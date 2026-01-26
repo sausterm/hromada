@@ -216,7 +216,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Projects</h2>
-              <Button>+ Add Project</Button>
+              <Link href="/admin/projects/new">
+                <Button>+ Add Project</Button>
+              </Link>
             </div>
 
             <Card>
@@ -270,7 +272,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                               <Link href={`/projects/${project.id}`}>
                                 <Button variant="ghost" size="sm">View</Button>
                               </Link>
-                              <Button variant="ghost" size="sm">Edit</Button>
+                              <Link href={`/admin/projects/${project.id}`}>
+                                <Button variant="ghost" size="sm">Edit</Button>
+                              </Link>
                             </div>
                           </td>
                         </tr>

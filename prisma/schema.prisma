@@ -1,14 +1,72 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Project {
+  id               String    @id @default(cuid())
+  municipalityName String
+  facilityName     String
+  category         Category
+  description      String    @db.Text
+  address          String
+  latitude         Float
+  longitude        Float
+  contactName      String
+  contactEmail     String
+  contactPhone     String?
+  urgency          Urgency   @default(MEDIUM)
+  status           Status    @default(OPEN)
+  photos           String[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  inquiries        Inquiry[]
+
+  @@index([category])
+  @@index([status])
+  @@index([urgency])
+  @@index([createdAt])
+}
+
+model Inquiry {
+  id           String   @id @default(cuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name         String
+  email        String
+  organization String?
+  message      String   @db.Text
+  read         Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([projectId])
+  @@index([createdAt])
+  @@index([read])
+}
+
+enum Category {
+  HOSPITAL
+  SCHOOL
+  WATER
+  ENERGY
+  OTHER
+}
+
+enum Urgency {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Status {
+  OPEN
+  IN_DISCUSSION
+  MATCHED
+  FULFILLED
 }

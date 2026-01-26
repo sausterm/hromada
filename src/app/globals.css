@@ -3,6 +3,43 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Ukraine Blue - Primary */
+  --ukraine-50: #eff8ff;
+  --ukraine-100: #dbeffe;
+  --ukraine-200: #bfe3fe;
+  --ukraine-300: #93d2fd;
+  --ukraine-400: #60b8fa;
+  --ukraine-500: #3b9af5;
+  --ukraine-600: #005BBB;
+  --ukraine-700: #1d6ad7;
+  --ukraine-800: #1e56ae;
+  --ukraine-900: #1e4a89;
+
+  /* Ukraine Gold - Accent */
+  --gold-50: #fefce8;
+  --gold-100: #fef9c3;
+  --gold-200: #fef08a;
+  --gold-300: #fde047;
+  --gold-400: #FFD500;
+  --gold-500: #eab308;
+  --gold-600: #ca8a04;
+  --gold-700: #a16207;
+  --gold-800: #854d0e;
+  --gold-900: #713f12;
+
+  /* Category colors for map pins */
+  --category-hospital: #3b82f6;
+  --category-school: #22c55e;
+  --category-water: #ef4444;
+  --category-energy: #f97316;
+  --category-other: #6b7280;
+
+  /* Urgency colors */
+  --urgency-low: #6b7280;
+  --urgency-medium: #eab308;
+  --urgency-high: #f97316;
+  --urgency-critical: #ef4444;
 }
 
 @theme inline {
@@ -10,6 +47,29 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Ukraine theme colors */
+  --color-ukraine-50: var(--ukraine-50);
+  --color-ukraine-100: var(--ukraine-100);
+  --color-ukraine-200: var(--ukraine-200);
+  --color-ukraine-300: var(--ukraine-300);
+  --color-ukraine-400: var(--ukraine-400);
+  --color-ukraine-500: var(--ukraine-500);
+  --color-ukraine-600: var(--ukraine-600);
+  --color-ukraine-700: var(--ukraine-700);
+  --color-ukraine-800: var(--ukraine-800);
+  --color-ukraine-900: var(--ukraine-900);
+
+  --color-gold-50: var(--gold-50);
+  --color-gold-100: var(--gold-100);
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+  --color-gold-800: var(--gold-800);
+  --color-gold-900: var(--gold-900);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,3 +84,27 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Leaflet map container styles */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Custom marker styles */
+.custom-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  font-size: 16px;
+}
+
+.custom-marker.hospital { background-color: var(--category-hospital); }
+.custom-marker.school { background-color: var(--category-school); }
+.custom-marker.water { background-color: var(--category-water); }
+.custom-marker.energy { background-color: var(--category-energy); }
+.custom-marker.other { background-color: var(--category-other); }

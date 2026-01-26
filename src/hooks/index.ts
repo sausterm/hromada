@@ -1,2 +1,1 @@
-// TODO: Custom React hooks
-export {};
+export { useAdminAuth } from './useAdminAuth'

@@ -60,16 +60,37 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         ...(body.municipalityName && { municipalityName: body.municipalityName }),
         ...(body.facilityName && { facilityName: body.facilityName }),
         ...(body.category && { category: body.category }),
-        ...(body.description && { description: body.description }),
-        ...(body.address && { address: body.address }),
-        ...(body.latitude && { latitude: parseFloat(body.latitude) }),
-        ...(body.longitude && { longitude: parseFloat(body.longitude) }),
+        ...(body.briefDescription && { briefDescription: body.briefDescription }),
+        ...(body.fullDescription && { fullDescription: body.fullDescription }),
+        ...(body.address !== undefined && { address: body.address || null }),
+        ...(body.cityLatitude && { cityLatitude: parseFloat(body.cityLatitude) }),
+        ...(body.cityLongitude && { cityLongitude: parseFloat(body.cityLongitude) }),
         ...(body.contactName && { contactName: body.contactName }),
         ...(body.contactEmail && { contactEmail: body.contactEmail }),
-        ...(body.contactPhone !== undefined && { contactPhone: body.contactPhone }),
+        ...(body.contactPhone !== undefined && { contactPhone: body.contactPhone || null }),
         ...(body.urgency && { urgency: body.urgency }),
         ...(body.status && { status: body.status }),
-        ...(body.photos && { photos: body.photos }),
+        // Technical & Financial Details (optional - allow null to clear)
+        ...(body.projectType !== undefined && { projectType: body.projectType || null }),
+        ...(body.projectSubtype !== undefined && { projectSubtype: body.projectSubtype || null }),
+        ...(body.technicalPowerKw !== undefined && {
+          technicalPowerKw: body.technicalPowerKw ? parseFloat(body.technicalPowerKw) : null,
+        }),
+        ...(body.numberOfPanels !== undefined && {
+          numberOfPanels: body.numberOfPanels ? parseInt(body.numberOfPanels) : null,
+        }),
+        ...(body.estimatedCostUsd !== undefined && {
+          estimatedCostUsd: body.estimatedCostUsd ? parseFloat(body.estimatedCostUsd) : null,
+        }),
+        ...(body.cofinancingAvailable !== undefined && {
+          cofinancingAvailable: body.cofinancingAvailable || null,
+        }),
+        ...(body.cofinancingDetails !== undefined && {
+          cofinancingDetails: body.cofinancingDetails || null,
+        }),
+        ...(body.partnerOrganization !== undefined && {
+          partnerOrganization: body.partnerOrganization || null,
+        }),
       },
     })
 

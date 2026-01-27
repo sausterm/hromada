@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG } from '@/types'
+import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 
 interface ProjectPopupProps {
@@ -58,6 +58,29 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         <p className="text-xs text-[var(--navy-600)] line-clamp-2 mb-3">
           {project.briefDescription || project.description}
         </p>
+
+        {/* Project Type & Cost */}
+        {(project.projectType || project.estimatedCostUsd) && (
+          <div className="flex items-center gap-2 mb-3">
+            {project.projectType && (
+              <span
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium"
+                style={{
+                  backgroundColor: `${PROJECT_TYPE_CONFIG[project.projectType].color}20`,
+                  color: PROJECT_TYPE_CONFIG[project.projectType].color,
+                }}
+              >
+                <span>{PROJECT_TYPE_CONFIG[project.projectType].icon}</span>
+                <span>{PROJECT_TYPE_CONFIG[project.projectType].label}</span>
+              </span>
+            )}
+            {project.estimatedCostUsd && (
+              <span className="text-xs font-semibold text-[var(--navy-600)]">
+                {formatCurrency(project.estimatedCostUsd)}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Urgency */}
         {project.urgency !== 'LOW' && (

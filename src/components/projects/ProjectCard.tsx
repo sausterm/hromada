@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG } from '@/types'
+import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency } from '@/types'
 
 interface ProjectCardProps {
   project: Project
@@ -77,9 +77,32 @@ export function ProjectCard({
         </h3>
 
         {/* Municipality */}
-        <p className="text-[var(--navy-500)] text-sm mb-2">
+        <p className="text-[var(--navy-500)] text-sm mb-1">
           {project.municipalityName}
         </p>
+
+        {/* Project Type & Cost Row */}
+        {(project.projectType || project.estimatedCostUsd) && (
+          <div className="flex items-center gap-2 mb-2">
+            {project.projectType && (
+              <span
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
+                style={{
+                  backgroundColor: `${PROJECT_TYPE_CONFIG[project.projectType].color}20`,
+                  color: PROJECT_TYPE_CONFIG[project.projectType].color,
+                }}
+              >
+                <span>{PROJECT_TYPE_CONFIG[project.projectType].icon}</span>
+                <span>{PROJECT_TYPE_CONFIG[project.projectType].label}</span>
+              </span>
+            )}
+            {project.estimatedCostUsd && (
+              <span className="text-xs font-semibold text-[var(--navy-600)]">
+                {formatCurrency(project.estimatedCostUsd)}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Description */}
         <p className="text-[var(--navy-600)] text-sm line-clamp-2 mb-3">
@@ -100,7 +123,7 @@ export function ProjectCard({
           </span>
 
           {/* Learn More Link */}
-          <span className="text-[#0057B7] hover:text-[#004494] text-sm font-medium">
+          <span className="text-[var(--navy-700)] hover:text-[var(--navy-800)] text-sm font-medium">
             Learn more &rarr;
           </span>
         </div>

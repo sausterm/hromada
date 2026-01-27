@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { MapWrapper, type MapBounds } from '@/components/map/MapWrapper'
 import { ProjectCard } from '@/components/projects/ProjectCard'
 import { Button } from '@/components/ui/Button'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import {
   type Project,
   type Category,
@@ -15,112 +16,48 @@ import {
   STATUS_CONFIG,
 } from '@/types'
 
-// Mock data - replace with API call
-const MOCK_PROJECTS: Project[] = [
-  {
-    id: '1',
-    municipalityName: 'Kharkiv Oblast',
-    municipalityEmail: 'contact@kharkiv-oblast.ua',
-    facilityName: 'Regional Hospital #5',
-    category: 'HOSPITAL',
-    description: 'Critical need for medical equipment including ventilators, patient monitors, and surgical instruments. The hospital serves over 50,000 residents and was damaged during recent attacks.',
-    briefDescription: 'Critical need for medical equipment including ventilators and patient monitors.',
-    address: 'Kharkiv, Ukraine',
-    cityLatitude: 49.9935,
-    cityLongitude: 36.2304,
-    contactName: 'Dr. Olena Kovalenko',
-    contactEmail: 'hospital5@kharkiv.ua',
-    contactPhone: '+380501234567',
-    urgency: 'CRITICAL',
-    status: 'OPEN',
-    photos: ['https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=800'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '2',
-    municipalityName: 'Kyiv Oblast',
-    municipalityEmail: 'contact@kyiv-oblast.ua',
-    facilityName: 'School #127',
-    category: 'SCHOOL',
-    description: 'Need educational supplies, computers, and repairs to damaged classrooms. 450 students attend this school.',
-    briefDescription: 'Need educational supplies, computers, and classroom repairs for 450 students.',
-    address: 'Bucha, Kyiv Oblast, Ukraine',
-    cityLatitude: 50.5414,
-    cityLongitude: 30.2131,
-    contactName: 'Natalia Shevchenko',
-    contactEmail: 'school127@bucha.ua',
-    urgency: 'HIGH',
-    status: 'OPEN',
-    photos: ['https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '3',
-    municipalityName: 'Odesa Oblast',
-    municipalityEmail: 'contact@odesa-oblast.ua',
-    facilityName: 'Municipal Water Treatment Plant',
-    category: 'WATER',
-    description: 'Urgent need for water filtration equipment and backup generators. Plant provides clean water to 30,000 residents.',
-    briefDescription: 'Urgent need for water filtration equipment and backup generators.',
-    address: 'Odesa, Ukraine',
-    cityLatitude: 46.4825,
-    cityLongitude: 30.7233,
-    contactName: 'Viktor Bondarenko',
-    contactEmail: 'water@odesa.ua',
-    urgency: 'HIGH',
-    status: 'IN_DISCUSSION',
-    photos: ['https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '4',
-    municipalityName: 'Lviv Oblast',
-    municipalityEmail: 'contact@lviv-oblast.ua',
-    facilityName: 'Power Substation East',
-    category: 'ENERGY',
-    description: 'Transformers and electrical equipment needed to restore power to residential area. Currently 2,000 homes without stable electricity.',
-    briefDescription: 'Transformers needed to restore power to 2,000 homes.',
-    address: 'Lviv, Ukraine',
-    cityLatitude: 49.8397,
-    cityLongitude: 24.0297,
-    contactName: 'Andriy Melnyk',
-    contactEmail: 'energy@lviv.ua',
-    urgency: 'MEDIUM',
-    status: 'OPEN',
-    photos: ['https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '5',
-    municipalityName: 'Dnipro Oblast',
-    municipalityEmail: 'contact@dnipro-oblast.ua',
-    facilityName: 'Community Center',
-    category: 'OTHER',
-    description: 'Heating system repairs needed before winter. Center serves as shelter for displaced families.',
-    briefDescription: 'Heating system repairs needed for shelter serving displaced families.',
-    address: 'Dnipro, Ukraine',
-    cityLatitude: 48.4647,
-    cityLongitude: 35.0462,
-    contactName: 'Maria Tkachenko',
-    contactEmail: 'community@dnipro.ua',
-    urgency: 'HIGH',
-    status: 'OPEN',
-    photos: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-]
+// Helper to transform API response to Project type
+function transformProject(data: any): Project {
+  return {
+    ...data,
+    // Map fullDescription to description for display
+    description: data.fullDescription || data.description || '',
+    // Ensure dates are Date objects
+    createdAt: new Date(data.createdAt),
+    updatedAt: new Date(data.updatedAt),
+    // Convert Decimal strings to numbers
+    technicalPowerKw: data.technicalPowerKw ? Number(data.technicalPowerKw) : undefined,
+    estimatedCostUsd: data.estimatedCostUsd ? Number(data.estimatedCostUsd) : undefined,
+  }
+}
 
 export default function HomePage() {
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   // State
-  const [allProjects] = useState<Project[]>(MOCK_PROJECTS)
-  const [visibleProjects, setVisibleProjects] = useState<Project[]>(MOCK_PROJECTS)
+  const [allProjects, setAllProjects] = useState<Project[]>([])
+  const [visibleProjects, setVisibleProjects] = useState<Project[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch projects from API
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const response = await fetch('/api/projects')
+        if (response.ok) {
+          const data = await response.json()
+          const projects = data.projects.map(transformProject)
+          setAllProjects(projects)
+          setVisibleProjects(projects)
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchProjects()
+  }, [])
   const [highlightedProjectId, setHighlightedProjectId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set())
@@ -224,6 +161,14 @@ export default function HomePage() {
     return count
   }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus])
 
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-[var(--cream-50)]">
+        <LoadingSpinner size="lg" />
+      </div>
+    )
+  }
+
   return (
     <div className="h-screen flex flex-col bg-[var(--cream-50)]">
       {/* Header */}
@@ -232,7 +177,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-2xl font-bold text-[#0057B7]">
+              <span className="text-2xl font-bold text-[var(--navy-700)]">
                 hromada <span className="opacity-60">|</span> громада
               </span>
             </Link>
@@ -273,7 +218,7 @@ export default function HomePage() {
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-[#0057B7] hover:bg-[#004494]"
+                className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]"
               >
                 Support a Project
               </Button>

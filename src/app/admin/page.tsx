@@ -10,71 +10,17 @@ import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { type Project, type Inquiry, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG } from '@/types'
 
-// Mock data for development
-const MOCK_PROJECTS: Project[] = [
-  {
-    id: '1',
-    municipalityName: 'Kharkiv Oblast',
-    municipalityEmail: 'contact@kharkiv-oblast.ua',
-    facilityName: 'Regional Hospital #5',
-    category: 'HOSPITAL',
-    briefDescription: 'Critical need for medical equipment including ventilators.',
-    description: 'Critical need for medical equipment...',
-    address: 'Kharkiv, Ukraine',
-    cityLatitude: 49.9935,
-    cityLongitude: 36.2304,
-    contactName: 'Dr. Olena Kovalenko',
-    contactEmail: 'hospital5@kharkiv.ua',
-    contactPhone: '+380501234567',
-    urgency: 'CRITICAL',
-    status: 'OPEN',
-    photos: [],
-    createdAt: new Date('2025-01-15'),
-    updatedAt: new Date('2025-01-20'),
-  },
-  {
-    id: '2',
-    municipalityName: 'Kyiv Oblast',
-    municipalityEmail: 'contact@kyiv-oblast.ua',
-    facilityName: 'School #127',
-    category: 'SCHOOL',
-    briefDescription: 'Need educational supplies and computers for students.',
-    description: 'Need educational supplies...',
-    address: 'Bucha, Kyiv Oblast, Ukraine',
-    cityLatitude: 50.5414,
-    cityLongitude: 30.2131,
-    contactName: 'Natalia Shevchenko',
-    contactEmail: 'school127@bucha.ua',
-    urgency: 'HIGH',
-    status: 'IN_DISCUSSION',
-    photos: [],
-    createdAt: new Date('2025-01-10'),
-    updatedAt: new Date('2025-01-18'),
-  },
-]
-
-const MOCK_INQUIRIES: (Inquiry & { project: Pick<Project, 'id' | 'facilityName'> })[] = [
-  {
-    id: '1',
-    projectId: '1',
-    name: 'John Smith',
-    email: 'john@example.com',
-    organization: 'Medical Aid Foundation',
-    message: 'We have ventilators available and would like to help. Can we schedule a call?',
-    createdAt: new Date('2025-01-22'),
-    project: { id: '1', facilityName: 'Regional Hospital #5' },
-  },
-  {
-    id: '2',
-    projectId: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah@nonprofit.org',
-    organization: 'Education First',
-    message: 'Our organization can provide laptops and educational materials.',
-    createdAt: new Date('2025-01-21'),
-    project: { id: '2', facilityName: 'School #127' },
-  },
-]
+// Helper to transform API response to Project type
+function transformProject(data: any): Project {
+  return {
+    ...data,
+    description: data.fullDescription || data.description || '',
+    createdAt: new Date(data.createdAt),
+    updatedAt: new Date(data.updatedAt),
+    technicalPowerKw: data.technicalPowerKw ? Number(data.technicalPowerKw) : undefined,
+    estimatedCostUsd: data.estimatedCostUsd ? Number(data.estimatedCostUsd) : undefined,
+  }
+}
 
 function LoginForm({ onLogin }: { onLogin: (password: string) => void }) {
   const [password, setPassword] = useState('')
@@ -141,11 +87,30 @@ interface ContactSubmissionWithProject extends ContactSubmission {
 }
 
 function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader: string | null }) {
-  const [projects] = useState(MOCK_PROJECTS)
-  const [inquiries] = useState(MOCK_INQUIRIES)
+  const [projects, setProjects] = useState<Project[]>([])
+  const [inquiries, setInquiries] = useState<(Inquiry & { project: Pick<Project, 'id' | 'facilityName'> })[]>([])
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmissionWithProject[]>([])
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true)
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(true)
   const [activeTab, setActiveTab] = useState<'projects' | 'inquiries' | 'contacts'>('projects')
+
+  // Fetch projects from API
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const response = await fetch('/api/projects')
+        if (response.ok) {
+          const data = await response.json()
+          setProjects(data.projects.map(transformProject))
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects:', error)
+      } finally {
+        setIsLoadingProjects(false)
+      }
+    }
+    fetchProjects()
+  }, [])
 
   // Fetch contact submissions
   useEffect(() => {
@@ -158,7 +123,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
         })
         if (response.ok) {
           const data = await response.json()
-          setContactSubmissions(data.submissions)
+          setContactSubmissions(data.submissions || [])
         }
       } catch (error) {
         console.error('Failed to fetch contact submissions:', error)

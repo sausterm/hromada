@@ -31,6 +31,16 @@ model Project {
   urgency          Urgency   @default(MEDIUM)
   status           Status    @default(OPEN)
 
+  // Technical & Financial Details (for renewable energy projects)
+  projectType           ProjectType?        // Solar PV, Heat Pump, Water Treatment, General
+  projectSubtype        String?             // e.g., "Building hybrid PV", "Ground-mounted"
+  technicalPowerKw      Decimal?  @db.Decimal(10, 2)  // Theoretical power in kilowatts
+  numberOfPanels        Int?                // For solar projects
+  estimatedCostUsd      Decimal?  @db.Decimal(12, 2)  // Approximate project cost in USD
+  cofinancingAvailable  CofinancingStatus?  // Yes, No, Needs Clarification
+  cofinancingDetails    String?             // Amount or percentage details
+  partnerOrganization   String?             // NGO or partner name
+
   // Timestamps
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
@@ -43,6 +53,7 @@ model Project {
   @@index([category])
   @@index([status])
   @@index([urgency])
+  @@index([projectType])
   @@index([createdAt])
 }
 
@@ -114,4 +125,17 @@ enum Status {
   IN_DISCUSSION
   MATCHED
   FULFILLED
+}
+
+enum ProjectType {
+  SOLAR_PV
+  HEAT_PUMP
+  WATER_TREATMENT
+  GENERAL
+}
+
+enum CofinancingStatus {
+  YES
+  NO
+  NEEDS_CLARIFICATION
 }

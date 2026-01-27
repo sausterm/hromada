@@ -6,7 +6,19 @@ import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { ImageUpload } from './ImageUpload'
-import { type Project, type Category, type Urgency, type Status, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG } from '@/types'
+import {
+  type Project,
+  type Category,
+  type Urgency,
+  type Status,
+  type ProjectType,
+  type CofinancingStatus,
+  CATEGORY_CONFIG,
+  URGENCY_CONFIG,
+  STATUS_CONFIG,
+  PROJECT_TYPE_CONFIG,
+  COFINANCING_CONFIG,
+} from '@/types'
 
 interface ProjectFormProps {
   project?: Project | null
@@ -31,6 +43,15 @@ export interface ProjectFormData {
   urgency: Urgency
   status: Status
   photos: string[]
+  // Technical & Financial Details
+  projectType: ProjectType | ''
+  projectSubtype: string
+  technicalPowerKw: string
+  numberOfPanels: string
+  estimatedCostUsd: string
+  cofinancingAvailable: CofinancingStatus | ''
+  cofinancingDetails: string
+  partnerOrganization: string
 }
 
 const initialFormData: ProjectFormData = {
@@ -48,6 +69,15 @@ const initialFormData: ProjectFormData = {
   urgency: 'MEDIUM',
   status: 'OPEN',
   photos: [],
+  // Technical & Financial Details
+  projectType: '',
+  projectSubtype: '',
+  technicalPowerKw: '',
+  numberOfPanels: '',
+  estimatedCostUsd: '',
+  cofinancingAvailable: '',
+  cofinancingDetails: '',
+  partnerOrganization: '',
 }
 
 export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader }: ProjectFormProps) {
@@ -74,6 +104,15 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
         urgency: project.urgency,
         status: project.status,
         photos: project.photos || [],
+        // Technical & Financial Details
+        projectType: project.projectType || '',
+        projectSubtype: project.projectSubtype || '',
+        technicalPowerKw: project.technicalPowerKw?.toString() || '',
+        numberOfPanels: project.numberOfPanels?.toString() || '',
+        estimatedCostUsd: project.estimatedCostUsd?.toString() || '',
+        cofinancingAvailable: project.cofinancingAvailable || '',
+        cofinancingDetails: project.cofinancingDetails || '',
+        partnerOrganization: project.partnerOrganization || '',
       })
     }
   }, [project])
@@ -155,6 +194,26 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
     }
     if (isNaN(lng) || lng < -180 || lng > 180) {
       newErrors.cityLongitude = 'Invalid longitude (-180 to 180)'
+    }
+
+    // Validate technical/financial fields (optional but must be positive if provided)
+    if (formData.technicalPowerKw.trim()) {
+      const power = parseFloat(formData.technicalPowerKw)
+      if (isNaN(power) || power <= 0) {
+        newErrors.technicalPowerKw = 'Must be a positive number'
+      }
+    }
+    if (formData.numberOfPanels.trim()) {
+      const panels = parseInt(formData.numberOfPanels)
+      if (isNaN(panels) || panels <= 0) {
+        newErrors.numberOfPanels = 'Must be a positive whole number'
+      }
+    }
+    if (formData.estimatedCostUsd.trim()) {
+      const cost = parseFloat(formData.estimatedCostUsd)
+      if (isNaN(cost) || cost <= 0) {
+        newErrors.estimatedCostUsd = 'Must be a positive number'
+      }
     }
 
     setErrors(newErrors)
@@ -379,6 +438,130 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
                   placeholder="+380..."
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Technical & Financial Details */}
+          <div className="space-y-4">
+            <h3 className="font-medium text-gray-900 border-b pb-2">Technical & Financial Details</h3>
+            <p className="text-sm text-gray-500">
+              Optional fields for renewable energy and infrastructure projects.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Project Type
+                </label>
+                <select
+                  value={formData.projectType}
+                  onChange={handleChange('projectType')}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--warm-200)] focus:border-[var(--warm-500)]"
+                >
+                  <option value="">-- Select Type --</option>
+                  {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
+                    <option key={type} value={type}>
+                      {PROJECT_TYPE_CONFIG[type].icon} {PROJECT_TYPE_CONFIG[type].label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Project Subtype
+                </label>
+                <Input
+                  value={formData.projectSubtype}
+                  onChange={handleChange('projectSubtype')}
+                  placeholder="e.g., Building hybrid PV, Ground-mounted"
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Technical Power (kW)
+                </label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.technicalPowerKw}
+                  onChange={handleChange('technicalPowerKw')}
+                  placeholder="e.g., 100"
+                  error={errors.technicalPowerKw}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Number of Panels
+                  {formData.projectType === 'SOLAR_PV' && <span className="text-amber-600"> *</span>}
+                </label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={formData.numberOfPanels}
+                  onChange={handleChange('numberOfPanels')}
+                  placeholder="e.g., 200"
+                  error={errors.numberOfPanels}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Estimated Cost (USD)
+                </label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.estimatedCostUsd}
+                  onChange={handleChange('estimatedCostUsd')}
+                  placeholder="e.g., 50000"
+                  error={errors.estimatedCostUsd}
+                />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Co-financing Available
+                </label>
+                <select
+                  value={formData.cofinancingAvailable}
+                  onChange={handleChange('cofinancingAvailable')}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--warm-200)] focus:border-[var(--warm-500)]"
+                >
+                  <option value="">-- Select --</option>
+                  {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
+                    <option key={status} value={status}>
+                      {COFINANCING_CONFIG[status].label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Co-financing Details
+                </label>
+                <Input
+                  value={formData.cofinancingDetails}
+                  onChange={handleChange('cofinancingDetails')}
+                  placeholder="e.g., Up to 20%, 500,000 UAH"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Partner Organization
+              </label>
+              <Input
+                value={formData.partnerOrganization}
+                onChange={handleChange('partnerOrganization')}
+                placeholder="e.g., NGO name, partner organization"
+              />
             </div>
           </div>
 

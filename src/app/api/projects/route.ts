@@ -8,6 +8,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const status = searchParams.get('status')
     const urgency = searchParams.get('urgency')
+    const projectType = searchParams.get('projectType')
 
     const where: any = {}
 
@@ -19,6 +20,9 @@ export async function GET(request: NextRequest) {
     }
     if (urgency) {
       where.urgency = urgency
+    }
+    if (projectType) {
+      where.projectType = projectType
     }
 
     const projects = await prisma.project.findMany({
@@ -106,6 +110,15 @@ export async function POST(request: NextRequest) {
         contactPhone: body.contactPhone || null,
         urgency: body.urgency || 'MEDIUM',
         status: body.status || 'OPEN',
+        // Technical & Financial Details (optional)
+        projectType: body.projectType || null,
+        projectSubtype: body.projectSubtype || null,
+        technicalPowerKw: body.technicalPowerKw ? parseFloat(body.technicalPowerKw) : null,
+        numberOfPanels: body.numberOfPanels ? parseInt(body.numberOfPanels) : null,
+        estimatedCostUsd: body.estimatedCostUsd ? parseFloat(body.estimatedCostUsd) : null,
+        cofinancingAvailable: body.cofinancingAvailable || null,
+        cofinancingDetails: body.cofinancingDetails || null,
+        partnerOrganization: body.partnerOrganization || null,
       },
     })
 

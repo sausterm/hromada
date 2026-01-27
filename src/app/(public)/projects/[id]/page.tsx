@@ -8,110 +8,28 @@ import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent } from '@/components/ui/Card'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { ContactForm } from '@/components/projects/ContactForm'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG } from '@/types'
+import {
+  type Project,
+  CATEGORY_CONFIG,
+  URGENCY_CONFIG,
+  STATUS_CONFIG,
+  PROJECT_TYPE_CONFIG,
+  COFINANCING_CONFIG,
+  formatCurrency,
+  formatPower,
+} from '@/types'
 
-// Mock data - same as homepage for now
-const MOCK_PROJECTS: Project[] = [
-  {
-    id: '1',
-    municipalityName: 'Kharkiv Oblast',
-    municipalityEmail: 'contact@kharkiv-oblast.ua',
-    facilityName: 'Regional Hospital #5',
-    category: 'HOSPITAL',
-    briefDescription: 'Critical need for medical equipment including ventilators and patient monitors.',
-    description: 'Critical need for medical equipment including ventilators, patient monitors, and surgical instruments. The hospital serves over 50,000 residents and was damaged during recent attacks.\n\nSpecific needs include:\n- 5 portable ventilators\n- 10 patient monitoring systems\n- Surgical instrument sets\n- Emergency power generators\n- Medical supplies and medications',
-    address: 'Kharkiv, Ukraine',
-    cityLatitude: 49.9935,
-    cityLongitude: 36.2304,
-    contactName: 'Dr. Olena Kovalenko',
-    contactEmail: 'hospital5@kharkiv.ua',
-    contactPhone: '+380501234567',
-    urgency: 'CRITICAL',
-    status: 'OPEN',
-    photos: [
-      'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=800',
-      'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800',
-    ],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '2',
-    municipalityName: 'Kyiv Oblast',
-    municipalityEmail: 'contact@kyiv-oblast.ua',
-    facilityName: 'School #127',
-    category: 'SCHOOL',
-    briefDescription: 'Need educational supplies, computers, and classroom repairs for 450 students.',
-    description: 'Need educational supplies, computers, and repairs to damaged classrooms. 450 students attend this school.\n\nRequired items:\n- 30 laptop computers for students\n- Educational materials and textbooks\n- Classroom furniture replacement\n- Window repairs and insulation\n- Heating system maintenance',
-    address: 'Bucha, Kyiv Oblast, Ukraine',
-    cityLatitude: 50.5414,
-    cityLongitude: 30.2131,
-    contactName: 'Natalia Shevchenko',
-    contactEmail: 'school127@bucha.ua',
-    urgency: 'HIGH',
-    status: 'OPEN',
-    photos: ['https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '3',
-    municipalityName: 'Odesa Oblast',
-    municipalityEmail: 'contact@odesa-oblast.ua',
-    facilityName: 'Municipal Water Treatment Plant',
-    category: 'WATER',
-    briefDescription: 'Urgent need for water filtration equipment and backup generators.',
-    description: 'Urgent need for water filtration equipment and backup generators. Plant provides clean water to 30,000 residents.',
-    address: 'Odesa, Ukraine',
-    cityLatitude: 46.4825,
-    cityLongitude: 30.7233,
-    contactName: 'Viktor Bondarenko',
-    contactEmail: 'water@odesa.ua',
-    urgency: 'HIGH',
-    status: 'IN_DISCUSSION',
-    photos: ['https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '4',
-    municipalityName: 'Lviv Oblast',
-    municipalityEmail: 'contact@lviv-oblast.ua',
-    facilityName: 'Power Substation East',
-    category: 'ENERGY',
-    briefDescription: 'Transformers needed to restore power to 2,000 homes.',
-    description: 'Transformers and electrical equipment needed to restore power to residential area. Currently 2,000 homes without stable electricity.',
-    address: 'Lviv, Ukraine',
-    cityLatitude: 49.8397,
-    cityLongitude: 24.0297,
-    contactName: 'Andriy Melnyk',
-    contactEmail: 'energy@lviv.ua',
-    urgency: 'MEDIUM',
-    status: 'OPEN',
-    photos: ['https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800'],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '5',
-    municipalityName: 'Dnipro Oblast',
-    municipalityEmail: 'contact@dnipro-oblast.ua',
-    facilityName: 'Community Center',
-    category: 'OTHER',
-    briefDescription: 'Heating system repairs needed for shelter serving displaced families.',
-    description: 'Heating system repairs needed before winter. Center serves as shelter for displaced families.',
-    address: 'Dnipro, Ukraine',
-    cityLatitude: 48.4647,
-    cityLongitude: 35.0462,
-    contactName: 'Maria Tkachenko',
-    contactEmail: 'community@dnipro.ua',
-    urgency: 'HIGH',
-    status: 'OPEN',
-    photos: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-]
+// Helper to transform API response to Project type
+function transformProject(data: any): Project {
+  return {
+    ...data,
+    description: data.fullDescription || data.description || '',
+    createdAt: new Date(data.createdAt),
+    updatedAt: new Date(data.updatedAt),
+    technicalPowerKw: data.technicalPowerKw ? Number(data.technicalPowerKw) : undefined,
+    estimatedCostUsd: data.estimatedCostUsd ? Number(data.estimatedCostUsd) : undefined,
+  }
+}
 
 export default function ProjectDetailPage() {
   const params = useParams()
@@ -122,10 +40,23 @@ export default function ProjectDetailPage() {
   const [selectedPhoto, setSelectedPhoto] = useState(0)
 
   useEffect(() => {
-    // Simulate API call - replace with actual fetch
-    const found = MOCK_PROJECTS.find((p) => p.id === projectId)
-    setProject(found || null)
-    setIsLoading(false)
+    async function fetchProject() {
+      try {
+        const response = await fetch(`/api/projects/${projectId}`)
+        if (response.ok) {
+          const data = await response.json()
+          setProject(transformProject(data.project))
+        } else {
+          setProject(null)
+        }
+      } catch (error) {
+        console.error('Failed to fetch project:', error)
+        setProject(null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchProject()
   }, [projectId])
 
   if (isLoading) {
@@ -242,6 +173,101 @@ export default function ProjectDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Project Specifications - only show if any technical/financial fields exist */}
+            {(project.projectType || project.estimatedCostUsd || project.technicalPowerKw ||
+              project.numberOfPanels || project.cofinancingAvailable || project.partnerOrganization) && (
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    Project Specifications
+                  </h2>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {/* Project Type */}
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Project Type</p>
+                      {project.projectType ? (
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium"
+                          style={{
+                            backgroundColor: `${PROJECT_TYPE_CONFIG[project.projectType].color}20`,
+                            color: PROJECT_TYPE_CONFIG[project.projectType].color,
+                          }}
+                        >
+                          <span>{PROJECT_TYPE_CONFIG[project.projectType].icon}</span>
+                          <span>{PROJECT_TYPE_CONFIG[project.projectType].label}</span>
+                        </span>
+                      ) : (
+                        <p className="text-gray-400 text-sm">Not specified</p>
+                      )}
+                    </div>
+
+                    {/* Project Subtype */}
+                    {project.projectSubtype && (
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">Subtype</p>
+                        <p className="font-medium text-gray-900">{project.projectSubtype}</p>
+                      </div>
+                    )}
+
+                    {/* Estimated Cost */}
+                    <div>
+                      <p className="text-sm text-gray-500 mb-1">Estimated Cost</p>
+                      {project.estimatedCostUsd ? (
+                        <p className="font-semibold text-lg text-[var(--navy-700)]">
+                          {formatCurrency(project.estimatedCostUsd)}
+                        </p>
+                      ) : (
+                        <p className="text-gray-400 text-sm">Not specified</p>
+                      )}
+                    </div>
+
+                    {/* Technical Power */}
+                    {project.technicalPowerKw && (
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">Technical Power</p>
+                        <p className="font-medium text-gray-900">{formatPower(project.technicalPowerKw)}</p>
+                      </div>
+                    )}
+
+                    {/* Number of Panels */}
+                    {project.numberOfPanels && (
+                      <div>
+                        <p className="text-sm text-gray-500 mb-1">Number of Panels</p>
+                        <p className="font-medium text-gray-900">{project.numberOfPanels.toLocaleString()}</p>
+                      </div>
+                    )}
+
+                    {/* Co-financing Available */}
+                    {project.cofinancingAvailable && (
+                      <div className="sm:col-span-2">
+                        <p className="text-sm text-gray-500 mb-1">Co-financing Available</p>
+                        <span
+                          className="inline-flex items-center px-2.5 py-1 rounded text-sm font-medium"
+                          style={{
+                            backgroundColor: `${COFINANCING_CONFIG[project.cofinancingAvailable].color}20`,
+                            color: COFINANCING_CONFIG[project.cofinancingAvailable].color,
+                          }}
+                        >
+                          {COFINANCING_CONFIG[project.cofinancingAvailable].label}
+                        </span>
+                        {project.cofinancingDetails && (
+                          <p className="text-gray-700 mt-1">{project.cofinancingDetails}</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Partner Organization */}
+                    {project.partnerOrganization && (
+                      <div className="sm:col-span-2">
+                        <p className="text-sm text-gray-500 mb-1">Partner Organization</p>
+                        <p className="font-medium text-gray-900">{project.partnerOrganization}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Location */}
             <Card>

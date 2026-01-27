@@ -29,7 +29,7 @@ function createCategoryIcon(category: Category, isHighlighted: boolean = false):
         border-radius: 50%;
         border: 3px solid white;
         box-shadow: ${isHighlighted
-          ? '0 0 0 4px rgba(212, 117, 78, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35)'
+          ? '0 0 0 4px rgba(44, 62, 80, 0.5), 0 4px 16px rgba(58, 54, 51, 0.35)'
           : '0 3px 12px rgba(58, 54, 51, 0.25)'};
         font-size: ${isHighlighted ? '18px' : '16px'};
         background-color: ${config.color};

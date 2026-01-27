@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
+import { ImageUpload } from './ImageUpload'
 import { type Project, type Category, type Urgency, type Status, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG } from '@/types'
 
 interface ProjectFormProps {
@@ -12,16 +13,18 @@ interface ProjectFormProps {
   onSubmit: (data: ProjectFormData) => Promise<void>
   onCancel: () => void
   isLoading?: boolean
+  authHeader?: string | null
 }
 
 export interface ProjectFormData {
   municipalityName: string
   facilityName: string
   category: Category
-  description: string
+  briefDescription: string
+  fullDescription: string
   address: string
-  latitude: string
-  longitude: string
+  cityLatitude: string
+  cityLongitude: string
   contactName: string
   contactEmail: string
   contactPhone: string
@@ -34,10 +37,11 @@ const initialFormData: ProjectFormData = {
   municipalityName: '',
   facilityName: '',
   category: 'OTHER',
-  description: '',
+  briefDescription: '',
+  fullDescription: '',
   address: '',
-  latitude: '',
-  longitude: '',
+  cityLatitude: '',
+  cityLongitude: '',
   contactName: '',
   contactEmail: '',
   contactPhone: '',
@@ -46,7 +50,7 @@ const initialFormData: ProjectFormData = {
   photos: [],
 }
 
-export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectFormProps) {
+export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader }: ProjectFormProps) {
   const [formData, setFormData] = useState<ProjectFormData>(initialFormData)
   const [errors, setErrors] = useState<Partial<Record<keyof ProjectFormData, string>>>({})
   const [isGeocoding, setIsGeocoding] = useState(false)
@@ -59,16 +63,17 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
         municipalityName: project.municipalityName,
         facilityName: project.facilityName,
         category: project.category,
-        description: project.description,
+        briefDescription: project.briefDescription,
+        fullDescription: project.description,
         address: project.address,
-        latitude: project.latitude.toString(),
-        longitude: project.longitude.toString(),
+        cityLatitude: project.cityLatitude.toString(),
+        cityLongitude: project.cityLongitude.toString(),
         contactName: project.contactName,
         contactEmail: project.contactEmail,
         contactPhone: project.contactPhone || '',
         urgency: project.urgency,
         status: project.status,
-        photos: project.photos,
+        photos: project.photos || [],
       })
     }
   }, [project])
@@ -80,6 +85,10 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
     }
+  }
+
+  const handleImagesChange = (photos: string[]) => {
+    setFormData((prev) => ({ ...prev, photos }))
   }
 
   const geocodeAddress = async () => {
@@ -100,10 +109,10 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
       if (data && data.length > 0) {
         setFormData((prev) => ({
           ...prev,
-          latitude: data[0].lat,
-          longitude: data[0].lon,
+          cityLatitude: data[0].lat,
+          cityLongitude: data[0].lon,
         }))
-        setErrors((prev) => ({ ...prev, latitude: undefined, longitude: undefined }))
+        setErrors((prev) => ({ ...prev, cityLatitude: undefined, cityLongitude: undefined }))
       } else {
         setErrors((prev) => ({ ...prev, address: 'Could not find coordinates for this address' }))
       }
@@ -119,10 +128,18 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
 
     if (!formData.municipalityName.trim()) newErrors.municipalityName = 'Required'
     if (!formData.facilityName.trim()) newErrors.facilityName = 'Required'
-    if (!formData.description.trim()) newErrors.description = 'Required'
-    if (!formData.address.trim()) newErrors.address = 'Required'
-    if (!formData.latitude.trim()) newErrors.latitude = 'Required'
-    if (!formData.longitude.trim()) newErrors.longitude = 'Required'
+    if (!formData.briefDescription.trim()) {
+      newErrors.briefDescription = 'Required'
+    } else if (formData.briefDescription.length > 150) {
+      newErrors.briefDescription = 'Maximum 150 characters'
+    }
+    if (!formData.fullDescription.trim()) {
+      newErrors.fullDescription = 'Required'
+    } else if (formData.fullDescription.length > 2000) {
+      newErrors.fullDescription = 'Maximum 2000 characters'
+    }
+    if (!formData.cityLatitude.trim()) newErrors.cityLatitude = 'Required'
+    if (!formData.cityLongitude.trim()) newErrors.cityLongitude = 'Required'
     if (!formData.contactName.trim()) newErrors.contactName = 'Required'
     if (!formData.contactEmail.trim()) {
       newErrors.contactEmail = 'Required'
@@ -131,13 +148,13 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
     }
 
     // Validate coordinates
-    const lat = parseFloat(formData.latitude)
-    const lng = parseFloat(formData.longitude)
+    const lat = parseFloat(formData.cityLatitude)
+    const lng = parseFloat(formData.cityLongitude)
     if (isNaN(lat) || lat < -90 || lat > 90) {
-      newErrors.latitude = 'Invalid latitude (-90 to 90)'
+      newErrors.cityLatitude = 'Invalid latitude (-90 to 90)'
     }
     if (isNaN(lng) || lng < -180 || lng > 180) {
-      newErrors.longitude = 'Invalid longitude (-180 to 180)'
+      newErrors.cityLongitude = 'Invalid longitude (-180 to 180)'
     }
 
     setErrors(newErrors)
@@ -239,13 +256,26 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description *
+                Brief Description * <span className="text-gray-400 font-normal">({formData.briefDescription.length}/150)</span>
               </label>
               <Textarea
-                value={formData.description}
-                onChange={handleChange('description')}
-                placeholder="Describe the needs, what's required, and how donors can help..."
-                error={errors.description}
+                value={formData.briefDescription}
+                onChange={handleChange('briefDescription')}
+                placeholder="Short summary for cards and lists (max 150 characters)"
+                error={errors.briefDescription}
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Full Description * <span className="text-gray-400 font-normal">({formData.fullDescription.length}/2000)</span>
+              </label>
+              <Textarea
+                value={formData.fullDescription}
+                onChange={handleChange('fullDescription')}
+                placeholder="Detailed description of needs, what's required, and how donors can help..."
+                error={errors.fullDescription}
                 rows={6}
               />
             </div>
@@ -253,11 +283,14 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
 
           {/* Location */}
           <div className="space-y-4">
-            <h3 className="font-medium text-gray-900 border-b pb-2">Location</h3>
+            <h3 className="font-medium text-gray-900 border-b pb-2">Location (City-Level Only)</h3>
+            <p className="text-sm text-gray-500">
+              For security, only enter city-level coordinates. Do not enter exact facility locations.
+            </p>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Address *
+                City/Region <span className="text-gray-400">(optional, for geocoding)</span>
               </label>
               <div className="flex gap-2">
                 <div className="flex-1">
@@ -283,24 +316,24 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Latitude *
+                  City Latitude *
                 </label>
                 <Input
-                  value={formData.latitude}
-                  onChange={handleChange('latitude')}
+                  value={formData.cityLatitude}
+                  onChange={handleChange('cityLatitude')}
                   placeholder="e.g., 49.9935"
-                  error={errors.latitude}
+                  error={errors.cityLatitude}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Longitude *
+                  City Longitude *
                 </label>
                 <Input
-                  value={formData.longitude}
-                  onChange={handleChange('longitude')}
+                  value={formData.cityLongitude}
+                  onChange={handleChange('cityLongitude')}
                   placeholder="e.g., 36.2304"
-                  error={errors.longitude}
+                  error={errors.cityLongitude}
                 />
               </div>
             </div>
@@ -347,6 +380,17 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
                 />
               </div>
             </div>
+          </div>
+
+          {/* Images */}
+          <div className="space-y-4">
+            <h3 className="font-medium text-gray-900 border-b pb-2">Project Images</h3>
+            <ImageUpload
+              images={formData.photos}
+              onChange={handleImagesChange}
+              authHeader={authHeader || null}
+              maxImages={5}
+            />
           </div>
 
           {/* Actions */}

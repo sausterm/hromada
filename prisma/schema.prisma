@@ -3,34 +3,62 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 model Project {
   id               String    @id @default(cuid())
+
+  // Required fields
   municipalityName String
   facilityName     String
   category         Category
-  description      String    @db.Text
-  address          String
-  latitude         Float
-  longitude        Float
+  briefDescription String    @db.VarChar(150)  // Short summary for cards/lists
+  fullDescription  String    @db.VarChar(2000) // Detailed project description
   contactName      String
   contactEmail     String
+
+  // Location - city-level precision only
+  // SECURITY: Coordinates are intentionally limited to city-level precision
+  // to protect facility locations from potential targeting during wartime.
+  // Do NOT store or transmit exact facility addresses or precise coordinates.
+  cityLatitude     Float
+  cityLongitude    Float
+
+  // Optional fields
+  address          String?   // General area description, not exact address
   contactPhone     String?
   urgency          Urgency   @default(MEDIUM)
   status           Status    @default(OPEN)
-  photos           String[]
+
+  // Timestamps
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
-  inquiries        Inquiry[]
+
+  // Relations
+  photos             ProjectImage[]
+  inquiries          Inquiry[]
+  contactSubmissions ContactSubmission[]
 
   @@index([category])
   @@index([status])
   @@index([urgency])
   @@index([createdAt])
+}
+
+/// Project images with a maximum of 5 per project.
+/// The 5-image limit must be enforced at the application layer.
+model ProjectImage {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       String
+  altText   String?  @db.VarChar(200)
+  sortOrder Int      @default(0) // For ordering images in display
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+  @@index([sortOrder])
 }
 
 model Inquiry {
@@ -47,6 +75,23 @@ model Inquiry {
   @@index([projectId])
   @@index([createdAt])
   @@index([read])
+}
+
+/// Contact submissions from donors interested in projects.
+/// Email notifications are sent to ADMIN_EMAIL when submissions are created.
+model ContactSubmission {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  donorName   String
+  donorEmail  String
+  message     String   @db.VarChar(1000)
+  handled     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([projectId])
+  @@index([createdAt])
+  @@index([handled])
 }
 
 enum Category {

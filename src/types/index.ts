@@ -11,18 +11,24 @@ export type Status = 'OPEN' | 'IN_DISCUSSION' | 'MATCHED' | 'FULFILLED'
 export interface Project {
   id: string
   municipalityName: string
+  municipalityEmail: string
   facilityName: string
   category: Category
+  briefDescription: string
   description: string
   address: string
-  latitude: number
-  longitude: number
+  // City-level coordinates only (for security during wartime)
+  cityLatitude: number
+  cityLongitude: number
+  // Legacy fields for backward compatibility
+  latitude?: number
+  longitude?: number
   contactName: string
   contactEmail: string
   contactPhone?: string
   urgency: Urgency
   status: Status
-  photos: string[]
+  photos?: string[]
   createdAt: Date
   updatedAt: Date
 }
@@ -38,27 +44,38 @@ export interface Inquiry {
   createdAt: Date
 }
 
-// Category display info for map
+// Contact submission from donors
+export interface ContactSubmission {
+  id: string
+  projectId: string
+  donorName: string
+  donorEmail: string
+  message: string
+  handled: boolean
+  createdAt: Date
+}
+
+// Category display info for map - warm humanitarian palette
 export const CATEGORY_CONFIG: Record<Category, { label: string; color: string; icon: string }> = {
-  HOSPITAL: { label: 'Hospital / Medical', color: '#3b82f6', icon: '🏥' },
-  SCHOOL: { label: 'School / Education', color: '#22c55e', icon: '🏫' },
-  WATER: { label: 'Water Utility', color: '#ef4444', icon: '💧' },
-  ENERGY: { label: 'Energy Infrastructure', color: '#f97316', icon: '⚡' },
-  OTHER: { label: 'Other Infrastructure', color: '#6b7280', icon: '🏗️' },
+  HOSPITAL: { label: 'Hospital / Medical', color: '#C75B39', icon: '🏥' },      // Deep terracotta
+  SCHOOL: { label: 'School / Education', color: '#7B9E6B', icon: '🏫' },        // Sage green
+  WATER: { label: 'Water Utility', color: '#5B8FA8', icon: '💧' },              // Muted teal
+  ENERGY: { label: 'Energy Infrastructure', color: '#D4954A', icon: '⚡' },     // Warm amber
+  OTHER: { label: 'Other Infrastructure', color: '#8B7355', icon: '🏗️' },      // Warm taupe
 }
 
-// Urgency display info
+// Urgency display info - warm palette
 export const URGENCY_CONFIG: Record<Urgency, { label: string; color: string }> = {
-  LOW: { label: 'Low', color: '#6b7280' },
-  MEDIUM: { label: 'Medium', color: '#eab308' },
-  HIGH: { label: 'High', color: '#f97316' },
-  CRITICAL: { label: 'Critical', color: '#ef4444' },
+  LOW: { label: 'Low', color: '#8B7355' },          // Warm taupe
+  MEDIUM: { label: 'Medium', color: '#D4954A' },    // Warm amber
+  HIGH: { label: 'High', color: '#D4754E' },        // Terracotta
+  CRITICAL: { label: 'Critical', color: '#B84A32' }, // Deep rust
 }
 
-// Status display info
+// Status display info - warm palette
 export const STATUS_CONFIG: Record<Status, { label: string; color: string }> = {
-  OPEN: { label: 'Open', color: '#22c55e' },
-  IN_DISCUSSION: { label: 'In Discussion', color: '#3b82f6' },
-  MATCHED: { label: 'Matched', color: '#a855f7' },
-  FULFILLED: { label: 'Fulfilled', color: '#6b7280' },
+  OPEN: { label: 'Seeking Donors', color: '#7B9E6B' },      // Sage green
+  IN_DISCUSSION: { label: 'In Discussion', color: '#5B8FA8' }, // Muted teal
+  MATCHED: { label: 'Matched', color: '#9B7BB8' },          // Dusty purple
+  FULFILLED: { label: 'Fulfilled', color: '#8B7355' },      // Warm taupe
 }

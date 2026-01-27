@@ -4,12 +4,28 @@
 
 A platform connecting American donors directly with Ukrainian municipalities that need support for critical infrastructure.
 
+## Scope
+
+### MVP (Current Version)
+- **Data entry**: Single admin enters all projects on behalf of municipalities (no municipality self-registration)
+- **Public features**: Interactive map with category/status filtering, project detail pages, contact form
+- **Contact flow**: Donor submits interest → Admin receives email notification → Admin forwards to municipality or donor sees municipality contact info to reach out directly
+- **Admin features**: CRUD for projects, view contact submissions
+- **Security**: Coordinates are city/town level only, not exact addresses, to avoid creating targetable infrastructure database
+
+### Future Versions (Not in MVP)
+- Municipality self-service accounts
+- Donor accounts and contribution tracking
+- Automated status update notifications
+- Analytics dashboard
+- Multi-language support
+
 ## Features
 
 - **Interactive Map** - Browse verified projects on an interactive map of Ukraine
 - **Category Filtering** - Filter by hospitals, schools, water utilities, energy infrastructure
-- **Direct Connection** - Contact municipalities directly through inquiry forms
-- **Admin Dashboard** - Manage projects and respond to inquiries
+- **Contact Form** - Express interest in supporting a project; admin facilitates connection with municipality
+- **Admin Dashboard** - Manage projects and view/handle contact submissions
 
 ## Tech Stack
 
@@ -18,6 +34,7 @@ A platform connecting American donors directly with Ukrainian municipalities tha
 - **Styling**: Tailwind CSS
 - **Database**: PostgreSQL via Prisma
 - **Maps**: Leaflet + OpenStreetMap
+- **Email**: Resend
 - **Testing**: Jest + React Testing Library
 
 ## Getting Started
@@ -71,7 +88,7 @@ src/
 │   │   └── projects/       # Project management
 │   └── api/                # API routes
 │       ├── projects/       # Project CRUD
-│       └── inquiries/      # Inquiry handling
+│       └── contact/        # Contact form submissions
 ├── components/
 │   ├── ui/                 # Reusable UI components
 │   ├── map/                # Map components (Leaflet)
@@ -79,6 +96,7 @@ src/
 │   └── admin/              # Admin-specific components
 ├── lib/
 │   ├── prisma.ts           # Database client
+│   ├── email.ts            # Email service (Resend)
 │   └── utils/              # Helper functions
 ├── hooks/                  # Custom React hooks
 ├── types/                  # TypeScript definitions
@@ -114,10 +132,14 @@ See `.env.example` for all required environment variables.
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `DATABASE_URL` | Yes | PostgreSQL connection string (with pgbouncer) |
 | `DIRECT_URL` | Yes | Direct database URL (for migrations) |
 | `HROMADA_ADMIN_SECRET` | Yes | Admin authentication password |
-| `NEXT_PUBLIC_APP_URL` | No | Public app URL |
+| `RESEND_API_KEY` | Yes | Resend API key for email notifications |
+| `ADMIN_EMAIL` | Yes | Email address to receive contact notifications |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL (for image storage) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anon/public key |
+| `NEXT_PUBLIC_APP_URL` | No | Public app URL (defaults to localhost:3000) |
 
 ## API Routes
 
@@ -128,8 +150,11 @@ See `.env.example` for all required environment variables.
 | GET | `/api/projects/[id]` | Get single project | Public |
 | PUT | `/api/projects/[id]` | Update project | Admin |
 | DELETE | `/api/projects/[id]` | Delete project | Admin |
-| GET | `/api/inquiries` | List inquiries | Admin |
-| POST | `/api/inquiries` | Submit inquiry | Public |
+| GET | `/api/contact` | List contact submissions | Admin |
+| POST | `/api/contact` | Submit contact form (sends email notification) | Public |
+| PATCH | `/api/contact/[id]` | Mark submission as handled | Admin |
+| POST | `/api/upload` | Upload image to Supabase Storage | Admin |
+| DELETE | `/api/upload` | Delete image from storage | Admin |
 
 ## Contributing
 

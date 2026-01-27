@@ -157,6 +157,7 @@ export default function EditProjectPage() {
           onSubmit={handleSubmit}
           onCancel={() => router.push('/admin')}
           isLoading={isSubmitting}
+          authHeader={getAuthHeader()}
         />
       </div>
     </div>

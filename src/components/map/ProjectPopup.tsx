@@ -14,10 +14,10 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
   const statusConfig = STATUS_CONFIG[project.status]
 
   return (
-    <div className="w-72 p-0">
+    <div className="w-72 p-0 bg-[var(--cream-100)]">
       {/* Photo */}
-      {project.photos.length > 0 && (
-        <div className="w-full h-32 bg-gray-200 rounded-t-lg overflow-hidden">
+      {project.photos && project.photos.length > 0 && (
+        <div className="w-full h-32 bg-[var(--cream-200)] rounded-t-lg overflow-hidden">
           <img
             src={project.photos[0]}
             alt={project.facilityName}
@@ -45,18 +45,18 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         </div>
 
         {/* Title */}
-        <h3 className="font-semibold text-gray-900 text-sm mb-1">
+        <h3 className="font-semibold text-[var(--navy-700)] text-sm mb-1">
           {project.facilityName}
         </h3>
 
         {/* Municipality */}
-        <p className="text-xs text-gray-500 mb-2">
+        <p className="text-xs text-[var(--navy-500)] mb-2">
           {project.municipalityName}
         </p>
 
         {/* Description preview */}
-        <p className="text-xs text-gray-600 line-clamp-2 mb-3">
-          {project.description}
+        <p className="text-xs text-[var(--navy-600)] line-clamp-2 mb-3">
+          {project.briefDescription || project.description}
         </p>
 
         {/* Urgency */}
@@ -75,7 +75,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         {/* View details link */}
         <Link
           href={`/projects/${project.id}`}
-          className="block w-full text-center py-2 px-4 bg-[var(--ukraine-600)] text-white text-sm font-medium rounded-lg hover:bg-[var(--ukraine-700)] transition-colors"
+          className="block w-full text-center py-2 px-4 bg-[var(--warm-500)] text-white text-sm font-medium rounded-lg hover:bg-[var(--warm-600)] transition-colors"
         >
           View Details
         </Link>

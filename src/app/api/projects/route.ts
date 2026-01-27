@@ -60,10 +60,10 @@ export async function POST(request: NextRequest) {
       'municipalityName',
       'facilityName',
       'category',
-      'description',
-      'address',
-      'latitude',
-      'longitude',
+      'briefDescription',
+      'fullDescription',
+      'cityLatitude',
+      'cityLongitude',
       'contactName',
       'contactEmail',
     ]
@@ -77,21 +77,35 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Validate field lengths
+    if (body.briefDescription.length > 150) {
+      return NextResponse.json(
+        { error: 'briefDescription must be 150 characters or less' },
+        { status: 400 }
+      )
+    }
+    if (body.fullDescription.length > 2000) {
+      return NextResponse.json(
+        { error: 'fullDescription must be 2000 characters or less' },
+        { status: 400 }
+      )
+    }
+
     const project = await prisma.project.create({
       data: {
         municipalityName: body.municipalityName,
         facilityName: body.facilityName,
         category: body.category,
-        description: body.description,
-        address: body.address,
-        latitude: parseFloat(body.latitude),
-        longitude: parseFloat(body.longitude),
+        briefDescription: body.briefDescription,
+        fullDescription: body.fullDescription,
+        address: body.address || null,
+        cityLatitude: parseFloat(body.cityLatitude),
+        cityLongitude: parseFloat(body.cityLongitude),
         contactName: body.contactName,
         contactEmail: body.contactEmail,
         contactPhone: body.contactPhone || null,
         urgency: body.urgency || 'MEDIUM',
         status: body.status || 'OPEN',
-        photos: body.photos || [],
       },
     })
 

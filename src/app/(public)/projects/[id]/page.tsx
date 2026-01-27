@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent } from '@/components/ui/Card'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { InquiryForm } from '@/components/projects/InquiryForm'
+import { ContactForm } from '@/components/projects/ContactForm'
 import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG } from '@/types'
 
 // Mock data - same as homepage for now
@@ -15,12 +15,14 @@ const MOCK_PROJECTS: Project[] = [
   {
     id: '1',
     municipalityName: 'Kharkiv Oblast',
+    municipalityEmail: 'contact@kharkiv-oblast.ua',
     facilityName: 'Regional Hospital #5',
     category: 'HOSPITAL',
+    briefDescription: 'Critical need for medical equipment including ventilators and patient monitors.',
     description: 'Critical need for medical equipment including ventilators, patient monitors, and surgical instruments. The hospital serves over 50,000 residents and was damaged during recent attacks.\n\nSpecific needs include:\n- 5 portable ventilators\n- 10 patient monitoring systems\n- Surgical instrument sets\n- Emergency power generators\n- Medical supplies and medications',
     address: 'Kharkiv, Ukraine',
-    latitude: 49.9935,
-    longitude: 36.2304,
+    cityLatitude: 49.9935,
+    cityLongitude: 36.2304,
     contactName: 'Dr. Olena Kovalenko',
     contactEmail: 'hospital5@kharkiv.ua',
     contactPhone: '+380501234567',
@@ -36,12 +38,14 @@ const MOCK_PROJECTS: Project[] = [
   {
     id: '2',
     municipalityName: 'Kyiv Oblast',
+    municipalityEmail: 'contact@kyiv-oblast.ua',
     facilityName: 'School #127',
     category: 'SCHOOL',
+    briefDescription: 'Need educational supplies, computers, and classroom repairs for 450 students.',
     description: 'Need educational supplies, computers, and repairs to damaged classrooms. 450 students attend this school.\n\nRequired items:\n- 30 laptop computers for students\n- Educational materials and textbooks\n- Classroom furniture replacement\n- Window repairs and insulation\n- Heating system maintenance',
     address: 'Bucha, Kyiv Oblast, Ukraine',
-    latitude: 50.5414,
-    longitude: 30.2131,
+    cityLatitude: 50.5414,
+    cityLongitude: 30.2131,
     contactName: 'Natalia Shevchenko',
     contactEmail: 'school127@bucha.ua',
     urgency: 'HIGH',
@@ -53,12 +57,14 @@ const MOCK_PROJECTS: Project[] = [
   {
     id: '3',
     municipalityName: 'Odesa Oblast',
+    municipalityEmail: 'contact@odesa-oblast.ua',
     facilityName: 'Municipal Water Treatment Plant',
     category: 'WATER',
+    briefDescription: 'Urgent need for water filtration equipment and backup generators.',
     description: 'Urgent need for water filtration equipment and backup generators. Plant provides clean water to 30,000 residents.',
     address: 'Odesa, Ukraine',
-    latitude: 46.4825,
-    longitude: 30.7233,
+    cityLatitude: 46.4825,
+    cityLongitude: 30.7233,
     contactName: 'Viktor Bondarenko',
     contactEmail: 'water@odesa.ua',
     urgency: 'HIGH',
@@ -70,12 +76,14 @@ const MOCK_PROJECTS: Project[] = [
   {
     id: '4',
     municipalityName: 'Lviv Oblast',
+    municipalityEmail: 'contact@lviv-oblast.ua',
     facilityName: 'Power Substation East',
     category: 'ENERGY',
+    briefDescription: 'Transformers needed to restore power to 2,000 homes.',
     description: 'Transformers and electrical equipment needed to restore power to residential area. Currently 2,000 homes without stable electricity.',
     address: 'Lviv, Ukraine',
-    latitude: 49.8397,
-    longitude: 24.0297,
+    cityLatitude: 49.8397,
+    cityLongitude: 24.0297,
     contactName: 'Andriy Melnyk',
     contactEmail: 'energy@lviv.ua',
     urgency: 'MEDIUM',
@@ -87,12 +95,14 @@ const MOCK_PROJECTS: Project[] = [
   {
     id: '5',
     municipalityName: 'Dnipro Oblast',
+    municipalityEmail: 'contact@dnipro-oblast.ua',
     facilityName: 'Community Center',
     category: 'OTHER',
+    briefDescription: 'Heating system repairs needed for shelter serving displaced families.',
     description: 'Heating system repairs needed before winter. Center serves as shelter for displaced families.',
     address: 'Dnipro, Ukraine',
-    latitude: 48.4647,
-    longitude: 35.0462,
+    cityLatitude: 48.4647,
+    cityLongitude: 35.0462,
     contactName: 'Maria Tkachenko',
     contactEmail: 'community@dnipro.ua',
     urgency: 'HIGH',
@@ -158,7 +168,7 @@ export default function ProjectDetailPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Photo Gallery */}
-            {project.photos.length > 0 && (
+            {project.photos && project.photos.length > 0 && (
               <div className="space-y-3">
                 <div className="aspect-video bg-gray-200 rounded-xl overflow-hidden">
                   <img
@@ -239,7 +249,7 @@ export default function ProjectDetailPage() {
                 <h3 className="font-semibold text-gray-900 mb-2">Location</h3>
                 <p className="text-gray-600">{project.address}</p>
                 <a
-                  href={`https://www.google.com/maps?q=${project.latitude},${project.longitude}`}
+                  href={`https://www.google.com/maps?q=${project.cityLatitude},${project.cityLongitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[var(--ukraine-600)] hover:underline text-sm mt-2 inline-block"
@@ -285,8 +295,8 @@ export default function ProjectDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Inquiry Form */}
-            <InquiryForm
+            {/* Contact Form */}
+            <ContactForm
               projectId={project.id}
               projectName={project.facilityName}
             />

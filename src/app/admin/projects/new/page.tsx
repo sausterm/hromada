@@ -80,6 +80,7 @@ export default function NewProjectPage() {
           onSubmit={handleSubmit}
           onCancel={() => router.push('/admin')}
           isLoading={isSubmitting}
+          authHeader={getAuthHeader()}
         />
       </div>
     </div>

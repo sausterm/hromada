@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { type Project } from '@/types'
+import { type MapBounds } from './UkraineMap'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 // Dynamic import with no SSR - Leaflet requires window
@@ -10,10 +11,10 @@ const UkraineMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-[600px] bg-gray-100 rounded-xl flex items-center justify-center">
+      <div className="w-full h-full bg-[var(--cream-100)] flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" className="mx-auto mb-4" />
-          <p className="text-gray-500">Loading map...</p>
+          <p className="text-[var(--charcoal-500)]">Loading map...</p>
         </div>
       </div>
     ),
@@ -22,13 +23,32 @@ const UkraineMap = dynamic(
 
 interface MapWrapperProps {
   projects: Project[]
+  highlightedProjectId?: string | null
   onProjectClick?: (project: Project) => void
+  onProjectHover?: (project: Project | null) => void
+  onBoundsChange?: (bounds: MapBounds, visibleProjects: Project[]) => void
+  className?: string
 }
 
-export function MapWrapper({ projects, onProjectClick }: MapWrapperProps) {
+export function MapWrapper({
+  projects,
+  highlightedProjectId,
+  onProjectClick,
+  onProjectHover,
+  onBoundsChange,
+  className = '',
+}: MapWrapperProps) {
   return (
-    <div className="w-full h-[600px]">
-      <UkraineMap projects={projects} onProjectClick={onProjectClick} />
+    <div className={`w-full h-full ${className}`}>
+      <UkraineMap
+        projects={projects}
+        highlightedProjectId={highlightedProjectId}
+        onProjectClick={onProjectClick}
+        onProjectHover={onProjectHover}
+        onBoundsChange={onBoundsChange}
+      />
     </div>
   )
 }
+
+export type { MapBounds }

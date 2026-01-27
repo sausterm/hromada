@@ -36,15 +36,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        'bg-[var(--ukraine-600)] text-white hover:bg-[var(--ukraine-700)] focus:ring-[var(--ukraine-500)]',
+        'bg-[var(--warm-500)] text-white hover:bg-[var(--warm-600)] focus:ring-[var(--warm-400)]',
       secondary:
-        'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500',
+        'bg-[var(--cream-200)] text-[var(--navy-700)] hover:bg-[var(--cream-300)] focus:ring-[var(--cream-400)]',
       ghost:
-        'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
+        'bg-transparent text-[var(--navy-600)] hover:bg-[var(--cream-100)] focus:ring-[var(--cream-400)]',
       danger:
-        'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
+        'bg-[#B84A32] text-white hover:bg-[#9A3D28] focus:ring-[#B84A32]',
       outline:
-        'border-2 border-[var(--ukraine-600)] text-[var(--ukraine-600)] hover:bg-[var(--ukraine-50)] focus:ring-[var(--ukraine-500)]',
+        'border-2 border-[var(--warm-500)] text-[var(--warm-600)] hover:bg-[var(--warm-50)] focus:ring-[var(--warm-400)]',
     }
 
     const sizes = {

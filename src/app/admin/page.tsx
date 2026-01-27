@@ -8,19 +8,21 @@ import { Input } from '@/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { type Project, type Inquiry, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG } from '@/types'
+import { type Project, type Inquiry, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG } from '@/types'
 
 // Mock data for development
 const MOCK_PROJECTS: Project[] = [
   {
     id: '1',
     municipalityName: 'Kharkiv Oblast',
+    municipalityEmail: 'contact@kharkiv-oblast.ua',
     facilityName: 'Regional Hospital #5',
     category: 'HOSPITAL',
+    briefDescription: 'Critical need for medical equipment including ventilators.',
     description: 'Critical need for medical equipment...',
     address: 'Kharkiv, Ukraine',
-    latitude: 49.9935,
-    longitude: 36.2304,
+    cityLatitude: 49.9935,
+    cityLongitude: 36.2304,
     contactName: 'Dr. Olena Kovalenko',
     contactEmail: 'hospital5@kharkiv.ua',
     contactPhone: '+380501234567',
@@ -33,12 +35,14 @@ const MOCK_PROJECTS: Project[] = [
   {
     id: '2',
     municipalityName: 'Kyiv Oblast',
+    municipalityEmail: 'contact@kyiv-oblast.ua',
     facilityName: 'School #127',
     category: 'SCHOOL',
+    briefDescription: 'Need educational supplies and computers for students.',
     description: 'Need educational supplies...',
     address: 'Bucha, Kyiv Oblast, Ukraine',
-    latitude: 50.5414,
-    longitude: 30.2131,
+    cityLatitude: 50.5414,
+    cityLongitude: 30.2131,
     contactName: 'Natalia Shevchenko',
     contactEmail: 'school127@bucha.ua',
     urgency: 'HIGH',
@@ -132,16 +136,70 @@ function LoginForm({ onLogin }: { onLogin: (password: string) => void }) {
   )
 }
 
-function Dashboard({ onLogout }: { onLogout: () => void }) {
+interface ContactSubmissionWithProject extends ContactSubmission {
+  project: Pick<Project, 'id' | 'facilityName' | 'municipalityName' | 'contactEmail'>
+}
+
+function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader: string | null }) {
   const [projects] = useState(MOCK_PROJECTS)
   const [inquiries] = useState(MOCK_INQUIRIES)
-  const [activeTab, setActiveTab] = useState<'projects' | 'inquiries'>('projects')
+  const [contactSubmissions, setContactSubmissions] = useState<ContactSubmissionWithProject[]>([])
+  const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(true)
+  const [activeTab, setActiveTab] = useState<'projects' | 'inquiries' | 'contacts'>('projects')
+
+  // Fetch contact submissions
+  useEffect(() => {
+    async function fetchSubmissions() {
+      if (!authHeader) return
+
+      try {
+        const response = await fetch('/api/contact', {
+          headers: { Authorization: authHeader },
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setContactSubmissions(data.submissions)
+        }
+      } catch (error) {
+        console.error('Failed to fetch contact submissions:', error)
+      } finally {
+        setIsLoadingSubmissions(false)
+      }
+    }
+    fetchSubmissions()
+  }, [authHeader])
+
+  const handleMarkAsHandled = async (submissionId: string, handled: boolean) => {
+    if (!authHeader) return
+
+    try {
+      const response = await fetch(`/api/contact/${submissionId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authHeader,
+        },
+        body: JSON.stringify({ handled }),
+      })
+
+      if (response.ok) {
+        setContactSubmissions((prev) =>
+          prev.map((s) => (s.id === submissionId ? { ...s, handled } : s))
+        )
+      }
+    } catch (error) {
+      console.error('Failed to update submission:', error)
+    }
+  }
+
+  const unhandledCount = contactSubmissions.filter((s) => !s.handled).length
 
   const stats = {
     totalProjects: projects.length,
     openProjects: projects.filter((p) => p.status === 'OPEN').length,
     criticalProjects: projects.filter((p) => p.urgency === 'CRITICAL').length,
     totalInquiries: inquiries.length,
+    contactSubmissions: contactSubmissions.length,
   }
 
   return (
@@ -206,6 +264,17 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             {inquiries.length > 0 && (
               <Badge variant="danger" size="sm" className="ml-2">
                 {inquiries.length}
+              </Badge>
+            )}
+          </Button>
+          <Button
+            variant={activeTab === 'contacts' ? 'primary' : 'ghost'}
+            onClick={() => setActiveTab('contacts')}
+          >
+            Contact Submissions
+            {unhandledCount > 0 && (
+              <Badge variant="danger" size="sm" className="ml-2">
+                {unhandledCount}
               </Badge>
             )}
           </Button>
@@ -329,13 +398,98 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </div>
           </div>
         )}
+
+        {activeTab === 'contacts' && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Contact Submissions</h2>
+
+            {isLoadingSubmissions ? (
+              <div className="flex justify-center py-8">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : contactSubmissions.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-gray-500">No contact submissions yet.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {contactSubmissions.map((submission) => (
+                  <Card
+                    key={submission.id}
+                    className={submission.handled ? 'opacity-60' : ''}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium text-gray-900">
+                              {submission.donorName}
+                            </p>
+                            {submission.handled && (
+                              <Badge size="sm" variant="success">
+                                Handled
+                              </Badge>
+                            )}
+                          </div>
+                          <a
+                            href={`mailto:${submission.donorEmail}`}
+                            className="text-sm text-[var(--ukraine-600)] hover:underline"
+                          >
+                            {submission.donorEmail}
+                          </a>
+                        </div>
+                        <div className="text-right">
+                          <Badge size="sm" variant="info">
+                            {submission.project.facilityName}
+                          </Badge>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {submission.project.municipalityName}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(submission.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-gray-700 bg-gray-50 p-3 rounded-lg text-sm whitespace-pre-wrap">
+                        {submission.message}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <a href={`mailto:${submission.donorEmail}`}>
+                          <Button size="sm" variant="primary">
+                            Reply to Donor
+                          </Button>
+                        </a>
+                        <a href={`mailto:${submission.project.contactEmail}`}>
+                          <Button size="sm" variant="outline">
+                            Contact Municipality
+                          </Button>
+                        </a>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() =>
+                            handleMarkAsHandled(submission.id, !submission.handled)
+                          }
+                        >
+                          {submission.handled ? 'Mark as Unhandled' : 'Mark as Handled'}
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
 export default function AdminDashboardPage() {
-  const { isAuthenticated, isLoading, login, logout } = useAdminAuth()
+  const { isAuthenticated, isLoading, login, logout, getAuthHeader } = useAdminAuth()
 
   if (isLoading) {
     return (
@@ -349,5 +503,5 @@ export default function AdminDashboardPage() {
     return <LoginForm onLogin={login} />
   }
 
-  return <Dashboard onLogout={logout} />
+  return <Dashboard onLogout={logout} authHeader={getAuthHeader()} />
 }

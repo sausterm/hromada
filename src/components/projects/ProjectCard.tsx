@@ -100,7 +100,7 @@ export function ProjectCard({
           </span>
 
           {/* Learn More Link */}
-          <span className="text-[var(--warm-600)] text-sm font-medium group-hover:underline">
+          <span className="text-[#0057B7] hover:text-[#004494] text-sm font-medium">
             Learn more &rarr;
           </span>
         </div>

@@ -232,9 +232,8 @@ export default function HomePage() {
           <div className="flex items-center justify-between gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-2xl font-bold text-[var(--navy-700)]">Hromada</span>
-              <span className="hidden sm:inline text-xs px-1.5 py-0.5 rounded bg-[var(--ukraine-blue)] text-white">
-                UA
+              <span className="text-2xl font-bold text-[#0057B7]">
+                hromada <span className="opacity-60">|</span> громада
               </span>
             </Link>
 
@@ -274,7 +273,7 @@ export default function HomePage() {
               <Button
                 variant="primary"
                 size="sm"
-                className="bg-[var(--warm-500)] hover:bg-[var(--warm-600)]"
+                className="bg-[#0057B7] hover:bg-[#004494]"
               >
                 Support a Project
               </Button>
@@ -416,7 +415,7 @@ export default function HomePage() {
           {/* Footer */}
           <div className="p-4 border-t border-[var(--cream-300)] bg-[var(--cream-100)]">
             <p className="text-xs text-[var(--navy-600)] text-center">
-              Hromada connects American donors with Ukrainian communities.
+              <span className="font-medium">hromada</span> connects American donors with Ukrainian communities.
               <br />
               <span className="text-[var(--navy-400)]">
                 No payment processing occurs on this platform.

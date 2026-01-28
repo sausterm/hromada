@@ -40,6 +40,7 @@ describe('GET /api/projects/[id]', () => {
       facilityName: 'Test Hospital',
       municipalityName: 'Kyiv',
       category: 'HOSPITAL',
+      photos: [{ url: 'https://example.com/photo.jpg' }],
     }
     ;(mockPrisma.project.findUnique as jest.Mock).mockResolvedValue(mockProject)
 
@@ -48,9 +49,11 @@ describe('GET /api/projects/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.project).toEqual(mockProject)
+    expect(data.project.facilityName).toBe('Test Hospital')
+    expect(data.project.photos).toEqual(['https://example.com/photo.jpg'])
     expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
       where: { id: '1' },
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
     })
   })
 

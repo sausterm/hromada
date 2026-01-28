@@ -34,8 +34,8 @@ describe('GET /api/projects', () => {
 
   it('returns paginated projects by default', async () => {
     const mockProjects = [
-      { id: '1', facilityName: 'Hospital A', category: 'HOSPITAL' },
-      { id: '2', facilityName: 'School B', category: 'SCHOOL' },
+      { id: '1', facilityName: 'Hospital A', category: 'HOSPITAL', photos: [] },
+      { id: '2', facilityName: 'School B', category: 'SCHOOL', photos: [] },
     ]
     ;(mockPrisma.project.findMany as jest.Mock).mockResolvedValue(mockProjects)
 
@@ -52,8 +52,8 @@ describe('GET /api/projects', () => {
 
   it('returns all projects when ?all=true', async () => {
     const mockProjects = [
-      { id: '1', facilityName: 'Hospital A', category: 'HOSPITAL' },
-      { id: '2', facilityName: 'School B', category: 'SCHOOL' },
+      { id: '1', facilityName: 'Hospital A', category: 'HOSPITAL', photos: [] },
+      { id: '2', facilityName: 'School B', category: 'SCHOOL', photos: [] },
     ]
     ;(mockPrisma.project.findMany as jest.Mock).mockResolvedValue(mockProjects)
 
@@ -62,18 +62,19 @@ describe('GET /api/projects', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.projects).toEqual(mockProjects)
+    expect(data.projects).toHaveLength(2)
     expect(data.total).toBe(2)
     expect(data.pagination).toBeUndefined()
     expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
       where: {},
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
       orderBy: [{ urgency: 'desc' }, { createdAt: 'desc' }],
     })
   })
 
   it('supports cursor-based pagination', async () => {
     const mockProjects = [
-      { id: '3', facilityName: 'School C', category: 'SCHOOL' },
+      { id: '3', facilityName: 'School C', category: 'SCHOOL', photos: [] },
     ]
     ;(mockPrisma.project.findMany as jest.Mock).mockResolvedValue(mockProjects)
 
@@ -84,6 +85,7 @@ describe('GET /api/projects', () => {
     expect(response.status).toBe(200)
     expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
       where: {},
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
       take: 11, // limit + 1 to check for more
       cursor: { id: '2' },
       skip: 1,
@@ -94,9 +96,9 @@ describe('GET /api/projects', () => {
   it('indicates hasMore when there are more results', async () => {
     // Return limit + 1 items to indicate more exist
     const mockProjects = [
-      { id: '1', facilityName: 'Hospital A' },
-      { id: '2', facilityName: 'Hospital B' },
-      { id: '3', facilityName: 'Hospital C' }, // Extra item
+      { id: '1', facilityName: 'Hospital A', photos: [] },
+      { id: '2', facilityName: 'Hospital B', photos: [] },
+      { id: '3', facilityName: 'Hospital C', photos: [] }, // Extra item
     ]
     ;(mockPrisma.project.findMany as jest.Mock).mockResolvedValue(mockProjects)
     ;(mockPrisma.project.count as jest.Mock).mockResolvedValue(10)
@@ -132,6 +134,7 @@ describe('GET /api/projects', () => {
 
     expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
       where: { category: 'HOSPITAL' },
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
       orderBy: [{ urgency: 'desc' }, { createdAt: 'desc' }],
     })
   })
@@ -144,6 +147,7 @@ describe('GET /api/projects', () => {
 
     expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
       where: { status: 'OPEN' },
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
       orderBy: [{ urgency: 'desc' }, { createdAt: 'desc' }],
     })
   })
@@ -156,6 +160,7 @@ describe('GET /api/projects', () => {
 
     expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
       where: { urgency: 'HIGH' },
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
       orderBy: [{ urgency: 'desc' }, { createdAt: 'desc' }],
     })
   })
@@ -168,6 +173,7 @@ describe('GET /api/projects', () => {
 
     expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
       where: { projectType: 'SOLAR' },
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
       orderBy: [{ urgency: 'desc' }, { createdAt: 'desc' }],
     })
   })
@@ -180,6 +186,7 @@ describe('GET /api/projects', () => {
 
     expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
       where: { category: 'HOSPITAL', status: 'OPEN', urgency: 'HIGH' },
+      include: { photos: { orderBy: { sortOrder: 'asc' } } },
       orderBy: [{ urgency: 'desc' }, { createdAt: 'desc' }],
     })
   })

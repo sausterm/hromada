@@ -17,7 +17,9 @@ import {
   COFINANCING_CONFIG,
   formatCurrency,
   formatPower,
+  formatRelativeTime,
 } from '@/types'
+import { ShareButton } from '@/components/ui/ShareButton'
 
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {
@@ -153,15 +155,28 @@ export default function ProjectDetailPage() {
                 )}
               </div>
 
-              {/* Title */}
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                {project.facilityName}
-              </h1>
+              {/* Title with Share Button */}
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900">
+                  {project.facilityName}
+                </h1>
+                <ShareButton
+                  projectId={project.id}
+                  projectTitle={project.facilityName}
+                  projectDescription={project.briefDescription || project.description}
+                  variant="button"
+                />
+              </div>
 
-              {/* Municipality */}
-              <p className="text-lg text-gray-600 mb-6">
-                {project.municipalityName}
-              </p>
+              {/* Municipality and Posted Time */}
+              <div className="flex items-center gap-3 mb-6">
+                <p className="text-lg text-gray-600">
+                  {project.municipalityName}
+                </p>
+                <span className="text-sm text-gray-400">
+                  Posted {formatRelativeTime(project.createdAt)}
+                </span>
+              </div>
 
               {/* Description */}
               <div className="prose prose-gray max-w-none">
@@ -214,8 +229,8 @@ export default function ProjectDetailPage() {
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Estimated Cost</p>
                       {project.estimatedCostUsd ? (
-                        <p className="font-semibold text-lg text-[var(--navy-700)]">
-                          {formatCurrency(project.estimatedCostUsd)}
+                        <p className="font-bold text-xl text-[var(--navy-700)]">
+                          {formatCurrency(project.estimatedCostUsd, { compact: true, showPrefix: true })}
                         </p>
                       ) : (
                         <p className="text-gray-400 text-sm">Not specified</p>

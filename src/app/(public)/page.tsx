@@ -16,6 +16,7 @@ import {
   URGENCY_CONFIG,
   STATUS_CONFIG,
   COFINANCING_CONFIG,
+  formatCurrency,
 } from '@/types'
 
 // Helper to transform API response to Project type
@@ -192,6 +193,11 @@ export default function HomePage() {
     return count
   }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, priceRange])
 
+  // Total funding needed for visible projects
+  const totalFundingNeeded = useMemo(() => {
+    return projectsInView.reduce((sum, p) => sum + (p.estimatedCostUsd || 0), 0)
+  }, [projectsInView])
+
   if (isLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-[var(--cream-50)]">
@@ -270,7 +276,11 @@ export default function HomePage() {
             <select
               value={selectedUrgency || ''}
               onChange={(e) => setSelectedUrgency((e.target.value as Urgency) || null)}
-              className="px-3 py-1 rounded-full text-sm font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+                selectedUrgency
+                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
+                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+              }`}
             >
               <option value="">Urgency</option>
               {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
@@ -284,7 +294,11 @@ export default function HomePage() {
             <select
               value={selectedStatus || ''}
               onChange={(e) => setSelectedStatus((e.target.value as Status) || null)}
-              className="px-3 py-1 rounded-full text-sm font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+                selectedStatus
+                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
+                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+              }`}
             >
               <option value="">Status</option>
               {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
@@ -298,7 +312,11 @@ export default function HomePage() {
             <select
               value={selectedCofinancing || ''}
               onChange={(e) => setSelectedCofinancing((e.target.value as CofinancingStatus) || null)}
-              className="px-3 py-1 rounded-full text-sm font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+                selectedCofinancing
+                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
+                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+              }`}
             >
               <option value="">Co-financing</option>
               {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
@@ -310,7 +328,7 @@ export default function HomePage() {
 
             {/* Price Range Slider */}
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--cream-300)]">
-              <span className="text-xs text-[var(--navy-600)] font-medium whitespace-nowrap">
+              <span className="text-xs text-[var(--navy-600)] font-medium w-10 text-right">
                 ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[0] / 1000)}k`}
               </span>
               <div className="relative w-28 h-5 flex items-center">
@@ -355,7 +373,7 @@ export default function HomePage() {
                   className="absolute w-full h-full appearance-none bg-transparent pointer-events-none z-[4] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
                 />
               </div>
-              <span className="text-xs text-[var(--navy-600)] font-medium whitespace-nowrap">
+              <span className="text-xs text-[var(--navy-600)] font-medium w-10 text-left">
                 ${priceRange[1] >= 1000000 ? `${(priceRange[1] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[1] / 1000)}k`}
               </span>
             </div>
@@ -364,9 +382,15 @@ export default function HomePage() {
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="px-3 py-1 rounded-full text-sm font-medium text-[var(--navy-600)] hover:bg-[var(--navy-50)] transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-[var(--navy-100)] text-[var(--navy-700)] hover:bg-[var(--navy-200)] transition-colors border border-[var(--navy-200)]"
               >
-                Clear ({activeFilterCount})
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Clear all
+                <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-[var(--navy-600)] text-white text-xs font-bold">
+                  {activeFilterCount}
+                </span>
               </button>
             )}
           </div>
@@ -405,17 +429,20 @@ export default function HomePage() {
                   />
                 </div>
               </div>
-              <p className="text-[var(--navy-600)] text-sm whitespace-nowrap">
-                <span className="font-semibold text-[var(--navy-700)]">
-                  {projectsInView.length}
-                </span>{' '}
-                {projectsInView.length === 1 ? 'project' : 'projects'} in this area
-                {filteredProjects.length !== allProjects.length && (
-                  <span className="text-[var(--navy-400)]">
-                    {' '}• {filteredProjects.length} total matching filters
+              <div className="text-right">
+                <p className="text-[var(--navy-700)] text-sm font-semibold">
+                  {projectsInView.length} {projectsInView.length === 1 ? 'project' : 'projects'}
+                  {' '}<span className="text-[var(--navy-400)] font-normal">|</span>{' '}
+                  <span className="text-[var(--navy-600)]">
+                    {formatCurrency(totalFundingNeeded, { compact: true })} needed
                   </span>
+                </p>
+                {activeFilterCount > 0 && (
+                  <p className="text-xs text-[var(--navy-400)]">
+                    {filteredProjects.length} of {allProjects.length} total
+                  </p>
                 )}
-              </p>
+              </div>
             </div>
           </div>
 

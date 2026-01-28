@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency } from '@/types'
+import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, formatRelativeTime } from '@/types'
+import { ShareButton } from '@/components/ui/ShareButton'
 
 interface ProjectCardProps {
   project: Project
@@ -34,7 +35,7 @@ export function ProjectCard({
       onMouseLeave={onMouseLeave}
     >
       {/* Image Section */}
-      <div className="relative aspect-[4/3] bg-[var(--cream-200)]">
+      <div className="relative aspect-[16/10] bg-[var(--cream-200)]">
         {mainPhoto ? (
           <img
             src={mainPhoto}
@@ -92,65 +93,73 @@ export function ProjectCard({
             {urgencyConfig.label}
           </div>
         )}
+
       </div>
 
       {/* Content Section */}
-      <div className="p-4 bg-[var(--cream-100)]">
-        {/* Title - fixed 2-line height with truncation */}
-        <h3 className="font-semibold text-[var(--navy-700)] text-lg leading-tight mb-1 line-clamp-2 min-h-[2.75rem]">
+      <div className="p-3 bg-[var(--cream-100)]">
+        {/* Title */}
+        <h3 className="font-semibold text-[var(--navy-700)] text-base leading-tight mb-0.5 line-clamp-2">
           {project.facilityName}
         </h3>
 
         {/* Municipality */}
-        <p className="text-[var(--navy-500)] text-sm mb-1">
+        <p className="text-[var(--navy-500)] text-sm mb-1.5">
           {project.municipalityName}
         </p>
 
-        {/* Project Type & Cost Row */}
-        {(project.projectType || project.estimatedCostUsd) && (
-          <div className="flex items-center gap-2 mb-2">
-            {project.projectType && (
-              <span
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
-                style={{
-                  backgroundColor: `${PROJECT_TYPE_CONFIG[project.projectType].color}20`,
-                  color: PROJECT_TYPE_CONFIG[project.projectType].color,
-                }}
-              >
-                <span>{PROJECT_TYPE_CONFIG[project.projectType].icon}</span>
-                <span>{PROJECT_TYPE_CONFIG[project.projectType].label}</span>
-              </span>
-            )}
-            {project.estimatedCostUsd && (
-              <span className="text-xs font-semibold text-[var(--navy-600)]">
-                {formatCurrency(project.estimatedCostUsd)}
-              </span>
-            )}
-          </div>
-        )}
+        {/* Cost & Project Type Row */}
+        <div className="flex items-center gap-2 flex-wrap mb-2">
+          {project.estimatedCostUsd && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded bg-[var(--navy-100)] text-[var(--navy-700)] text-sm font-bold">
+              {formatCurrency(project.estimatedCostUsd, { compact: true, showPrefix: true })}
+            </span>
+          )}
+          {project.projectType && (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
+              style={{
+                backgroundColor: `${PROJECT_TYPE_CONFIG[project.projectType].color}20`,
+                color: PROJECT_TYPE_CONFIG[project.projectType].color,
+              }}
+            >
+              <span>{PROJECT_TYPE_CONFIG[project.projectType].icon}</span>
+              <span>{PROJECT_TYPE_CONFIG[project.projectType].label}</span>
+            </span>
+          )}
+        </div>
 
         {/* Description */}
-        <p className="text-[var(--navy-600)] text-sm line-clamp-2 mb-3">
+        <p className="text-[var(--navy-600)] text-sm line-clamp-2 mb-2">
           {project.briefDescription || project.description}
         </p>
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-[var(--cream-300)]">
-          {/* Status Badge - using warm palette */}
-          <span
-            className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
-            style={{
-              backgroundColor: `${statusConfig.color}20`,
-              color: statusConfig.color,
-            }}
-          >
-            {statusConfig.label}
-          </span>
+          <div className="flex items-center gap-2">
+            {/* Status Badge */}
+            <span
+              className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+              style={{
+                backgroundColor: `${statusConfig.color}20`,
+                color: statusConfig.color,
+              }}
+            >
+              {statusConfig.label}
+            </span>
+            {/* Posted time */}
+            <span className="text-xs text-[var(--navy-400)]">
+              {formatRelativeTime(project.createdAt)}
+            </span>
+          </div>
 
-          {/* Learn More Link */}
-          <span className="text-[var(--navy-700)] hover:text-[var(--navy-800)] text-sm font-medium">
-            Learn more &rarr;
-          </span>
+          {/* Share Button */}
+          <ShareButton
+            projectId={project.id}
+            projectTitle={project.facilityName}
+            projectDescription={project.briefDescription || project.description}
+            variant="icon"
+          />
         </div>
       </div>
     </Link>

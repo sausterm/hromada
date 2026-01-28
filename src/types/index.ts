@@ -112,17 +112,79 @@ export const COFINANCING_CONFIG: Record<CofinancingStatus, { label: string; colo
   NEEDS_CLARIFICATION: { label: 'Needs Clarification', color: '#D4954A' }, // Warm amber
 }
 
+// Currency format options
+export interface FormatCurrencyOptions {
+  compact?: boolean  // Use compact format like $60K instead of $60,000
+  showPrefix?: boolean  // Show "USD" prefix like "USD $60K"
+}
+
 // Utility function to format currency
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount)
+export function formatCurrency(amount: number, options: FormatCurrencyOptions = {}): string {
+  const { compact = false, showPrefix = false } = options
+
+  let formatted: string
+
+  if (compact) {
+    if (amount >= 1000000) {
+      const millions = amount / 1000000
+      formatted = `$${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)}M`
+    } else if (amount >= 1000) {
+      const thousands = amount / 1000
+      formatted = `$${thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)}K`
+    } else {
+      formatted = `$${amount}`
+    }
+  } else {
+    formatted = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
+
+  return showPrefix ? `USD ${formatted}` : formatted
 }
 
 // Utility function to format power in kW
 export function formatPower(kw: number): string {
   return `${kw.toLocaleString()} kW`
+}
+
+// Utility function to format relative time (e.g., "2 days ago")
+export function formatRelativeTime(date: Date): string {
+  const now = new Date()
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+  if (diffInSeconds < 60) {
+    return 'just now'
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60)
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (diffInHours < 24) {
+    return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays < 7) {
+    return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`
+  }
+
+  const diffInWeeks = Math.floor(diffInDays / 7)
+  if (diffInWeeks < 4) {
+    return `${diffInWeeks} ${diffInWeeks === 1 ? 'week' : 'weeks'} ago`
+  }
+
+  const diffInMonths = Math.floor(diffInDays / 30)
+  if (diffInMonths < 12) {
+    return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`
+  }
+
+  const diffInYears = Math.floor(diffInDays / 365)
+  return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`
 }

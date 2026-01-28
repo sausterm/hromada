@@ -122,7 +122,7 @@ interface ContactSubmissionWithProject extends ContactSubmission {
   project: Pick<Project, 'id' | 'facilityName' | 'municipalityName' | 'contactEmail'>
 }
 
-type SortField = 'facilityName' | 'municipalityName' | 'category' | 'projectType' | 'urgency' | 'status'
+type SortField = 'facilityName' | 'municipalityName' | 'region' | 'category' | 'projectType' | 'urgency' | 'status'
 type SortDirection = 'asc' | 'desc'
 
 function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader: string | null }) {
@@ -341,6 +341,10 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
           aVal = a.municipalityName
           bVal = b.municipalityName
           break
+        case 'region':
+          aVal = a.region || ''
+          bVal = b.region || ''
+          break
         case 'category':
           aVal = CATEGORY_CONFIG[a.category].label
           bVal = CATEGORY_CONFIG[b.category].label
@@ -538,6 +542,15 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         </span>
                       </th>
                       <th
+                        className="text-left p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('region')}
+                      >
+                        <span className="flex items-center">
+                          Oblast
+                          <SortIcon field="region" />
+                        </span>
+                      </th>
+                      <th
                         className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('category')}
                       >
@@ -588,6 +601,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                             <p className="font-medium text-gray-900">{project.facilityName}</p>
                           </td>
                           <td className="p-4 text-gray-600">{project.municipalityName}</td>
+                          <td className="p-4 text-gray-500 text-sm">{project.region || '-'}</td>
                           <td className="p-4 text-center">
                             <Badge dot dotColor={categoryConfig.color} size="sm">
                               {categoryConfig.label}
@@ -633,7 +647,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                     })}
                     {filteredAndSortedProjects.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="p-8 text-center text-gray-500">
+                        <td colSpan={8} className="p-8 text-center text-gray-500">
                           {searchQuery ? 'No projects match your search.' : 'No projects yet.'}
                         </td>
                       </tr>

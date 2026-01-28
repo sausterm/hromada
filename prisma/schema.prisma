@@ -11,6 +11,7 @@ model Project {
 
   // Required fields
   municipalityName String
+  region           String?   // Oblast/region name
   facilityName     String
   category         Category
   briefDescription String    @db.VarChar(150)  // Short summary for cards/lists

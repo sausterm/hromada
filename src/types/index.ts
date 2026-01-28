@@ -17,6 +17,7 @@ export type CofinancingStatus = 'YES' | 'NO' | 'NEEDS_CLARIFICATION'
 export interface Project {
   id: string
   municipalityName: string
+  region?: string  // Oblast/region name
   municipalityEmail: string
   facilityName: string
   category: Category

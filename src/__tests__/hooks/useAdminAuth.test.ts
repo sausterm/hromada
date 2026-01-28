@@ -1,86 +1,143 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react'
 import { useAdminAuth } from '@/hooks/useAdminAuth'
 
-// Access the mock through global
-declare global {
-  // eslint-disable-next-line no-var
-  var __localStorageMock: {
-    getItem: jest.Mock
-    setItem: jest.Mock
-    removeItem: jest.Mock
-    clear: jest.Mock
-  }
-}
+// Mock fetch
+const mockFetch = jest.fn()
+global.fetch = mockFetch
 
 describe('useAdminAuth', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    localStorage.clear()
   })
 
-  it('returns isAuthenticated false initially when no token', () => {
+  it('starts with isLoading true and isAuthenticated false', () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ authenticated: false }),
+    })
+
     const { result } = renderHook(() => useAdminAuth())
+
+    expect(result.current.isLoading).toBe(true)
     expect(result.current.isAuthenticated).toBe(false)
   })
 
-  it('returns isAuthenticated true when token exists', async () => {
-    // Set up the mock to return a token
-    localStorage.setItem('hromada_admin_token', 'test-token')
+  it('sets isAuthenticated true when auth status returns authenticated', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ authenticated: true }),
+    })
 
     const { result } = renderHook(() => useAdminAuth())
 
-    // Wait for useEffect to run
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
     })
 
     expect(result.current.isAuthenticated).toBe(true)
+    expect(mockFetch).toHaveBeenCalledWith('/api/auth/status')
   })
 
-  it('login stores token and sets authenticated', () => {
-    const { result } = renderHook(() => useAdminAuth())
-
-    act(() => {
-      result.current.login('my-password')
+  it('sets isAuthenticated false when auth status returns not authenticated', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ authenticated: false }),
     })
-
-    expect(global.__localStorageMock.setItem).toHaveBeenCalledWith('hromada_admin_token', 'my-password')
-    expect(result.current.isAuthenticated).toBe(true)
-  })
-
-  it('logout removes token and sets unauthenticated', async () => {
-    localStorage.setItem('hromada_admin_token', 'test-token')
 
     const { result } = renderHook(() => useAdminAuth())
 
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
     })
 
-    expect(result.current.isAuthenticated).toBe(true)
-
-    act(() => {
-      result.current.logout()
-    })
-
-    expect(global.__localStorageMock.removeItem).toHaveBeenCalledWith('hromada_admin_token')
     expect(result.current.isAuthenticated).toBe(false)
   })
 
-  it('getAuthHeader returns Bearer token when authenticated', async () => {
-    localStorage.setItem('hromada_admin_token', 'test-token')
-
-    const { result } = renderHook(() => useAdminAuth())
-
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
+  it('login calls /api/auth/login and returns true on success', async () => {
+    // First call for initial auth check
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ authenticated: false }),
     })
 
-    expect(result.current.getAuthHeader()).toBe('Bearer test-token')
+    const { result } = renderHook(() => useAdminAuth())
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    // Mock login call
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
+    })
+
+    let loginResult: boolean = false
+    await act(async () => {
+      loginResult = await result.current.login('my-password')
+    })
+
+    expect(loginResult).toBe(true)
+    expect(result.current.isAuthenticated).toBe(true)
+    expect(mockFetch).toHaveBeenCalledWith('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: 'my-password' }),
+    })
   })
 
-  it('getAuthHeader returns null when not authenticated', () => {
+  it('login returns false on failure', async () => {
+    // First call for initial auth check
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ authenticated: false }),
+    })
+
     const { result } = renderHook(() => useAdminAuth())
-    expect(result.current.getAuthHeader()).toBe(null)
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    // Mock failed login call
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'Invalid password' }),
+    })
+
+    let loginResult: boolean = true
+    await act(async () => {
+      loginResult = await result.current.login('wrong-password')
+    })
+
+    expect(loginResult).toBe(false)
+    expect(result.current.isAuthenticated).toBe(false)
+  })
+
+  it('logout calls /api/auth/logout and sets unauthenticated', async () => {
+    // Start authenticated
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ authenticated: true }),
+    })
+
+    const { result } = renderHook(() => useAdminAuth())
+
+    await waitFor(() => {
+      expect(result.current.isAuthenticated).toBe(true)
+    })
+
+    // Mock logout call
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true }),
+    })
+
+    await act(async () => {
+      await result.current.logout()
+    })
+
+    expect(result.current.isAuthenticated).toBe(false)
+    expect(mockFetch).toHaveBeenCalledWith('/api/auth/logout', { method: 'POST' })
   })
 })

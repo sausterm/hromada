@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/Button'
 interface ImageUploadProps {
   images: string[]
   onChange: (images: string[]) => void
-  authHeader: string | null
   maxImages?: number
 }
 
@@ -16,7 +15,6 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 export function ImageUpload({
   images,
   onChange,
-  authHeader,
   maxImages = 5,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
@@ -44,9 +42,9 @@ export function ImageUpload({
     formData.append('file', file)
 
     try {
+      // Cookies are sent automatically for authentication
       const response = await fetch('/api/upload', {
         method: 'POST',
-        headers: authHeader ? { Authorization: authHeader } : {},
         body: formData,
       })
 

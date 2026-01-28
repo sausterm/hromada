@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase, STORAGE_BUCKET } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured, STORAGE_BUCKET } from '@/lib/supabase'
+import { verifyAdminAuth } from '@/lib/auth'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 export async function POST(request: NextRequest) {
   try {
-    // Check admin auth
-    const authHeader = request.headers.get('authorization')
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
+    // Check admin auth (supports both cookie and Bearer token)
+    const isAuthorized = await verifyAdminAuth(request)
+    if (!isAuthorized) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -18,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if Supabase is configured
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (!isSupabaseConfigured) {
       return NextResponse.json(
         { error: 'Supabase storage not configured' },
         { status: 500 }
@@ -99,11 +98,9 @@ export async function POST(request: NextRequest) {
 // DELETE endpoint to remove an image
 export async function DELETE(request: NextRequest) {
   try {
-    // Check admin auth
-    const authHeader = request.headers.get('authorization')
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
+    // Check admin auth (supports both cookie and Bearer token)
+    const isAuthorized = await verifyAdminAuth(request)
+    if (!isAuthorized) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

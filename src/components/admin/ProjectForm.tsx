@@ -25,7 +25,6 @@ interface ProjectFormProps {
   onSubmit: (data: ProjectFormData) => Promise<void>
   onCancel: () => void
   isLoading?: boolean
-  authHeader?: string | null
 }
 
 export interface ProjectFormData {
@@ -80,7 +79,7 @@ const initialFormData: ProjectFormData = {
   partnerOrganization: '',
 }
 
-export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader }: ProjectFormProps) {
+export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectFormProps) {
   const [formData, setFormData] = useState<ProjectFormData>(initialFormData)
   const [errors, setErrors] = useState<Partial<Record<keyof ProjectFormData, string>>>({})
   const [isGeocoding, setIsGeocoding] = useState(false)
@@ -571,7 +570,6 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
             <ImageUpload
               images={formData.photos}
               onChange={handleImagesChange}
-              authHeader={authHeader || null}
               maxImages={5}
             />
           </div>

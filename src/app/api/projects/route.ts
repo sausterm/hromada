@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { verifyAdminAuth } from '@/lib/auth'
 
 // GET /api/projects - List all projects (public)
 export async function GET(request: NextRequest) {
@@ -46,11 +47,9 @@ export async function GET(request: NextRequest) {
 // POST /api/projects - Create new project (admin only)
 export async function POST(request: NextRequest) {
   try {
-    // Check admin auth
-    const authHeader = request.headers.get('authorization')
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
+    // Check admin auth (supports both cookie and Bearer token)
+    const isAuthorized = await verifyAdminAuth(request)
+    if (!isAuthorized) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

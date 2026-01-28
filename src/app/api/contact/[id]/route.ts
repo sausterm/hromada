@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { verifyAdminAuth } from '@/lib/auth'
 
 // PATCH /api/contact/[id] - Update contact submission (admin only)
 export async function PATCH(
@@ -7,10 +8,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authHeader = request.headers.get('authorization')
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
+    const isAuthorized = await verifyAdminAuth(request)
+    if (!isAuthorized) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

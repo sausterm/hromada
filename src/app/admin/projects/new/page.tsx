@@ -9,7 +9,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function NewProjectPage() {
   const router = useRouter()
-  const { isAuthenticated, isLoading: authLoading, getAuthHeader } = useAdminAuth()
+  const { isAuthenticated, isLoading: authLoading } = useAdminAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -18,17 +18,10 @@ export default function NewProjectPage() {
     setError(null)
 
     try {
-      const authHeader = getAuthHeader()
-      if (!authHeader) {
-        throw new Error('Not authenticated')
-      }
-
+      // Cookies are sent automatically for authentication
       const response = await fetch('/api/projects', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: authHeader,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
 
@@ -80,7 +73,6 @@ export default function NewProjectPage() {
           onSubmit={handleSubmit}
           onCancel={() => router.push('/admin')}
           isLoading={isSubmitting}
-          authHeader={getAuthHeader()}
         />
       </div>
     </div>

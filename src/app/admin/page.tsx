@@ -125,7 +125,7 @@ interface ContactSubmissionWithProject extends ContactSubmission {
 type SortField = 'facilityName' | 'municipalityName' | 'category' | 'urgency' | 'status'
 type SortDirection = 'asc' | 'desc'
 
-function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader: string | null }) {
+function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [projects, setProjects] = useState<Project[]>([])
   const [inquiries, setInquiries] = useState<(Inquiry & { project: Pick<Project, 'id' | 'facilityName'> })[]>([])
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmissionWithProject[]>([])
@@ -159,15 +159,11 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
     fetchProjects()
   }, [])
 
-  // Fetch contact submissions
+  // Fetch contact submissions (cookies sent automatically)
   useEffect(() => {
     async function fetchSubmissions() {
-      if (!authHeader) return
-
       try {
-        const response = await fetch('/api/contact', {
-          headers: { Authorization: authHeader },
-        })
+        const response = await fetch('/api/contact')
         if (response.ok) {
           const data = await response.json()
           setContactSubmissions(data.submissions || [])
@@ -179,17 +175,13 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
       }
     }
     fetchSubmissions()
-  }, [authHeader])
+  }, [])
 
-  // Fetch project submissions
+  // Fetch project submissions (cookies sent automatically)
   useEffect(() => {
     async function fetchProjectSubmissions() {
-      if (!authHeader) return
-
       try {
-        const response = await fetch('/api/projects/submissions', {
-          headers: { Authorization: authHeader },
-        })
+        const response = await fetch('/api/projects/submissions')
         if (response.ok) {
           const data = await response.json()
           setProjectSubmissions(data.submissions || [])
@@ -201,19 +193,15 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
       }
     }
     fetchProjectSubmissions()
-  }, [authHeader])
+  }, [])
 
   const handleApproveSubmission = async (submissionId: string) => {
-    if (!authHeader) return
     setIsProcessing(true)
 
     try {
       const response = await fetch(`/api/projects/submissions/${submissionId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: authHeader,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'approve', reviewedBy: 'admin' }),
       })
 
@@ -248,7 +236,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
   }
 
   const handleRejectSubmission = async (submissionId: string) => {
-    if (!authHeader || !rejectionReason.trim()) {
+    if (!rejectionReason.trim()) {
       alert('Please provide a rejection reason')
       return
     }
@@ -257,10 +245,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
     try {
       const response = await fetch(`/api/projects/submissions/${submissionId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: authHeader,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'reject',
           rejectionReason: rejectionReason.trim(),
@@ -292,15 +277,10 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
   }
 
   const handleMarkAsHandled = async (submissionId: string, handled: boolean) => {
-    if (!authHeader) return
-
     try {
       const response = await fetch(`/api/contact/${submissionId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: authHeader,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ handled }),
       })
 
@@ -1086,7 +1066,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
 }
 
 export default function AdminDashboardPage() {
-  const { isAuthenticated, isLoading, login, logout, getAuthHeader } = useAdminAuth()
+  const { isAuthenticated, isLoading, login, logout } = useAdminAuth()
 
   if (isLoading) {
     return (
@@ -1100,5 +1080,5 @@ export default function AdminDashboardPage() {
     return <LoginForm onLogin={login} />
   }
 
-  return <Dashboard onLogout={logout} authHeader={getAuthHeader()} />
+  return <Dashboard onLogout={logout} />
 }

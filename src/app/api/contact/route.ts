@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendContactNotification } from '@/lib/email'
+import { verifyAdminAuth } from '@/lib/auth'
 
 // GET /api/contact - List all contact submissions (admin only)
 export async function GET(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization')
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
+    const isAuthorized = await verifyAdminAuth(request)
+    if (!isAuthorized) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

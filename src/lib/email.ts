@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Only create Resend client if API key is configured
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 interface ContactNotificationParams {
   donorName: string
@@ -29,7 +30,7 @@ export async function sendContactNotification({
     return { success: true }
   }
 
-  if (!process.env.RESEND_API_KEY) {
+  if (!resend) {
     console.warn('RESEND_API_KEY not configured, skipping email notification')
     return { success: true }
   }

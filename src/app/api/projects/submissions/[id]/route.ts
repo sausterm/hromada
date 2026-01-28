@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
+import { verifyAdminAuth } from '@/lib/auth'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
@@ -11,11 +12,9 @@ export async function GET(
 ) {
   const { id } = await params
 
-  // Check for admin authorization
-  const authHeader = request.headers.get('authorization')
-  const expectedAuth = `Basic ${Buffer.from(`admin:${process.env.ADMIN_PASSWORD || 'admin'}`).toString('base64')}`
-
-  if (authHeader !== expectedAuth) {
+  // Check for admin authorization (supports both cookie and Bearer token)
+  const isAuthorized = await verifyAdminAuth(request)
+  if (!isAuthorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -42,11 +41,9 @@ export async function PATCH(
 ) {
   const { id } = await params
 
-  // Check for admin authorization
-  const authHeader = request.headers.get('authorization')
-  const expectedAuth = `Basic ${Buffer.from(`admin:${process.env.ADMIN_PASSWORD || 'admin'}`).toString('base64')}`
-
-  if (authHeader !== expectedAuth) {
+  // Check for admin authorization (supports both cookie and Bearer token)
+  const isAuthorized = await verifyAdminAuth(request)
+  if (!isAuthorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -204,11 +201,9 @@ export async function DELETE(
 ) {
   const { id } = await params
 
-  // Check for admin authorization
-  const authHeader = request.headers.get('authorization')
-  const expectedAuth = `Basic ${Buffer.from(`admin:${process.env.ADMIN_PASSWORD || 'admin'}`).toString('base64')}`
-
-  if (authHeader !== expectedAuth) {
+  // Check for admin authorization (supports both cookie and Bearer token)
+  const isAuthorized = await verifyAdminAuth(request)
+  if (!isAuthorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

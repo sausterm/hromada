@@ -14,7 +14,7 @@ export default function EditProjectPage() {
   const params = useParams()
   const projectId = params.id as string
 
-  const { isAuthenticated, isLoading: authLoading, getAuthHeader } = useAdminAuth()
+  const { isAuthenticated, isLoading: authLoading } = useAdminAuth()
   const [project, setProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,17 +46,10 @@ export default function EditProjectPage() {
     setError(null)
 
     try {
-      const authHeader = getAuthHeader()
-      if (!authHeader) {
-        throw new Error('Not authenticated')
-      }
-
+      // Cookies are sent automatically for authentication
       const response = await fetch(`/api/projects/${projectId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: authHeader,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
 
@@ -82,16 +75,9 @@ export default function EditProjectPage() {
     setError(null)
 
     try {
-      const authHeader = getAuthHeader()
-      if (!authHeader) {
-        throw new Error('Not authenticated')
-      }
-
+      // Cookies are sent automatically for authentication
       const response = await fetch(`/api/projects/${projectId}`, {
         method: 'DELETE',
-        headers: {
-          Authorization: authHeader,
-        },
       })
 
       if (!response.ok) {
@@ -157,7 +143,6 @@ export default function EditProjectPage() {
           onSubmit={handleSubmit}
           onCancel={() => router.push('/admin')}
           isLoading={isSubmitting}
-          authHeader={getAuthHeader()}
         />
       </div>
     </div>

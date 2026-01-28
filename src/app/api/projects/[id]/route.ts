@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { verifyAdminAuth } from '@/lib/auth'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -41,11 +42,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params
 
-    // Check admin auth
-    const authHeader = request.headers.get('authorization')
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
+    // Check admin auth (supports both cookie and Bearer token)
+    const isAuthorized = await verifyAdminAuth(request)
+    if (!isAuthorized) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -109,11 +108,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params
 
-    // Check admin auth
-    const authHeader = request.headers.get('authorization')
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-    if (!adminSecret || authHeader !== `Bearer ${adminSecret}`) {
+    // Check admin auth (supports both cookie and Bearer token)
+    const isAuthorized = await verifyAdminAuth(request)
+    if (!isAuthorized) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }

@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
-import Link from 'next/link'
+import { useState, useCallback, useMemo, useRef, useEffect, useId } from 'react'
+import { useTranslations } from 'next-intl'
 import { MapWrapper, type MapBounds } from '@/components/map/MapWrapper'
 import { ProjectCard } from '@/components/projects/ProjectCard'
+import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/Button'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import {
@@ -37,6 +38,7 @@ function transformProject(data: any): Project {
 }
 
 export default function HomePage() {
+  const t = useTranslations()
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   // State
@@ -71,6 +73,22 @@ export default function HomePage() {
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000000])
+  const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
+  const priceDropdownRef = useRef<HTMLDivElement>(null)
+  const priceDropdownId = useId()
+
+  // Close price dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (priceDropdownRef.current && !priceDropdownRef.current.contains(event.target as Node)) {
+        setIsPriceDropdownOpen(false)
+      }
+    }
+    if (isPriceDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isPriceDropdownOpen])
 
   // Filtered projects based on search and filters
   const filteredProjects = useMemo(() => {
@@ -218,48 +236,8 @@ export default function HomePage() {
 
   return (
     <div className="h-screen flex flex-col bg-[var(--cream-50)]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
-        {/* Top Bar - Navigation */}
-        <div className="px-4 lg:px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
-            {/* Left - Admin */}
-            <div className="flex-1">
-              <Link href="/admin" className="hidden sm:inline-block">
-                <Button variant="ghost" size="md">
-                  Admin
-                </Button>
-              </Link>
-            </div>
-
-            {/* Center - Logo */}
-            <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-3xl font-bold text-[var(--navy-700)]">
-                hromada <span className="opacity-60">|</span> громада
-              </span>
-            </Link>
-
-            {/* Right - About & Submit */}
-            <div className="flex-1 flex items-center justify-end gap-3">
-              <Link href="/about" className="hidden sm:inline-block">
-                <Button variant="ghost" size="md">
-                  About Us
-                </Button>
-              </Link>
-              <Link href="/submit-project">
-                <Button
-                  variant="primary"
-                  size="md"
-                  className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]"
-                >
-                  Submit a Project
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Filter Bar */}
+      {/* Header with Filter Bar */}
+      <Header>
         <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)]">
           <div className="flex flex-wrap items-center gap-2">
             {/* Category chips */}
@@ -277,10 +255,113 @@ export default function HomePage() {
                   }`}
                 >
                   <span>{config.icon}</span>
-                  <span className="hidden sm:inline">{config.label.split(' ')[0]}</span>
+                  <span className="hidden sm:inline">{t(`categories.${category}`).split(' ')[0]}</span>
                 </button>
               )
             })}
+
+            {/* Price Range Dropdown */}
+            <div className="relative" ref={priceDropdownRef}>
+              <button
+                onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}
+                aria-expanded={isPriceDropdownOpen}
+                aria-controls={priceDropdownId}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                  priceRange[0] > 0 || priceRange[1] < 3000000
+                    ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
+                    : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                }`}
+              >
+                <span>
+                  {priceRange[0] > 0 || priceRange[1] < 3000000
+                    ? `$${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[0] / 1000)}k`} - $${priceRange[1] >= 1000000 ? `${(priceRange[1] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[1] / 1000)}k`}`
+                    : t('homepage.filters.price')}
+                </span>
+                <svg className={`h-3.5 w-3.5 transition-transform ${isPriceDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown panel */}
+              {isPriceDropdownOpen && (
+                <div
+                  id={priceDropdownId}
+                  className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border border-[var(--cream-200)] p-4 z-50 min-w-[200px]"
+                >
+                  <div className="flex flex-col gap-4">
+                    {/* Max price label and value (top) */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-[var(--navy-500)]">Max</span>
+                      <span className="text-sm font-medium text-[var(--navy-700)]">
+                        ${priceRange[1] >= 1000000 ? `${(priceRange[1] / 1000000).toFixed(1)}M` : priceRange[1] >= 1000 ? `${Math.round(priceRange[1] / 1000)}k` : priceRange[1]}
+                      </span>
+                    </div>
+
+                    {/* Vertical slider container */}
+                    <div className="relative h-32 flex justify-center">
+                      {/* Track background */}
+                      <div className="absolute w-1.5 h-full bg-[var(--cream-300)] rounded-full" />
+                      {/* Active track */}
+                      <div
+                        className="absolute w-1.5 bg-[var(--navy-500)] rounded-full pointer-events-none"
+                        style={{
+                          top: `${(1 - priceRange[1] / 3000000) * 100}%`,
+                          bottom: `${(priceRange[0] / 3000000) * 100}%`,
+                        }}
+                      />
+                      {/* Max slider (top - higher values) */}
+                      <input
+                        type="range"
+                        min={0}
+                        max={3000000}
+                        step={50000}
+                        value={priceRange[1]}
+                        onChange={(e) => {
+                          const val = Number(e.target.value)
+                          if (val > priceRange[0]) {
+                            setPriceRange([priceRange[0], val])
+                          }
+                        }}
+                        className="absolute h-full w-32 appearance-none bg-transparent pointer-events-none cursor-pointer z-[4] origin-center -rotate-90 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
+                      />
+                      {/* Min slider (bottom - lower values) */}
+                      <input
+                        type="range"
+                        min={0}
+                        max={3000000}
+                        step={50000}
+                        value={priceRange[0]}
+                        onChange={(e) => {
+                          const val = Number(e.target.value)
+                          if (val < priceRange[1]) {
+                            setPriceRange([val, priceRange[1]])
+                          }
+                        }}
+                        className="absolute h-full w-32 appearance-none bg-transparent pointer-events-none cursor-pointer z-[3] origin-center -rotate-90 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
+                      />
+                    </div>
+
+                    {/* Min price label and value (bottom) */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-[var(--navy-500)]">Min</span>
+                      <span className="text-sm font-medium text-[var(--navy-700)]">
+                        ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : priceRange[0] >= 1000 ? `${Math.round(priceRange[0] / 1000)}k` : priceRange[0]}
+                      </span>
+                    </div>
+
+                    {/* Reset button */}
+                    {(priceRange[0] > 0 || priceRange[1] < 3000000) && (
+                      <button
+                        onClick={() => setPriceRange([0, 3000000])}
+                        className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Urgency dropdown */}
             <select
@@ -292,10 +373,10 @@ export default function HomePage() {
                   : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
               }`}
             >
-              <option value="">Urgency</option>
+              <option value="">{t('homepage.filters.urgency')}</option>
               {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
                 <option key={urgency} value={urgency}>
-                  {URGENCY_CONFIG[urgency].label}
+                  {t(`urgency.${urgency}`)}
                 </option>
               ))}
             </select>
@@ -310,10 +391,10 @@ export default function HomePage() {
                   : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
               }`}
             >
-              <option value="">Status</option>
+              <option value="">{t('homepage.filters.status')}</option>
               {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
                 <option key={status} value={status}>
-                  {STATUS_CONFIG[status].label}
+                  {t(`status.${status}`)}
                 </option>
               ))}
             </select>
@@ -328,10 +409,10 @@ export default function HomePage() {
                   : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
               }`}
             >
-              <option value="">Co-financing</option>
+              <option value="">{t('homepage.filters.cofinancing')}</option>
               {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
                 <option key={status} value={status}>
-                  {COFINANCING_CONFIG[status].label}
+                  {t(`cofinancing.${status}`)}
                 </option>
               ))}
             </select>
@@ -346,65 +427,13 @@ export default function HomePage() {
                   : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
               }`}
             >
-              <option value="">Project Type</option>
+              <option value="">{t('homepage.filters.projectType')}</option>
               {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
                 <option key={type} value={type}>
-                  {PROJECT_TYPE_CONFIG[type].label}
+                  {t(`projectTypes.${type}`)}
                 </option>
               ))}
             </select>
-
-            {/* Price Range Slider */}
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white border border-[var(--cream-300)]">
-              <span className="text-xs text-[var(--navy-600)] font-medium w-8 text-right">
-                ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[0] / 1000)}k`}
-              </span>
-              <div className="relative w-20 h-5 flex items-center">
-                {/* Track background */}
-                <div className="absolute w-full h-1.5 bg-[var(--cream-300)] rounded-full" />
-                {/* Active track */}
-                <div
-                  className="absolute h-1.5 bg-[var(--navy-500)] rounded-full pointer-events-none"
-                  style={{
-                    left: `${(priceRange[0] / 3000000) * 100}%`,
-                    right: `${100 - (priceRange[1] / 3000000) * 100}%`,
-                  }}
-                />
-                {/* Min slider */}
-                <input
-                  type="range"
-                  min={0}
-                  max={3000000}
-                  step={50000}
-                  value={priceRange[0]}
-                  onChange={(e) => {
-                    const val = Number(e.target.value)
-                    if (val < priceRange[1]) {
-                      setPriceRange([val, priceRange[1]])
-                    }
-                  }}
-                  className="absolute w-full h-full appearance-none bg-transparent pointer-events-none z-[3] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
-                />
-                {/* Max slider */}
-                <input
-                  type="range"
-                  min={0}
-                  max={3000000}
-                  step={50000}
-                  value={priceRange[1]}
-                  onChange={(e) => {
-                    const val = Number(e.target.value)
-                    if (val > priceRange[0]) {
-                      setPriceRange([priceRange[0], val])
-                    }
-                  }}
-                  className="absolute w-full h-full appearance-none bg-transparent pointer-events-none z-[4] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
-                />
-              </div>
-              <span className="text-xs text-[var(--navy-600)] font-medium w-8 text-left">
-                ${priceRange[1] >= 1000000 ? `${(priceRange[1] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[1] / 1000)}k`}
-              </span>
-            </div>
 
             {/* Clear filters */}
             {activeFilterCount > 0 && (
@@ -415,7 +444,7 @@ export default function HomePage() {
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                Clear
+                {t('homepage.filters.clear')}
                 <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-[var(--navy-600)] text-white text-xs font-bold">
                   {activeFilterCount}
                 </span>
@@ -423,7 +452,7 @@ export default function HomePage() {
             )}
           </div>
         </div>
-      </header>
+      </Header>
 
       {/* Main Content - Split Screen */}
       <main className="flex-1 flex overflow-hidden">
@@ -450,7 +479,7 @@ export default function HomePage() {
                   </svg>
                   <input
                     type="text"
-                    placeholder="Search..."
+                    placeholder={t('homepage.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-3 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-50)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
@@ -459,15 +488,15 @@ export default function HomePage() {
               </div>
               <div className="text-right">
                 <p className="text-[var(--navy-700)] text-sm font-semibold">
-                  {projectsInView.length} {projectsInView.length === 1 ? 'project' : 'projects'}
+                  {t('homepage.projectCount', { count: projectsInView.length })}
                   {' '}<span className="text-[var(--navy-400)] font-normal">|</span>{' '}
                   <span className="text-[var(--navy-600)]">
-                    {formatCurrency(totalFundingNeeded, { compact: true })} needed
+                    {formatCurrency(totalFundingNeeded, { compact: true })} {t('common.needed')}
                   </span>
                 </p>
                 {activeFilterCount > 0 && (
                   <p className="text-xs text-[var(--navy-400)]">
-                    {filteredProjects.length} of {allProjects.length} total
+                    {filteredProjects.length} {t('common.of')} {allProjects.length} {t('common.total')}
                   </p>
                 )}
               </div>
@@ -510,14 +539,14 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-[var(--navy-700)] mb-2">
-                  No projects found
+                  {t('homepage.noProjectsFound')}
                 </h3>
                 <p className="text-[var(--navy-500)] mb-4">
-                  Try adjusting your filters or zoom out on the map.
+                  {t('homepage.noProjectsHint')}
                 </p>
                 {activeFilterCount > 0 && (
                   <Button variant="outline" size="sm" onClick={clearFilters}>
-                    Clear all filters
+                    {t('homepage.clearAllFilters')}
                   </Button>
                 )}
               </div>
@@ -527,10 +556,10 @@ export default function HomePage() {
           {/* Footer */}
           <div className="p-4 border-t border-[var(--cream-300)] bg-[var(--cream-100)]">
             <p className="text-xs text-[var(--navy-600)] text-center">
-              <span className="font-medium">hromada</span> connects American donors with Ukrainian communities.
+              <span className="font-medium">hromada</span> {t('homepage.footer')}
               <br />
               <span className="text-[var(--navy-400)]">
-                No payment processing occurs on this platform.
+                {t('homepage.noPaymentProcessing')}
               </span>
             </p>
           </div>
@@ -565,7 +594,7 @@ export default function HomePage() {
               d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
             />
           </svg>
-          View Map
+          {t('homepage.viewMap')}
         </Button>
       </div>
     </div>

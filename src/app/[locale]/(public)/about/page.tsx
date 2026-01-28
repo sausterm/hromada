@@ -1,24 +1,17 @@
 'use client'
 
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
+import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/Button'
 
 export default function AboutPage() {
+  const t = useTranslations()
+
   return (
     <div className="min-h-screen bg-[var(--cream-50)]">
       {/* Header */}
-      <header className="bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-[var(--navy-700)]">
-            hromada <span className="opacity-60">|</span> громада
-          </Link>
-          <Link href="/">
-            <Button variant="ghost" size="sm">
-              &larr; Back to Projects
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 py-12">
@@ -67,11 +60,11 @@ export default function AboutPage() {
               Project Categories
             </h2>
             <ul className="space-y-2">
-              <li><strong>Hospitals & Medical Facilities</strong> - Healthcare infrastructure and equipment</li>
-              <li><strong>Schools & Education</strong> - Educational facilities and resources</li>
-              <li><strong>Water Utilities</strong> - Clean water and sanitation systems</li>
-              <li><strong>Energy Infrastructure</strong> - Solar panels, heat pumps, and power systems</li>
-              <li><strong>Other Infrastructure</strong> - Community buildings and essential services</li>
+              <li><strong>{t('categories.HOSPITAL')}</strong> - Healthcare infrastructure and equipment</li>
+              <li><strong>{t('categories.SCHOOL')}</strong> - Educational facilities and resources</li>
+              <li><strong>{t('categories.WATER')}</strong> - Clean water and sanitation systems</li>
+              <li><strong>{t('categories.ENERGY')}</strong> - Solar panels, heat pumps, and power systems</li>
+              <li><strong>{t('categories.OTHER')}</strong> - Community buildings and essential services</li>
             </ul>
           </section>
 
@@ -96,7 +89,7 @@ export default function AboutPage() {
           </Link>
           <Link href="/submit-project">
             <Button variant="outline">
-              Submit a Project
+              {t('nav.submitProject')}
             </Button>
           </Link>
         </div>

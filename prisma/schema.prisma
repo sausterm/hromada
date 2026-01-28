@@ -9,7 +9,7 @@ datasource db {
 model Project {
   id               String    @id @default(cuid())
 
-  // Required fields
+  // Required fields (English - primary)
   municipalityName String
   region           String?   // Oblast/region name
   facilityName     String
@@ -18,6 +18,12 @@ model Project {
   fullDescription  String    @db.VarChar(2000) // Detailed project description
   contactName      String
   contactEmail     String
+
+  // Ukrainian translations (auto-generated)
+  municipalityNameUk String?
+  facilityNameUk     String?
+  briefDescriptionUk String?  @db.VarChar(200)  // Ukrainian may be longer
+  fullDescriptionUk  String?  @db.VarChar(3000)
 
   // Location - city-level precision only
   // SECURITY: Coordinates are intentionally limited to city-level precision
@@ -170,6 +176,7 @@ model ProjectSubmission {
   partnerOrganization   String?
   projectSubtype        String?
   additionalNotes       String?  @db.VarChar(1000)
+  photos                String[] @default([])  // Array of image URLs
 
   // Status tracking
   status                SubmissionStatus @default(PENDING)

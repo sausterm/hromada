@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { useAdminAuth } from '@/hooks/useAdminAuth'
 import { ProjectForm, type ProjectFormData } from '@/components/admin/ProjectForm'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/Button'
 import { type Project } from '@/types'
 
 export default function EditProjectPage() {
+  const t = useTranslations()
   const router = useRouter()
   const params = useParams()
   const projectId = params.id as string
@@ -74,7 +76,7 @@ export default function EditProjectPage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this project? This cannot be undone.')) {
+    if (!confirm(t('admin.projects.confirmDelete'))) {
       return
     }
 
@@ -123,9 +125,9 @@ export default function EditProjectPage() {
   if (!project && !isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Project Not Found</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('admin.projects.notFound')}</h1>
         <Link href="/admin">
-          <Button>Back to Dashboard</Button>
+          <Button>{t('admin.projects.backToDashboard')}</Button>
         </Link>
       </div>
     )
@@ -137,10 +139,10 @@ export default function EditProjectPage() {
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/admin" className="text-[var(--ukraine-600)] hover:underline text-sm">
-            ← Back to Dashboard
+            {t('admin.projects.backToDashboard')}
           </Link>
           <Button variant="danger" size="sm" onClick={handleDelete} disabled={isSubmitting}>
-            Delete Project
+            {t('admin.projects.deleteProject')}
           </Button>
         </div>
       </header>

@@ -1,16 +1,21 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
+import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import {
   type Category,
   type Urgency,
+  type ProjectType,
   CATEGORY_CONFIG,
   URGENCY_CONFIG,
+  PROJECT_TYPE_CONFIG,
 } from '@/types'
+import { PublicImageUpload } from '@/components/forms/PublicImageUpload'
 
 interface FormData {
   // Municipality info
@@ -43,6 +48,8 @@ interface FormData {
   partnerOrganization: string
   projectSubtype: string
   additionalNotes: string
+  // Photos
+  photos: string[]
 }
 
 const initialFormData: FormData = {
@@ -70,17 +77,11 @@ const initialFormData: FormData = {
   partnerOrganization: '',
   projectSubtype: '',
   additionalNotes: '',
+  photos: [],
 }
 
-const PROJECT_TYPES = [
-  { value: 'SOLAR_PV', label: 'Solar PV Installation' },
-  { value: 'HEAT_PUMP', label: 'Heat Pump System' },
-  { value: 'WATER_TREATMENT', label: 'Water Treatment' },
-  { value: 'GENERAL', label: 'General Infrastructure' },
-  { value: 'OTHER', label: 'Other' },
-]
-
 export default function SubmitProjectPage() {
+  const t = useTranslations()
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -97,9 +98,13 @@ export default function SubmitProjectPage() {
     }
   }
 
+  const handlePhotosChange = (photos: string[]) => {
+    setFormData((prev) => ({ ...prev, photos }))
+  }
+
   const geocodeCity = async () => {
     if (!formData.cityName.trim()) {
-      setErrors((prev) => ({ ...prev, cityName: 'Enter a city name first' }))
+      setErrors((prev) => ({ ...prev, cityName: t('submitProject.validation.enterCityFirst') }))
       return
     }
 
@@ -120,10 +125,10 @@ export default function SubmitProjectPage() {
         }))
         setErrors((prev) => ({ ...prev, cityLatitude: undefined, cityLongitude: undefined }))
       } else {
-        setErrors((prev) => ({ ...prev, cityName: 'Could not find coordinates for this city' }))
+        setErrors((prev) => ({ ...prev, cityName: t('submitProject.validation.coordinatesNotFound') }))
       }
     } catch {
-      setErrors((prev) => ({ ...prev, cityName: 'Geocoding failed. Please enter coordinates manually.' }))
+      setErrors((prev) => ({ ...prev, cityName: t('submitProject.validation.geocodingFailed') }))
     } finally {
       setIsGeocoding(false)
     }
@@ -133,66 +138,66 @@ export default function SubmitProjectPage() {
     const newErrors: Partial<Record<keyof FormData, string>> = {}
 
     // Required fields
-    if (!formData.municipalityName.trim()) newErrors.municipalityName = 'Required'
+    if (!formData.municipalityName.trim()) newErrors.municipalityName = t('submitProject.validation.required')
     if (!formData.municipalityEmail.trim()) {
-      newErrors.municipalityEmail = 'Required'
+      newErrors.municipalityEmail = t('submitProject.validation.required')
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.municipalityEmail)) {
-      newErrors.municipalityEmail = 'Invalid email format'
+      newErrors.municipalityEmail = t('submitProject.validation.invalidEmail')
     }
 
-    if (!formData.facilityName.trim()) newErrors.facilityName = 'Required'
-    if (!formData.projectType) newErrors.projectType = 'Required'
+    if (!formData.facilityName.trim()) newErrors.facilityName = t('submitProject.validation.required')
+    if (!formData.projectType) newErrors.projectType = t('submitProject.validation.required')
 
     if (!formData.briefDescription.trim()) {
-      newErrors.briefDescription = 'Required'
+      newErrors.briefDescription = t('submitProject.validation.required')
     } else if (formData.briefDescription.length > 150) {
-      newErrors.briefDescription = 'Maximum 150 characters'
+      newErrors.briefDescription = t('submitProject.validation.tooLong', { max: 150 })
     }
 
     if (!formData.fullDescription.trim()) {
-      newErrors.fullDescription = 'Required'
+      newErrors.fullDescription = t('submitProject.validation.required')
     } else if (formData.fullDescription.length > 2000) {
-      newErrors.fullDescription = 'Maximum 2000 characters'
+      newErrors.fullDescription = t('submitProject.validation.tooLong', { max: 2000 })
     }
 
-    if (!formData.cityName.trim()) newErrors.cityName = 'Required'
-    if (!formData.cityLatitude.trim()) newErrors.cityLatitude = 'Required'
-    if (!formData.cityLongitude.trim()) newErrors.cityLongitude = 'Required'
+    if (!formData.cityName.trim()) newErrors.cityName = t('submitProject.validation.required')
+    if (!formData.cityLatitude.trim()) newErrors.cityLatitude = t('submitProject.validation.required')
+    if (!formData.cityLongitude.trim()) newErrors.cityLongitude = t('submitProject.validation.required')
 
     // Validate coordinates
     const lat = parseFloat(formData.cityLatitude)
     const lng = parseFloat(formData.cityLongitude)
     if (formData.cityLatitude && (isNaN(lat) || lat < -90 || lat > 90)) {
-      newErrors.cityLatitude = 'Invalid latitude (-90 to 90)'
+      newErrors.cityLatitude = t('submitProject.validation.invalidLatitude')
     }
     if (formData.cityLongitude && (isNaN(lng) || lng < -180 || lng > 180)) {
-      newErrors.cityLongitude = 'Invalid longitude (-180 to 180)'
+      newErrors.cityLongitude = t('submitProject.validation.invalidLongitude')
     }
 
-    if (!formData.contactName.trim()) newErrors.contactName = 'Required'
+    if (!formData.contactName.trim()) newErrors.contactName = t('submitProject.validation.required')
     if (!formData.contactEmail.trim()) {
-      newErrors.contactEmail = 'Required'
+      newErrors.contactEmail = t('submitProject.validation.required')
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactEmail)) {
-      newErrors.contactEmail = 'Invalid email format'
+      newErrors.contactEmail = t('submitProject.validation.invalidEmail')
     }
 
     // Optional numeric fields
     if (formData.estimatedCostUsd.trim()) {
       const cost = parseFloat(formData.estimatedCostUsd)
       if (isNaN(cost) || cost <= 0) {
-        newErrors.estimatedCostUsd = 'Must be a positive number'
+        newErrors.estimatedCostUsd = t('submitProject.validation.positiveNumber')
       }
     }
     if (formData.technicalPowerKw.trim()) {
       const power = parseFloat(formData.technicalPowerKw)
       if (isNaN(power) || power <= 0) {
-        newErrors.technicalPowerKw = 'Must be a positive number'
+        newErrors.technicalPowerKw = t('submitProject.validation.positiveNumber')
       }
     }
     if (formData.numberOfPanels.trim()) {
       const panels = parseInt(formData.numberOfPanels)
       if (isNaN(panels) || panels <= 0) {
-        newErrors.numberOfPanels = 'Must be a positive whole number'
+        newErrors.numberOfPanels = t('submitProject.validation.positiveWholeNumber')
       }
     }
 
@@ -219,10 +224,10 @@ export default function SubmitProjectPage() {
         setFormData(initialFormData)
       } else {
         const data = await response.json()
-        setSubmitError(data.error || 'Failed to submit project. Please try again.')
+        setSubmitError(data.error || t('submitProject.error.message'))
       }
     } catch {
-      setSubmitError('Network error. Please check your connection and try again.')
+      setSubmitError(t('submitProject.error.network'))
     } finally {
       setIsSubmitting(false)
     }
@@ -235,13 +240,7 @@ export default function SubmitProjectPage() {
   if (submitSuccess) {
     return (
       <div className="min-h-screen bg-[var(--cream-50)]">
-        <header className="bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
-          <div className="max-w-4xl mx-auto px-4 py-4">
-            <Link href="/" className="text-2xl font-bold text-[var(--navy-700)]">
-              hromada <span className="opacity-60">|</span> громада
-            </Link>
-          </div>
-        </header>
+        <Header />
 
         <main className="max-w-2xl mx-auto px-4 py-16 text-center">
           <div className="bg-[var(--cream-100)] rounded-xl p-8 border border-[var(--cream-300)]">
@@ -251,20 +250,19 @@ export default function SubmitProjectPage() {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-[var(--navy-700)] mb-4">
-              Thank You for Your Submission!
+              {t('submitProject.success.title')}
             </h1>
             <p className="text-[var(--navy-600)] mb-6">
-              Our team will review your project and contact you at <strong>{formData.contactEmail || 'your email'}</strong> within 3-5 business days.
-              You will receive an email confirmation shortly.
+              {t('submitProject.success.message', { email: formData.contactEmail || 'your email' })}
             </p>
             <div className="flex gap-4 justify-center">
               <Link href="/">
                 <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
-                  Back to Home
+                  {t('submitProject.buttons.backToHome')}
                 </Button>
               </Link>
               <Button variant="outline" onClick={() => setSubmitSuccess(false)}>
-                Submit Another Project
+                {t('submitProject.buttons.submitAnother')}
               </Button>
             </div>
           </div>
@@ -276,27 +274,16 @@ export default function SubmitProjectPage() {
   return (
     <div className="min-h-screen bg-[var(--cream-50)]">
       {/* Header */}
-      <header className="bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-[var(--navy-700)]">
-            hromada <span className="opacity-60">|</span> громада
-          </Link>
-          <Link href="/">
-            <Button variant="ghost" size="sm">
-              &larr; Back to Projects
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <div className="bg-[var(--navy-700)] text-white py-12">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Submit Your Infrastructure Project
+            {t('submitProject.title')}
           </h1>
           <p className="text-lg text-[var(--navy-100)] max-w-2xl mx-auto">
-            Municipal leaders: Submit your infrastructure project to connect with American donors who want to help Ukrainian communities rebuild.
+            {t('submitProject.subtitle')}
           </p>
         </div>
       </div>
@@ -304,15 +291,14 @@ export default function SubmitProjectPage() {
       {/* Form Instructions */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)] mb-8">
-          <h2 className="font-semibold text-[var(--navy-700)] mb-3">Before You Begin</h2>
+          <h2 className="font-semibold text-[var(--navy-700)] mb-3">{t('submitProject.beforeYouBegin')}</h2>
           <ul className="text-[var(--navy-600)] space-y-2 text-sm">
-            <li>• This form is for Ukrainian municipal officials to submit infrastructure projects that need donor support.</li>
-            <li>• Projects are reviewed by our team before being published on the platform.</li>
-            <li>• All fields marked with <span className="text-red-600">*</span> are required.</li>
-            <li>• For security reasons, we only display city-level locations on the map - never exact facility addresses.</li>
+            <li>• {t('submitProject.description')}</li>
+            <li>• {t('submitProject.allFieldsRequired')}</li>
+            <li>• {t('submitProject.securityNote')}</li>
           </ul>
           <p className="text-sm text-[var(--navy-500)] mt-4">
-            Questions? Contact us at <a href="mailto:support@hromada.org" className="text-[var(--navy-700)] underline">support@hromada.org</a>
+            {t('submitProject.questionsContact')} <a href="mailto:support@hromada.org" className="text-[var(--navy-700)] underline">support@hromada.org</a>
           </p>
         </div>
 
@@ -328,40 +314,40 @@ export default function SubmitProjectPage() {
           {/* Section 1: Municipality Information */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              Municipality Information
+              {t('submitProject.sections.municipalityInfo')}
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  Municipality Name <span className="text-red-600">*</span>
+                  {t('submitProject.fields.municipalityName')} <span className="text-red-600">*</span>
                 </label>
                 <Input
                   value={formData.municipalityName}
                   onChange={handleChange('municipalityName')}
-                  placeholder="e.g., Kharkiv City Council"
+                  placeholder={t('submitProject.fields.municipalityNamePlaceholder')}
                   error={errors.municipalityName}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  Municipality Email <span className="text-red-600">*</span>
+                  {t('submitProject.fields.municipalityEmail')} <span className="text-red-600">*</span>
                 </label>
                 <Input
                   type="email"
                   value={formData.municipalityEmail}
                   onChange={handleChange('municipalityEmail')}
-                  placeholder="municipality@example.ua"
+                  placeholder={t('submitProject.fields.municipalityEmailPlaceholder')}
                   error={errors.municipalityEmail}
                 />
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  Region/Oblast
+                  {t('submitProject.fields.region')}
                 </label>
                 <Input
                   value={formData.region}
                   onChange={handleChange('region')}
-                  placeholder="e.g., Kharkiv Oblast"
+                  placeholder={t('submitProject.fields.regionPlaceholder')}
                 />
               </div>
             </div>
@@ -370,24 +356,24 @@ export default function SubmitProjectPage() {
           {/* Section 2: Project Details */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              Project Details
+              {t('submitProject.sections.projectDetails')}
             </h2>
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Facility/Project Name <span className="text-red-600">*</span>
+                    {t('submitProject.fields.facilityName')} <span className="text-red-600">*</span>
                   </label>
                   <Input
                     value={formData.facilityName}
                     onChange={handleChange('facilityName')}
-                    placeholder="e.g., Regional Hospital #5"
+                    placeholder={t('submitProject.fields.facilityPlaceholder')}
                     error={errors.facilityName}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Category <span className="text-red-600">*</span>
+                    {t('submitProject.fields.category')} <span className="text-red-600">*</span>
                   </label>
                   <select
                     value={formData.category}
@@ -396,7 +382,7 @@ export default function SubmitProjectPage() {
                   >
                     {(Object.keys(CATEGORY_CONFIG) as Category[]).map((cat) => (
                       <option key={cat} value={cat}>
-                        {CATEGORY_CONFIG[cat].icon} {CATEGORY_CONFIG[cat].label}
+                        {CATEGORY_CONFIG[cat].icon} {t(`categories.${cat}`)}
                       </option>
                     ))}
                   </select>
@@ -406,7 +392,7 @@ export default function SubmitProjectPage() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Project Type <span className="text-red-600">*</span>
+                    {t('submitProject.fields.projectType')} <span className="text-red-600">*</span>
                   </label>
                   <select
                     value={formData.projectType}
@@ -415,10 +401,10 @@ export default function SubmitProjectPage() {
                       errors.projectType ? 'border-red-500' : 'border-gray-300'
                     }`}
                   >
-                    <option value="">-- Select Type --</option>
-                    {PROJECT_TYPES.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
+                    <option value="">{t('submitProject.fields.selectType')}</option>
+                    {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
+                      <option key={type} value={type}>
+                        {PROJECT_TYPE_CONFIG[type].icon} {t(`projectTypes.${type}`)}
                       </option>
                     ))}
                   </select>
@@ -426,7 +412,7 @@ export default function SubmitProjectPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Urgency <span className="text-red-600">*</span>
+                    {t('submitProject.fields.urgency')} <span className="text-red-600">*</span>
                   </label>
                   <select
                     value={formData.urgency}
@@ -435,7 +421,7 @@ export default function SubmitProjectPage() {
                   >
                     {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urg) => (
                       <option key={urg} value={urg}>
-                        {URGENCY_CONFIG[urg].label}
+                        {t(`urgency.${urg}`)}
                       </option>
                     ))}
                   </select>
@@ -444,7 +430,7 @@ export default function SubmitProjectPage() {
 
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  Brief Description <span className="text-red-600">*</span>
+                  {t('submitProject.fields.briefDescription')} <span className="text-red-600">*</span>
                   <span className="text-[var(--navy-400)] font-normal ml-2">
                     ({formData.briefDescription.length}/150)
                   </span>
@@ -452,7 +438,7 @@ export default function SubmitProjectPage() {
                 <Textarea
                   value={formData.briefDescription}
                   onChange={handleChange('briefDescription')}
-                  placeholder="Short summary for project cards (max 150 characters)"
+                  placeholder={t('submitProject.fields.briefDescriptionHelper')}
                   error={errors.briefDescription}
                   rows={2}
                   className="min-h-[80px]"
@@ -461,7 +447,7 @@ export default function SubmitProjectPage() {
 
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  Full Description <span className="text-red-600">*</span>
+                  {t('submitProject.fields.fullDescription')} <span className="text-red-600">*</span>
                   <span className="text-[var(--navy-400)] font-normal ml-2">
                     ({formData.fullDescription.length}/2000)
                   </span>
@@ -469,7 +455,7 @@ export default function SubmitProjectPage() {
                 <Textarea
                   value={formData.fullDescription}
                   onChange={handleChange('fullDescription')}
-                  placeholder="Detailed description of needs, what's required, how donors can help..."
+                  placeholder={t('submitProject.fields.fullDescriptionHelper')}
                   error={errors.fullDescription}
                   rows={6}
                 />
@@ -480,16 +466,16 @@ export default function SubmitProjectPage() {
           {/* Section 3: Technical & Financial Information */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              Technical & Financial Information
+              {t('submitProject.sections.technicalFinancial')}
             </h2>
             <p className="text-sm text-[var(--navy-500)] mb-4">
-              These fields are optional but help donors understand the project scope.
+              {t('submitProject.optionalFieldsNote')}
             </p>
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Estimated Cost (USD)
+                    {t('submitProject.fields.estimatedCost')}
                   </label>
                   <Input
                     type="number"
@@ -497,14 +483,14 @@ export default function SubmitProjectPage() {
                     min="0"
                     value={formData.estimatedCostUsd}
                     onChange={handleChange('estimatedCostUsd')}
-                    placeholder="e.g., 50000"
+                    placeholder={t('submitProject.fields.costPlaceholder')}
                     error={errors.estimatedCostUsd}
                   />
                 </div>
                 {showTechnicalPower && (
                   <div>
                     <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                      Technical Power (kW)
+                      {t('submitProject.fields.technicalPower')}
                     </label>
                     <Input
                       type="number"
@@ -512,7 +498,7 @@ export default function SubmitProjectPage() {
                       min="0"
                       value={formData.technicalPowerKw}
                       onChange={handleChange('technicalPowerKw')}
-                      placeholder="e.g., 100"
+                      placeholder={t('submitProject.fields.technicalPowerPlaceholder')}
                       error={errors.technicalPowerKw}
                     />
                   </div>
@@ -520,14 +506,14 @@ export default function SubmitProjectPage() {
                 {showPanels && (
                   <div>
                     <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                      Number of Solar Panels
+                      {t('submitProject.fields.numberOfPanels')}
                     </label>
                     <Input
                       type="number"
                       min="0"
                       value={formData.numberOfPanels}
                       onChange={handleChange('numberOfPanels')}
-                      placeholder="e.g., 200"
+                      placeholder={t('submitProject.fields.numberOfPanelsPlaceholder')}
                       error={errors.numberOfPanels}
                     />
                   </div>
@@ -537,28 +523,28 @@ export default function SubmitProjectPage() {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Co-financing Available?
+                    {t('submitProject.fields.cofinancingAvailable')}
                   </label>
                   <select
                     value={formData.cofinancingAvailable}
                     onChange={handleChange('cofinancingAvailable')}
                     className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--navy-200)] focus:border-[var(--navy-500)]"
                   >
-                    <option value="">-- Select --</option>
-                    <option value="YES">Yes</option>
-                    <option value="NO">No</option>
-                    <option value="NEEDS_CLARIFICATION">Needs to be discussed</option>
+                    <option value="">{t('submitProject.fields.select')}</option>
+                    <option value="YES">{t('cofinancing.YES')}</option>
+                    <option value="NO">{t('cofinancing.NO')}</option>
+                    <option value="NEEDS_CLARIFICATION">{t('submitProject.fields.needsDiscussion')}</option>
                   </select>
                 </div>
                 {showCofinancingDetails && (
                   <div>
                     <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                      Co-financing Details
+                      {t('submitProject.fields.cofinancingDetails')}
                     </label>
                     <Input
                       value={formData.cofinancingDetails}
                       onChange={handleChange('cofinancingDetails')}
-                      placeholder="e.g., Up to 20% or 500,000 UAH"
+                      placeholder={t('submitProject.fields.cofinancingPlaceholder')}
                     />
                   </div>
                 )}
@@ -569,22 +555,22 @@ export default function SubmitProjectPage() {
           {/* Section 4: Location */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              Location
+              {t('submitProject.sections.location')}
             </h2>
             <p className="text-sm text-[var(--navy-500)] mb-4">
-              For security, we only show city-level locations on the map - never exact facility addresses.
+              {t('submitProject.securityNote')}
             </p>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  City/Town Name <span className="text-red-600">*</span>
+                  {t('submitProject.fields.cityName')} <span className="text-red-600">*</span>
                 </label>
                 <div className="flex gap-2">
                   <div className="flex-1">
                     <Input
                       value={formData.cityName}
                       onChange={handleChange('cityName')}
-                      placeholder="e.g., Kharkiv"
+                      placeholder={t('submitProject.fields.cityNamePlaceholder')}
                       error={errors.cityName}
                     />
                   </div>
@@ -593,48 +579,48 @@ export default function SubmitProjectPage() {
                     variant="secondary"
                     onClick={geocodeCity}
                     isLoading={isGeocoding}
-                    loadingText="Finding..."
+                    loadingText={t('submitProject.fields.findingCoordinates')}
                   >
-                    Get Coordinates
+                    {t('submitProject.fields.getCoordinates')}
                   </Button>
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  Address/Region Description
+                  {t('submitProject.fields.address')}
                 </label>
                 <Input
                   value={formData.address}
                   onChange={handleChange('address')}
-                  placeholder="e.g., Northern district (general area only)"
+                  placeholder={t('submitProject.fields.addressPlaceholder')}
                 />
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    City Latitude <span className="text-red-600">*</span>
+                    {t('submitProject.fields.cityLatitude')} <span className="text-red-600">*</span>
                   </label>
                   <Input
                     value={formData.cityLatitude}
                     onChange={handleChange('cityLatitude')}
-                    placeholder="e.g., 49.9935"
+                    placeholder={t('submitProject.fields.cityLatitudePlaceholder')}
                     error={errors.cityLatitude}
                   />
-                  <p className="text-xs text-[var(--navy-400)] mt-1">City-level only, not exact facility location</p>
+                  <p className="text-xs text-[var(--navy-400)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    City Longitude <span className="text-red-600">*</span>
+                    {t('submitProject.fields.cityLongitude')} <span className="text-red-600">*</span>
                   </label>
                   <Input
                     value={formData.cityLongitude}
                     onChange={handleChange('cityLongitude')}
-                    placeholder="e.g., 36.2304"
+                    placeholder={t('submitProject.fields.cityLongitudePlaceholder')}
                     error={errors.cityLongitude}
                   />
-                  <p className="text-xs text-[var(--navy-400)] mt-1">City-level only, not exact facility location</p>
+                  <p className="text-xs text-[var(--navy-400)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
                 </div>
               </div>
             </div>
@@ -643,42 +629,42 @@ export default function SubmitProjectPage() {
           {/* Section 5: Contact Information */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              Contact Information
+              {t('submitProject.sections.contactInfo')}
             </h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  Contact Person Name <span className="text-red-600">*</span>
+                  {t('submitProject.fields.contactName')} <span className="text-red-600">*</span>
                 </label>
                 <Input
                   value={formData.contactName}
                   onChange={handleChange('contactName')}
-                  placeholder="e.g., Dr. Olena Kovalenko"
+                  placeholder={t('submitProject.fields.contactNamePlaceholder')}
                   error={errors.contactName}
                 />
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Contact Email <span className="text-red-600">*</span>
+                    {t('submitProject.fields.contactEmail')} <span className="text-red-600">*</span>
                   </label>
                   <Input
                     type="email"
                     value={formData.contactEmail}
                     onChange={handleChange('contactEmail')}
-                    placeholder="contact@example.ua"
+                    placeholder={t('submitProject.fields.contactEmailPlaceholder')}
                     error={errors.contactEmail}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Contact Phone
+                    {t('submitProject.fields.contactPhone')}
                   </label>
                   <Input
                     type="tel"
                     value={formData.contactPhone}
                     onChange={handleChange('contactPhone')}
-                    placeholder="+380..."
+                    placeholder={t('submitProject.fields.phonePlaceholder')}
                   />
                 </div>
               </div>
@@ -688,39 +674,39 @@ export default function SubmitProjectPage() {
           {/* Section 6: Supporting Information */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              Supporting Information <span className="text-[var(--navy-400)] font-normal">(Optional)</span>
+              {t('submitProject.sections.supportingInfo')} <span className="text-[var(--navy-400)] font-normal">({t('submitProject.sections.optional')})</span>
             </h2>
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Partner Organization
+                    {t('submitProject.fields.partnerOrganization')}
                   </label>
                   <Input
                     value={formData.partnerOrganization}
                     onChange={handleChange('partnerOrganization')}
-                    placeholder="e.g., NGO Ecoclub"
+                    placeholder={t('submitProject.fields.partnerPlaceholder')}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    Project Subtype
+                    {t('submitProject.fields.projectSubtype')}
                   </label>
                   <Input
                     value={formData.projectSubtype}
                     onChange={handleChange('projectSubtype')}
-                    placeholder="e.g., Building hybrid PV, District heating"
+                    placeholder={t('submitProject.fields.subtypePlaceholder')}
                   />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                  Additional Notes
+                  {t('submitProject.fields.additionalNotes')}
                 </label>
                 <Textarea
                   value={formData.additionalNotes}
                   onChange={handleChange('additionalNotes')}
-                  placeholder="Any other details you'd like to share..."
+                  placeholder={t('submitProject.fields.notesPlaceholder')}
                   rows={3}
                   className="min-h-[80px]"
                 />
@@ -728,11 +714,26 @@ export default function SubmitProjectPage() {
             </div>
           </section>
 
+          {/* Section 7: Project Photos */}
+          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
+            <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
+              {t('submitProject.photos.title')} <span className="text-[var(--navy-400)] font-normal">({t('submitProject.sections.optional')})</span>
+            </h2>
+            <p className="text-sm text-[var(--navy-500)] mb-4">
+              {t('submitProject.photos.description')}
+            </p>
+            <PublicImageUpload
+              images={formData.photos}
+              onChange={handlePhotosChange}
+              maxImages={5}
+            />
+          </section>
+
           {/* Submit Button */}
           <div className="flex justify-end gap-4">
             <Link href="/">
               <Button type="button" variant="ghost">
-                Cancel
+                {t('submitProject.buttons.cancel')}
               </Button>
             </Link>
             <Button
@@ -740,9 +741,9 @@ export default function SubmitProjectPage() {
               variant="primary"
               className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]"
               isLoading={isSubmitting}
-              loadingText="Submitting..."
+              loadingText={t('submitProject.buttons.submitting')}
             >
-              Submit Project for Review
+              {t('submitProject.buttons.submit')}
             </Button>
           </div>
         </form>
@@ -752,7 +753,7 @@ export default function SubmitProjectPage() {
       <footer className="mt-12 py-6 border-t border-[var(--cream-300)] bg-[var(--cream-100)]">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-xs text-[var(--navy-600)]">
-            <span className="font-medium">hromada</span> connects American donors with Ukrainian communities.
+            <span className="font-medium">hromada</span> {t('homepage.footer')}
           </p>
         </div>
       </footer>

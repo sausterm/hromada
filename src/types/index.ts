@@ -46,9 +46,38 @@ export interface Project {
   cofinancingAvailable?: CofinancingStatus
   cofinancingDetails?: string
   partnerOrganization?: string
+  // Ukrainian translations (auto-generated)
+  municipalityNameUk?: string
+  facilityNameUk?: string
+  briefDescriptionUk?: string
+  fullDescriptionUk?: string
   // Timestamps
   createdAt: Date
   updatedAt: Date
+}
+
+// Helper to get localized project content
+export function getLocalizedProject(project: Project, locale: string): {
+  municipalityName: string
+  facilityName: string
+  briefDescription: string
+  fullDescription: string
+} {
+  if (locale === 'uk') {
+    return {
+      municipalityName: project.municipalityNameUk || project.municipalityName,
+      facilityName: project.facilityNameUk || project.facilityName,
+      briefDescription: project.briefDescriptionUk || project.briefDescription,
+      fullDescription: project.fullDescriptionUk || project.fullDescription || project.description,
+    }
+  }
+  // Default to English
+  return {
+    municipalityName: project.municipalityName,
+    facilityName: project.facilityName,
+    briefDescription: project.briefDescription,
+    fullDescription: project.fullDescription || project.description,
+  }
 }
 
 // Contact submission from donors

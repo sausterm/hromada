@@ -12,11 +12,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const project = await prisma.project.findUnique({
       where: { id },
-      include: {
-        _count: {
-          select: { inquiries: true },
-        },
-      },
     })
 
     if (!project) {

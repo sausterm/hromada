@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
@@ -27,6 +28,7 @@ interface FormErrors {
 const MAX_MESSAGE_LENGTH = 1000
 
 export function ContactForm({ projectId, projectName, onSuccess }: ContactFormProps) {
+  const t = useTranslations()
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -42,21 +44,21 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
     const newErrors: FormErrors = {}
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
+      newErrors.name = t('projectDetail.contact.validation.nameRequired')
     }
 
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
+      newErrors.email = t('projectDetail.contact.validation.emailRequired')
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email'
+      newErrors.email = t('projectDetail.contact.validation.emailInvalid')
     }
 
     if (!formData.message.trim()) {
-      newErrors.message = 'Message is required'
+      newErrors.message = t('projectDetail.contact.validation.messageRequired')
     } else if (formData.message.trim().length < 20) {
-      newErrors.message = 'Please provide more details (at least 20 characters)'
+      newErrors.message = t('projectDetail.contact.validation.messageMinLength')
     } else if (formData.message.length > MAX_MESSAGE_LENGTH) {
-      newErrors.message = `Message must be ${MAX_MESSAGE_LENGTH} characters or less`
+      newErrors.message = t('projectDetail.contact.validation.messageMaxLength', { max: MAX_MESSAGE_LENGTH })
     }
 
     setErrors(newErrors)
@@ -116,15 +118,15 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
             <span className="text-3xl">✓</span>
           </div>
           <h3 className="text-lg font-semibold text-green-800 mb-2 text-center">
-            Thank You!
+            {t('projectDetail.contact.successTitle')}
           </h3>
           <p className="text-green-700 text-center mb-4">
-            Your interest has been sent to our team.
+            {t('projectDetail.contact.successMessage')}
           </p>
           {municipalityEmail && (
             <div className="bg-white rounded-lg p-4 border border-green-200">
               <p className="text-sm text-gray-600 mb-2">
-                You can also reach the municipality directly at:
+                {t('projectDetail.contact.directContact')}
               </p>
               <a
                 href={`mailto:${municipalityEmail}`}
@@ -142,21 +144,20 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Express Interest</CardTitle>
+        <CardTitle>{t('projectDetail.contact.interestForm')}</CardTitle>
         <CardDescription>
-          Interested in supporting {projectName}? Send a message to connect with our team.
+          {t('projectDetail.contact.formDescription', { projectName })}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Your Name *
+              {t('projectDetail.contact.yourName')} *
             </label>
             <Input
               id="name"
               type="text"
-              placeholder="John Smith"
               value={formData.name}
               onChange={handleChange('name')}
               error={errors.name}
@@ -165,12 +166,11 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address *
+              {t('projectDetail.contact.yourEmail')} *
             </label>
             <Input
               id="email"
               type="email"
-              placeholder="john@example.com"
               value={formData.email}
               onChange={handleChange('email')}
               error={errors.email}
@@ -179,11 +179,11 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
 
           <div>
             <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-              Message *
+              {t('projectDetail.contact.message')} *
             </label>
             <Textarea
               id="message"
-              placeholder="Tell us how you'd like to help. What resources can you provide? Any questions about the project?"
+              placeholder={t('projectDetail.contact.messagePlaceholder')}
               value={formData.message}
               onChange={handleChange('message')}
               error={errors.message}
@@ -210,13 +210,13 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
             type="submit"
             fullWidth
             isLoading={isSubmitting}
-            loadingText="Sending..."
+            loadingText={t('projectDetail.contact.submitting')}
           >
-            Send Message
+            {t('projectDetail.contact.submitButton')}
           </Button>
 
           <p className="text-xs text-gray-500 text-center">
-            Our team will review your message and connect you with the municipality.
+            {t('projectDetail.contact.reviewMessage')}
           </p>
         </form>
       </CardContent>

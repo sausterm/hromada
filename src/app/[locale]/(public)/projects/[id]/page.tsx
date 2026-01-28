@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useTranslations, useLocale } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { useParams } from 'next/navigation'
+import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent } from '@/components/ui/Card'
@@ -18,6 +20,7 @@ import {
   formatCurrency,
   formatPower,
   formatRelativeTime,
+  getLocalizedProject,
 } from '@/types'
 import { ShareButton } from '@/components/ui/ShareButton'
 
@@ -34,6 +37,8 @@ function transformProject(data: any): Project {
 }
 
 export default function ProjectDetailPage() {
+  const t = useTranslations()
+  const locale = useLocale()
   const params = useParams()
   const projectId = params.id as string
 
@@ -72,10 +77,10 @@ export default function ProjectDetailPage() {
   if (!project) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Project Not Found</h1>
-        <p className="text-gray-600 mb-6">The project you're looking for doesn't exist.</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('projectDetail.notFound')}</h1>
+        <p className="text-gray-600 mb-6">{t('projectDetail.notFoundMessage')}</p>
         <Link href="/">
-          <Button>Back to Map</Button>
+          <Button>{t('projectDetail.backToMap')}</Button>
         </Link>
       </div>
     )
@@ -84,17 +89,12 @@ export default function ProjectDetailPage() {
   const categoryConfig = CATEGORY_CONFIG[project.category]
   const urgencyConfig = URGENCY_CONFIG[project.urgency]
   const statusConfig = STATUS_CONFIG[project.status]
+  const localized = getLocalizedProject(project, locale)
 
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="text-[var(--ukraine-600)] hover:underline text-sm">
-            ← Back to Map
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-3 gap-8">
@@ -106,7 +106,7 @@ export default function ProjectDetailPage() {
                 <div className="aspect-video bg-gray-200 rounded-xl overflow-hidden">
                   <img
                     src={project.photos[selectedPhoto]}
-                    alt={project.facilityName}
+                    alt={localized.facilityName}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -124,7 +124,7 @@ export default function ProjectDetailPage() {
                       >
                         <img
                           src={photo}
-                          alt={`${project.facilityName} ${index + 1}`}
+                          alt={`${localized.facilityName} ${index + 1}`}
                           className="w-full h-full object-cover"
                         />
                       </button>
@@ -139,18 +139,18 @@ export default function ProjectDetailPage() {
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mb-4">
                 <Badge dot dotColor={categoryConfig.color}>
-                  {categoryConfig.icon} {categoryConfig.label}
+                  {categoryConfig.icon} {t(`categories.${project.category}`)}
                 </Badge>
                 <Badge
                   variant={project.status === 'OPEN' ? 'success' : 'default'}
                 >
-                  {statusConfig.label}
+                  {t(`status.${project.status}`)}
                 </Badge>
                 {project.urgency !== 'LOW' && (
                   <Badge
                     variant={project.urgency === 'CRITICAL' ? 'danger' : 'warning'}
                   >
-                    {urgencyConfig.label} Urgency
+                    {t('projectDetail.urgencyLabel', { level: t(`urgency.${project.urgency}`) })}
                   </Badge>
                 )}
               </div>
@@ -158,12 +158,12 @@ export default function ProjectDetailPage() {
               {/* Title with Share Button */}
               <div className="flex items-start justify-between gap-4 mb-2">
                 <h1 className="text-3xl font-bold text-gray-900">
-                  {project.facilityName}
+                  {localized.facilityName}
                 </h1>
                 <ShareButton
                   projectId={project.id}
-                  projectTitle={project.facilityName}
-                  projectDescription={project.briefDescription || project.description}
+                  projectTitle={localized.facilityName}
+                  projectDescription={localized.briefDescription || localized.fullDescription}
                   variant="button"
                 />
               </div>
@@ -171,20 +171,20 @@ export default function ProjectDetailPage() {
               {/* Municipality and Posted Time */}
               <div className="flex items-center gap-3 mb-6">
                 <p className="text-lg text-gray-600">
-                  {project.municipalityName}
+                  {localized.municipalityName}
                 </p>
                 <span className="text-sm text-gray-400" suppressHydrationWarning>
-                  Posted {formatRelativeTime(project.createdAt)}
+                  {t('projectDetail.postedTime', { time: formatRelativeTime(project.createdAt) })}
                 </span>
               </div>
 
               {/* Description */}
               <div className="prose prose-gray max-w-none">
                 <h2 className="text-xl font-semibold text-gray-900 mb-3">
-                  About This Project
+                  {t('projectDetail.aboutProject')}
                 </h2>
                 <div className="text-gray-700 whitespace-pre-line">
-                  {project.description}
+                  {localized.fullDescription}
                 </div>
               </div>
             </div>
@@ -195,12 +195,12 @@ export default function ProjectDetailPage() {
               <Card>
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    Project Specifications
+                    {t('projectDetail.projectSpecifications')}
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {/* Project Type */}
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Project Type</p>
+                      <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.projectType')}</p>
                       {project.projectType ? (
                         <span
                           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium"
@@ -210,37 +210,37 @@ export default function ProjectDetailPage() {
                           }}
                         >
                           <span>{PROJECT_TYPE_CONFIG[project.projectType].icon}</span>
-                          <span>{PROJECT_TYPE_CONFIG[project.projectType].label}</span>
+                          <span>{t(`projectTypes.${project.projectType}`)}</span>
                         </span>
                       ) : (
-                        <p className="text-gray-400 text-sm">Not specified</p>
+                        <p className="text-gray-400 text-sm">{t('common.notSpecified')}</p>
                       )}
                     </div>
 
                     {/* Project Subtype */}
                     {project.projectSubtype && (
                       <div>
-                        <p className="text-sm text-gray-500 mb-1">Subtype</p>
+                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.subtype')}</p>
                         <p className="font-medium text-gray-900">{project.projectSubtype}</p>
                       </div>
                     )}
 
                     {/* Estimated Cost */}
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Estimated Cost</p>
+                      <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.estimatedCost')}</p>
                       {project.estimatedCostUsd ? (
                         <p className="font-bold text-xl text-[var(--navy-700)]">
                           {formatCurrency(project.estimatedCostUsd, { compact: true, showPrefix: true })}
                         </p>
                       ) : (
-                        <p className="text-gray-400 text-sm">Not specified</p>
+                        <p className="text-gray-400 text-sm">{t('common.notSpecified')}</p>
                       )}
                     </div>
 
                     {/* Technical Power */}
                     {project.technicalPowerKw && (
                       <div>
-                        <p className="text-sm text-gray-500 mb-1">Technical Power</p>
+                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.technicalPower')}</p>
                         <p className="font-medium text-gray-900">{formatPower(project.technicalPowerKw)}</p>
                       </div>
                     )}
@@ -248,7 +248,7 @@ export default function ProjectDetailPage() {
                     {/* Number of Panels */}
                     {project.numberOfPanels && (
                       <div>
-                        <p className="text-sm text-gray-500 mb-1">Number of Panels</p>
+                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.numberOfPanels')}</p>
                         <p className="font-medium text-gray-900">{project.numberOfPanels.toLocaleString()}</p>
                       </div>
                     )}
@@ -256,7 +256,7 @@ export default function ProjectDetailPage() {
                     {/* Co-financing Available */}
                     {project.cofinancingAvailable && (
                       <div className="sm:col-span-2">
-                        <p className="text-sm text-gray-500 mb-1">Co-financing Available</p>
+                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.cofinancing')}</p>
                         <span
                           className="inline-flex items-center px-2.5 py-1 rounded text-sm font-medium"
                           style={{
@@ -264,7 +264,7 @@ export default function ProjectDetailPage() {
                             color: COFINANCING_CONFIG[project.cofinancingAvailable].color,
                           }}
                         >
-                          {COFINANCING_CONFIG[project.cofinancingAvailable].label}
+                          {t(`cofinancing.${project.cofinancingAvailable}`)}
                         </span>
                         {project.cofinancingDetails && (
                           <p className="text-gray-700 mt-1">{project.cofinancingDetails}</p>
@@ -275,7 +275,7 @@ export default function ProjectDetailPage() {
                     {/* Partner Organization */}
                     {project.partnerOrganization && (
                       <div className="sm:col-span-2">
-                        <p className="text-sm text-gray-500 mb-1">Partner Organization</p>
+                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.partnerOrganization')}</p>
                         <p className="font-medium text-gray-900">{project.partnerOrganization}</p>
                       </div>
                     )}
@@ -287,7 +287,7 @@ export default function ProjectDetailPage() {
             {/* Location */}
             <Card>
               <CardContent className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">Location</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('projectDetail.location')}</h3>
                 <p className="text-gray-600">{project.address}</p>
                 <a
                   href={`https://www.google.com/maps?q=${project.cityLatitude},${project.cityLongitude}`}
@@ -295,7 +295,7 @@ export default function ProjectDetailPage() {
                   rel="noopener noreferrer"
                   className="text-[var(--ukraine-600)] hover:underline text-sm mt-2 inline-block"
                 >
-                  View on Google Maps →
+                  {t('projectDetail.viewOnMap')}
                 </a>
               </CardContent>
             </Card>
@@ -306,14 +306,14 @@ export default function ProjectDetailPage() {
             {/* Contact Info */}
             <Card>
               <CardContent className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-4">Contact Information</h3>
+                <h3 className="font-semibold text-gray-900 mb-4">{t('projectDetail.contact.title')}</h3>
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm text-gray-500">Contact Person</p>
+                    <p className="text-sm text-gray-500">{t('projectDetail.contact.contactPerson')}</p>
                     <p className="font-medium text-gray-900">{project.contactName}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="text-sm text-gray-500">{t('projectDetail.contact.email')}</p>
                     <a
                       href={`mailto:${project.contactEmail}`}
                       className="font-medium text-[var(--ukraine-600)] hover:underline"
@@ -323,7 +323,7 @@ export default function ProjectDetailPage() {
                   </div>
                   {project.contactPhone && (
                     <div>
-                      <p className="text-sm text-gray-500">Phone</p>
+                      <p className="text-sm text-gray-500">{t('projectDetail.contact.phone')}</p>
                       <a
                         href={`tel:${project.contactPhone}`}
                         className="font-medium text-[var(--ukraine-600)] hover:underline"
@@ -339,7 +339,7 @@ export default function ProjectDetailPage() {
             {/* Contact Form */}
             <ContactForm
               projectId={project.id}
-              projectName={project.facilityName}
+              projectName={localized.facilityName}
             />
           </div>
         </div>
@@ -349,7 +349,7 @@ export default function ProjectDetailPage() {
       <footer className="bg-gray-900 text-gray-400 py-8 mt-16">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm">
-            Hromada — Connecting communities across borders
+            Hromada — {t('homepage.footer')}
           </p>
         </div>
       </footer>

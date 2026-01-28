@@ -110,9 +110,12 @@ export function ShareButton({
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-1 z-50">
+        <div
+          className="absolute right-0 bottom-full mb-2 w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-1 z-50"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        >
           <button
-            onClick={handleCopyLink}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCopyLink(); }}
             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[var(--navy-700)] hover:bg-[var(--cream-100)] transition-colors"
           >
             <svg className="h-4 w-4 text-[var(--navy-500)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -129,7 +132,7 @@ export function ShareButton({
           <div className="border-t border-[var(--cream-200)] my-1" />
 
           <button
-            onClick={handleShareTwitter}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleShareTwitter(); }}
             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[var(--navy-700)] hover:bg-[var(--cream-100)] transition-colors"
           >
             <svg className="h-4 w-4 text-[var(--navy-500)]" viewBox="0 0 24 24" fill="currentColor">
@@ -139,7 +142,7 @@ export function ShareButton({
           </button>
 
           <button
-            onClick={handleShareLinkedIn}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleShareLinkedIn(); }}
             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[var(--navy-700)] hover:bg-[var(--cream-100)] transition-colors"
           >
             <svg className="h-4 w-4 text-[var(--navy-500)]" viewBox="0 0 24 24" fill="currentColor">
@@ -149,7 +152,7 @@ export function ShareButton({
           </button>
 
           <button
-            onClick={handleShareFacebook}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleShareFacebook(); }}
             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[var(--navy-700)] hover:bg-[var(--cream-100)] transition-colors"
           >
             <svg className="h-4 w-4 text-[var(--navy-500)]" viewBox="0 0 24 24" fill="currentColor">
@@ -159,7 +162,7 @@ export function ShareButton({
           </button>
 
           <button
-            onClick={handleShareEmail}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleShareEmail(); }}
             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[var(--navy-700)] hover:bg-[var(--cream-100)] transition-colors"
           >
             <svg className="h-4 w-4 text-[var(--navy-500)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">

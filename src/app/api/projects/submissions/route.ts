@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
         partnerOrganization: data.partnerOrganization?.trim() || null,
         projectSubtype: data.projectSubtype?.trim() || null,
         additionalNotes: data.additionalNotes?.trim() || null,
+        photos: Array.isArray(data.photos) ? data.photos.slice(0, 5) : [],
       },
     })
 
@@ -139,6 +140,11 @@ export async function POST(request: NextRequest) {
 
             <h3>Brief Description</h3>
             <p>${data.briefDescription}</p>
+
+            ${data.photos && data.photos.length > 0 ? `
+            <h3>Photos</h3>
+            <p>${data.photos.length} photo(s) uploaded</p>
+            ` : ''}
 
             <h3>Contact Information</h3>
             <ul>

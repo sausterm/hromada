@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency } from '@/types'
+import { useLocale, useTranslations } from 'next-intl'
+import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, getLocalizedProject } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 
 interface ProjectPopupProps {
@@ -9,6 +10,9 @@ interface ProjectPopupProps {
 }
 
 export function ProjectPopup({ project }: ProjectPopupProps) {
+  const t = useTranslations()
+  const locale = useLocale()
+  const localized = getLocalizedProject(project, locale)
   const categoryConfig = CATEGORY_CONFIG[project.category]
   const urgencyConfig = URGENCY_CONFIG[project.urgency]
   const statusConfig = STATUS_CONFIG[project.status]
@@ -20,7 +24,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         <div className="w-full h-32 bg-[var(--cream-200)] rounded-t-lg overflow-hidden">
           <img
             src={project.photos[0]}
-            alt={project.facilityName}
+            alt={localized.facilityName}
             className="w-full h-full object-cover"
           />
         </div>
@@ -34,29 +38,29 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
             dot
             dotColor={categoryConfig.color}
           >
-            {categoryConfig.label}
+            {t(`categories.${project.category}`)}
           </Badge>
           <Badge
             size="sm"
             variant={project.status === 'OPEN' ? 'success' : 'default'}
           >
-            {statusConfig.label}
+            {t(`status.${project.status}`)}
           </Badge>
         </div>
 
         {/* Title */}
         <h3 className="font-semibold text-[var(--navy-700)] text-sm mb-1">
-          {project.facilityName}
+          {localized.facilityName}
         </h3>
 
         {/* Municipality */}
         <p className="text-xs text-[var(--navy-500)] mb-2">
-          {project.municipalityName}
+          {localized.municipalityName}
         </p>
 
         {/* Description preview */}
         <p className="text-xs text-[var(--navy-600)] line-clamp-2 mb-3">
-          {project.briefDescription || project.description}
+          {localized.briefDescription || localized.fullDescription}
         </p>
 
         {/* Project Type & Cost */}
@@ -71,7 +75,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
                 }}
               >
                 <span>{PROJECT_TYPE_CONFIG[project.projectType].icon}</span>
-                <span>{PROJECT_TYPE_CONFIG[project.projectType].label}</span>
+                <span>{t(`projectTypes.${project.projectType}`)}</span>
               </span>
             )}
             {project.estimatedCostUsd && (
@@ -90,7 +94,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
               style={{ backgroundColor: urgencyConfig.color }}
             />
             <span className="text-xs font-medium" style={{ color: urgencyConfig.color }}>
-              {urgencyConfig.label} Urgency
+              {t('projectDetail.urgencyLabel', { level: t(`urgency.${project.urgency}`) })}
             </span>
           </div>
         )}
@@ -100,7 +104,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
           href={`/projects/${project.id}`}
           className="block w-full text-center py-2 px-4 bg-[var(--navy-600)] text-white text-sm font-medium rounded-lg hover:bg-[var(--navy-700)] transition-colors"
         >
-          View Details
+          {t('projectDetail.viewDetails')}
         </Link>
       </div>
     </div>

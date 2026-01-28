@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
+import { translateProjectToUkrainian, detectLanguage } from '@/lib/translate'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
@@ -67,6 +68,33 @@ export async function PATCH(
     }
 
     if (action === 'approve') {
+      // Auto-translate content to Ukrainian
+      let ukrainianTranslations = {
+        municipalityNameUk: null as string | null,
+        facilityNameUk: null as string | null,
+        briefDescriptionUk: null as string | null,
+        fullDescriptionUk: null as string | null,
+      }
+
+      // Only translate if content appears to be in English
+      const contentLanguage = detectLanguage(submission.fullDescription)
+      if (contentLanguage === 'en' || contentLanguage === 'unknown') {
+        console.log('[approve] Translating project content to Ukrainian...')
+        try {
+          ukrainianTranslations = await translateProjectToUkrainian({
+            municipalityName: submission.municipalityName,
+            facilityName: submission.facilityName,
+            briefDescription: submission.briefDescription,
+            fullDescription: submission.fullDescription,
+          })
+          console.log('[approve] Translation completed successfully')
+        } catch (translationError) {
+          console.error('[approve] Translation failed, continuing without translations:', translationError)
+        }
+      } else {
+        console.log('[approve] Content appears to be in Ukrainian, skipping translation')
+      }
+
       // Create a new Project from the submission
       const project = await prisma.project.create({
         data: {
@@ -91,6 +119,11 @@ export async function PATCH(
           cofinancingAvailable: submission.cofinancingAvailable as any || null,
           cofinancingDetails: submission.cofinancingDetails,
           partnerOrganization: submission.partnerOrganization,
+          // Ukrainian translations
+          municipalityNameUk: ukrainianTranslations.municipalityNameUk,
+          facilityNameUk: ukrainianTranslations.facilityNameUk,
+          briefDescriptionUk: ukrainianTranslations.briefDescriptionUk,
+          fullDescriptionUk: ukrainianTranslations.fullDescriptionUk,
         },
       })
 

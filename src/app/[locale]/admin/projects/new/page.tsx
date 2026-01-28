@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { useAdminAuth } from '@/hooks/useAdminAuth'
 import { ProjectForm, type ProjectFormData } from '@/components/admin/ProjectForm'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function NewProjectPage() {
+  const t = useTranslations()
   const router = useRouter()
   const { isAuthenticated, isLoading: authLoading, getAuthHeader } = useAdminAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -64,7 +66,7 @@ export default function NewProjectPage() {
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
           <Link href="/admin" className="text-[var(--ukraine-600)] hover:underline text-sm">
-            ← Back to Dashboard
+            {t('admin.projects.backToDashboard')}
           </Link>
         </div>
       </header>

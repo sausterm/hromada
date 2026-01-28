@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { useAdminAuth } from '@/hooks/useAdminAuth'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -59,6 +60,7 @@ function transformProject(data: any): Project {
 }
 
 function LoginForm({ onLogin }: { onLogin: (password: string) => Promise<boolean> }) {
+  const t = useTranslations()
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -69,14 +71,14 @@ function LoginForm({ onLogin }: { onLogin: (password: string) => Promise<boolean
     setIsLoading(true)
 
     if (!password.trim()) {
-      setError('Password is required')
+      setError(t('admin.login.passwordRequired'))
       setIsLoading(false)
       return
     }
 
     const success = await onLogin(password)
     if (!success) {
-      setError('Invalid password')
+      setError(t('admin.login.error'))
     }
     setIsLoading(false)
   }
@@ -85,31 +87,31 @@ function LoginForm({ onLogin }: { onLogin: (password: string) => Promise<boolean
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
-          <p className="text-gray-500 text-sm mt-1">Enter the admin password to continue</p>
+          <CardTitle className="text-2xl">{t('admin.login.title')}</CardTitle>
+          <p className="text-gray-500 text-sm mt-1">{t('admin.login.subtitle')}</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
+                {t('admin.login.password')}
               </label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter admin password"
+                placeholder={t('admin.login.passwordPlaceholder')}
                 error={error}
               />
             </div>
             <Button type="submit" fullWidth isLoading={isLoading}>
-              Login
+              {t('admin.login.loginButton')}
             </Button>
           </form>
           <div className="mt-4 text-center">
             <Link href="/" className="text-sm text-[var(--ukraine-600)] hover:underline">
-              ← Back to Map
+              {t('admin.backToMap')}
             </Link>
           </div>
         </CardContent>
@@ -126,6 +128,7 @@ type SortField = 'facilityName' | 'municipalityName' | 'region' | 'category' | '
 type SortDirection = 'asc' | 'desc'
 
 function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader: string | null }) {
+  const t = useTranslations()
   const [projects, setProjects] = useState<Project[]>([])
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmissionWithProject[]>([])
   const [projectSubmissions, setProjectSubmissions] = useState<ProjectSubmission[]>([])
@@ -233,14 +236,14 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
           setProjects(projectsData.projects.map(transformProject))
         }
         setSelectedSubmission(null)
-        alert('Project approved and published!')
+        alert(t('admin.submissions.approveSuccess'))
       } else {
         const data = await response.json()
-        alert(data.error || 'Failed to approve submission')
+        alert(data.error || t('admin.submissions.approveSuccess'))
       }
     } catch (error) {
       console.error('Failed to approve submission:', error)
-      alert('Failed to approve submission')
+      alert(t('admin.submissions.approveSuccess'))
     } finally {
       setIsProcessing(false)
     }
@@ -248,7 +251,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
 
   const handleRejectSubmission = async (submissionId: string) => {
     if (!authHeader || !rejectionReason.trim()) {
-      alert('Please provide a rejection reason')
+      alert(t('admin.submissions.provideReason'))
       return
     }
     setIsProcessing(true)
@@ -277,14 +280,14 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
         )
         setSelectedSubmission(null)
         setRejectionReason('')
-        alert('Submission rejected')
+        alert(t('admin.submissions.rejectSuccess'))
       } else {
         const data = await response.json()
-        alert(data.error || 'Failed to reject submission')
+        alert(data.error || t('admin.submissions.rejectSuccess'))
       }
     } catch (error) {
       console.error('Failed to reject submission:', error)
-      alert('Failed to reject submission')
+      alert(t('admin.submissions.rejectSuccess'))
     } finally {
       setIsProcessing(false)
     }
@@ -415,10 +418,10 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
             <Link href="/" className="text-xl font-bold text-[var(--ukraine-600)]">
               Hromada
             </Link>
-            <Badge variant="secondary">Admin</Badge>
+            <Badge variant="secondary">{t('nav.admin')}</Badge>
           </div>
           <Button variant="ghost" onClick={onLogout}>
-            Logout
+            {t('admin.nav.logout')}
           </Button>
         </div>
       </header>
@@ -429,25 +432,25 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-gray-900">{stats.totalProjects}</p>
-              <p className="text-sm text-gray-500">Total Projects</p>
+              <p className="text-sm text-gray-500">{t('admin.stats.totalProjects')}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-green-600">{stats.openProjects}</p>
-              <p className="text-sm text-gray-500">Open Projects</p>
+              <p className="text-sm text-gray-500">{t('admin.stats.openProjects')}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-red-600">{stats.criticalProjects}</p>
-              <p className="text-sm text-gray-500">Critical Urgency</p>
+              <p className="text-sm text-gray-500">{t('admin.stats.criticalProjects')}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-amber-600">{stats.pendingSubmissions}</p>
-              <p className="text-sm text-gray-500">Pending Submissions</p>
+              <p className="text-sm text-gray-500">{t('admin.stats.pendingSubmissions')}</p>
             </CardContent>
           </Card>
         </div>
@@ -458,13 +461,13 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
             variant={activeTab === 'projects' ? 'primary' : 'ghost'}
             onClick={() => setActiveTab('projects')}
           >
-            Projects
+            {t('admin.nav.projects')}
           </Button>
           <Button
             variant={activeTab === 'submissions' ? 'primary' : 'ghost'}
             onClick={() => setActiveTab('submissions')}
           >
-            Project Submissions
+            {t('admin.nav.submissions')}
             {pendingSubmissionsCount > 0 && (
               <Badge variant="warning" size="sm" className="ml-2">
                 {pendingSubmissionsCount}
@@ -475,7 +478,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
             variant={activeTab === 'contacts' ? 'primary' : 'ghost'}
             onClick={() => setActiveTab('contacts')}
           >
-            Contact Submissions
+            {t('admin.nav.contacts')}
             {unhandledCount > 0 && (
               <Badge variant="danger" size="sm" className="ml-2">
                 {unhandledCount}
@@ -488,7 +491,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
         {activeTab === 'projects' && (
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <h2 className="text-xl font-semibold">Projects ({filteredAndSortedProjects.length})</h2>
+              <h2 className="text-xl font-semibold">{t('admin.projects.title')} ({filteredAndSortedProjects.length})</h2>
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <div className="relative">
                   <svg
@@ -506,14 +509,14 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                   </svg>
                   <input
                     type="text"
-                    placeholder="Search projects..."
+                    placeholder={t('admin.projects.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
                   />
                 </div>
                 <Link href="/admin/projects/new">
-                  <Button>+ Add Project</Button>
+                  <Button>{t('admin.projects.addNew')}</Button>
                 </Link>
               </div>
             </div>
@@ -528,7 +531,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         onClick={() => handleSort('facilityName')}
                       >
                         <span className="flex items-center">
-                          Facility
+                          {t('admin.projects.table.facility')}
                           <SortIcon field="facilityName" />
                         </span>
                       </th>
@@ -537,7 +540,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         onClick={() => handleSort('municipalityName')}
                       >
                         <span className="flex items-center">
-                          Municipality
+                          {t('admin.projects.table.municipality')}
                           <SortIcon field="municipalityName" />
                         </span>
                       </th>
@@ -546,7 +549,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         onClick={() => handleSort('region')}
                       >
                         <span className="flex items-center">
-                          Oblast
+                          {t('admin.projects.table.oblast')}
                           <SortIcon field="region" />
                         </span>
                       </th>
@@ -555,7 +558,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         onClick={() => handleSort('category')}
                       >
                         <span className="flex items-center justify-center">
-                          Category
+                          {t('admin.projects.table.category')}
                           <SortIcon field="category" />
                         </span>
                       </th>
@@ -564,7 +567,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         onClick={() => handleSort('projectType')}
                       >
                         <span className="flex items-center justify-center">
-                          Type
+                          {t('admin.projects.table.type')}
                           <SortIcon field="projectType" />
                         </span>
                       </th>
@@ -573,7 +576,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         onClick={() => handleSort('urgency')}
                       >
                         <span className="flex items-center justify-center">
-                          Urgency
+                          {t('admin.projects.table.urgency')}
                           <SortIcon field="urgency" />
                         </span>
                       </th>
@@ -582,11 +585,11 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         onClick={() => handleSort('status')}
                       >
                         <span className="flex items-center justify-center">
-                          Status
+                          {t('admin.projects.table.status')}
                           <SortIcon field="status" />
                         </span>
                       </th>
-                      <th className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
+                      <th className="text-center p-4 text-sm font-medium text-gray-500">{t('admin.projects.table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
@@ -604,13 +607,13 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                           <td className="p-4 text-gray-500 text-sm">{project.region || '-'}</td>
                           <td className="p-4 text-center">
                             <Badge dot dotColor={categoryConfig.color} size="sm">
-                              {categoryConfig.label}
+                              {t(`categories.${project.category}`)}
                             </Badge>
                           </td>
                           <td className="p-4 text-center">
                             {project.projectType ? (
                               <Badge size="sm" dot dotColor={PROJECT_TYPE_CONFIG[project.projectType].color}>
-                                {PROJECT_TYPE_CONFIG[project.projectType].label}
+                                {t(`projectTypes.${project.projectType}`)}
                               </Badge>
                             ) : (
                               <span className="text-gray-400 text-sm">-</span>
@@ -621,7 +624,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                               variant={project.urgency === 'CRITICAL' ? 'danger' : project.urgency === 'HIGH' ? 'warning' : 'default'}
                               size="sm"
                             >
-                              {urgencyConfig.label}
+                              {t(`urgency.${project.urgency}`)}
                             </Badge>
                           </td>
                           <td className="p-4 text-center">
@@ -629,16 +632,16 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                               variant={project.status === 'OPEN' ? 'success' : 'default'}
                               size="sm"
                             >
-                              {statusConfig.label}
+                              {t(`status.${project.status}`)}
                             </Badge>
                           </td>
                           <td className="p-4 text-center">
                             <div className="flex gap-2 justify-center">
                               <Link href={`/projects/${project.id}`}>
-                                <Button variant="ghost" size="sm">View</Button>
+                                <Button variant="ghost" size="sm">{t('admin.projects.view')}</Button>
                               </Link>
                               <Link href={`/admin/projects/${project.id}`}>
-                                <Button variant="ghost" size="sm">Edit</Button>
+                                <Button variant="ghost" size="sm">{t('admin.projects.edit')}</Button>
                               </Link>
                             </div>
                           </td>
@@ -648,7 +651,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                     {filteredAndSortedProjects.length === 0 && (
                       <tr>
                         <td colSpan={8} className="p-8 text-center text-gray-500">
-                          {searchQuery ? 'No projects match your search.' : 'No projects yet.'}
+                          {searchQuery ? t('admin.projects.noMatch') : t('admin.projects.noProjects')}
                         </td>
                       </tr>
                     )}
@@ -661,7 +664,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
 
         {activeTab === 'submissions' && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Project Submissions</h2>
+            <h2 className="text-xl font-semibold">{t('admin.submissions.title')}</h2>
 
             {isLoadingProjectSubmissions ? (
               <div className="flex justify-center py-8">
@@ -670,7 +673,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
             ) : projectSubmissions.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <p className="text-gray-500">No project submissions yet.</p>
+                  <p className="text-gray-500">{t('admin.submissions.noSubmissions')}</p>
                 </CardContent>
               </Card>
             ) : (
@@ -734,16 +737,16 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         {/* Details grid */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-3">
                           <div>
-                            <span className="text-gray-500">Type:</span>{' '}
-                            <span className="font-medium">{submission.projectType}</span>
+                            <span className="text-gray-500">{t('admin.submissions.labels.type')}:</span>{' '}
+                            <span className="font-medium">{t(`projectTypes.${submission.projectType}`)}</span>
                           </div>
                           <div>
-                            <span className="text-gray-500">Urgency:</span>{' '}
-                            <span className="font-medium">{submission.urgency}</span>
+                            <span className="text-gray-500">{t('admin.submissions.labels.urgency')}:</span>{' '}
+                            <span className="font-medium">{t(`urgency.${submission.urgency}`)}</span>
                           </div>
                           {submission.estimatedCostUsd && (
                             <div>
-                              <span className="text-gray-500">Cost:</span>{' '}
+                              <span className="text-gray-500">{t('admin.submissions.labels.cost')}:</span>{' '}
                               <span className="font-medium">
                                 ${Number(submission.estimatedCostUsd).toLocaleString()}
                               </span>
@@ -751,15 +754,15 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                           )}
                           {submission.cofinancingAvailable && (
                             <div>
-                              <span className="text-gray-500">Co-financing:</span>{' '}
-                              <span className="font-medium">{submission.cofinancingAvailable}</span>
+                              <span className="text-gray-500">{t('admin.submissions.labels.cofinancing')}:</span>{' '}
+                              <span className="font-medium">{t(`cofinancing.${submission.cofinancingAvailable}`)}</span>
                             </div>
                           )}
                         </div>
 
                         {/* Contact info */}
                         <div className="text-sm text-gray-600 mb-3">
-                          <span className="font-medium">Contact:</span> {submission.contactName} •{' '}
+                          <span className="font-medium">{t('admin.submissions.labels.contact')}:</span> {submission.contactName} •{' '}
                           <a href={`mailto:${submission.contactEmail}`} className="text-blue-600 hover:underline">
                             {submission.contactEmail}
                           </a>
@@ -769,7 +772,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         {/* Rejection reason if rejected */}
                         {submission.status === 'REJECTED' && submission.rejectionReason && (
                           <div className="text-sm text-red-600 bg-red-50 p-2 rounded mb-3">
-                            <strong>Rejection reason:</strong> {submission.rejectionReason}
+                            <strong>{t('admin.submissions.labels.rejectionReasonLabel')}:</strong> {submission.rejectionReason}
                           </div>
                         )}
 
@@ -777,7 +780,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         {submission.status === 'APPROVED' && submission.approvedProjectId && (
                           <div className="text-sm text-green-600 bg-green-50 p-2 rounded mb-3">
                             <Link href={`/projects/${submission.approvedProjectId}`} className="hover:underline">
-                              View approved project →
+                              {t('admin.submissions.viewApproved')}
                             </Link>
                           </div>
                         )}
@@ -790,7 +793,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                               variant="primary"
                               onClick={() => setSelectedSubmission(submission)}
                             >
-                              Review Details
+                              {t('admin.submissions.reviewDetails')}
                             </Button>
                             <Button
                               size="sm"
@@ -799,7 +802,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                               onClick={() => handleApproveSubmission(submission.id)}
                               disabled={isProcessing}
                             >
-                              Approve
+                              {t('admin.submissions.approve')}
                             </Button>
                             <Button
                               size="sm"
@@ -811,7 +814,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                               }}
                               disabled={isProcessing}
                             >
-                              Reject
+                              {t('admin.submissions.reject')}
                             </Button>
                           </div>
                         )}
@@ -826,33 +829,33 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                 <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                   <CardHeader>
-                    <CardTitle>Review Submission: {selectedSubmission.facilityName}</CardTitle>
+                    <CardTitle>{t('admin.submissions.reviewSubmission')}: {selectedSubmission.facilityName}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Full details */}
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-500">Municipality</p>
+                        <p className="text-gray-500">{t('admin.submissions.labels.municipality')}</p>
                         <p className="font-medium">{selectedSubmission.municipalityName}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Municipality Email</p>
+                        <p className="text-gray-500">{t('admin.submissions.labels.municipalityEmail')}</p>
                         <p className="font-medium">{selectedSubmission.municipalityEmail}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Category</p>
-                        <p className="font-medium">{selectedSubmission.category}</p>
+                        <p className="text-gray-500">{t('admin.submissions.labels.category')}</p>
+                        <p className="font-medium">{t(`categories.${selectedSubmission.category}`)}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Project Type</p>
-                        <p className="font-medium">{selectedSubmission.projectType}</p>
+                        <p className="text-gray-500">{t('admin.submissions.labels.projectType')}</p>
+                        <p className="font-medium">{t(`projectTypes.${selectedSubmission.projectType}`)}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Urgency</p>
-                        <p className="font-medium">{selectedSubmission.urgency}</p>
+                        <p className="text-gray-500">{t('admin.submissions.labels.urgency')}</p>
+                        <p className="font-medium">{t(`urgency.${selectedSubmission.urgency}`)}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500">Location</p>
+                        <p className="text-gray-500">{t('admin.submissions.labels.location')}</p>
                         <p className="font-medium">
                           {selectedSubmission.cityName}
                           {selectedSubmission.address && ` - ${selectedSubmission.address}`}
@@ -860,7 +863,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                       </div>
                       {selectedSubmission.estimatedCostUsd && (
                         <div>
-                          <p className="text-gray-500">Estimated Cost</p>
+                          <p className="text-gray-500">{t('admin.submissions.labels.estimatedCost')}</p>
                           <p className="font-medium">
                             ${Number(selectedSubmission.estimatedCostUsd).toLocaleString()}
                           </p>
@@ -868,40 +871,40 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                       )}
                       {selectedSubmission.technicalPowerKw && (
                         <div>
-                          <p className="text-gray-500">Technical Power</p>
+                          <p className="text-gray-500">{t('admin.submissions.labels.technicalPower')}</p>
                           <p className="font-medium">{selectedSubmission.technicalPowerKw} kW</p>
                         </div>
                       )}
                       {selectedSubmission.numberOfPanels && (
                         <div>
-                          <p className="text-gray-500">Number of Panels</p>
+                          <p className="text-gray-500">{t('admin.submissions.labels.numberOfPanels')}</p>
                           <p className="font-medium">{selectedSubmission.numberOfPanels}</p>
                         </div>
                       )}
                       {selectedSubmission.cofinancingAvailable && (
                         <div>
-                          <p className="text-gray-500">Co-financing</p>
+                          <p className="text-gray-500">{t('admin.submissions.labels.cofinancing')}</p>
                           <p className="font-medium">
-                            {selectedSubmission.cofinancingAvailable}
+                            {t(`cofinancing.${selectedSubmission.cofinancingAvailable}`)}
                             {selectedSubmission.cofinancingDetails && ` - ${selectedSubmission.cofinancingDetails}`}
                           </p>
                         </div>
                       )}
                       {selectedSubmission.partnerOrganization && (
                         <div>
-                          <p className="text-gray-500">Partner Organization</p>
+                          <p className="text-gray-500">{t('admin.submissions.labels.partnerOrganization')}</p>
                           <p className="font-medium">{selectedSubmission.partnerOrganization}</p>
                         </div>
                       )}
                     </div>
 
                     <div>
-                      <p className="text-gray-500 text-sm mb-1">Brief Description</p>
+                      <p className="text-gray-500 text-sm mb-1">{t('admin.submissions.labels.briefDescription')}</p>
                       <p className="bg-gray-50 p-3 rounded text-sm">{selectedSubmission.briefDescription}</p>
                     </div>
 
                     <div>
-                      <p className="text-gray-500 text-sm mb-1">Full Description</p>
+                      <p className="text-gray-500 text-sm mb-1">{t('admin.submissions.labels.fullDescription')}</p>
                       <p className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
                         {selectedSubmission.fullDescription}
                       </p>
@@ -909,13 +912,13 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
 
                     {selectedSubmission.additionalNotes && (
                       <div>
-                        <p className="text-gray-500 text-sm mb-1">Additional Notes</p>
+                        <p className="text-gray-500 text-sm mb-1">{t('admin.submissions.labels.additionalNotes')}</p>
                         <p className="bg-gray-50 p-3 rounded text-sm">{selectedSubmission.additionalNotes}</p>
                       </div>
                     )}
 
                     <div className="border-t pt-4">
-                      <p className="text-gray-500 text-sm mb-1">Contact Information</p>
+                      <p className="text-gray-500 text-sm mb-1">{t('admin.submissions.labels.contactInfo')}</p>
                       <p className="font-medium">{selectedSubmission.contactName}</p>
                       <p className="text-sm">
                         <a href={`mailto:${selectedSubmission.contactEmail}`} className="text-blue-600 hover:underline">
@@ -928,14 +931,14 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                     {/* Rejection reason input */}
                     <div className="border-t pt-4">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Rejection Reason (required to reject)
+                        {t('admin.submissions.rejectionReason')}
                       </label>
                       <textarea
                         value={rejectionReason}
                         onChange={(e) => setRejectionReason(e.target.value)}
                         className="w-full border border-gray-300 rounded-lg p-3 text-sm"
                         rows={3}
-                        placeholder="Explain why this submission is being rejected..."
+                        placeholder={t('admin.submissions.rejectionReasonPlaceholder')}
                       />
                     </div>
 
@@ -948,7 +951,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         disabled={isProcessing}
                         isLoading={isProcessing}
                       >
-                        Approve & Publish
+                        {t('admin.submissions.approvePublish')}
                       </Button>
                       <Button
                         variant="danger"
@@ -956,7 +959,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         disabled={isProcessing || !rejectionReason.trim()}
                         isLoading={isProcessing}
                       >
-                        Reject
+                        {t('admin.submissions.reject')}
                       </Button>
                       <Button
                         variant="ghost"
@@ -966,7 +969,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         }}
                         disabled={isProcessing}
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </Button>
                     </div>
                   </CardContent>
@@ -978,7 +981,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
 
         {activeTab === 'contacts' && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Contact Submissions</h2>
+            <h2 className="text-xl font-semibold">{t('admin.contacts.title')}</h2>
 
             {isLoadingSubmissions ? (
               <div className="flex justify-center py-8">
@@ -987,7 +990,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
             ) : contactSubmissions.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <p className="text-gray-500">No contact submissions yet.</p>
+                  <p className="text-gray-500">{t('admin.contacts.noContacts')}</p>
                 </CardContent>
               </Card>
             ) : (
@@ -1006,7 +1009,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                             </p>
                             {submission.handled && (
                               <Badge size="sm" variant="success">
-                                Handled
+                                {t('admin.contacts.handled')}
                               </Badge>
                             )}
                           </div>
@@ -1035,12 +1038,12 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                       <div className="flex flex-wrap gap-2 mt-3">
                         <a href={`mailto:${submission.donorEmail}`}>
                           <Button size="sm" variant="primary">
-                            Reply to Donor
+                            {t('admin.contacts.replyToDonor')}
                           </Button>
                         </a>
                         <a href={`mailto:${submission.project.contactEmail}`}>
                           <Button size="sm" variant="outline">
-                            Contact Municipality
+                            {t('admin.contacts.contactMunicipality')}
                           </Button>
                         </a>
                         <Button
@@ -1050,7 +1053,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                             handleMarkAsHandled(submission.id, !submission.handled)
                           }
                         >
-                          {submission.handled ? 'Mark as Unhandled' : 'Mark as Handled'}
+                          {submission.handled ? t('admin.contacts.markUnhandled') : t('admin.contacts.markHandled')}
                         </Button>
                       </div>
                     </CardContent>

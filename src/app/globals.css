@@ -83,6 +83,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-logo: var(--font-outfit);
 
   /* Warm theme colors */
   --color-warm-50: var(--warm-50);
@@ -322,4 +323,11 @@ body {
 .badge-ukraine-gold {
   background-color: var(--ukraine-gold);
   color: var(--charcoal-900);
+}
+
+/* Logo font utility */
+.font-logo {
+  font-family: var(--font-outfit), 'Outfit', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }

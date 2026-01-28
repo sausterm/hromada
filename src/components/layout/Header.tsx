@@ -61,8 +61,10 @@ export function Header({ children }: HeaderProps) {
             href="/"
             className="flex items-center gap-2 flex-shrink-0 transition-opacity hover:opacity-80"
           >
-            <span className="font-logo text-[var(--navy-700)] text-2xl sm:text-[1.75rem] lg:text-[2.125rem]">
-              {t('nav.siteName')}
+            <span className="font-logo text-[var(--navy-700)] text-[1.625rem] sm:text-[2rem] lg:text-[2.375rem]">
+              <span className={locale === 'en' ? 'font-bold' : 'font-normal'}>hromada</span>
+              <span className="font-normal"> | </span>
+              <span className={locale === 'uk' ? 'font-bold' : 'font-normal'}>громада</span>
             </span>
           </Link>
 

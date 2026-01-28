@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useMemo, useRef, useEffect, useId } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { MapWrapper, type MapBounds } from '@/components/map/MapWrapper'
 import { ProjectCard } from '@/components/projects/ProjectCard'
 import { Header } from '@/components/layout/Header'
@@ -20,7 +20,19 @@ import {
   COFINANCING_CONFIG,
   PROJECT_TYPE_CONFIG,
   formatCurrency,
+  getLocalizedProject,
 } from '@/types'
+
+// Sort options type
+type SortOption = 'newest' | 'oldest' | 'highestCost' | 'lowestCost' | 'mostUrgent' | 'alphabetical'
+
+// Urgency priority for sorting
+const URGENCY_PRIORITY: Record<Urgency, number> = {
+  CRITICAL: 4,
+  HIGH: 3,
+  MEDIUM: 2,
+  LOW: 1,
+}
 
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {
@@ -39,6 +51,7 @@ function transformProject(data: any): Project {
 
 export default function HomePage() {
   const t = useTranslations()
+  const locale = useLocale()
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   // State
@@ -66,6 +79,7 @@ export default function HomePage() {
     fetchProjects()
   }, [])
   const [highlightedProjectId, setHighlightedProjectId] = useState<string | null>(null)
+  const [flyToProjectId, setFlyToProjectId] = useState<string | null>(null) // Separate state for zoom-on-click
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set())
   const [selectedUrgency, setSelectedUrgency] = useState<Urgency | null>(null)
@@ -76,6 +90,7 @@ export default function HomePage() {
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
   const priceDropdownRef = useRef<HTMLDivElement>(null)
   const priceDropdownId = useId()
+  const [sortBy, setSortBy] = useState<SortOption>('newest')
 
   // Close price dropdown when clicking outside
   useEffect(() => {
@@ -98,14 +113,23 @@ export default function HomePage() {
   const filteredProjects = useMemo(() => {
     let result = allProjects
 
-    // Search filter
+    // Search filter - includes facility name, municipality, region/oblast, address
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
-      result = result.filter(
-        (p) =>
-          p.facilityName.toLowerCase().includes(query) ||
-          p.municipalityName.toLowerCase().includes(query)
-      )
+      result = result.filter((p) => {
+        const localized = getLocalizedProject(p, locale)
+        const searchableFields = [
+          localized.facilityName,
+          localized.municipalityName,
+          p.region, // Oblast/region
+          p.address, // Address field
+          localized.briefDescription, // Also search in description
+        ].filter(Boolean) // Remove undefined/null values
+
+        return searchableFields.some((field) =>
+          field!.toLowerCase().includes(query)
+        )
+      })
     }
 
     // Category filter
@@ -143,14 +167,56 @@ export default function HomePage() {
     }
 
     return result
-  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange])
+  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange, locale])
 
-  // Projects visible in current map bounds
+  // Sorted projects
+  const sortedProjects = useMemo(() => {
+    const sorted = [...filteredProjects]
+
+    switch (sortBy) {
+      case 'newest':
+        sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        break
+      case 'oldest':
+        sorted.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        break
+      case 'highestCost':
+        sorted.sort((a, b) => {
+          // Projects without cost go to the end
+          if (a.estimatedCostUsd === undefined || a.estimatedCostUsd === null) return 1
+          if (b.estimatedCostUsd === undefined || b.estimatedCostUsd === null) return -1
+          return b.estimatedCostUsd - a.estimatedCostUsd
+        })
+        break
+      case 'lowestCost':
+        sorted.sort((a, b) => {
+          // Projects without cost go to the end
+          if (a.estimatedCostUsd === undefined || a.estimatedCostUsd === null) return 1
+          if (b.estimatedCostUsd === undefined || b.estimatedCostUsd === null) return -1
+          return a.estimatedCostUsd - b.estimatedCostUsd
+        })
+        break
+      case 'mostUrgent':
+        sorted.sort((a, b) => URGENCY_PRIORITY[b.urgency] - URGENCY_PRIORITY[a.urgency])
+        break
+      case 'alphabetical':
+        sorted.sort((a, b) => {
+          const localizedA = getLocalizedProject(a, locale)
+          const localizedB = getLocalizedProject(b, locale)
+          return localizedA.facilityName.localeCompare(localizedB.facilityName)
+        })
+        break
+    }
+
+    return sorted
+  }, [filteredProjects, sortBy, locale])
+
+  // Projects visible in current map bounds (uses sorted projects)
   const projectsInView = useMemo(() => {
-    return filteredProjects.filter((p) =>
+    return sortedProjects.filter((p) =>
       visibleProjects.some((vp) => vp.id === p.id)
     )
-  }, [filteredProjects, visibleProjects])
+  }, [sortedProjects, visibleProjects])
 
   // Paginated projects for the card list
   const paginatedProjects = useMemo(() => {
@@ -185,24 +251,35 @@ export default function HomePage() {
     []
   )
 
-  // Handle card hover - highlight marker on map
+  // Handle card hover - highlight corresponding marker on map
   const handleCardHover = useCallback((projectId: string | null) => {
     setHighlightedProjectId(projectId)
   }, [])
 
-  // Handle marker click - scroll to card in list
+  // Handle marker click - scroll to card in list and zoom
   const handleMarkerClick = useCallback((project: Project) => {
     setHighlightedProjectId(project.id)
+    setFlyToProjectId(project.id)
     const cardElement = cardRefs.current[project.id]
     if (cardElement) {
       cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
   }, [])
 
-  // Handle marker hover - only update if different
+  // Handle card click - zoom to project on map (for homepage split view)
+  const handleCardClick = useCallback((project: Project) => {
+    setHighlightedProjectId(project.id)
+    setFlyToProjectId(project.id)
+  }, [])
+
+  // Handle marker hover - highlight corresponding card in list
   const handleMarkerHover = useCallback((project: Project | null) => {
-    const newId = project?.id || null
-    setHighlightedProjectId((prev) => (prev === newId ? prev : newId))
+    setHighlightedProjectId(project?.id || null)
+  }, [])
+
+  // Handle fly animation complete - reset state to allow re-trigger
+  const handleFlyToComplete = useCallback(() => {
+    setFlyToProjectId(null)
   }, [])
 
   // Toggle category filter
@@ -218,6 +295,11 @@ export default function HomePage() {
     })
   }, [])
 
+  // Clear search only
+  const clearSearch = useCallback(() => {
+    setSearchQuery('')
+  }, [])
+
   // Clear all filters
   const clearFilters = useCallback(() => {
     setSearchQuery('')
@@ -227,6 +309,7 @@ export default function HomePage() {
     setSelectedCofinancing(null)
     setSelectedProjectType(null)
     setPriceRange([0, 3000000])
+    setSortBy('newest')
   }, [])
 
   // Active filter count
@@ -479,11 +562,11 @@ export default function HomePage() {
       <main className="flex-1 flex overflow-hidden">
         {/* Left Panel - Project List */}
         <div className="w-full lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-50)]">
-          {/* Results Header */}
-          <div className="sticky top-0 z-10 bg-[var(--cream-100)] px-4 py-3 border-b border-[var(--cream-300)]">
-            <div className="flex items-center justify-between gap-4">
-              {/* Search */}
-              <div className="flex-1 max-w-xs">
+          {/* Results Header - Single Line */}
+          <div className="sticky top-0 z-10 bg-[var(--cream-100)] px-4 py-2.5 border-b border-[var(--cream-300)]">
+            <div className="flex items-center gap-3">
+              {/* Search with clear button - fills available space */}
+              <div className="flex-1 min-w-0">
                 <div className="relative">
                   <svg
                     className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-400)]"
@@ -503,23 +586,52 @@ export default function HomePage() {
                     placeholder={t('homepage.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-50)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+                    className="w-full pl-9 pr-8 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-50)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
                   />
+                  {/* Clear search button */}
+                  {searchQuery && (
+                    <button
+                      onClick={clearSearch}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-400)] hover:text-[var(--navy-600)] transition-colors"
+                      aria-label={t('homepage.searchClear')}
+                    >
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[var(--navy-700)] text-sm font-semibold">
-                  {t('homepage.projectCount', { count: projectsInView.length })}
-                  {' '}<span className="text-[var(--navy-400)] font-normal">|</span>{' '}
-                  <span className="text-[var(--navy-600)]">
-                    {formatCurrency(totalFundingNeeded, { compact: true })} {t('common.needed')}
-                  </span>
-                </p>
-                {activeFilterCount > 0 && (
-                  <p className="text-xs text-[var(--navy-400)]">
-                    {filteredProjects.length} {t('common.of')} {allProjects.length} {t('common.total')}
-                  </p>
-                )}
+
+              {/* Sort dropdown */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-1 focus:ring-[var(--navy-300)] shrink-0"
+              >
+                <option value="newest">{t('homepage.sortOptions.newest')}</option>
+                <option value="oldest">{t('homepage.sortOptions.oldest')}</option>
+                <option value="highestCost">{t('homepage.sortOptions.highestCost')}</option>
+                <option value="lowestCost">{t('homepage.sortOptions.lowestCost')}</option>
+                <option value="mostUrgent">{t('homepage.sortOptions.mostUrgent')}</option>
+                <option value="alphabetical">{t('homepage.sortOptions.alphabetical')}</option>
+              </select>
+
+              {/* Project count & funding - bold and visible */}
+              <div className="shrink-0 whitespace-nowrap">
+                <span className="text-[var(--navy-800)] text-sm font-bold">
+                  {projectsInView.length}
+                </span>
+                <span className="text-[var(--navy-600)] text-sm font-medium">
+                  {' '}{t('common.projects')}{' '}
+                </span>
+                <span className="text-[var(--navy-400)]">|</span>
+                <span className="text-[var(--navy-800)] text-sm font-bold">
+                  {' '}{formatCurrency(totalFundingNeeded, { compact: true })}
+                </span>
+                <span className="text-[var(--navy-600)] text-sm font-medium">
+                  {' '}{t('common.needed')}
+                </span>
               </div>
             </div>
           </div>
@@ -540,6 +652,7 @@ export default function HomePage() {
                       isHighlighted={highlightedProjectId === project.id}
                       onMouseEnter={() => handleCardHover(project.id)}
                       onMouseLeave={() => handleCardHover(null)}
+                      onClick={() => handleCardClick(project)}
                     />
                   </div>
                 ))}
@@ -603,11 +716,13 @@ export default function HomePage() {
         {/* Right Panel - Map */}
         <div className="hidden lg:block lg:w-1/2 xl:w-[55%] sticky top-0 h-full">
           <MapWrapper
-            projects={filteredProjects}
+            projects={sortedProjects}
             highlightedProjectId={highlightedProjectId}
+            flyToProjectId={flyToProjectId}
             onProjectClick={handleMarkerClick}
             onProjectHover={handleMarkerHover}
             onBoundsChange={handleBoundsChange}
+            onFlyToComplete={handleFlyToComplete}
           />
         </div>
       </main>

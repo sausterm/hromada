@@ -24,18 +24,22 @@ const UkraineMap = dynamic(
 interface MapWrapperProps {
   projects: Project[]
   highlightedProjectId?: string | null
+  flyToProjectId?: string | null  // Separate prop for zoom-on-click
   onProjectClick?: (project: Project) => void
   onProjectHover?: (project: Project | null) => void
   onBoundsChange?: (bounds: MapBounds, visibleProjects: Project[]) => void
+  onFlyToComplete?: () => void
   className?: string
 }
 
 export function MapWrapper({
   projects,
   highlightedProjectId,
+  flyToProjectId,
   onProjectClick,
   onProjectHover,
   onBoundsChange,
+  onFlyToComplete,
   className = '',
 }: MapWrapperProps) {
   return (
@@ -43,9 +47,11 @@ export function MapWrapper({
       <UkraineMap
         projects={projects}
         highlightedProjectId={highlightedProjectId}
+        flyToProjectId={flyToProjectId}
         onProjectClick={onProjectClick}
         onProjectHover={onProjectHover}
         onBoundsChange={onBoundsChange}
+        onFlyToComplete={onFlyToComplete}
       />
     </div>
   )

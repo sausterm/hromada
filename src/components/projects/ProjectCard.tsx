@@ -10,6 +10,7 @@ interface ProjectCardProps {
   isHighlighted?: boolean
   onMouseEnter?: () => void
   onMouseLeave?: () => void
+  onClick?: () => void  // If provided, clicking card body zooms to map; detail link still navigates
 }
 
 export function ProjectCard({
@@ -17,6 +18,7 @@ export function ProjectCard({
   isHighlighted = false,
   onMouseEnter,
   onMouseLeave,
+  onClick,
 }: ProjectCardProps) {
   const t = useTranslations()
   const locale = useLocale()
@@ -27,17 +29,16 @@ export function ProjectCard({
 
   const mainPhoto = project.photos?.[0]
 
-  return (
-    <Link
-      href={`/projects/${project.id}`}
-      className={`flex flex-col h-full bg-[var(--cream-100)] rounded-xl overflow-hidden card-hover border-2 transition-all duration-200 ${
-        isHighlighted
-          ? 'border-[var(--navy-600)] shadow-lg ring-2 ring-[var(--navy-200)]'
-          : 'border-[var(--cream-300)] shadow-sm hover:shadow-md hover:border-[var(--cream-400)]'
-      }`}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
+  // Common class names for the card container
+  const cardClassName = `flex flex-col h-full bg-[var(--cream-100)] rounded-xl overflow-hidden card-hover border-2 transition-all duration-200 ${
+    isHighlighted
+      ? 'border-[var(--navy-600)] shadow-lg ring-2 ring-[var(--navy-200)]'
+      : 'border-[var(--cream-300)] shadow-sm hover:shadow-md hover:border-[var(--cream-400)]'
+  }`
+
+  // Card content - shared between both modes
+  const cardContent = (
+    <>
       {/* Image Section */}
       <div className="relative aspect-[16/10] bg-[var(--cream-200)]">
         {mainPhoto ? (
@@ -97,7 +98,6 @@ export function ProjectCard({
             {t(`urgency.${project.urgency}`)}
           </div>
         )}
-
       </div>
 
       {/* Content Section */}
@@ -146,7 +146,7 @@ export function ProjectCard({
           <div className="flex items-center gap-2">
             {/* Status Badge */}
             <span
-              className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+              className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-medium text-center"
               style={{
                 backgroundColor: `${statusConfig.color}20`,
                 color: statusConfig.color,
@@ -160,15 +160,59 @@ export function ProjectCard({
             </span>
           </div>
 
-          {/* Share Button */}
-          <ShareButton
-            projectId={project.id}
-            projectTitle={localized.facilityName}
-            projectDescription={localized.briefDescription}
-            variant="icon"
-          />
+          {/* View Details link (only when onClick is provided) or Share Button */}
+          {onClick ? (
+            <Link
+              href={`/projects/${project.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-xs font-medium text-[var(--navy-600)] hover:text-[var(--navy-800)] hover:underline"
+            >
+              {t('projectDetail.viewDetails')} →
+            </Link>
+          ) : (
+            <ShareButton
+              projectId={project.id}
+              projectTitle={localized.facilityName}
+              projectDescription={localized.briefDescription}
+              variant="icon"
+            />
+          )}
         </div>
       </div>
+    </>
+  )
+
+  // If onClick is provided, render as a clickable div that zooms to map
+  if (onClick) {
+    return (
+      <div
+        className={`${cardClassName} cursor-pointer`}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onClick()
+          }
+        }}
+      >
+        {cardContent}
+      </div>
+    )
+  }
+
+  // Default: render as a Link that navigates to project detail page
+  return (
+    <Link
+      href={`/projects/${project.id}`}
+      className={cardClassName}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {cardContent}
     </Link>
   )
 }

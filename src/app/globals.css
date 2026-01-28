@@ -169,7 +169,7 @@ body {
   border: 3px solid white;
   box-shadow: 0 3px 12px rgba(58, 54, 51, 0.25);
   font-size: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* No transition - prevents animation when highlighting from card hover */
 }
 
 .custom-marker:hover {
@@ -330,4 +330,19 @@ body {
   font-family: var(--font-outfit), 'Outfit', sans-serif;
   font-weight: 700;
   letter-spacing: -0.01em;
+}
+
+/* Cluster icon z-index */
+.leaflet-marker-pane .custom-cluster-icon {
+  z-index: 100 !important;
+}
+
+/* Highlighted cluster state - same as marker highlight */
+.cluster-highlighted {
+  z-index: 1000 !important;
+}
+
+.cluster-highlighted > div {
+  transform: scale(1.22) !important;
+  box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.5), 0 4px 16px rgba(58, 54, 51, 0.35) !important;
 }

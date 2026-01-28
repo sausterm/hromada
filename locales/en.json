@@ -31,7 +31,8 @@
     "home": "Home",
     "projects": "Projects",
     "language": "Language",
-    "switchLanguage": "Switch to Ukrainian"
+    "switchLanguage": "Switch to Ukrainian",
+    "menu": "Menu"
   },
   "categories": {
     "HOSPITAL": "Hospital / Medical",

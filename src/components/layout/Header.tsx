@@ -16,21 +16,26 @@ export function Header({ children }: HeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
+  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false)
   const langMenuRef = useRef<HTMLDivElement>(null)
+  const navMenuRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
         setIsLangMenuOpen(false)
       }
+      if (navMenuRef.current && !navMenuRef.current.contains(event.target as Node)) {
+        setIsNavMenuOpen(false)
+      }
     }
 
-    if (isLangMenuOpen) {
+    if (isLangMenuOpen || isNavMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isLangMenuOpen])
+  }, [isLangMenuOpen, isNavMenuOpen])
 
   const switchLocale = (newLocale: Locale) => {
     router.replace(pathname, { locale: newLocale })
@@ -47,13 +52,75 @@ export function Header({ children }: HeaderProps) {
       {/* Top Bar - Navigation */}
       <div className="px-4 lg:px-6 py-4">
         <div className="flex items-center justify-between gap-4">
-          {/* Left - Admin */}
+          {/* Left - Menu Button */}
           <div className="flex-1">
-            <Link href="/admin" className="hidden sm:inline-block">
-              <Button variant="ghost" size="md">
-                {t('nav.admin')}
-              </Button>
-            </Link>
+            <div className="relative" ref={navMenuRef}>
+              <button
+                onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-[var(--navy-600)] hover:bg-[var(--navy-50)] hover:text-[var(--navy-800)] transition-colors"
+                aria-label={t('nav.menu')}
+              >
+                {isNavMenuOpen ? (
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+
+              {/* Navigation Dropdown */}
+              {isNavMenuOpen && (
+                <div className="absolute left-0 top-full mt-2 w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 z-50">
+                  <Link
+                    href="/"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--navy-600)] hover:bg-[var(--cream-100)] transition-colors"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    {t('nav.home')}
+                  </Link>
+                  <Link
+                    href="/about"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--navy-600)] hover:bg-[var(--cream-100)] transition-colors"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {t('nav.aboutUs')}
+                  </Link>
+                  <Link
+                    href="/submit-project"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--navy-600)] hover:bg-[var(--cream-100)] transition-colors"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    {t('nav.submitProject')}
+                  </Link>
+
+                  <div className="my-2 border-t border-[var(--cream-300)]" />
+
+                  <Link
+                    href="/admin"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--navy-600)] hover:bg-[var(--cream-100)] transition-colors"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    {t('nav.admin')}
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Center - Logo */}
@@ -75,9 +142,8 @@ export function Header({ children }: HeaderProps) {
             </span>
           </div>
 
-          {/* Right - Language, About & Submit */}
-          <div className="flex-1 flex items-center justify-end gap-3">
-            {/* Language Switcher */}
+          {/* Right - Language Switcher */}
+          <div className="flex-1 flex items-center justify-end">
             <div className="relative" ref={langMenuRef}>
               <button
                 onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
@@ -121,22 +187,6 @@ export function Header({ children }: HeaderProps) {
                 </div>
               )}
             </div>
-
-            <Link href="/about" className="hidden sm:inline-block">
-              <Button variant="ghost" size="md">
-                {t('nav.aboutUs')}
-              </Button>
-            </Link>
-            <Link href="/submit-project">
-              <Button
-                variant="primary"
-                size="md"
-                className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]"
-              >
-                <span className="hidden sm:inline">{t('nav.submitProject')}</span>
-                <span className="sm:hidden">+</span>
-              </Button>
-            </Link>
           </div>
         </div>
       </div>

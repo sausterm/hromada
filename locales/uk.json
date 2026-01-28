@@ -31,7 +31,8 @@
     "home": "Головна",
     "projects": "Проекти",
     "language": "Мова",
-    "switchLanguage": "Перемкнути на англійську"
+    "switchLanguage": "Перемкнути на англійську",
+    "menu": "Меню"
   },
   "categories": {
     "HOSPITAL": "Лікарня / Медицина",

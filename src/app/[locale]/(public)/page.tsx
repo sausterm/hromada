@@ -467,6 +467,24 @@ export default function HomePage() {
               )}
             </div>
 
+            {/* Project Type dropdown */}
+            <select
+              value={selectedProjectType || ''}
+              onChange={(e) => setSelectedProjectType((e.target.value as ProjectType) || null)}
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+                selectedProjectType
+                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
+                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+              }`}
+            >
+              <option value="">{t('homepage.filters.projectType')}</option>
+              {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
+                <option key={type} value={type}>
+                  {t(`projectTypes.${type}`)}
+                </option>
+              ))}
+            </select>
+
             {/* Urgency dropdown */}
             <select
               value={selectedUrgency || ''}
@@ -517,24 +535,6 @@ export default function HomePage() {
               {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
                 <option key={status} value={status}>
                   {t(`cofinancing.${status}`)}
-                </option>
-              ))}
-            </select>
-
-            {/* Project Type dropdown */}
-            <select
-              value={selectedProjectType || ''}
-              onChange={(e) => setSelectedProjectType((e.target.value as ProjectType) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
-                selectedProjectType
-                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
-                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
-              }`}
-            >
-              <option value="">{t('homepage.filters.projectType')}</option>
-              {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
-                <option key={type} value={type}>
-                  {t(`projectTypes.${type}`)}
                 </option>
               ))}
             </select>
@@ -646,6 +646,7 @@ export default function HomePage() {
                     ref={(el) => {
                       cardRefs.current[project.id] = el
                     }}
+                    className="h-full"
                   >
                     <ProjectCard
                       project={project}

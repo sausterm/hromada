@@ -39,8 +39,8 @@ export function ProjectCard({
   // Card content - shared between both modes
   const cardContent = (
     <>
-      {/* Image Section */}
-      <div className="relative aspect-[16/10] bg-[var(--cream-200)]">
+      {/* Image Section - fixed aspect ratio, never shrinks */}
+      <div className="relative aspect-[16/10] bg-[var(--cream-200)] flex-shrink-0 overflow-hidden">
         {mainPhoto ? (
           <img
             src={mainPhoto}

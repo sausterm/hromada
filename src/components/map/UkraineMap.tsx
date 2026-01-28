@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
 import L from 'leaflet'
 import { type Project, type Category, CATEGORY_CONFIG } from '@/types'
 import { ProjectPopup } from './ProjectPopup'
@@ -61,6 +62,49 @@ const highlightedIcons: Record<Category, L.DivIcon> = {
   WATER: createCategoryIcon('WATER', true),
   ENERGY: createCategoryIcon('ENERGY', true),
   OTHER: createCategoryIcon('OTHER', true),
+}
+
+// Create cluster icon with count
+function createClusterIcon(cluster: { getChildCount: () => number }): L.DivIcon {
+  const count = cluster.getChildCount()
+  let size = 40
+  let fontSize = 14
+
+  if (count >= 100) {
+    size = 56
+    fontSize = 16
+  } else if (count >= 50) {
+    size = 50
+    fontSize = 15
+  } else if (count >= 10) {
+    size = 44
+    fontSize = 14
+  }
+
+  return L.divIcon({
+    html: `
+      <div style="
+        width: ${size}px;
+        height: ${size}px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--navy-600) 0%, var(--navy-700) 100%);
+        border: 3px solid white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        color: white;
+        font-size: ${fontSize}px;
+        font-weight: 700;
+        font-family: system-ui, -apple-system, sans-serif;
+      ">
+        ${count}
+      </div>
+    `,
+    className: 'custom-cluster-icon',
+    iconSize: L.point(size, size),
+    iconAnchor: [size / 2, size / 2],
+  })
 }
 
 export interface MapBounds {
@@ -193,32 +237,42 @@ export function UkraineMap({
         {/* Note: FlyToProject removed to prevent auto-zoom on hover.
             Map stays at current zoom level, only marker highlighting occurs. */}
 
-        {projects.map((project) => {
-          const lat = project.latitude || project.cityLatitude
-          const lng = project.longitude || project.cityLongitude
+        <MarkerClusterGroup
+          chunkedLoading
+          iconCreateFunction={createClusterIcon}
+          maxClusterRadius={50}
+          spiderfyOnMaxZoom={true}
+          showCoverageOnHover={false}
+          zoomToBoundsOnClick={true}
+          disableClusteringAtZoom={12}
+        >
+          {projects.map((project) => {
+            const lat = project.latitude || project.cityLatitude
+            const lng = project.longitude || project.cityLongitude
 
-          if (!lat || !lng) return null
+            if (!lat || !lng) return null
 
-          return (
-            <Marker
-              key={project.id}
-              position={[lat, lng]}
-              icon={getIcon(project)}
-              ref={(ref) => {
-                if (ref) markerRefs.current[project.id] = ref
-              }}
-              eventHandlers={{
-                click: () => onProjectClick?.(project),
-                mouseover: () => onProjectHover?.(project),
-                mouseout: () => onProjectHover?.(null),
-              }}
-            >
-              <Popup maxWidth={300} minWidth={280}>
-                <ProjectPopup project={project} />
-              </Popup>
-            </Marker>
-          )
-        })}
+            return (
+              <Marker
+                key={project.id}
+                position={[lat, lng]}
+                icon={getIcon(project)}
+                ref={(ref) => {
+                  if (ref) markerRefs.current[project.id] = ref
+                }}
+                eventHandlers={{
+                  click: () => onProjectClick?.(project),
+                  mouseover: () => onProjectHover?.(project),
+                  mouseout: () => onProjectHover?.(null),
+                }}
+              >
+                <Popup maxWidth={300} minWidth={280}>
+                  <ProjectPopup project={project} />
+                </Popup>
+              </Marker>
+            )
+          })}
+        </MarkerClusterGroup>
       </MapContainer>
     </div>
   )

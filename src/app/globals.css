@@ -200,16 +200,32 @@ body {
 }
 
 /* Map cluster styles */
-.marker-cluster {
-  background-color: rgba(44, 62, 80, 0.6);
-  border-radius: 50%;
+.marker-cluster,
+.custom-cluster-icon {
+  background: transparent !important;
 }
 
-.marker-cluster div {
-  background-color: var(--navy-600);
-  color: white;
-  font-weight: 600;
-  border-radius: 50%;
+.marker-cluster div,
+.custom-cluster-icon div {
+  transition: transform 0.2s ease;
+}
+
+.marker-cluster:hover div,
+.custom-cluster-icon:hover div {
+  transform: scale(1.1);
+}
+
+/* Hide default leaflet cluster backgrounds */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background-color: transparent !important;
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background-color: transparent !important;
 }
 
 /* Toast animations */

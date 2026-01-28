@@ -86,6 +86,9 @@ interface ContactSubmissionWithProject extends ContactSubmission {
   project: Pick<Project, 'id' | 'facilityName' | 'municipalityName' | 'contactEmail'>
 }
 
+type SortField = 'facilityName' | 'municipalityName' | 'category' | 'urgency' | 'status'
+type SortDirection = 'asc' | 'desc'
+
 function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader: string | null }) {
   const [projects, setProjects] = useState<Project[]>([])
   const [inquiries, setInquiries] = useState<(Inquiry & { project: Pick<Project, 'id' | 'facilityName'> })[]>([])
@@ -93,6 +96,9 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
   const [isLoadingProjects, setIsLoadingProjects] = useState(true)
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(true)
   const [activeTab, setActiveTab] = useState<'projects' | 'inquiries' | 'contacts'>('projects')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortField, setSortField] = useState<SortField>('facilityName')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   // Fetch projects from API
   useEffect(() => {
@@ -158,6 +164,80 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
   }
 
   const unhandledCount = contactSubmissions.filter((s) => !s.handled).length
+
+  // Filter and sort projects
+  const filteredAndSortedProjects = projects
+    .filter((p) => {
+      if (!searchQuery.trim()) return true
+      const query = searchQuery.toLowerCase()
+      return (
+        p.facilityName.toLowerCase().includes(query) ||
+        p.municipalityName.toLowerCase().includes(query) ||
+        CATEGORY_CONFIG[p.category].label.toLowerCase().includes(query) ||
+        STATUS_CONFIG[p.status].label.toLowerCase().includes(query)
+      )
+    })
+    .sort((a, b) => {
+      let aVal: string
+      let bVal: string
+
+      switch (sortField) {
+        case 'facilityName':
+          aVal = a.facilityName
+          bVal = b.facilityName
+          break
+        case 'municipalityName':
+          aVal = a.municipalityName
+          bVal = b.municipalityName
+          break
+        case 'category':
+          aVal = CATEGORY_CONFIG[a.category].label
+          bVal = CATEGORY_CONFIG[b.category].label
+          break
+        case 'urgency':
+          aVal = URGENCY_CONFIG[a.urgency].label
+          bVal = URGENCY_CONFIG[b.urgency].label
+          break
+        case 'status':
+          aVal = STATUS_CONFIG[a.status].label
+          bVal = STATUS_CONFIG[b.status].label
+          break
+        default:
+          aVal = a.facilityName
+          bVal = b.facilityName
+      }
+
+      const comparison = aVal.localeCompare(bVal)
+      return sortDirection === 'asc' ? comparison : -comparison
+    })
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
+
+  const SortIcon = ({ field }: { field: SortField }) => (
+    <span className="inline-flex flex-col ml-1">
+      <svg
+        className={`w-3 h-3 -mb-1 ${sortField === field && sortDirection === 'asc' ? 'text-gray-900' : 'text-gray-300'}`}
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path d="M12 5l-8 8h16l-8-8z" />
+      </svg>
+      <svg
+        className={`w-3 h-3 ${sortField === field && sortDirection === 'desc' ? 'text-gray-900' : 'text-gray-300'}`}
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path d="M12 19l8-8H4l8 8z" />
+      </svg>
+    </span>
+  )
 
   const stats = {
     totalProjects: projects.length,
@@ -248,11 +328,35 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
         {/* Content */}
         {activeTab === 'projects' && (
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Projects</h2>
-              <Link href="/admin/projects/new">
-                <Button>+ Add Project</Button>
-              </Link>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl font-semibold">Projects ({filteredAndSortedProjects.length})</h2>
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <div className="relative">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search projects..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
+                  />
+                </div>
+                <Link href="/admin/projects/new">
+                  <Button>+ Add Project</Button>
+                </Link>
+              </div>
             </div>
 
             <Card>
@@ -260,16 +364,56 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b">
                     <tr>
-                      <th className="text-left p-4 text-sm font-medium text-gray-500">Facility</th>
-                      <th className="text-left p-4 text-sm font-medium text-gray-500">Municipality</th>
-                      <th className="text-left p-4 text-sm font-medium text-gray-500">Category</th>
-                      <th className="text-left p-4 text-sm font-medium text-gray-500">Urgency</th>
-                      <th className="text-left p-4 text-sm font-medium text-gray-500">Status</th>
-                      <th className="text-left p-4 text-sm font-medium text-gray-500">Actions</th>
+                      <th
+                        className="text-left p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('facilityName')}
+                      >
+                        <span className="flex items-center">
+                          Facility
+                          <SortIcon field="facilityName" />
+                        </span>
+                      </th>
+                      <th
+                        className="text-left p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('municipalityName')}
+                      >
+                        <span className="flex items-center">
+                          Municipality
+                          <SortIcon field="municipalityName" />
+                        </span>
+                      </th>
+                      <th
+                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('category')}
+                      >
+                        <span className="flex items-center justify-center">
+                          Category
+                          <SortIcon field="category" />
+                        </span>
+                      </th>
+                      <th
+                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('urgency')}
+                      >
+                        <span className="flex items-center justify-center">
+                          Urgency
+                          <SortIcon field="urgency" />
+                        </span>
+                      </th>
+                      <th
+                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('status')}
+                      >
+                        <span className="flex items-center justify-center">
+                          Status
+                          <SortIcon field="status" />
+                        </span>
+                      </th>
+                      <th className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {projects.map((project) => {
+                    {filteredAndSortedProjects.map((project) => {
                       const categoryConfig = CATEGORY_CONFIG[project.category]
                       const urgencyConfig = URGENCY_CONFIG[project.urgency]
                       const statusConfig = STATUS_CONFIG[project.status]
@@ -280,12 +424,12 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                             <p className="font-medium text-gray-900">{project.facilityName}</p>
                           </td>
                           <td className="p-4 text-gray-600">{project.municipalityName}</td>
-                          <td className="p-4">
+                          <td className="p-4 text-center">
                             <Badge dot dotColor={categoryConfig.color} size="sm">
                               {categoryConfig.label}
                             </Badge>
                           </td>
-                          <td className="p-4">
+                          <td className="p-4 text-center">
                             <Badge
                               variant={project.urgency === 'CRITICAL' ? 'danger' : project.urgency === 'HIGH' ? 'warning' : 'default'}
                               size="sm"
@@ -293,7 +437,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                               {urgencyConfig.label}
                             </Badge>
                           </td>
-                          <td className="p-4">
+                          <td className="p-4 text-center">
                             <Badge
                               variant={project.status === 'OPEN' ? 'success' : 'default'}
                               size="sm"
@@ -301,8 +445,8 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                               {statusConfig.label}
                             </Badge>
                           </td>
-                          <td className="p-4">
-                            <div className="flex gap-2">
+                          <td className="p-4 text-center">
+                            <div className="flex gap-2 justify-center">
                               <Link href={`/projects/${project.id}`}>
                                 <Button variant="ghost" size="sm">View</Button>
                               </Link>
@@ -314,6 +458,13 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                         </tr>
                       )
                     })}
+                    {filteredAndSortedProjects.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center text-gray-500">
+                          {searchQuery ? 'No projects match your search.' : 'No projects yet.'}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

@@ -90,12 +90,12 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
   useEffect(() => {
     if (project) {
       setFormData({
-        municipalityName: project.municipalityName,
-        facilityName: project.facilityName,
+        municipalityName: project.municipalityName || '',
+        facilityName: project.facilityName || '',
         category: project.category,
-        briefDescription: project.briefDescription,
-        fullDescription: project.description,
-        address: project.address,
+        briefDescription: project.briefDescription || '',
+        fullDescription: project.fullDescription || '',
+        address: project.address || '',
         cityLatitude: project.cityLatitude.toString(),
         cityLongitude: project.cityLongitude.toString(),
         contactName: project.contactName,
@@ -315,7 +315,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Brief Description * <span className="text-gray-400 font-normal">({formData.briefDescription.length}/150)</span>
+                Brief Description * <span className="text-gray-400 font-normal">({formData.briefDescription?.length || 0}/150)</span>
               </label>
               <Textarea
                 value={formData.briefDescription}
@@ -328,7 +328,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Description * <span className="text-gray-400 font-normal">({formData.fullDescription.length}/2000)</span>
+                Full Description * <span className="text-gray-400 font-normal">({formData.fullDescription?.length || 0}/2000)</span>
               </label>
               <Textarea
                 value={formData.fullDescription}

@@ -11,9 +11,11 @@ import {
   type Category,
   type Urgency,
   type Status,
+  type CofinancingStatus,
   CATEGORY_CONFIG,
   URGENCY_CONFIG,
   STATUS_CONFIG,
+  COFINANCING_CONFIG,
 } from '@/types'
 
 // Helper to transform API response to Project type
@@ -63,6 +65,8 @@ export default function HomePage() {
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set())
   const [selectedUrgency, setSelectedUrgency] = useState<Urgency | null>(null)
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null)
+  const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000000])
 
   // Filtered projects based on search and filters
   const filteredProjects = useMemo(() => {
@@ -93,8 +97,22 @@ export default function HomePage() {
       result = result.filter((p) => p.status === selectedStatus)
     }
 
+    // Cofinancing filter
+    if (selectedCofinancing) {
+      result = result.filter((p) => p.cofinancingAvailable === selectedCofinancing)
+    }
+
+    // Price range filter
+    const [minPrice, maxPrice] = priceRange
+    if (minPrice > 0 || maxPrice < 3000000) {
+      result = result.filter((p) => {
+        if (p.estimatedCostUsd === undefined || p.estimatedCostUsd === null) return true
+        return p.estimatedCostUsd >= minPrice && p.estimatedCostUsd <= maxPrice
+      })
+    }
+
     return result
-  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus])
+  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, priceRange])
 
   // Projects visible in current map bounds
   const projectsInView = useMemo(() => {
@@ -103,10 +121,18 @@ export default function HomePage() {
     )
   }, [filteredProjects, visibleProjects])
 
-  // Handle map bounds change
+  // Handle map bounds change - only update if visible projects actually changed
   const handleBoundsChange = useCallback(
     (_bounds: MapBounds, visible: Project[]) => {
-      setVisibleProjects(visible)
+      setVisibleProjects((prev) => {
+        // Compare IDs to avoid unnecessary state updates
+        const prevIds = new Set(prev.map((p) => p.id))
+        const newIds = new Set(visible.map((p) => p.id))
+        if (prevIds.size === newIds.size && [...prevIds].every((id) => newIds.has(id))) {
+          return prev // No change, return same reference
+        }
+        return visible
+      })
     },
     []
   )
@@ -125,9 +151,10 @@ export default function HomePage() {
     }
   }, [])
 
-  // Handle marker hover
+  // Handle marker hover - only update if different
   const handleMarkerHover = useCallback((project: Project | null) => {
-    setHighlightedProjectId(project?.id || null)
+    const newId = project?.id || null
+    setHighlightedProjectId((prev) => (prev === newId ? prev : newId))
   }, [])
 
   // Toggle category filter
@@ -149,6 +176,8 @@ export default function HomePage() {
     setSelectedCategories(new Set())
     setSelectedUrgency(null)
     setSelectedStatus(null)
+    setSelectedCofinancing(null)
+    setPriceRange([0, 3000000])
   }, [])
 
   // Active filter count
@@ -158,8 +187,10 @@ export default function HomePage() {
     count += selectedCategories.size
     if (selectedUrgency) count++
     if (selectedStatus) count++
+    if (selectedCofinancing) count++
+    if (priceRange[0] > 0 || priceRange[1] < 3000000) count++
     return count
-  }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus])
+  }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, priceRange])
 
   if (isLoading) {
     return (
@@ -274,6 +305,72 @@ export default function HomePage() {
                 </option>
               ))}
             </select>
+
+            {/* Cofinancing dropdown */}
+            <select
+              value={selectedCofinancing || ''}
+              onChange={(e) => setSelectedCofinancing((e.target.value as CofinancingStatus) || null)}
+              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--warm-300)]"
+            >
+              <option value="">Co-financing</option>
+              {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
+                <option key={status} value={status}>
+                  {COFINANCING_CONFIG[status].label}
+                </option>
+              ))}
+            </select>
+
+            {/* Price Range Slider */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--cream-50)] border border-[var(--cream-300)]">
+              <span className="text-xs text-[var(--navy-600)] font-medium whitespace-nowrap">
+                ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[0] / 1000)}k`}
+              </span>
+              <div className="relative w-28 h-5 flex items-center">
+                {/* Track background */}
+                <div className="absolute w-full h-1.5 bg-[var(--cream-300)] rounded-full" />
+                {/* Active track */}
+                <div
+                  className="absolute h-1.5 bg-[var(--navy-500)] rounded-full pointer-events-none"
+                  style={{
+                    left: `${(priceRange[0] / 3000000) * 100}%`,
+                    right: `${100 - (priceRange[1] / 3000000) * 100}%`,
+                  }}
+                />
+                {/* Min slider */}
+                <input
+                  type="range"
+                  min={0}
+                  max={3000000}
+                  step={50000}
+                  value={priceRange[0]}
+                  onChange={(e) => {
+                    const val = Number(e.target.value)
+                    if (val < priceRange[1]) {
+                      setPriceRange([val, priceRange[1]])
+                    }
+                  }}
+                  className="absolute w-full h-full appearance-none bg-transparent pointer-events-none z-[3] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
+                />
+                {/* Max slider */}
+                <input
+                  type="range"
+                  min={0}
+                  max={3000000}
+                  step={50000}
+                  value={priceRange[1]}
+                  onChange={(e) => {
+                    const val = Number(e.target.value)
+                    if (val > priceRange[0]) {
+                      setPriceRange([priceRange[0], val])
+                    }
+                  }}
+                  className="absolute w-full h-full appearance-none bg-transparent pointer-events-none z-[4] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
+                />
+              </div>
+              <span className="text-xs text-[var(--navy-600)] font-medium whitespace-nowrap">
+                ${priceRange[1] >= 1000000 ? `${(priceRange[1] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[1] / 1000)}k`}
+              </span>
+            </div>
 
             {/* Clear filters */}
             {activeFilterCount > 0 && (

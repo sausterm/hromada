@@ -50,7 +50,7 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const response = await fetch('/api/projects')
+        const response = await fetch('/api/projects?all=true')
         if (response.ok) {
           const data = await response.json()
           const projects = data.projects.map(transformProject)

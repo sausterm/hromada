@@ -8,21 +8,45 @@ export function useAdminAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    // Check for existing token on mount
-    const token = localStorage.getItem(STORAGE_KEY)
-    if (token) {
-      setIsAuthenticated(true)
+  // Verify token by making a test API call
+  const verifyToken = useCallback(async (password: string): Promise<boolean> => {
+    try {
+      const authHeader = `Basic ${btoa(`admin:${password}`)}`
+      const response = await fetch('/api/admin/verify', {
+        headers: { Authorization: authHeader },
+      })
+      return response.ok
+    } catch {
+      return false
     }
-    setIsLoading(false)
   }, [])
 
-  const login = useCallback((password: string): boolean => {
-    // Store the password as the token (will be sent as Bearer token)
-    localStorage.setItem(STORAGE_KEY, password)
-    setIsAuthenticated(true)
-    return true
-  }, [])
+  useEffect(() => {
+    // Check for existing token on mount and verify it
+    const token = localStorage.getItem(STORAGE_KEY)
+    if (token) {
+      verifyToken(token).then((valid) => {
+        if (valid) {
+          setIsAuthenticated(true)
+        } else {
+          localStorage.removeItem(STORAGE_KEY)
+        }
+        setIsLoading(false)
+      })
+    } else {
+      setIsLoading(false)
+    }
+  }, [verifyToken])
+
+  const login = useCallback(async (password: string): Promise<boolean> => {
+    const valid = await verifyToken(password)
+    if (valid) {
+      localStorage.setItem(STORAGE_KEY, password)
+      setIsAuthenticated(true)
+      return true
+    }
+    return false
+  }, [verifyToken])
 
   const logout = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY)
@@ -31,7 +55,7 @@ export function useAdminAuth() {
 
   const getAuthHeader = useCallback((): string | null => {
     const token = localStorage.getItem(STORAGE_KEY)
-    return token ? `Bearer ${token}` : null
+    return token ? `Basic ${btoa(`admin:${token}`)}` : null
   }, [])
 
   return {

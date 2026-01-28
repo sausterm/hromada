@@ -58,7 +58,7 @@ function transformProject(data: any): Project {
   }
 }
 
-function LoginForm({ onLogin }: { onLogin: (password: string) => void }) {
+function LoginForm({ onLogin }: { onLogin: (password: string) => Promise<boolean> }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -68,16 +68,16 @@ function LoginForm({ onLogin }: { onLogin: (password: string) => void }) {
     setError('')
     setIsLoading(true)
 
-    // Simple validation - in production, verify against API
     if (!password.trim()) {
       setError('Password is required')
       setIsLoading(false)
       return
     }
 
-    // Simulate verification delay
-    await new Promise((r) => setTimeout(r, 500))
-    onLogin(password)
+    const success = await onLogin(password)
+    if (!success) {
+      setError('Invalid password')
+    }
     setIsLoading(false)
   }
 

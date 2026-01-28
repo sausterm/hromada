@@ -4,45 +4,53 @@ import { resolve } from 'path';
 // Load environment variables from .env.local BEFORE importing prisma
 config({ path: resolve(process.cwd(), '.env.local') });
 
-// Stock photos by category from Unsplash
+// Stock photos by category from Unsplash - curated for Ukrainian infrastructure
 const stockPhotos: Record<string, string[]> = {
   HOSPITAL: [
-    'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1200&q=80',
-    'https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=1200&q=80',
-    'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1200&q=80',
-    'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1200&q=80',
-    'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1200&q=80',
-    'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1200&q=80',
-    'https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=1200&q=80',
+    // Hospital buildings and medical facilities
+    'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=1200&q=80', // Hospital building exterior
+    'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1200&q=80', // Hospital corridor
+    'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1200&q=80', // Hospital room
+    'https://images.unsplash.com/photo-1581595220892-4ef7c392de07?w=1200&q=80', // Medical equipment
+    'https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=1200&q=80', // Hospital ward
+    'https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=1200&q=80', // Medical facility
+    'https://images.unsplash.com/photo-1632833239869-a37e3a5806d2?w=1200&q=80', // Hospital exterior
   ],
   SCHOOL: [
-    'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80',
-    'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&q=80',
-    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200&q=80',
-    'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&q=80',
-    'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=1200&q=80',
-    'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=1200&q=80',
+    // Schools and educational facilities
+    'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80', // Empty classroom
+    'https://images.unsplash.com/photo-1562774053-701939374585?w=1200&q=80', // School building
+    'https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?w=1200&q=80', // Classroom desks
+    'https://images.unsplash.com/photo-1588072432836-e10032774350?w=1200&q=80', // School hallway
+    'https://images.unsplash.com/photo-1613896527026-f195d5c818ed?w=1200&q=80', // Classroom interior
+    'https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?w=1200&q=80', // School exterior
   ],
   WATER: [
-    'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=1200&q=80',
-    'https://images.unsplash.com/photo-1504973960431-1c467e159aa4?w=1200&q=80',
-    'https://images.unsplash.com/photo-1562016600-ece13e8ba570?w=1200&q=80',
-    'https://images.unsplash.com/photo-1532188978303-4bfaccc429d2?w=1200&q=80',
-    'https://images.unsplash.com/photo-1519455953755-af066f52f1a6?w=1200&q=80',
+    // Water infrastructure and treatment
+    'https://images.unsplash.com/photo-1597931752949-98c74b5b159f?w=1200&q=80', // Water treatment facility
+    'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=1200&q=80', // Water pipes infrastructure
+    'https://images.unsplash.com/photo-1585918749741-68e0d55e2ad1?w=1200&q=80', // Water pumping station
+    'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=1200&q=80', // Industrial water system
+    'https://images.unsplash.com/photo-1504973960431-1c467e159aa4?w=1200&q=80', // Water treatment tanks
+    'https://images.unsplash.com/photo-1606937295547-bc0f668595b3?w=1200&q=80', // Water facility
   ],
   ENERGY: [
-    'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&q=80',
-    'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&q=80',
-    'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1200&q=80',
-    'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=1200&q=80',
-    'https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=1200&q=80',
+    // Solar, electrical, and energy infrastructure
+    'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&q=80', // Solar panels on roof
+    'https://images.unsplash.com/photo-1558449028-b53a39d100fc?w=1200&q=80', // Solar panel installation
+    'https://images.unsplash.com/photo-1595437193398-f24279553f4f?w=1200&q=80', // Solar farm
+    'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=1200&q=80', // Electrical infrastructure
+    'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&q=80', // Power lines
+    'https://images.unsplash.com/photo-1591964006776-90d33e597179?w=1200&q=80', // Generator/power equipment
   ],
   OTHER: [
-    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80',
-    'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1200&q=80',
-    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80',
-    'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80',
-    'https://images.unsplash.com/photo-1429497419816-9ca5cfb4571a?w=1200&q=80',
+    // Community buildings, admin centers, cultural facilities
+    'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=1200&q=80', // Government building
+    'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80', // Community center interior
+    'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80', // Modern office building
+    'https://images.unsplash.com/photo-1564069114553-7215e1ff1890?w=1200&q=80', // Sports facility
+    'https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=1200&q=80', // Administrative building
+    'https://images.unsplash.com/photo-1582653291997-079a1c04e5a1?w=1200&q=80', // Cultural center
   ],
 };
 
@@ -50,13 +58,8 @@ async function addStockPhotosToAll() {
   // Dynamic import to ensure env vars are loaded first
   const { prisma } = await import('../lib/prisma');
 
-  // Find all projects that don't have any photos
-  const projectsWithoutPhotos = await prisma.project.findMany({
-    where: {
-      photos: {
-        none: {},
-      },
-    },
+  // Find all projects
+  const allProjects = await prisma.project.findMany({
     select: {
       id: true,
       facilityName: true,
@@ -64,7 +67,11 @@ async function addStockPhotosToAll() {
     },
   });
 
-  console.log(`Found ${projectsWithoutPhotos.length} projects without photos\n`);
+  console.log(`Found ${allProjects.length} projects to update\n`);
+
+  // Delete all existing photos first
+  await prisma.projectImage.deleteMany({});
+  console.log('Cleared existing photos\n');
 
   let addedCount = 0;
   let photoIndex: Record<string, number> = {
@@ -75,7 +82,7 @@ async function addStockPhotosToAll() {
     OTHER: 0,
   };
 
-  for (const project of projectsWithoutPhotos) {
+  for (const project of allProjects) {
     const category = project.category;
     const photos = stockPhotos[category] || stockPhotos.OTHER;
 

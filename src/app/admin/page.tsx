@@ -8,7 +8,43 @@ import { Input } from '@/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { type Project, type Inquiry, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG } from '@/types'
+import { type Project, type Inquiry, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG } from '@/types'
+
+// ProjectSubmission type for API responses
+interface ProjectSubmission {
+  id: string
+  municipalityName: string
+  municipalityEmail: string
+  region: string | null
+  facilityName: string
+  category: string
+  projectType: string
+  briefDescription: string
+  fullDescription: string
+  urgency: string
+  estimatedCostUsd: number | null
+  technicalPowerKw: number | null
+  numberOfPanels: number | null
+  cofinancingAvailable: string | null
+  cofinancingDetails: string | null
+  cityName: string
+  address: string | null
+  cityLatitude: number
+  cityLongitude: number
+  contactName: string
+  contactEmail: string
+  contactPhone: string | null
+  partnerOrganization: string | null
+  projectSubtype: string | null
+  additionalNotes: string | null
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  reviewedAt: string | null
+  reviewedBy: string | null
+  rejectionReason: string | null
+  approvedProjectId: string | null
+  createdAt: string
+  updatedAt: string
+}
 
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {
@@ -93,12 +129,17 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
   const [projects, setProjects] = useState<Project[]>([])
   const [inquiries, setInquiries] = useState<(Inquiry & { project: Pick<Project, 'id' | 'facilityName'> })[]>([])
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmissionWithProject[]>([])
+  const [projectSubmissions, setProjectSubmissions] = useState<ProjectSubmission[]>([])
   const [isLoadingProjects, setIsLoadingProjects] = useState(true)
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(true)
-  const [activeTab, setActiveTab] = useState<'projects' | 'inquiries' | 'contacts'>('projects')
+  const [isLoadingProjectSubmissions, setIsLoadingProjectSubmissions] = useState(true)
+  const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'inquiries' | 'contacts'>('projects')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortField, setSortField] = useState<SortField>('facilityName')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+  const [selectedSubmission, setSelectedSubmission] = useState<ProjectSubmission | null>(null)
+  const [rejectionReason, setRejectionReason] = useState('')
+  const [isProcessing, setIsProcessing] = useState(false)
 
   // Fetch projects from API
   useEffect(() => {
@@ -140,6 +181,116 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
     fetchSubmissions()
   }, [authHeader])
 
+  // Fetch project submissions
+  useEffect(() => {
+    async function fetchProjectSubmissions() {
+      if (!authHeader) return
+
+      try {
+        const response = await fetch('/api/projects/submissions', {
+          headers: { Authorization: authHeader },
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setProjectSubmissions(data.submissions || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch project submissions:', error)
+      } finally {
+        setIsLoadingProjectSubmissions(false)
+      }
+    }
+    fetchProjectSubmissions()
+  }, [authHeader])
+
+  const handleApproveSubmission = async (submissionId: string) => {
+    if (!authHeader) return
+    setIsProcessing(true)
+
+    try {
+      const response = await fetch(`/api/projects/submissions/${submissionId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authHeader,
+        },
+        body: JSON.stringify({ action: 'approve', reviewedBy: 'admin' }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // Update submissions list
+        setProjectSubmissions((prev) =>
+          prev.map((s) =>
+            s.id === submissionId
+              ? { ...s, status: 'APPROVED' as const, approvedProjectId: data.projectId }
+              : s
+          )
+        )
+        // Refetch projects to include the new one
+        const projectsResponse = await fetch('/api/projects')
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json()
+          setProjects(projectsData.projects.map(transformProject))
+        }
+        setSelectedSubmission(null)
+        alert('Project approved and published!')
+      } else {
+        const data = await response.json()
+        alert(data.error || 'Failed to approve submission')
+      }
+    } catch (error) {
+      console.error('Failed to approve submission:', error)
+      alert('Failed to approve submission')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleRejectSubmission = async (submissionId: string) => {
+    if (!authHeader || !rejectionReason.trim()) {
+      alert('Please provide a rejection reason')
+      return
+    }
+    setIsProcessing(true)
+
+    try {
+      const response = await fetch(`/api/projects/submissions/${submissionId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authHeader,
+        },
+        body: JSON.stringify({
+          action: 'reject',
+          rejectionReason: rejectionReason.trim(),
+          reviewedBy: 'admin',
+        }),
+      })
+
+      if (response.ok) {
+        setProjectSubmissions((prev) =>
+          prev.map((s) =>
+            s.id === submissionId
+              ? { ...s, status: 'REJECTED' as const, rejectionReason: rejectionReason.trim() }
+              : s
+          )
+        )
+        setSelectedSubmission(null)
+        setRejectionReason('')
+        alert('Submission rejected')
+      } else {
+        const data = await response.json()
+        alert(data.error || 'Failed to reject submission')
+      }
+    } catch (error) {
+      console.error('Failed to reject submission:', error)
+      alert('Failed to reject submission')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
   const handleMarkAsHandled = async (submissionId: string, handled: boolean) => {
     if (!authHeader) return
 
@@ -164,6 +315,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
   }
 
   const unhandledCount = contactSubmissions.filter((s) => !s.handled).length
+  const pendingSubmissionsCount = projectSubmissions.filter((s) => s.status === 'PENDING').length
 
   // Filter and sort projects
   const filteredAndSortedProjects = projects
@@ -245,6 +397,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
     criticalProjects: projects.filter((p) => p.urgency === 'CRITICAL').length,
     totalInquiries: inquiries.length,
     contactSubmissions: contactSubmissions.length,
+    pendingSubmissions: pendingSubmissionsCount,
   }
 
   return (
@@ -287,19 +440,30 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-[var(--ukraine-600)]">{stats.totalInquiries}</p>
-              <p className="text-sm text-gray-500">Inquiries</p>
+              <p className="text-3xl font-bold text-amber-600">{stats.pendingSubmissions}</p>
+              <p className="text-sm text-gray-500">Pending Submissions</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-6">
           <Button
             variant={activeTab === 'projects' ? 'primary' : 'ghost'}
             onClick={() => setActiveTab('projects')}
           >
             Projects
+          </Button>
+          <Button
+            variant={activeTab === 'submissions' ? 'primary' : 'ghost'}
+            onClick={() => setActiveTab('submissions')}
+          >
+            Project Submissions
+            {pendingSubmissionsCount > 0 && (
+              <Badge variant="warning" size="sm" className="ml-2">
+                {pendingSubmissionsCount}
+              </Badge>
+            )}
           </Button>
           <Button
             variant={activeTab === 'inquiries' ? 'primary' : 'ghost'}

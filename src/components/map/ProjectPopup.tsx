@@ -98,7 +98,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         {/* View details link */}
         <Link
           href={`/projects/${project.id}`}
-          className="block w-full text-center py-2 px-4 bg-[var(--warm-500)] text-white text-sm font-medium rounded-lg hover:bg-[var(--warm-600)] transition-colors"
+          className="block w-full text-center py-2 px-4 bg-[var(--navy-600)] text-white text-sm font-medium rounded-lg hover:bg-[var(--navy-700)] transition-colors"
         >
           View Details
         </Link>

@@ -139,3 +139,65 @@ enum CofinancingStatus {
   NO
   NEEDS_CLARIFICATION
 }
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Project submissions from municipalities awaiting admin review.
+/// Once approved, a Project record is created from the submission data.
+model ProjectSubmission {
+  id                    String   @id @default(cuid())
+
+  // Municipality info
+  municipalityName      String
+  municipalityEmail     String
+  region                String?
+
+  // Project details
+  facilityName          String
+  category              Category
+  projectType           String
+  briefDescription      String   @db.VarChar(150)
+  fullDescription       String   @db.VarChar(2000)
+  urgency               Urgency  @default(MEDIUM)
+
+  // Technical & financial
+  estimatedCostUsd      Decimal? @db.Decimal(12, 2)
+  technicalPowerKw      Decimal? @db.Decimal(10, 2)
+  numberOfPanels        Int?
+  cofinancingAvailable  String?
+  cofinancingDetails    String?
+
+  // Location
+  cityName              String
+  address               String?
+  cityLatitude          Decimal  @db.Decimal(10, 8)
+  cityLongitude         Decimal  @db.Decimal(11, 8)
+
+  // Contact
+  contactName           String
+  contactEmail          String
+  contactPhone          String?
+
+  // Supporting info
+  partnerOrganization   String?
+  projectSubtype        String?
+  additionalNotes       String?  @db.VarChar(1000)
+
+  // Status tracking
+  status                SubmissionStatus @default(PENDING)
+  reviewedAt            DateTime?
+  reviewedBy            String?
+  rejectionReason       String?
+  approvedProjectId     String?  // Link to created Project if approved
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([municipalityEmail])
+}

@@ -234,7 +234,7 @@ export default function HomePage() {
                   placeholder="Search projects or municipalities..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-full border border-[var(--cream-300)] bg-[var(--cream-50)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--warm-300)] focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 rounded-full border border-[var(--cream-300)] bg-[var(--cream-50)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
                 />
               </div>
             </div>
@@ -246,13 +246,15 @@ export default function HomePage() {
                   Admin
                 </Button>
               </Link>
-              <Button
-                variant="primary"
-                size="sm"
-                className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]"
-              >
-                Support a Project
-              </Button>
+              <Link href="/submit-project">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]"
+                >
+                  Submit a Project
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -268,8 +270,8 @@ export default function HomePage() {
                   onClick={() => toggleCategory(category)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-[var(--warm-500)] text-white'
-                      : 'bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--warm-300)] hover:bg-[var(--warm-50)]'
+                      ? 'bg-[var(--navy-600)] text-white'
+                      : 'bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
                   }`}
                 >
                   <span>{config.icon}</span>
@@ -282,7 +284,7 @@ export default function HomePage() {
             <select
               value={selectedUrgency || ''}
               onChange={(e) => setSelectedUrgency((e.target.value as Urgency) || null)}
-              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--warm-300)]"
+              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
             >
               <option value="">Urgency</option>
               {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
@@ -296,7 +298,7 @@ export default function HomePage() {
             <select
               value={selectedStatus || ''}
               onChange={(e) => setSelectedStatus((e.target.value as Status) || null)}
-              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--warm-300)]"
+              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
             >
               <option value="">Status</option>
               {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
@@ -310,7 +312,7 @@ export default function HomePage() {
             <select
               value={selectedCofinancing || ''}
               onChange={(e) => setSelectedCofinancing((e.target.value as CofinancingStatus) || null)}
-              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--warm-300)]"
+              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
             >
               <option value="">Co-financing</option>
               {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
@@ -376,7 +378,7 @@ export default function HomePage() {
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="px-3 py-1.5 rounded-full text-sm font-medium text-[var(--warm-600)] hover:bg-[var(--warm-50)] transition-colors"
+                className="px-3 py-1.5 rounded-full text-sm font-medium text-[var(--navy-600)] hover:bg-[var(--navy-50)] transition-colors"
               >
                 Clear ({activeFilterCount})
               </button>

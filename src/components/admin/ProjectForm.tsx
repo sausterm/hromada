@@ -456,7 +456,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
                 <select
                   value={formData.projectType}
                   onChange={handleChange('projectType')}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--warm-200)] focus:border-[var(--warm-500)]"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--navy-200)] focus:border-[var(--navy-500)]"
                 >
                   <option value="">-- Select Type --</option>
                   {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
@@ -531,7 +531,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading, authHeader
                 <select
                   value={formData.cofinancingAvailable}
                   onChange={handleChange('cofinancingAvailable')}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--warm-200)] focus:border-[var(--warm-500)]"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--navy-200)] focus:border-[var(--navy-500)]"
                 >
                   <option value="">-- Select --</option>
                   {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (

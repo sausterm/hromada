@@ -65,7 +65,7 @@
   --ukraine-gold: #FFD500;
 
   /* Category colors for map pins - warmer tones */
-  --category-hospital: #D4754E;
+  --category-hospital: #C75B39;
   --category-school: #7CB518;
   --category-water: #3B8EA5;
   --category-energy: #E6A855;
@@ -75,7 +75,7 @@
   --urgency-low: #948c82;
   --urgency-medium: #E6A855;
   --urgency-high: #D4754E;
-  --urgency-critical: #c53030;
+  --urgency-critical: #B84A32;
 }
 
 @theme inline {
@@ -185,7 +185,7 @@ body {
 /* Highlighted marker state */
 .custom-marker.highlighted {
   transform: scale(1.2);
-  box-shadow: 0 0 0 4px rgba(212, 117, 78, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35);
+  box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35);
   z-index: 1000 !important;
 }
 
@@ -201,12 +201,12 @@ body {
 
 /* Map cluster styles */
 .marker-cluster {
-  background-color: rgba(212, 117, 78, 0.6);
+  background-color: rgba(44, 62, 80, 0.6);
   border-radius: 50%;
 }
 
 .marker-cluster div {
-  background-color: var(--warm-500);
+  background-color: var(--navy-600);
   color: white;
   font-weight: 600;
   border-radius: 50%;
@@ -273,7 +273,7 @@ body {
 
 /* Gradient overlays */
 .gradient-warm {
-  background: linear-gradient(135deg, rgba(212, 117, 78, 0.05) 0%, rgba(230, 168, 85, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(44, 62, 80, 0.05) 0%, rgba(61, 90, 128, 0.05) 100%);
 }
 
 /* Text truncation utilities */
@@ -293,7 +293,7 @@ body {
 
 /* Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--warm-500);
+  outline: 2px solid var(--navy-500);
   outline-offset: 2px;
 }
 

@@ -204,12 +204,13 @@ export default function HomePage() {
     <div className="h-screen flex flex-col bg-[var(--cream-50)]">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
-        <div className="px-4 lg:px-6 py-3">
+        {/* Top Bar - Navigation */}
+        <div className="px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Left - Admin */}
             <div className="flex-1">
               <Link href="/admin" className="hidden sm:inline-block">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="md">
                   Admin
                 </Button>
               </Link>
@@ -217,7 +218,7 @@ export default function HomePage() {
 
             {/* Center - Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-2xl font-bold text-[var(--navy-700)]">
+              <span className="text-3xl font-bold text-[var(--navy-700)]">
                 hromada <span className="opacity-60">|</span> громада
               </span>
             </Link>
@@ -225,14 +226,14 @@ export default function HomePage() {
             {/* Right - About & Submit */}
             <div className="flex-1 flex items-center justify-end gap-3">
               <Link href="/about" className="hidden sm:inline-block">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="md">
                   About Us
                 </Button>
               </Link>
               <Link href="/submit-project">
                 <Button
                   variant="primary"
-                  size="sm"
+                  size="md"
                   className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]"
                 >
                   Submit a Project
@@ -240,9 +241,11 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+        </div>
 
-          {/* Filter Chips */}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+        {/* Filter Bar */}
+        <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)]">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Category chips */}
             {(Object.keys(CATEGORY_CONFIG) as Category[]).map((category) => {
               const config = CATEGORY_CONFIG[category]
@@ -251,10 +254,10 @@ export default function HomePage() {
                 <button
                   key={category}
                   onClick={() => toggleCategory(category)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all ${
                     isActive
                       ? 'bg-[var(--navy-600)] text-white'
-                      : 'bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
+                      : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
                   }`}
                 >
                   <span>{config.icon}</span>
@@ -267,7 +270,7 @@ export default function HomePage() {
             <select
               value={selectedUrgency || ''}
               onChange={(e) => setSelectedUrgency((e.target.value as Urgency) || null)}
-              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
+              className="px-3 py-1 rounded-full text-sm font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
             >
               <option value="">Urgency</option>
               {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
@@ -281,7 +284,7 @@ export default function HomePage() {
             <select
               value={selectedStatus || ''}
               onChange={(e) => setSelectedStatus((e.target.value as Status) || null)}
-              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
+              className="px-3 py-1 rounded-full text-sm font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
             >
               <option value="">Status</option>
               {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
@@ -295,7 +298,7 @@ export default function HomePage() {
             <select
               value={selectedCofinancing || ''}
               onChange={(e) => setSelectedCofinancing((e.target.value as CofinancingStatus) || null)}
-              className="px-3 py-1.5 rounded-full text-sm font-medium bg-[var(--cream-50)] border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
+              className="px-3 py-1 rounded-full text-sm font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)]"
             >
               <option value="">Co-financing</option>
               {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
@@ -306,7 +309,7 @@ export default function HomePage() {
             </select>
 
             {/* Price Range Slider */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--cream-50)] border border-[var(--cream-300)]">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--cream-300)]">
               <span className="text-xs text-[var(--navy-600)] font-medium whitespace-nowrap">
                 ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[0] / 1000)}k`}
               </span>
@@ -361,7 +364,7 @@ export default function HomePage() {
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="px-3 py-1.5 rounded-full text-sm font-medium text-[var(--navy-600)] hover:bg-[var(--navy-50)] transition-colors"
+                className="px-3 py-1 rounded-full text-sm font-medium text-[var(--navy-600)] hover:bg-[var(--navy-50)] transition-colors"
               >
                 Clear ({activeFilterCount})
               </button>

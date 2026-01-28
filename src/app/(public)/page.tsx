@@ -355,11 +355,11 @@ export default function HomePage() {
             </select>
 
             {/* Price Range Slider */}
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[var(--cream-300)]">
-              <span className="text-xs text-[var(--navy-600)] font-medium w-10 text-right">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white border border-[var(--cream-300)]">
+              <span className="text-xs text-[var(--navy-600)] font-medium w-8 text-right">
                 ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[0] / 1000)}k`}
               </span>
-              <div className="relative w-28 h-5 flex items-center">
+              <div className="relative w-20 h-5 flex items-center">
                 {/* Track background */}
                 <div className="absolute w-full h-1.5 bg-[var(--cream-300)] rounded-full" />
                 {/* Active track */}
@@ -401,7 +401,7 @@ export default function HomePage() {
                   className="absolute w-full h-full appearance-none bg-transparent pointer-events-none z-[4] [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
                 />
               </div>
-              <span className="text-xs text-[var(--navy-600)] font-medium w-10 text-left">
+              <span className="text-xs text-[var(--navy-600)] font-medium w-8 text-left">
                 ${priceRange[1] >= 1000000 ? `${(priceRange[1] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[1] / 1000)}k`}
               </span>
             </div>
@@ -410,13 +410,13 @@ export default function HomePage() {
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-[var(--navy-100)] text-[var(--navy-700)] hover:bg-[var(--navy-200)] transition-colors border border-[var(--navy-200)]"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm font-medium bg-[var(--navy-100)] text-[var(--navy-700)] hover:bg-[var(--navy-200)] transition-colors border border-[var(--navy-200)]"
               >
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                Clear all
-                <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-[var(--navy-600)] text-white text-xs font-bold">
+                Clear
+                <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-[var(--navy-600)] text-white text-xs font-bold">
                   {activeFilterCount}
                 </span>
               </button>

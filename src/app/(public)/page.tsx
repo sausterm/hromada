@@ -206,20 +206,24 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
         <div className="px-4 lg:px-6 py-3">
           <div className="flex items-center justify-between gap-4">
-            {/* Logo */}
+            {/* Left - Admin */}
+            <div className="flex-1">
+              <Link href="/admin" className="hidden sm:inline-block">
+                <Button variant="ghost" size="sm">
+                  Admin
+                </Button>
+              </Link>
+            </div>
+
+            {/* Center - Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
               <span className="text-2xl font-bold text-[var(--navy-700)]">
                 hromada <span className="opacity-60">|</span> громада
               </span>
             </Link>
 
-            {/* Actions */}
-            <div className="flex items-center gap-3">
-              <Link href="/admin" className="hidden sm:block">
-                <Button variant="ghost" size="sm">
-                  Admin
-                </Button>
-              </Link>
+            {/* Right - Submit */}
+            <div className="flex-1 flex justify-end">
               <Link href="/submit-project">
                 <Button
                   variant="primary"

@@ -222,8 +222,13 @@ export default function HomePage() {
               </span>
             </Link>
 
-            {/* Right - Submit */}
-            <div className="flex-1 flex justify-end">
+            {/* Right - About & Submit */}
+            <div className="flex-1 flex items-center justify-end gap-3">
+              <Link href="/about" className="hidden sm:inline-block">
+                <Button variant="ghost" size="sm">
+                  About Us
+                </Button>
+              </Link>
               <Link href="/submit-project">
                 <Button
                   variant="primary"

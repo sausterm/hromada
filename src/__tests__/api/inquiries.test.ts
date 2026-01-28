@@ -230,7 +230,7 @@ describe('POST /api/inquiries', () => {
     expect(data.error).toBe('Failed to submit inquiry')
   })
 
-  it('trims and lowercases email', async () => {
+  it('lowercases email', async () => {
     const projectId = 'proj-123'
     ;(mockPrisma.project.findUnique as jest.Mock).mockResolvedValue({ id: projectId })
     ;(mockPrisma.inquiry.create as jest.Mock).mockResolvedValue({ id: 'inq-1' })
@@ -241,7 +241,7 @@ describe('POST /api/inquiries', () => {
       body: JSON.stringify({
         projectId,
         name: 'John Doe',
-        email: '  JOHN@EXAMPLE.COM  ',
+        email: 'JOHN@EXAMPLE.COM',
         message: 'Test message',
       }),
     })

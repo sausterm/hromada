@@ -32,13 +32,13 @@ describe('Button', () => {
 
   it('applies variant styles', () => {
     const { rerender } = render(<Button variant="primary">Primary</Button>)
-    expect(screen.getByRole('button')).toHaveClass('bg-[var(--ukraine-600)]')
+    expect(screen.getByRole('button')).toHaveClass('bg-[var(--navy-600)]')
 
     rerender(<Button variant="secondary">Secondary</Button>)
-    expect(screen.getByRole('button')).toHaveClass('bg-gray-100')
+    expect(screen.getByRole('button')).toHaveClass('bg-[var(--cream-200)]')
 
     rerender(<Button variant="danger">Danger</Button>)
-    expect(screen.getByRole('button')).toHaveClass('bg-red-600')
+    expect(screen.getByRole('button')).toHaveClass('bg-[#B84A32]')
   })
 
   it('applies size styles', () => {

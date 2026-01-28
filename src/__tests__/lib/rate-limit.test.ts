@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { rateLimit } from '@/lib/rate-limit'
 import { NextRequest } from 'next/server'
 

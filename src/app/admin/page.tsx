@@ -636,6 +636,323 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
           </div>
         )}
 
+        {activeTab === 'submissions' && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Project Submissions</h2>
+
+            {isLoadingProjectSubmissions ? (
+              <div className="flex justify-center py-8">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : projectSubmissions.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-gray-500">No project submissions yet.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {/* Pending submissions first */}
+                {projectSubmissions
+                  .sort((a, b) => {
+                    // Pending first, then by date
+                    if (a.status === 'PENDING' && b.status !== 'PENDING') return -1
+                    if (a.status !== 'PENDING' && b.status === 'PENDING') return 1
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                  })
+                  .map((submission) => (
+                    <Card
+                      key={submission.id}
+                      className={submission.status !== 'PENDING' ? 'opacity-60' : ''}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="font-semibold text-gray-900">
+                                {submission.facilityName}
+                              </p>
+                              <Badge
+                                size="sm"
+                                variant={
+                                  submission.status === 'PENDING'
+                                    ? 'warning'
+                                    : submission.status === 'APPROVED'
+                                    ? 'success'
+                                    : 'danger'
+                                }
+                              >
+                                {submission.status}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600">
+                              {submission.municipalityName}
+                              {submission.region && ` • ${submission.region}`}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {submission.cityName}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <Badge size="sm" dot dotColor={CATEGORY_CONFIG[submission.category as keyof typeof CATEGORY_CONFIG]?.color || '#888'}>
+                              {CATEGORY_CONFIG[submission.category as keyof typeof CATEGORY_CONFIG]?.label || submission.category}
+                            </Badge>
+                            <p className="text-xs text-gray-400 mt-1">
+                              {new Date(submission.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Brief description */}
+                        <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg mb-3">
+                          {submission.briefDescription}
+                        </p>
+
+                        {/* Details grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-3">
+                          <div>
+                            <span className="text-gray-500">Type:</span>{' '}
+                            <span className="font-medium">{submission.projectType}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Urgency:</span>{' '}
+                            <span className="font-medium">{submission.urgency}</span>
+                          </div>
+                          {submission.estimatedCostUsd && (
+                            <div>
+                              <span className="text-gray-500">Cost:</span>{' '}
+                              <span className="font-medium">
+                                ${Number(submission.estimatedCostUsd).toLocaleString()}
+                              </span>
+                            </div>
+                          )}
+                          {submission.cofinancingAvailable && (
+                            <div>
+                              <span className="text-gray-500">Co-financing:</span>{' '}
+                              <span className="font-medium">{submission.cofinancingAvailable}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Contact info */}
+                        <div className="text-sm text-gray-600 mb-3">
+                          <span className="font-medium">Contact:</span> {submission.contactName} •{' '}
+                          <a href={`mailto:${submission.contactEmail}`} className="text-blue-600 hover:underline">
+                            {submission.contactEmail}
+                          </a>
+                          {submission.contactPhone && ` • ${submission.contactPhone}`}
+                        </div>
+
+                        {/* Rejection reason if rejected */}
+                        {submission.status === 'REJECTED' && submission.rejectionReason && (
+                          <div className="text-sm text-red-600 bg-red-50 p-2 rounded mb-3">
+                            <strong>Rejection reason:</strong> {submission.rejectionReason}
+                          </div>
+                        )}
+
+                        {/* Approved project link */}
+                        {submission.status === 'APPROVED' && submission.approvedProjectId && (
+                          <div className="text-sm text-green-600 bg-green-50 p-2 rounded mb-3">
+                            <Link href={`/projects/${submission.approvedProjectId}`} className="hover:underline">
+                              View approved project →
+                            </Link>
+                          </div>
+                        )}
+
+                        {/* Actions for pending submissions */}
+                        {submission.status === 'PENDING' && (
+                          <div className="flex flex-wrap gap-2 pt-3 border-t">
+                            <Button
+                              size="sm"
+                              variant="primary"
+                              onClick={() => setSelectedSubmission(submission)}
+                            >
+                              Review Details
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-green-600 hover:bg-green-50"
+                              onClick={() => handleApproveSubmission(submission.id)}
+                              disabled={isProcessing}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-red-600 hover:bg-red-50"
+                              onClick={() => {
+                                setSelectedSubmission(submission)
+                                setRejectionReason('')
+                              }}
+                              disabled={isProcessing}
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+              </div>
+            )}
+
+            {/* Review/Reject Modal */}
+            {selectedSubmission && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <CardHeader>
+                    <CardTitle>Review Submission: {selectedSubmission.facilityName}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Full details */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <p className="text-gray-500">Municipality</p>
+                        <p className="font-medium">{selectedSubmission.municipalityName}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Municipality Email</p>
+                        <p className="font-medium">{selectedSubmission.municipalityEmail}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Category</p>
+                        <p className="font-medium">{selectedSubmission.category}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Project Type</p>
+                        <p className="font-medium">{selectedSubmission.projectType}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Urgency</p>
+                        <p className="font-medium">{selectedSubmission.urgency}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500">Location</p>
+                        <p className="font-medium">
+                          {selectedSubmission.cityName}
+                          {selectedSubmission.address && ` - ${selectedSubmission.address}`}
+                        </p>
+                      </div>
+                      {selectedSubmission.estimatedCostUsd && (
+                        <div>
+                          <p className="text-gray-500">Estimated Cost</p>
+                          <p className="font-medium">
+                            ${Number(selectedSubmission.estimatedCostUsd).toLocaleString()}
+                          </p>
+                        </div>
+                      )}
+                      {selectedSubmission.technicalPowerKw && (
+                        <div>
+                          <p className="text-gray-500">Technical Power</p>
+                          <p className="font-medium">{selectedSubmission.technicalPowerKw} kW</p>
+                        </div>
+                      )}
+                      {selectedSubmission.numberOfPanels && (
+                        <div>
+                          <p className="text-gray-500">Number of Panels</p>
+                          <p className="font-medium">{selectedSubmission.numberOfPanels}</p>
+                        </div>
+                      )}
+                      {selectedSubmission.cofinancingAvailable && (
+                        <div>
+                          <p className="text-gray-500">Co-financing</p>
+                          <p className="font-medium">
+                            {selectedSubmission.cofinancingAvailable}
+                            {selectedSubmission.cofinancingDetails && ` - ${selectedSubmission.cofinancingDetails}`}
+                          </p>
+                        </div>
+                      )}
+                      {selectedSubmission.partnerOrganization && (
+                        <div>
+                          <p className="text-gray-500">Partner Organization</p>
+                          <p className="font-medium">{selectedSubmission.partnerOrganization}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="text-gray-500 text-sm mb-1">Brief Description</p>
+                      <p className="bg-gray-50 p-3 rounded text-sm">{selectedSubmission.briefDescription}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-gray-500 text-sm mb-1">Full Description</p>
+                      <p className="bg-gray-50 p-3 rounded text-sm whitespace-pre-wrap">
+                        {selectedSubmission.fullDescription}
+                      </p>
+                    </div>
+
+                    {selectedSubmission.additionalNotes && (
+                      <div>
+                        <p className="text-gray-500 text-sm mb-1">Additional Notes</p>
+                        <p className="bg-gray-50 p-3 rounded text-sm">{selectedSubmission.additionalNotes}</p>
+                      </div>
+                    )}
+
+                    <div className="border-t pt-4">
+                      <p className="text-gray-500 text-sm mb-1">Contact Information</p>
+                      <p className="font-medium">{selectedSubmission.contactName}</p>
+                      <p className="text-sm">
+                        <a href={`mailto:${selectedSubmission.contactEmail}`} className="text-blue-600 hover:underline">
+                          {selectedSubmission.contactEmail}
+                        </a>
+                        {selectedSubmission.contactPhone && ` • ${selectedSubmission.contactPhone}`}
+                      </p>
+                    </div>
+
+                    {/* Rejection reason input */}
+                    <div className="border-t pt-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Rejection Reason (required to reject)
+                      </label>
+                      <textarea
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg p-3 text-sm"
+                        rows={3}
+                        placeholder="Explain why this submission is being rejected..."
+                      />
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-4 border-t">
+                      <Button
+                        variant="primary"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => handleApproveSubmission(selectedSubmission.id)}
+                        disabled={isProcessing}
+                        isLoading={isProcessing}
+                      >
+                        Approve & Publish
+                      </Button>
+                      <Button
+                        variant="danger"
+                        onClick={() => handleRejectSubmission(selectedSubmission.id)}
+                        disabled={isProcessing || !rejectionReason.trim()}
+                        isLoading={isProcessing}
+                      >
+                        Reject
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setSelectedSubmission(null)
+                          setRejectionReason('')
+                        }}
+                        disabled={isProcessing}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === 'inquiries' && (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Recent Inquiries</h2>

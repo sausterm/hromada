@@ -213,32 +213,6 @@ export default function HomePage() {
               </span>
             </Link>
 
-            {/* Search */}
-            <div className="flex-1 max-w-md hidden md:block">
-              <div className="relative">
-                <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-400)]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search projects or municipalities..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-full border border-[var(--cream-300)] bg-[var(--cream-50)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
-                />
-              </div>
-            </div>
-
             {/* Actions */}
             <div className="flex items-center gap-3">
               <Link href="/admin" className="hidden sm:block">
@@ -393,17 +367,44 @@ export default function HomePage() {
         <div className="w-full lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-50)]">
           {/* Results Header */}
           <div className="sticky top-0 z-10 bg-[var(--cream-100)] px-4 py-3 border-b border-[var(--cream-300)]">
-            <p className="text-[var(--navy-600)] text-sm">
-              <span className="font-semibold text-[var(--navy-700)]">
-                {projectsInView.length}
-              </span>{' '}
-              {projectsInView.length === 1 ? 'project' : 'projects'} in this area
-              {filteredProjects.length !== allProjects.length && (
-                <span className="text-[var(--navy-400)]">
-                  {' '}• {filteredProjects.length} total matching filters
-                </span>
-              )}
-            </p>
+            <div className="flex items-center justify-between gap-4">
+              {/* Search */}
+              <div className="flex-1 max-w-xs">
+                <div className="relative">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-400)]"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-50)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+                  />
+                </div>
+              </div>
+              <p className="text-[var(--navy-600)] text-sm whitespace-nowrap">
+                <span className="font-semibold text-[var(--navy-700)]">
+                  {projectsInView.length}
+                </span>{' '}
+                {projectsInView.length === 1 ? 'project' : 'projects'} in this area
+                {filteredProjects.length !== allProjects.length && (
+                  <span className="text-[var(--navy-400)]">
+                    {' '}• {filteredProjects.length} total matching filters
+                  </span>
+                )}
+              </p>
+            </div>
           </div>
 
           {/* Project Cards Grid */}

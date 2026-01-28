@@ -22,6 +22,7 @@ export interface Project {
   category: Category
   briefDescription: string
   description: string
+  fullDescription?: string  // From database, mapped to description for display
   address: string
   // City-level coordinates only (for security during wartime)
   cityLatitude: number

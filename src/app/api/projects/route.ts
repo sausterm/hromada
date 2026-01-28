@@ -44,12 +44,22 @@ export async function GET(request: NextRequest) {
     if (allParam === 'true') {
       const projects = await prisma.project.findMany({
         where,
+        include: {
+          photos: {
+            orderBy: { sortOrder: 'asc' },
+          },
+        },
         orderBy: [
           { urgency: 'desc' },
           { createdAt: 'desc' },
         ],
       })
-      return NextResponse.json({ projects, total: projects.length })
+      // Transform photos relation to photos string array for frontend compatibility
+      const transformedProjects = projects.map((project) => ({
+        ...project,
+        photos: project.photos.map((img) => img.url),
+      }))
+      return NextResponse.json({ projects: transformedProjects, total: projects.length })
     }
 
     // Get total count for pagination info
@@ -58,6 +68,11 @@ export async function GET(request: NextRequest) {
     // Cursor-based pagination for better performance
     const projects = await prisma.project.findMany({
       where,
+      include: {
+        photos: {
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
       take: limit + 1, // Take one extra to check if there's more
       ...(cursor && {
         cursor: { id: cursor },
@@ -74,8 +89,14 @@ export async function GET(request: NextRequest) {
     const items = hasMore ? projects.slice(0, -1) : projects
     const nextCursor = hasMore ? items[items.length - 1]?.id : null
 
+    // Transform photos relation to photos string array for frontend compatibility
+    const transformedItems = items.map((project) => ({
+      ...project,
+      photos: project.photos.map((img) => img.url),
+    }))
+
     return NextResponse.json({
-      projects: items,
+      projects: transformedItems,
       pagination: {
         total,
         limit,

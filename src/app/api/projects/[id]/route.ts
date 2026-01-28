@@ -13,6 +13,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const project = await prisma.project.findUnique({
       where: { id },
+      include: {
+        photos: {
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
     })
 
     if (!project) {
@@ -22,7 +27,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       )
     }
 
-    return NextResponse.json({ project })
+    // Transform photos relation to photos string array for frontend compatibility
+    const transformedProject = {
+      ...project,
+      photos: project.photos.map((img) => img.url),
+    }
+
+    return NextResponse.json({ project: transformedProject })
   } catch (error) {
     console.error('Error fetching project:', error)
     return NextResponse.json(

@@ -290,6 +290,14 @@ export default function SubmitProjectPage() {
 
       {/* Form Instructions */}
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Back Button */}
+        <Link href="/" className="inline-flex items-center gap-2 text-[var(--navy-600)] hover:text-[var(--navy-800)] mb-6 group">
+          <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span className="font-medium">{t('submitProject.buttons.backToHome')}</span>
+        </Link>
+
         <div className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)] mb-8">
           <h2 className="font-semibold text-[var(--navy-700)] mb-3">{t('submitProject.beforeYouBegin')}</h2>
           <ul className="text-[var(--navy-600)] space-y-2 text-sm">

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
 import { verifyAdminAuth } from '@/lib/auth'
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@hromada.org'
@@ -28,6 +29,12 @@ export async function GET(request: NextRequest) {
 
 // POST - Create new submission (public)
 export async function POST(request: NextRequest) {
+  // Rate limit: 3 submissions per hour per IP
+  const rateLimitResponse = rateLimit(request, RATE_LIMITS.projectSubmission)
+  if (rateLimitResponse) {
+    return rateLimitResponse
+  }
+
   try {
     const data = await request.json()
 

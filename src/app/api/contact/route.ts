@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { sendContactNotification } from '@/lib/email'
 import { verifyAdminAuth } from '@/lib/auth'
+import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 // GET /api/contact - List all contact submissions (admin only)
 export async function GET(request: NextRequest) {
@@ -49,6 +50,12 @@ export async function GET(request: NextRequest) {
 
 // POST /api/contact - Create new contact submission (public)
 export async function POST(request: NextRequest) {
+  // Rate limit: 5 submissions per minute per IP
+  const rateLimitResponse = rateLimit(request, RATE_LIMITS.contact)
+  if (rateLimitResponse) {
+    return rateLimitResponse
+  }
+
   try {
     const body = await request.json()
 

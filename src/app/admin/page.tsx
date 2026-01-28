@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { type Project, type Inquiry, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG } from '@/types'
+import { type Project, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG } from '@/types'
 
 // ProjectSubmission type for API responses
 interface ProjectSubmission {
@@ -127,13 +127,12 @@ type SortDirection = 'asc' | 'desc'
 
 function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader: string | null }) {
   const [projects, setProjects] = useState<Project[]>([])
-  const [inquiries, setInquiries] = useState<(Inquiry & { project: Pick<Project, 'id' | 'facilityName'> })[]>([])
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmissionWithProject[]>([])
   const [projectSubmissions, setProjectSubmissions] = useState<ProjectSubmission[]>([])
   const [isLoadingProjects, setIsLoadingProjects] = useState(true)
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(true)
   const [isLoadingProjectSubmissions, setIsLoadingProjectSubmissions] = useState(true)
-  const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'inquiries' | 'contacts'>('projects')
+  const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'contacts'>('projects')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortField, setSortField] = useState<SortField>('facilityName')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
@@ -399,7 +398,6 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
     totalProjects: projects.length,
     openProjects: projects.filter((p) => p.status === 'OPEN').length,
     criticalProjects: projects.filter((p) => p.urgency === 'CRITICAL').length,
-    totalInquiries: inquiries.length,
     contactSubmissions: contactSubmissions.length,
     pendingSubmissions: pendingSubmissionsCount,
   }
@@ -466,17 +464,6 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
             {pendingSubmissionsCount > 0 && (
               <Badge variant="warning" size="sm" className="ml-2">
                 {pendingSubmissionsCount}
-              </Badge>
-            )}
-          </Button>
-          <Button
-            variant={activeTab === 'inquiries' ? 'primary' : 'ghost'}
-            onClick={() => setActiveTab('inquiries')}
-          >
-            Inquiries
-            {inquiries.length > 0 && (
-              <Badge variant="danger" size="sm" className="ml-2">
-                {inquiries.length}
               </Badge>
             )}
           </Button>
@@ -972,49 +959,6 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                 </Card>
               </div>
             )}
-          </div>
-        )}
-
-        {activeTab === 'inquiries' && (
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Recent Inquiries</h2>
-
-            <div className="space-y-4">
-              {inquiries.map((inquiry) => (
-                <Card key={inquiry.id}>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <p className="font-medium text-gray-900">{inquiry.name}</p>
-                        <p className="text-sm text-gray-500">{inquiry.email}</p>
-                        {inquiry.organization && (
-                          <p className="text-sm text-gray-500">{inquiry.organization}</p>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <Badge size="sm" variant="info">
-                          {inquiry.project.facilityName}
-                        </Badge>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {new Date(inquiry.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="text-gray-700 bg-gray-50 p-3 rounded-lg text-sm">
-                      {inquiry.message}
-                    </p>
-                    <div className="flex gap-2 mt-3">
-                      <Button size="sm" variant="primary">
-                        Reply
-                      </Button>
-                      <Button size="sm" variant="ghost">
-                        Mark as Read
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
           </div>
         )}
 

@@ -50,17 +50,6 @@ export interface Project {
   updatedAt: Date
 }
 
-// Inquiry from potential donors
-export interface Inquiry {
-  id: string
-  projectId: string
-  name: string
-  email: string
-  organization?: string
-  message: string
-  createdAt: Date
-}
-
 // Contact submission from donors
 export interface ContactSubmission {
   id: string

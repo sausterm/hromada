@@ -47,7 +47,6 @@ model Project {
 
   // Relations
   photos             ProjectImage[]
-  inquiries          Inquiry[]
   contactSubmissions ContactSubmission[]
 
   @@index([category])
@@ -70,22 +69,6 @@ model ProjectImage {
 
   @@index([projectId])
   @@index([sortOrder])
-}
-
-model Inquiry {
-  id           String   @id @default(cuid())
-  projectId    String
-  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  name         String
-  email        String
-  organization String?
-  message      String   @db.Text
-  read         Boolean  @default(false)
-  createdAt    DateTime @default(now())
-
-  @@index([projectId])
-  @@index([createdAt])
-  @@index([read])
 }
 
 /// Contact submissions from donors interested in projects.

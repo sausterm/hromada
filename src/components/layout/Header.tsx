@@ -57,16 +57,23 @@ export function Header({ children }: HeaderProps) {
           </div>
 
           {/* Center - Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 flex-shrink-0 transition-opacity hover:opacity-80"
-          >
+          <div className="flex items-center gap-2 flex-shrink-0">
             <span className="font-logo text-[var(--navy-700)] text-[1.625rem] sm:text-[2rem] lg:text-[2.375rem]">
-              <span className={locale === 'en' ? 'font-bold' : 'font-normal'}>hromada</span>
+              <button
+                onClick={() => switchLocale('en')}
+                className={`${locale === 'en' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}
+              >
+                hromada
+              </button>
               <span className="font-normal"> | </span>
-              <span className={locale === 'uk' ? 'font-bold' : 'font-normal'}>громада</span>
+              <button
+                onClick={() => switchLocale('uk')}
+                className={`${locale === 'uk' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}
+              >
+                громада
+              </button>
             </span>
-          </Link>
+          </div>
 
           {/* Right - Language, About & Submit */}
           <div className="flex-1 flex items-center justify-end gap-3">

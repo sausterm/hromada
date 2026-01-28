@@ -144,7 +144,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Pagination
-  const ITEMS_PER_PAGE = 15
+  const PAGE_SIZE_OPTIONS = [20, 50, 100] as const
+  const [itemsPerPage, setItemsPerPage] = useState<number>(20)
   const [currentPage, setCurrentPage] = useState(1)
 
   // Fetch projects from API
@@ -358,16 +359,16 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     })
 
   // Paginate the filtered projects
-  const totalPages = Math.ceil(filteredAndSortedProjects.length / ITEMS_PER_PAGE)
+  const totalPages = Math.ceil(filteredAndSortedProjects.length / itemsPerPage)
   const paginatedProjects = filteredAndSortedProjects.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   )
 
-  // Reset to page 1 when search changes
+  // Reset to page 1 when search or page size changes
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchQuery])
+  }, [searchQuery, itemsPerPage])
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -656,13 +657,32 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               </div>
 
               {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="px-4 py-3 border-t flex items-center justify-between">
+              <div className="px-4 py-3 border-t flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
                   <p className="text-sm text-gray-500">
-                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
-                    {Math.min(currentPage * ITEMS_PER_PAGE, filteredAndSortedProjects.length)} of{' '}
+                    Showing {filteredAndSortedProjects.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to{' '}
+                    {Math.min(currentPage * itemsPerPage, filteredAndSortedProjects.length)} of{' '}
                     {filteredAndSortedProjects.length} projects
                   </p>
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="pageSize" className="text-sm text-gray-500">
+                      Per page:
+                    </label>
+                    <select
+                      id="pageSize"
+                      value={itemsPerPage}
+                      onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                      className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {PAGE_SIZE_OPTIONS.map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {totalPages > 1 && (
                   <div className="flex gap-2">
                     <Button
                       variant="ghost"
@@ -709,8 +729,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                       Next
                     </Button>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </Card>
           </div>
         )}

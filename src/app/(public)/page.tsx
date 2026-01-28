@@ -68,6 +68,10 @@ export default function HomePage() {
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000000])
 
+  // Pagination for card list
+  const ITEMS_PER_PAGE = 12
+  const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
+
   // Filtered projects based on search and filters
   const filteredProjects = useMemo(() => {
     let result = allProjects
@@ -120,6 +124,23 @@ export default function HomePage() {
       visibleProjects.some((vp) => vp.id === p.id)
     )
   }, [filteredProjects, visibleProjects])
+
+  // Paginated projects for the card list
+  const paginatedProjects = useMemo(() => {
+    return projectsInView.slice(0, displayCount)
+  }, [projectsInView, displayCount])
+
+  const hasMoreProjects = projectsInView.length > displayCount
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setDisplayCount(ITEMS_PER_PAGE)
+  }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, priceRange])
+
+  // Show more projects
+  const showMoreProjects = useCallback(() => {
+    setDisplayCount((prev) => prev + ITEMS_PER_PAGE)
+  }, [])
 
   // Handle map bounds change - only update if visible projects actually changed
   const handleBoundsChange = useCallback(
@@ -421,22 +442,36 @@ export default function HomePage() {
 
           {/* Project Cards Grid */}
           <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
-            {projectsInView.length > 0 ? (
-              projectsInView.map((project) => (
-                <div
-                  key={project.id}
-                  ref={(el) => {
-                    cardRefs.current[project.id] = el
-                  }}
-                >
-                  <ProjectCard
-                    project={project}
-                    isHighlighted={highlightedProjectId === project.id}
-                    onMouseEnter={() => handleCardHover(project.id)}
-                    onMouseLeave={() => handleCardHover(null)}
-                  />
-                </div>
-              ))
+            {paginatedProjects.length > 0 ? (
+              <>
+                {paginatedProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    ref={(el) => {
+                      cardRefs.current[project.id] = el
+                    }}
+                  >
+                    <ProjectCard
+                      project={project}
+                      isHighlighted={highlightedProjectId === project.id}
+                      onMouseEnter={() => handleCardHover(project.id)}
+                      onMouseLeave={() => handleCardHover(null)}
+                    />
+                  </div>
+                ))}
+                {/* Show More Button */}
+                {hasMoreProjects && (
+                  <div className="col-span-full flex justify-center py-4">
+                    <Button
+                      variant="outline"
+                      onClick={showMoreProjects}
+                      className="px-8"
+                    >
+                      Show More ({projectsInView.length - displayCount} remaining)
+                    </Button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="col-span-full py-12 text-center">
                 <div className="text-[var(--navy-300)] mb-4">

@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAdminAuth } from '@/lib/auth'
 
-// GET /api/projects - List all projects (public)
+// Default page size
+const DEFAULT_PAGE_SIZE = 20
+const MAX_PAGE_SIZE = 100
+
+// GET /api/projects - List projects with optional pagination (public)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -10,6 +14,16 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const urgency = searchParams.get('urgency')
     const projectType = searchParams.get('projectType')
+
+    // Pagination params
+    const cursor = searchParams.get('cursor') // cursor-based pagination
+    const limitParam = searchParams.get('limit')
+    const allParam = searchParams.get('all') // ?all=true returns all (for map)
+
+    const limit = Math.min(
+      parseInt(limitParam || String(DEFAULT_PAGE_SIZE), 10) || DEFAULT_PAGE_SIZE,
+      MAX_PAGE_SIZE
+    )
 
     const where: any = {}
 
@@ -26,15 +40,49 @@ export async function GET(request: NextRequest) {
       where.projectType = projectType
     }
 
+    // If ?all=true, return all projects (needed for map markers)
+    if (allParam === 'true') {
+      const projects = await prisma.project.findMany({
+        where,
+        orderBy: [
+          { urgency: 'desc' },
+          { createdAt: 'desc' },
+        ],
+      })
+      return NextResponse.json({ projects, total: projects.length })
+    }
+
+    // Get total count for pagination info
+    const total = await prisma.project.count({ where })
+
+    // Cursor-based pagination for better performance
     const projects = await prisma.project.findMany({
       where,
+      take: limit + 1, // Take one extra to check if there's more
+      ...(cursor && {
+        cursor: { id: cursor },
+        skip: 1, // Skip the cursor item
+      }),
       orderBy: [
         { urgency: 'desc' },
         { createdAt: 'desc' },
       ],
     })
 
-    return NextResponse.json({ projects })
+    // Check if there are more results
+    const hasMore = projects.length > limit
+    const items = hasMore ? projects.slice(0, -1) : projects
+    const nextCursor = hasMore ? items[items.length - 1]?.id : null
+
+    return NextResponse.json({
+      projects: items,
+      pagination: {
+        total,
+        limit,
+        hasMore,
+        nextCursor,
+      },
+    })
   } catch (error) {
     console.error('Error fetching projects:', error)
     return NextResponse.json(

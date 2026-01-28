@@ -141,6 +141,10 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [rejectionReason, setRejectionReason] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
 
+  // Pagination
+  const ITEMS_PER_PAGE = 15
+  const [currentPage, setCurrentPage] = useState(1)
+
   // Fetch projects from API
   useEffect(() => {
     async function fetchProjects() {
@@ -342,6 +346,18 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       const comparison = aVal.localeCompare(bVal)
       return sortDirection === 'asc' ? comparison : -comparison
     })
+
+  // Paginate the filtered projects
+  const totalPages = Math.ceil(filteredAndSortedProjects.length / ITEMS_PER_PAGE)
+  const paginatedProjects = filteredAndSortedProjects.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  )
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery])
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -557,7 +573,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {filteredAndSortedProjects.map((project) => {
+                    {paginatedProjects.map((project) => {
                       const categoryConfig = CATEGORY_CONFIG[project.category]
                       const urgencyConfig = URGENCY_CONFIG[project.urgency]
                       const statusConfig = STATUS_CONFIG[project.status]
@@ -602,7 +618,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                         </tr>
                       )
                     })}
-                    {filteredAndSortedProjects.length === 0 && (
+                    {paginatedProjects.length === 0 && (
                       <tr>
                         <td colSpan={6} className="p-8 text-center text-gray-500">
                           {searchQuery ? 'No projects match your search.' : 'No projects yet.'}
@@ -612,6 +628,63 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   </tbody>
                 </table>
               </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="px-4 py-3 border-t flex items-center justify-between">
+                  <p className="text-sm text-gray-500">
+                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{' '}
+                    {Math.min(currentPage * ITEMS_PER_PAGE, filteredAndSortedProjects.length)} of{' '}
+                    {filteredAndSortedProjects.length} projects
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        // Show pages around current page
+                        let pageNum: number
+                        if (totalPages <= 5) {
+                          pageNum = i + 1
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i
+                        } else {
+                          pageNum = currentPage - 2 + i
+                        }
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={`w-8 h-8 rounded text-sm font-medium ${
+                              currentPage === pageNum
+                                ? 'bg-[var(--ukraine-600)] text-white'
+                                : 'text-gray-600 hover:bg-gray-100'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </Card>
           </div>
         )}

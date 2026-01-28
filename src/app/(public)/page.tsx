@@ -12,10 +12,12 @@ import {
   type Urgency,
   type Status,
   type CofinancingStatus,
+  type ProjectType,
   CATEGORY_CONFIG,
   URGENCY_CONFIG,
   STATUS_CONFIG,
   COFINANCING_CONFIG,
+  PROJECT_TYPE_CONFIG,
   formatCurrency,
 } from '@/types'
 
@@ -67,6 +69,7 @@ export default function HomePage() {
   const [selectedUrgency, setSelectedUrgency] = useState<Urgency | null>(null)
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null)
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
+  const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000000])
 
   // Filtered projects based on search and filters
@@ -103,6 +106,11 @@ export default function HomePage() {
       result = result.filter((p) => p.cofinancingAvailable === selectedCofinancing)
     }
 
+    // Project type filter
+    if (selectedProjectType) {
+      result = result.filter((p) => p.projectType === selectedProjectType)
+    }
+
     // Price range filter
     const [minPrice, maxPrice] = priceRange
     if (minPrice > 0 || maxPrice < 3000000) {
@@ -113,7 +121,7 @@ export default function HomePage() {
     }
 
     return result
-  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, priceRange])
+  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange])
 
   // Projects visible in current map bounds
   const projectsInView = useMemo(() => {
@@ -178,6 +186,7 @@ export default function HomePage() {
     setSelectedUrgency(null)
     setSelectedStatus(null)
     setSelectedCofinancing(null)
+    setSelectedProjectType(null)
     setPriceRange([0, 3000000])
   }, [])
 
@@ -189,9 +198,10 @@ export default function HomePage() {
     if (selectedUrgency) count++
     if (selectedStatus) count++
     if (selectedCofinancing) count++
+    if (selectedProjectType) count++
     if (priceRange[0] > 0 || priceRange[1] < 3000000) count++
     return count
-  }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, priceRange])
+  }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange])
 
   // Total funding needed for visible projects
   const totalFundingNeeded = useMemo(() => {
@@ -322,6 +332,24 @@ export default function HomePage() {
               {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
                 <option key={status} value={status}>
                   {COFINANCING_CONFIG[status].label}
+                </option>
+              ))}
+            </select>
+
+            {/* Project Type dropdown */}
+            <select
+              value={selectedProjectType || ''}
+              onChange={(e) => setSelectedProjectType((e.target.value as ProjectType) || null)}
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+                selectedProjectType
+                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
+                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+              }`}
+            >
+              <option value="">Project Type</option>
+              {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
+                <option key={type} value={type}>
+                  {PROJECT_TYPE_CONFIG[type].label}
                 </option>
               ))}
             </select>

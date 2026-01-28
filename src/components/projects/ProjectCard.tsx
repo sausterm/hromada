@@ -102,9 +102,15 @@ export function ProjectCard({
 
       {/* Content Section */}
       <div className="flex flex-col flex-1 p-3 bg-[var(--cream-100)]">
-        {/* Title - fixed 2-line height */}
-        <h3 className="font-semibold text-[var(--navy-700)] text-base leading-tight mb-0.5 line-clamp-2 min-h-[2.5rem]">
-          {localized.facilityName}
+        {/* Title - fixed 2-line height, clickable to view project */}
+        <h3 className="font-semibold text-base leading-tight mb-0.5 line-clamp-2 min-h-[2.5rem]">
+          <Link
+            href={`/projects/${project.id}`}
+            onClick={(e) => e.stopPropagation()}
+            className="text-[var(--navy-700)] hover:text-[var(--ukraine-blue)] hover:underline transition-colors"
+          >
+            {localized.facilityName}
+          </Link>
         </h3>
 
         {/* Municipality & Oblast */}
@@ -160,23 +166,13 @@ export function ProjectCard({
             </span>
           </div>
 
-          {/* View Details link (only when onClick is provided) or Share Button */}
-          {onClick ? (
-            <Link
-              href={`/projects/${project.id}`}
-              onClick={(e) => e.stopPropagation()}
-              className="text-xs font-medium text-[var(--navy-600)] hover:text-[var(--navy-800)] hover:underline"
-            >
-              {t('projectDetail.viewDetails')} →
-            </Link>
-          ) : (
-            <ShareButton
-              projectId={project.id}
-              projectTitle={localized.facilityName}
-              projectDescription={localized.briefDescription}
-              variant="icon"
-            />
-          )}
+          {/* Share Button */}
+          <ShareButton
+            projectId={project.id}
+            projectTitle={localized.facilityName}
+            projectDescription={localized.briefDescription}
+            variant="icon"
+          />
         </div>
       </div>
     </>

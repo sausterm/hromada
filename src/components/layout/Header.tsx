@@ -151,7 +151,7 @@ export function Header({ children }: HeaderProps) {
                 aria-label={t('nav.language')}
               >
                 <span>{languageLabels[locale as Locale].flag}</span>
-                <span className="hidden sm:inline">{locale.toUpperCase()}</span>
+                <span className="hidden sm:inline">{locale === 'uk' ? 'UA' : locale.toUpperCase()}</span>
                 <svg
                   className={`h-4 w-4 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`}
                   fill="none"

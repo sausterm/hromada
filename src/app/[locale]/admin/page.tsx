@@ -151,7 +151,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const response = await fetch('/api/projects')
+        const response = await fetch('/api/projects?all=true')
         if (response.ok) {
           const data = await response.json()
           setProjects(data.projects.map(transformProject))
@@ -222,7 +222,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           )
         )
         // Refetch projects to include the new one
-        const projectsResponse = await fetch('/api/projects')
+        const projectsResponse = await fetch('/api/projects?all=true')
         if (projectsResponse.ok) {
           const projectsData = await projectsResponse.json()
           setProjects(projectsData.projects.map(transformProject))

@@ -148,7 +148,7 @@ export function ProjectCard({
               {statusConfig.label}
             </span>
             {/* Posted time */}
-            <span className="text-xs text-[var(--navy-400)]">
+            <span className="text-xs text-[var(--navy-400)]" suppressHydrationWarning>
               {formatRelativeTime(project.createdAt)}
             </span>
           </div>

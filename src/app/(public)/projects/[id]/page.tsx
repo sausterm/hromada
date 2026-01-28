@@ -173,7 +173,7 @@ export default function ProjectDetailPage() {
                 <p className="text-lg text-gray-600">
                   {project.municipalityName}
                 </p>
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-gray-400" suppressHydrationWarning>
                   Posted {formatRelativeTime(project.createdAt)}
                 </span>
               </div>

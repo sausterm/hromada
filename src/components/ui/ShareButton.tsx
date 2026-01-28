@@ -35,9 +35,11 @@ export function ShareButton({
     }
   }, [isOpen])
 
-  const shareUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/projects/${projectId}`
-    : `/projects/${projectId}`
+  const [shareUrl, setShareUrl] = useState(`/projects/${projectId}`)
+
+  useEffect(() => {
+    setShareUrl(`${window.location.origin}/projects/${projectId}`)
+  }, [projectId])
 
   const shareText = `${projectTitle} - Support this Ukrainian community project on Hromada`
   const shareDescription = projectDescription

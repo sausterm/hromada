@@ -40,7 +40,6 @@ describe('GET /api/projects/[id]', () => {
       facilityName: 'Test Hospital',
       municipalityName: 'Kyiv',
       category: 'HOSPITAL',
-      _count: { inquiries: 5 },
     }
     ;(mockPrisma.project.findUnique as jest.Mock).mockResolvedValue(mockProject)
 
@@ -52,11 +51,6 @@ describe('GET /api/projects/[id]', () => {
     expect(data.project).toEqual(mockProject)
     expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
       where: { id: '1' },
-      include: {
-        _count: {
-          select: { inquiries: true },
-        },
-      },
     })
   })
 

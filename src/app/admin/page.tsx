@@ -122,7 +122,7 @@ interface ContactSubmissionWithProject extends ContactSubmission {
   project: Pick<Project, 'id' | 'facilityName' | 'municipalityName' | 'contactEmail'>
 }
 
-type SortField = 'facilityName' | 'municipalityName' | 'category' | 'urgency' | 'status'
+type SortField = 'facilityName' | 'municipalityName' | 'category' | 'projectType' | 'urgency' | 'status'
 type SortDirection = 'asc' | 'desc'
 
 function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader: string | null }) {
@@ -346,6 +346,10 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
           aVal = CATEGORY_CONFIG[a.category].label
           bVal = CATEGORY_CONFIG[b.category].label
           break
+        case 'projectType':
+          aVal = a.projectType ? PROJECT_TYPE_CONFIG[a.projectType].label : ''
+          bVal = b.projectType ? PROJECT_TYPE_CONFIG[b.projectType].label : ''
+          break
         case 'urgency':
           aVal = URGENCY_CONFIG[a.urgency].label
           bVal = URGENCY_CONFIG[b.urgency].label
@@ -557,6 +561,15 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                       </th>
                       <th
                         className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('projectType')}
+                      >
+                        <span className="flex items-center justify-center">
+                          Type
+                          <SortIcon field="projectType" />
+                        </span>
+                      </th>
+                      <th
+                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('urgency')}
                       >
                         <span className="flex items-center justify-center">
@@ -594,6 +607,15 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                             </Badge>
                           </td>
                           <td className="p-4 text-center">
+                            {project.projectType ? (
+                              <Badge size="sm" dot dotColor={PROJECT_TYPE_CONFIG[project.projectType].color}>
+                                {PROJECT_TYPE_CONFIG[project.projectType].label}
+                              </Badge>
+                            ) : (
+                              <span className="text-gray-400 text-sm">-</span>
+                            )}
+                          </td>
+                          <td className="p-4 text-center">
                             <Badge
                               variant={project.urgency === 'CRITICAL' ? 'danger' : project.urgency === 'HIGH' ? 'warning' : 'default'}
                               size="sm"
@@ -624,7 +646,7 @@ function Dashboard({ onLogout, authHeader }: { onLogout: () => void; authHeader:
                     })}
                     {filteredAndSortedProjects.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="p-8 text-center text-gray-500">
+                        <td colSpan={7} className="p-8 text-center text-gray-500">
                           {searchQuery ? 'No projects match your search.' : 'No projects yet.'}
                         </td>
                       </tr>

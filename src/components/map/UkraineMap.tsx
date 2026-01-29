@@ -1,21 +1,23 @@
 'use client'
 
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, memo } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import L from 'leaflet'
 import { type Project, type Category, CATEGORY_CONFIG } from '@/types'
 import { ProjectPopup } from './ProjectPopup'
 import 'leaflet/dist/leaflet.css'
+import 'react-leaflet-cluster/dist/assets/MarkerCluster.css'
+import 'react-leaflet-cluster/dist/assets/MarkerCluster.Default.css'
 
 // Ukraine center coordinates
 const UKRAINE_CENTER: [number, number] = [48.3794, 31.1656]
 const UKRAINE_ZOOM = 6
 
 // Create custom icon for each category
-function createCategoryIcon(category: Category, isHighlighted: boolean = false): L.DivIcon {
+function createCategoryIcon(category: Category): L.DivIcon {
   const config = CATEGORY_CONFIG[category]
-  const size = isHighlighted ? 44 : 36
+  const size = 36
 
   return L.divIcon({
     className: 'custom-marker-wrapper',
@@ -28,10 +30,8 @@ function createCategoryIcon(category: Category, isHighlighted: boolean = false):
         justify-content: center;
         border-radius: 50%;
         border: 3px solid white;
-        box-shadow: ${isHighlighted
-          ? '0 0 0 4px rgba(44, 62, 80, 0.5), 0 4px 16px rgba(58, 54, 51, 0.35)'
-          : '0 3px 12px rgba(58, 54, 51, 0.25)'};
-        font-size: ${isHighlighted ? '18px' : '16px'};
+        box-shadow: 0 3px 12px rgba(58, 54, 51, 0.25);
+        font-size: 16px;
         background-color: ${config.color};
       ">
         ${config.icon}
@@ -52,17 +52,7 @@ const categoryIcons: Record<Category, L.DivIcon> = {
   OTHER: createCategoryIcon('OTHER'),
 }
 
-// Pre-create highlighted icons for each category
-const highlightedIcons: Record<Category, L.DivIcon> = {
-  HOSPITAL: createCategoryIcon('HOSPITAL', true),
-  SCHOOL: createCategoryIcon('SCHOOL', true),
-  WATER: createCategoryIcon('WATER', true),
-  ENERGY: createCategoryIcon('ENERGY', true),
-  OTHER: createCategoryIcon('OTHER', true),
-}
-
-
-// Create cluster icon with count and smooth animation
+// Create cluster icon with count
 function createClusterIcon(cluster: { getChildCount: () => number }): L.DivIcon {
   const count = cluster.getChildCount()
   let size = 40
@@ -115,11 +105,11 @@ export interface MapBounds {
 interface UkraineMapProps {
   projects: Project[]
   highlightedProjectId?: string | null
-  flyToProjectId?: string | null  // Separate prop for zoom-on-click (not hover)
+  flyToProjectId?: string | null
   onProjectClick?: (project: Project) => void
   onProjectHover?: (project: Project | null) => void
   onBoundsChange?: (bounds: MapBounds, visibleProjects: Project[]) => void
-  onFlyToComplete?: () => void  // Called when fly animation completes
+  onFlyToComplete?: () => void
   showControls?: boolean
 }
 
@@ -144,7 +134,6 @@ function MapEventHandler({
       west: bounds.getWest(),
     }
 
-    // Filter projects within bounds
     const visibleProjects = projects.filter((p) => {
       const lat = p.latitude || p.cityLatitude
       const lng = p.longitude || p.cityLongitude
@@ -164,9 +153,7 @@ function MapEventHandler({
     zoomend: updateBounds,
   })
 
-  // Initial bounds update
   useEffect(() => {
-    // Small delay to ensure map is ready
     const timer = setTimeout(updateBounds, 100)
     return () => clearTimeout(timer)
   }, [updateBounds])
@@ -174,7 +161,7 @@ function MapEventHandler({
   return null
 }
 
-// Component to fly to a project and open popup - triggered when card is clicked
+// Component to fly to a project
 function FlyToProject({
   projectId,
   projects,
@@ -194,11 +181,7 @@ function FlyToProject({
       if (project) {
         const lat = project.latitude || project.cityLatitude
         const lng = project.longitude || project.cityLongitude
-        // Zoom to level 12 so marker is not clustered, then open popup
-        map.flyTo([lat, lng], 12, {
-          duration: 0.4,
-        })
-        // After animation completes, open the popup
+        map.flyTo([lat, lng], 12, { duration: 0.4 })
         setTimeout(() => {
           const marker = markerRefs.current[projectId]
           if (marker) {
@@ -213,6 +196,150 @@ function FlyToProject({
   return null
 }
 
+// Memoized markers component - ONLY re-renders when projects change, NOT on highlight changes
+interface ProjectMarkersProps {
+  projects: Project[]
+  markerRefs: React.MutableRefObject<Record<string, L.Marker>>
+  clusterGroupRef: React.MutableRefObject<L.MarkerClusterGroup | null>
+  onProjectClick?: (project: Project) => void
+  onProjectHover?: (project: Project | null) => void
+}
+
+const ProjectMarkers = memo(function ProjectMarkers({
+  projects,
+  markerRefs,
+  clusterGroupRef,
+  onProjectClick,
+  onProjectHover,
+}: ProjectMarkersProps) {
+  const clusterGroupCallback = useCallback((node: L.MarkerClusterGroup | null) => {
+    if (node) {
+      clusterGroupRef.current = node
+    }
+  }, [clusterGroupRef])
+
+  return (
+    <MarkerClusterGroup
+      ref={clusterGroupCallback}
+      chunkedLoading
+      iconCreateFunction={createClusterIcon}
+      maxClusterRadius={60}
+      spiderfyOnMaxZoom={true}
+      showCoverageOnHover={false}
+      zoomToBoundsOnClick={true}
+      disableClusteringAtZoom={12}
+      removeOutsideVisibleBounds={true}
+      animate={true}
+      animateAddingMarkers={true}
+      spiderfyDistanceMultiplier={1.5}
+    >
+      {projects.map((project) => {
+        const lat = project.latitude || project.cityLatitude
+        const lng = project.longitude || project.cityLongitude
+
+        if (!lat || !lng) return null
+
+        return (
+          <Marker
+            key={project.id}
+            position={[lat, lng]}
+            icon={categoryIcons[project.category]}
+            ref={(ref) => {
+              if (ref) {
+                markerRefs.current[project.id] = ref
+                ;(ref as any).projectId = project.id
+              }
+            }}
+            eventHandlers={{
+              click: () => onProjectClick?.(project),
+              mouseover: () => onProjectHover?.(project),
+              mouseout: () => onProjectHover?.(null),
+            }}
+          >
+            <Popup maxWidth={300} minWidth={280}>
+              <ProjectPopup project={project} />
+            </Popup>
+          </Marker>
+        )
+      })}
+    </MarkerClusterGroup>
+  )
+})
+
+// Component to handle highlighting via DOM manipulation (no re-renders)
+function HighlightHandler({
+  highlightedProjectId,
+  markerRefs,
+  clusterGroupRef,
+}: {
+  highlightedProjectId: string | null | undefined
+  markerRefs: React.MutableRefObject<Record<string, L.Marker>>
+  clusterGroupRef: React.MutableRefObject<L.MarkerClusterGroup | null>
+}) {
+  const prevHighlightedRef = useRef<string | null>(null)
+  const highlightedClusterRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    // Remove highlight from previous marker
+    if (prevHighlightedRef.current && markerRefs.current[prevHighlightedRef.current]) {
+      const prevMarker = markerRefs.current[prevHighlightedRef.current]
+      const prevEl = prevMarker.getElement()
+      if (prevEl) {
+        prevEl.classList.remove('marker-highlighted')
+      }
+    }
+
+    // Remove previous cluster highlight
+    if (highlightedClusterRef.current) {
+      highlightedClusterRef.current.classList.remove('cluster-highlighted')
+      highlightedClusterRef.current = null
+    }
+
+    // Add highlight to current marker
+    if (highlightedProjectId && markerRefs.current[highlightedProjectId]) {
+      const marker = markerRefs.current[highlightedProjectId]
+      const el = marker.getElement()
+      if (el) {
+        el.classList.add('marker-highlighted')
+      }
+    }
+
+    // Handle cluster highlighting when marker is inside a cluster
+    if (highlightedProjectId && clusterGroupRef.current) {
+      let marker = markerRefs.current[highlightedProjectId]
+
+      if (!marker) {
+        clusterGroupRef.current.eachLayer((layer: any) => {
+          if (layer.projectId === highlightedProjectId) {
+            marker = layer
+          }
+        })
+      }
+
+      if (marker) {
+        setTimeout(() => {
+          try {
+            const visibleParent = clusterGroupRef.current?.getVisibleParent(marker!)
+            if (visibleParent && visibleParent !== marker) {
+              const clusterEl = visibleParent.getElement()
+              if (clusterEl) {
+                clusterEl.classList.add('cluster-highlighted')
+                highlightedClusterRef.current = clusterEl
+              }
+            }
+          } catch (e) {
+            // getVisibleParent might fail
+          }
+        }, 50)
+      }
+    }
+
+    prevHighlightedRef.current = highlightedProjectId ?? null
+  }, [highlightedProjectId, markerRefs, clusterGroupRef])
+
+  return null
+}
+
 export function UkraineMap({
   projects,
   highlightedProjectId,
@@ -221,76 +348,9 @@ export function UkraineMap({
   onProjectHover,
   onBoundsChange,
   onFlyToComplete,
-  showControls = false,
 }: UkraineMapProps) {
   const markerRefs = useRef<Record<string, L.Marker>>({})
-  const [clusterGroup, setClusterGroup] = useState<L.MarkerClusterGroup | null>(null)
-  const highlightedClusterRef = useRef<HTMLElement | null>(null)
-
-  // Callback ref for cluster group
-  const clusterGroupCallback = useCallback((node: L.MarkerClusterGroup | null) => {
-    if (node) {
-      setClusterGroup(node)
-    }
-  }, [])
-
-  // Get icon for a project - uses pre-created icons, switches based on highlight state
-  const getIcon = useCallback(
-    (project: Project) => {
-      const isHighlighted = project.id === highlightedProjectId
-      return isHighlighted ? highlightedIcons[project.category] : categoryIcons[project.category]
-    },
-    [highlightedProjectId]
-  )
-
-  // Handle cluster highlighting when marker is inside a cluster
-  useEffect(() => {
-    // Remove previous cluster highlight
-    if (highlightedClusterRef.current) {
-      highlightedClusterRef.current.classList.remove('cluster-highlighted')
-      highlightedClusterRef.current = null
-    }
-
-    if (!highlightedProjectId || !clusterGroup) {
-      return
-    }
-
-    // Try to get marker from refs first
-    let marker = markerRefs.current[highlightedProjectId]
-
-    // If not found, search through cluster group layers
-    if (!marker) {
-      clusterGroup.eachLayer((layer: any) => {
-        if (layer.projectId === highlightedProjectId) {
-          marker = layer
-        }
-      })
-    }
-
-    if (!marker) {
-      return
-    }
-
-    // Small delay to ensure DOM is ready
-    const timeoutId = setTimeout(() => {
-      try {
-        const visibleParent = clusterGroup.getVisibleParent(marker!)
-
-        // If visibleParent is different from marker, it means marker is in a cluster
-        if (visibleParent && visibleParent !== marker) {
-          const clusterEl = visibleParent.getElement()
-          if (clusterEl) {
-            clusterEl.classList.add('cluster-highlighted')
-            highlightedClusterRef.current = clusterEl
-          }
-        }
-      } catch (e) {
-        // getVisibleParent might fail
-      }
-    }, 50)
-
-    return () => clearTimeout(timeoutId)
-  }, [highlightedProjectId, clusterGroup])
+  const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null)
 
   return (
     <div className="relative w-full h-full">
@@ -301,7 +361,6 @@ export function UkraineMap({
         scrollWheelZoom={true}
         style={{ minHeight: '100%' }}
       >
-        {/* Warm-toned map tiles */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -309,7 +368,6 @@ export function UkraineMap({
 
         <MapEventHandler projects={projects} onBoundsChange={onBoundsChange} />
 
-        {/* FlyToProject - triggered only on click, not hover */}
         {flyToProjectId && (
           <FlyToProject
             projectId={flyToProjectId}
@@ -319,49 +377,19 @@ export function UkraineMap({
           />
         )}
 
-        <MarkerClusterGroup
-          ref={clusterGroupCallback}
-          chunkedLoading
-          iconCreateFunction={createClusterIcon}
-          maxClusterRadius={60}
-          spiderfyOnMaxZoom={true}
-          showCoverageOnHover={false}
-          zoomToBoundsOnClick={true}
-          disableClusteringAtZoom={12}
-          removeOutsideVisibleBounds={true}
-          animate={false}
-        >
-          {projects.map((project) => {
-            const lat = project.latitude || project.cityLatitude
-            const lng = project.longitude || project.cityLongitude
+        <ProjectMarkers
+          projects={projects}
+          markerRefs={markerRefs}
+          clusterGroupRef={clusterGroupRef}
+          onProjectClick={onProjectClick}
+          onProjectHover={onProjectHover}
+        />
 
-            if (!lat || !lng) return null
-
-            return (
-              <Marker
-                key={project.id}
-                position={[lat, lng]}
-                icon={getIcon(project)}
-                ref={(ref) => {
-                  if (ref) {
-                    markerRefs.current[project.id] = ref
-                    // Store project ID on the marker for later lookup
-                    ;(ref as any).projectId = project.id
-                  }
-                }}
-                eventHandlers={{
-                  click: () => onProjectClick?.(project),
-                  mouseover: () => onProjectHover?.(project),
-                  mouseout: () => onProjectHover?.(null),
-                }}
-              >
-                <Popup maxWidth={300} minWidth={280}>
-                  <ProjectPopup project={project} />
-                </Popup>
-              </Marker>
-            )
-          })}
-        </MarkerClusterGroup>
+        <HighlightHandler
+          highlightedProjectId={highlightedProjectId}
+          markerRefs={markerRefs}
+          clusterGroupRef={clusterGroupRef}
+        />
       </MapContainer>
     </div>
   )

@@ -86,7 +86,7 @@ export default function HomePage() {
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null)
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000000])
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000])
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
   const priceDropdownRef = useRef<HTMLDivElement>(null)
   const priceDropdownId = useId()
@@ -159,7 +159,7 @@ export default function HomePage() {
 
     // Price range filter
     const [minPrice, maxPrice] = priceRange
-    if (minPrice > 0 || maxPrice < 3000000) {
+    if (minPrice > 0 || maxPrice < 500000) {
       result = result.filter((p) => {
         if (p.estimatedCostUsd === undefined || p.estimatedCostUsd === null) return true
         return p.estimatedCostUsd >= minPrice && p.estimatedCostUsd <= maxPrice
@@ -308,7 +308,7 @@ export default function HomePage() {
     setSelectedStatus(null)
     setSelectedCofinancing(null)
     setSelectedProjectType(null)
-    setPriceRange([0, 3000000])
+    setPriceRange([0, 500000])
     setSortBy('newest')
   }, [])
 
@@ -321,7 +321,7 @@ export default function HomePage() {
     if (selectedStatus) count++
     if (selectedCofinancing) count++
     if (selectedProjectType) count++
-    if (priceRange[0] > 0 || priceRange[1] < 3000000) count++
+    if (priceRange[0] > 0 || priceRange[1] < 500000) count++
     return count
   }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange])
 
@@ -371,14 +371,14 @@ export default function HomePage() {
                 aria-expanded={isPriceDropdownOpen}
                 aria-controls={priceDropdownId}
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                  priceRange[0] > 0 || priceRange[1] < 3000000
+                  priceRange[0] > 0 || priceRange[1] < 500000
                     ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
                     : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
                 }`}
               >
                 <span>
-                  {priceRange[0] > 0 || priceRange[1] < 3000000
-                    ? `$${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[0] / 1000)}k`} - $${priceRange[1] >= 1000000 ? `${(priceRange[1] / 1000000).toFixed(1)}M` : `${Math.round(priceRange[1] / 1000)}k`}`
+                  {priceRange[0] > 0 || priceRange[1] < 500000
+                    ? `$${Math.round(priceRange[0] / 1000)}k - $${priceRange[1] >= 500000 ? '500k+' : `${Math.round(priceRange[1] / 1000)}k`}`
                     : t('homepage.filters.price')}
                 </span>
                 <svg className={`h-3.5 w-3.5 transition-transform ${isPriceDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -397,7 +397,7 @@ export default function HomePage() {
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-[var(--navy-500)]">Max</span>
                       <span className="text-sm font-medium text-[var(--navy-700)]">
-                        ${priceRange[1] >= 1000000 ? `${(priceRange[1] / 1000000).toFixed(1)}M` : priceRange[1] >= 1000 ? `${Math.round(priceRange[1] / 1000)}k` : priceRange[1]}
+                        ${priceRange[1] >= 500000 ? '500k+' : priceRange[1] >= 1000 ? `${Math.round(priceRange[1] / 1000)}k` : priceRange[1]}
                       </span>
                     </div>
 
@@ -409,16 +409,16 @@ export default function HomePage() {
                       <div
                         className="absolute w-1.5 bg-[var(--navy-500)] rounded-full pointer-events-none"
                         style={{
-                          top: `${(1 - priceRange[1] / 3000000) * 100}%`,
-                          bottom: `${(priceRange[0] / 3000000) * 100}%`,
+                          top: `${(1 - priceRange[1] / 500000) * 100}%`,
+                          bottom: `${(priceRange[0] / 500000) * 100}%`,
                         }}
                       />
                       {/* Max slider (top - higher values) */}
                       <input
                         type="range"
                         min={0}
-                        max={3000000}
-                        step={50000}
+                        max={500000}
+                        step={10000}
                         value={priceRange[1]}
                         onChange={(e) => {
                           const val = Number(e.target.value)
@@ -432,8 +432,8 @@ export default function HomePage() {
                       <input
                         type="range"
                         min={0}
-                        max={3000000}
-                        step={50000}
+                        max={500000}
+                        step={10000}
                         value={priceRange[0]}
                         onChange={(e) => {
                           const val = Number(e.target.value)
@@ -454,9 +454,9 @@ export default function HomePage() {
                     </div>
 
                     {/* Reset button */}
-                    {(priceRange[0] > 0 || priceRange[1] < 3000000) && (
+                    {(priceRange[0] > 0 || priceRange[1] < 500000) && (
                       <button
-                        onClick={() => setPriceRange([0, 3000000])}
+                        onClick={() => setPriceRange([0, 500000])}
                         className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline"
                       >
                         Reset

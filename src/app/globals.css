@@ -183,7 +183,17 @@ body {
 .custom-marker.energy { background-color: var(--category-energy); }
 .custom-marker.other { background-color: var(--category-other); }
 
-/* Highlighted marker state */
+/* Highlighted marker state - applied via CSS class on wrapper */
+.marker-highlighted {
+  z-index: 1000 !important;
+}
+
+.marker-highlighted .custom-marker {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35);
+}
+
+/* Legacy: direct class on custom-marker (keeping for backwards compatibility) */
 .custom-marker.highlighted {
   transform: scale(1.2);
   box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35);
@@ -227,6 +237,59 @@ body {
 .marker-cluster-medium div,
 .marker-cluster-large div {
   background-color: transparent !important;
+}
+
+/* Cluster animation styles - markers flying to/from clusters */
+.leaflet-cluster-anim .leaflet-marker-icon,
+.leaflet-cluster-anim .leaflet-marker-shadow {
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out !important;
+}
+
+/* Spider leg animation */
+.leaflet-cluster-spider-leg {
+  transition: stroke-dashoffset 0.4s ease-out, stroke-opacity 0.4s ease-out;
+}
+
+/* Cluster spawn/despawn animation */
+@keyframes cluster-spawn {
+  0% {
+    transform: scale(0) translate(-50%, -50%);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15) translate(-50%, -50%);
+  }
+  100% {
+    transform: scale(1) translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes cluster-despawn {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+/* Apply animation to cluster icons */
+.marker-cluster {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out !important;
+}
+
+/* Custom marker animation */
+.custom-marker {
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out !important;
+}
+
+/* Ensure smooth marker position transitions during zoom */
+.leaflet-zoom-anim .leaflet-marker-icon,
+.leaflet-zoom-anim .leaflet-marker-shadow {
+  transition: transform 0.25s cubic-bezier(0, 0, 0.25, 1) !important;
 }
 
 /* Toast animations */

@@ -7,54 +7,37 @@ datasource db {
 }
 
 model Project {
-  id               String    @id @default(cuid())
-
-  // Required fields (English - primary)
-  municipalityName String
-  region           String?   // Oblast/region name
-  facilityName     String
-  category         Category
-  briefDescription String    @db.VarChar(150)  // Short summary for cards/lists
-  fullDescription  String    @db.VarChar(2000) // Detailed project description
-  contactName      String
-  contactEmail     String
-
-  // Ukrainian translations (auto-generated)
-  municipalityNameUk String?
-  facilityNameUk     String?
-  briefDescriptionUk String?  @db.VarChar(200)  // Ukrainian may be longer
-  fullDescriptionUk  String?  @db.VarChar(3000)
-
-  // Location - city-level precision only
-  // SECURITY: Coordinates are intentionally limited to city-level precision
-  // to protect facility locations from potential targeting during wartime.
-  // Do NOT store or transmit exact facility addresses or precise coordinates.
-  cityLatitude     Float
-  cityLongitude    Float
-
-  // Optional fields
-  address          String?   // General area description, not exact address
-  contactPhone     String?
-  urgency          Urgency   @default(MEDIUM)
-  status           Status    @default(OPEN)
-
-  // Technical & Financial Details (for renewable energy projects)
-  projectType           ProjectType?        // Solar PV, Heat Pump, Water Treatment, General
-  projectSubtype        String?             // e.g., "Building hybrid PV", "Ground-mounted"
-  technicalPowerKw      Decimal?  @db.Decimal(10, 2)  // Theoretical power in kilowatts
-  numberOfPanels        Int?                // For solar projects
-  estimatedCostUsd      Decimal?  @db.Decimal(12, 2)  // Approximate project cost in USD
-  cofinancingAvailable  CofinancingStatus?  // Yes, No, Needs Clarification
-  cofinancingDetails    String?             // Amount or percentage details
-  partnerOrganization   String?             // NGO or partner name
-
-  // Timestamps
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  // Relations
-  photos             ProjectImage[]
-  contactSubmissions ContactSubmission[]
+  id                   String              @id @default(cuid())
+  municipalityName     String
+  facilityName         String
+  category             Category
+  briefDescription     String              @db.VarChar(150)
+  fullDescription      String              @db.VarChar(2000)
+  contactName          String
+  contactEmail         String
+  cityLatitude         Float
+  cityLongitude        Float
+  address              String?
+  contactPhone         String?
+  urgency              Urgency             @default(MEDIUM)
+  status               Status              @default(OPEN)
+  projectType          ProjectType?
+  projectSubtype       String?
+  technicalPowerKw     Decimal?            @db.Decimal(10, 2)
+  numberOfPanels       Int?
+  estimatedCostUsd     Decimal?            @db.Decimal(12, 2)
+  cofinancingAvailable CofinancingStatus?
+  cofinancingDetails   String?
+  partnerOrganization  String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  region               String?
+  briefDescriptionUk   String?             @db.VarChar(200)
+  facilityNameUk       String?
+  fullDescriptionUk    String?             @db.VarChar(3000)
+  municipalityNameUk   String?
+  contactSubmissions   ContactSubmission[]
+  photos               ProjectImage[]
 
   @@index([category])
   @@index([status])
@@ -68,11 +51,11 @@ model Project {
 model ProjectImage {
   id        String   @id @default(cuid())
   projectId String
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   url       String
   altText   String?  @db.VarChar(200)
-  sortOrder Int      @default(0) // For ordering images in display
+  sortOrder Int      @default(0)
   createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([sortOrder])
@@ -81,18 +64,60 @@ model ProjectImage {
 /// Contact submissions from donors interested in projects.
 /// Email notifications are sent to ADMIN_EMAIL when submissions are created.
 model ContactSubmission {
-  id          String   @id @default(cuid())
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  donorName   String
-  donorEmail  String
-  message     String   @db.VarChar(1000)
-  handled     Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  projectId  String
+  donorName  String
+  donorEmail String
+  message    String   @db.VarChar(1000)
+  handled    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
   @@index([createdAt])
   @@index([handled])
+}
+
+/// Project submissions from municipalities awaiting admin review.
+/// Once approved, a Project record is created from the submission data.
+model ProjectSubmission {
+  id                   String           @id @default(cuid())
+  municipalityName     String
+  municipalityEmail    String
+  region               String?
+  facilityName         String
+  category             Category
+  projectType          String
+  briefDescription     String           @db.VarChar(150)
+  fullDescription      String           @db.VarChar(2000)
+  urgency              Urgency          @default(MEDIUM)
+  estimatedCostUsd     Decimal?         @db.Decimal(12, 2)
+  technicalPowerKw     Decimal?         @db.Decimal(10, 2)
+  numberOfPanels       Int?
+  cofinancingAvailable String?
+  cofinancingDetails   String?
+  cityName             String
+  address              String?
+  cityLatitude         Decimal          @db.Decimal(10, 8)
+  cityLongitude        Decimal          @db.Decimal(11, 8)
+  contactName          String
+  contactEmail         String
+  contactPhone         String?
+  partnerOrganization  String?
+  projectSubtype       String?
+  additionalNotes      String?          @db.VarChar(1000)
+  status               SubmissionStatus @default(PENDING)
+  reviewedAt           DateTime?
+  reviewedBy           String?
+  rejectionReason      String?
+  approvedProjectId    String?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  photos               String[]         @default([])
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([municipalityEmail])
 }
 
 enum Category {
@@ -134,61 +159,4 @@ enum SubmissionStatus {
   PENDING
   APPROVED
   REJECTED
-}
-
-/// Project submissions from municipalities awaiting admin review.
-/// Once approved, a Project record is created from the submission data.
-model ProjectSubmission {
-  id                    String   @id @default(cuid())
-
-  // Municipality info
-  municipalityName      String
-  municipalityEmail     String
-  region                String?
-
-  // Project details
-  facilityName          String
-  category              Category
-  projectType           String
-  briefDescription      String   @db.VarChar(150)
-  fullDescription       String   @db.VarChar(2000)
-  urgency               Urgency  @default(MEDIUM)
-
-  // Technical & financial
-  estimatedCostUsd      Decimal? @db.Decimal(12, 2)
-  technicalPowerKw      Decimal? @db.Decimal(10, 2)
-  numberOfPanels        Int?
-  cofinancingAvailable  String?
-  cofinancingDetails    String?
-
-  // Location
-  cityName              String
-  address               String?
-  cityLatitude          Decimal  @db.Decimal(10, 8)
-  cityLongitude         Decimal  @db.Decimal(11, 8)
-
-  // Contact
-  contactName           String
-  contactEmail          String
-  contactPhone          String?
-
-  // Supporting info
-  partnerOrganization   String?
-  projectSubtype        String?
-  additionalNotes       String?  @db.VarChar(1000)
-  photos                String[] @default([])  // Array of image URLs
-
-  // Status tracking
-  status                SubmissionStatus @default(PENDING)
-  reviewedAt            DateTime?
-  reviewedBy            String?
-  rejectionReason       String?
-  approvedProjectId     String?  // Link to created Project if approved
-
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  @@index([status])
-  @@index([createdAt])
-  @@index([municipalityEmail])
 }

@@ -38,7 +38,6 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
-  const [municipalityEmail, setMunicipalityEmail] = useState<string | null>(null)
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {}
@@ -91,7 +90,6 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
         throw new Error(data.error || 'Failed to submit contact form')
       }
 
-      setMunicipalityEmail(data.municipalityEmail)
       setIsSubmitted(true)
       onSuccess?.()
     } catch (error) {
@@ -120,22 +118,9 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
           <h3 className="text-lg font-semibold text-green-800 mb-2 text-center">
             {t('projectDetail.contact.successTitle')}
           </h3>
-          <p className="text-green-700 text-center mb-4">
+          <p className="text-green-700 text-center">
             {t('projectDetail.contact.successMessage')}
           </p>
-          {municipalityEmail && (
-            <div className="bg-white rounded-lg p-4 border border-green-200">
-              <p className="text-sm text-gray-600 mb-2">
-                {t('projectDetail.contact.directContact')}
-              </p>
-              <a
-                href={`mailto:${municipalityEmail}`}
-                className="text-[var(--ukraine-600)] hover:underline font-medium"
-              >
-                {municipalityEmail}
-              </a>
-            </div>
-          )}
         </CardContent>
       </Card>
     )

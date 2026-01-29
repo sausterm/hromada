@@ -123,9 +123,9 @@ export const RATE_LIMITS = {
     limit: 5,
     windowSeconds: 60,
   },
-  // Project submissions: 3 per hour per IP
+  // Project submissions: 10 per hour per IP
   projectSubmission: {
-    limit: 3,
+    limit: 10,
     windowSeconds: 3600,
   },
   // Login attempts: 5 per minute per IP (brute force protection)

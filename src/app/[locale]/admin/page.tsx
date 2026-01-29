@@ -127,6 +127,10 @@ interface ContactSubmissionWithProject extends ContactSubmission {
 type SortField = 'facilityName' | 'municipalityName' | 'region' | 'category' | 'projectType' | 'urgency' | 'status'
 type SortDirection = 'asc' | 'desc'
 
+// Sort options for submissions
+type SubmissionSortField = 'recency' | 'status'
+type ContactSortField = 'recency' | 'handled'
+
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const t = useTranslations()
   const [projects, setProjects] = useState<Project[]>([])
@@ -142,6 +146,16 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [selectedSubmission, setSelectedSubmission] = useState<ProjectSubmission | null>(null)
   const [rejectionReason, setRejectionReason] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
+
+  // Submissions search and sort
+  const [submissionSearchQuery, setSubmissionSearchQuery] = useState('')
+  const [submissionSortField, setSubmissionSortField] = useState<SubmissionSortField>('recency')
+  const [submissionStatusFilter, setSubmissionStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL')
+
+  // Contacts search and sort
+  const [contactSearchQuery, setContactSearchQuery] = useState('')
+  const [contactSortField, setContactSortField] = useState<ContactSortField>('recency')
+  const [contactHandledFilter, setContactHandledFilter] = useState<'ALL' | 'HANDLED' | 'UNHANDLED'>('ALL')
 
   // Pagination
   const PAGE_SIZE_OPTIONS = [20, 50, 100] as const
@@ -373,6 +387,65 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   useEffect(() => {
     setCurrentPage(1)
   }, [searchQuery, itemsPerPage])
+
+  // Filter and sort project submissions
+  const filteredAndSortedSubmissions = projectSubmissions
+    .filter((s) => {
+      // Status filter
+      if (submissionStatusFilter !== 'ALL' && s.status !== submissionStatusFilter) {
+        return false
+      }
+      // Search filter
+      if (!submissionSearchQuery.trim()) return true
+      const query = submissionSearchQuery.toLowerCase()
+      return (
+        s.facilityName.toLowerCase().includes(query) ||
+        s.municipalityName.toLowerCase().includes(query) ||
+        s.contactName.toLowerCase().includes(query) ||
+        s.contactEmail.toLowerCase().includes(query) ||
+        s.cityName.toLowerCase().includes(query)
+      )
+    })
+    .sort((a, b) => {
+      if (submissionSortField === 'status') {
+        // PENDING first, then APPROVED, then REJECTED
+        const statusOrder = { PENDING: 0, APPROVED: 1, REJECTED: 2 }
+        const statusDiff = statusOrder[a.status] - statusOrder[b.status]
+        if (statusDiff !== 0) return statusDiff
+        // Then by recency within same status
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+      // Default: recency (newest first)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
+
+  // Filter and sort contact submissions
+  const filteredAndSortedContacts = contactSubmissions
+    .filter((s) => {
+      // Handled filter
+      if (contactHandledFilter === 'HANDLED' && !s.handled) return false
+      if (contactHandledFilter === 'UNHANDLED' && s.handled) return false
+      // Search filter
+      if (!contactSearchQuery.trim()) return true
+      const query = contactSearchQuery.toLowerCase()
+      return (
+        s.donorName.toLowerCase().includes(query) ||
+        s.donorEmail.toLowerCase().includes(query) ||
+        s.message.toLowerCase().includes(query) ||
+        s.project.facilityName.toLowerCase().includes(query) ||
+        s.project.municipalityName.toLowerCase().includes(query)
+      )
+    })
+    .sort((a, b) => {
+      if (contactSortField === 'handled') {
+        // Unhandled first
+        if (a.handled !== b.handled) return a.handled ? 1 : -1
+        // Then by recency
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+      // Default: recency (newest first)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -858,29 +931,69 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
         {activeTab === 'submissions' && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">{t('admin.submissions.title')}</h2>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl font-semibold">
+                {t('admin.submissions.title')} ({filteredAndSortedSubmissions.length})
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                {/* Search */}
+                <div className="relative">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search submissions..."
+                    value={submissionSearchQuery}
+                    onChange={(e) => setSubmissionSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-48"
+                  />
+                </div>
+                {/* Status Filter */}
+                <select
+                  value={submissionStatusFilter}
+                  onChange={(e) => setSubmissionStatusFilter(e.target.value as typeof submissionStatusFilter)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="ALL">All Status</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+                {/* Sort */}
+                <select
+                  value={submissionSortField}
+                  onChange={(e) => setSubmissionSortField(e.target.value as SubmissionSortField)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="recency">Newest First</option>
+                  <option value="status">By Status</option>
+                </select>
+              </div>
+            </div>
 
             {isLoadingProjectSubmissions ? (
               <div className="flex justify-center py-8">
                 <LoadingSpinner size="lg" />
               </div>
-            ) : projectSubmissions.length === 0 ? (
+            ) : filteredAndSortedSubmissions.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <p className="text-gray-500">{t('admin.submissions.noSubmissions')}</p>
+                  <p className="text-gray-500">
+                    {projectSubmissions.length === 0
+                      ? t('admin.submissions.noSubmissions')
+                      : 'No submissions match your filters'}
+                  </p>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-4">
-                {/* Pending submissions first */}
-                {projectSubmissions
-                  .sort((a, b) => {
-                    // Pending first, then by date
-                    if (a.status === 'PENDING' && b.status !== 'PENDING') return -1
-                    if (a.status !== 'PENDING' && b.status === 'PENDING') return 1
-                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-                  })
-                  .map((submission) => (
+                {filteredAndSortedSubmissions.map((submission) => (
                     <Card
                       key={submission.id}
                       className={submission.status !== 'PENDING' ? 'opacity-60' : ''}
@@ -1175,21 +1288,68 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
         {activeTab === 'contacts' && (
           <div className="space-y-4">
-            <h2 className="text-xl font-semibold">{t('admin.contacts.title')}</h2>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl font-semibold">
+                {t('admin.contacts.title')} ({filteredAndSortedContacts.length})
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                {/* Search */}
+                <div className="relative">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search contacts..."
+                    value={contactSearchQuery}
+                    onChange={(e) => setContactSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-48"
+                  />
+                </div>
+                {/* Handled Filter */}
+                <select
+                  value={contactHandledFilter}
+                  onChange={(e) => setContactHandledFilter(e.target.value as typeof contactHandledFilter)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="ALL">All</option>
+                  <option value="UNHANDLED">Unhandled</option>
+                  <option value="HANDLED">Handled</option>
+                </select>
+                {/* Sort */}
+                <select
+                  value={contactSortField}
+                  onChange={(e) => setContactSortField(e.target.value as ContactSortField)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="recency">Newest First</option>
+                  <option value="handled">Unhandled First</option>
+                </select>
+              </div>
+            </div>
 
             {isLoadingSubmissions ? (
               <div className="flex justify-center py-8">
                 <LoadingSpinner size="lg" />
               </div>
-            ) : contactSubmissions.length === 0 ? (
+            ) : filteredAndSortedContacts.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <p className="text-gray-500">{t('admin.contacts.noContacts')}</p>
+                  <p className="text-gray-500">
+                    {contactSubmissions.length === 0
+                      ? t('admin.contacts.noContacts')
+                      : 'No contacts match your filters'}
+                  </p>
                 </CardContent>
               </Card>
             ) : (
               <div className="space-y-4">
-                {contactSubmissions.map((submission) => (
+                {filteredAndSortedContacts.map((submission) => (
                   <Card
                     key={submission.id}
                     className={submission.handled ? 'opacity-60' : ''}

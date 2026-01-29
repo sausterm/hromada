@@ -42,6 +42,18 @@ export function Header({ children }: HeaderProps) {
     setIsLangMenuOpen(false)
   }
 
+  const isHomepage = pathname === '/'
+
+  const handleLogoClick = (targetLocale: Locale) => {
+    if (isHomepage) {
+      // On homepage, just switch language
+      switchLocale(targetLocale)
+    } else {
+      // On other pages, navigate to homepage in that language
+      router.push('/', { locale: targetLocale })
+    }
+  }
+
   const languageLabels: Record<Locale, { name: string; flag: string }> = {
     en: { name: 'English', flag: '🇺🇸' },
     uk: { name: 'Українська', flag: '🇺🇦' },
@@ -127,14 +139,14 @@ export function Header({ children }: HeaderProps) {
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="font-logo text-[var(--navy-700)] text-[1.625rem] sm:text-[2rem] lg:text-[2.375rem]">
               <button
-                onClick={() => switchLocale('en')}
+                onClick={() => handleLogoClick('en')}
                 className={`${locale === 'en' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}
               >
                 hromada
               </button>
               <span className="font-normal"> | </span>
               <button
-                onClick={() => switchLocale('uk')}
+                onClick={() => handleLogoClick('uk')}
                 className={`${locale === 'uk' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}
               >
                 громада

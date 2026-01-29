@@ -1,7 +1,7 @@
 /**
  * Hromada Platform
  *
- * Copyright (c) 2025 Thomas Protzman and Sloan Austermann
+ * Copyright (c) 2025 Thomas D. Protzman and Sloan Austermann
  * All rights reserved.
  *
  * This source code is proprietary and confidential.
@@ -46,12 +46,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Hromada | Support Ukrainian Infrastructure',
     description: 'Connect with Ukrainian municipalities to support infrastructure recovery',
-    authors: [{ name: 'Thomas Protzman' }, { name: 'Sloan Austermann' }],
+    authors: [{ name: 'Thomas D. Protzman' }, { name: 'Sloan Austermann' }],
     creator: 'Hromada Platform',
     publisher: 'Hromada Platform',
     robots: 'index, follow',
     other: {
-      'copyright': '© 2025 Thomas Protzman and Sloan Austermann. All rights reserved.',
+      'copyright': '© 2025 Thomas D. Protzman and Sloan Austermann. All rights reserved.',
     },
   };
 }

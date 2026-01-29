@@ -4,13 +4,13 @@
 
 ## Copyright & Ownership
 
-© 2025 Thomas Protzmann and Sloan Austermann. All rights reserved.
+© 2025 Thomas Protzman and Sloan Austermann. All rights reserved.
 
 This is proprietary software. Unauthorized copying, modification, distribution, or use is strictly prohibited without explicit written permission from the copyright holders.
 
 **Intellectual Property Notice:**
 - All code, designs, documentation, and related materials are protected by copyright law
-- The Hromada platform, its codebase, and associated intellectual property are owned by Thomas Protzmann and Sloan Austermann
+- The Hromada platform, its codebase, and associated intellectual property are owned by Thomas Protzman and Sloan Austermann
 - No license is granted for use, modification, or distribution
 
 For licensing inquiries or permissions, contact: support@hromada.org
@@ -203,7 +203,7 @@ The app can be deployed to any platform that supports Next.js:
 
 Proprietary - All Rights Reserved
 
-© 2025 Thomas Protzmann and Sloan Austermann
+© 2025 Thomas Protzman and Sloan Austermann
 
 ## Support
 

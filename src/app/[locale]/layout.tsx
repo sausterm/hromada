@@ -3,6 +3,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
+import { Footer } from "@/components/layout/Footer";
 import { locales, type Locale } from '@/i18n';
 
 const geistSans = Geist({
@@ -52,12 +53,15 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}
         suppressHydrationWarning
       >
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ToastProvider>
-            {children}
+            <div className="flex-1 flex flex-col">
+              {children}
+            </div>
+            <Footer />
           </ToastProvider>
         </NextIntlClientProvider>
       </body>

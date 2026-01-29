@@ -100,7 +100,7 @@ export function Header({ children }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
       {/* Top Bar - Navigation */}
-      <div className="px-4 lg:px-6 py-4">
+      <div className="px-4 lg:px-6 py-2">
         <div className="flex items-center justify-between gap-4">
           {/* Left - Menu Button */}
           <div className="flex-1 flex items-center">
@@ -174,8 +174,8 @@ export function Header({ children }: HeaderProps) {
           </div>
 
           {/* Center - Logo */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="font-logo text-[var(--navy-700)] text-[1.625rem] sm:text-[2rem] lg:text-[2.375rem]">
+          <div className="flex flex-col items-center flex-shrink-0">
+            <span className="font-logo text-[var(--navy-700)] text-[2rem] sm:text-[2.5rem] lg:text-[3rem] leading-tight">
               <button
                 onClick={() => handleLogoClick('en')}
                 className={`${locale === 'en' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}
@@ -190,6 +190,9 @@ export function Header({ children }: HeaderProps) {
                 громада
               </button>
             </span>
+            <span className="text-[0.7rem] sm:text-xs text-[var(--navy-500)] italic">
+              Built to support renewable Ukrainian infrastructure recovery
+            </span>
           </div>
 
           {/* Right - Language Switcher */}
@@ -197,10 +200,12 @@ export function Header({ children }: HeaderProps) {
             <div className="relative" ref={langMenuRef}>
               <button
                 onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                className="w-8 h-8 rounded-full overflow-hidden border border-[var(--cream-300)] hover:border-[var(--navy-400)] transition-colors"
+                className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
                 aria-label={t('nav.language')}
               >
-                <FlagComponent className="w-full h-full" />
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  <FlagComponent className="w-full h-full" />
+                </div>
               </button>
 
               {/* Language Dropdown */}
@@ -208,10 +213,12 @@ export function Header({ children }: HeaderProps) {
                 <div className="absolute right-0 top-full mt-2 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] p-1.5 z-50">
                   <button
                     onClick={() => switchLocale(otherLocale)}
-                    className="w-8 h-8 rounded-full overflow-hidden border border-[var(--cream-300)] hover:border-[var(--navy-400)] transition-colors"
+                    className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
                     title={otherLocale === 'uk' ? 'Українська' : 'English'}
                   >
-                    <OtherFlagComponent className="w-full h-full" />
+                    <div className="w-full h-full rounded-full overflow-hidden">
+                      <OtherFlagComponent className="w-full h-full" />
+                    </div>
                   </button>
                 </div>
               )}

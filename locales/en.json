@@ -289,7 +289,7 @@
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",
-    "builtFor": "Built to support Ukrainian infrastructure recovery",
+    "builtFor": "Built to support renewable Ukrainian infrastructure recovery",
     "geoRestrictions": "Service restricted in certain regions for security"
   },
   "legal": {
@@ -300,9 +300,9 @@
   },
   "about": {
     "title": "About Hromada",
-    "mission": "Hromada connects Ukrainian municipalities with donors to rebuild critical infrastructure damaged by war.",
+    "mission": "Hromada connects Ukrainian municipalities with donors to rebuild critical infrastructure with a focus on renewable energy and sustainability.",
     "ourMission": "Our Mission",
-    "ourMissionText": "The word \"hromada\" (громада) means \"community\" in Ukrainian. Our platform serves as a bridge between Ukrainian municipalities seeking support for critical infrastructure projects and donors who want to make a direct, meaningful impact.",
+    "ourMissionText": "The word \"hromada\" (громада) means \"community\" in Ukrainian. Our platform serves as a bridge between Ukrainian municipalities seeking support for renewable energy and infrastructure projects, and donors who want to make a direct, meaningful impact.",
     "howItWorks": "How It Works",
     "howItWorksText": "Municipalities submit infrastructure projects that need funding. We verify each submission and connect them with donors and 501(c)(3) organizations who can provide support.",
     "forMunicipalities": "For Municipalities:",
@@ -315,7 +315,7 @@
     "categoryHospital": "Healthcare infrastructure and equipment",
     "categorySchool": "Educational facilities and resources",
     "categoryWater": "Clean water and sanitation systems",
-    "categoryEnergy": "Solar panels, heat pumps, and power systems",
+    "categoryEnergy": "Solar panels, heat pumps, and renewable power systems",
     "categoryOther": "Community buildings and essential services",
     "contact": "Contact Us",
     "contactText": "Questions or feedback? Reach out to us at",

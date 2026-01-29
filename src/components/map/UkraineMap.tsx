@@ -230,7 +230,7 @@ const ProjectMarkers = memo(function ProjectMarkers({
       disableClusteringAtZoom={12}
       removeOutsideVisibleBounds={true}
       animate={true}
-      animateAddingMarkers={true}
+      animateAddingMarkers={false}
       spiderfyDistanceMultiplier={1.5}
     >
       {projects.map((project) => {

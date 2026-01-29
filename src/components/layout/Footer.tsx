@@ -13,7 +13,7 @@ export function Footer() {
         <div className="text-center">
           {/* Copyright Notice */}
           <p className="text-sm text-[var(--navy-500)] mb-3">
-            © {currentYear} Thomas D. Protzman and Sloan Austermann. All rights reserved.
+            © {currentYear} Thomas D. Protzman. All rights reserved.
           </p>
 
           {/* Links */}

@@ -88,7 +88,9 @@ export default function HomePage() {
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000])
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
+  const [priceDropdownPosition, setPriceDropdownPosition] = useState({ top: 0, left: 0 })
   const priceDropdownRef = useRef<HTMLDivElement>(null)
+  const priceButtonRef = useRef<HTMLButtonElement>(null)
   const priceDropdownId = useId()
   const [sortBy, setSortBy] = useState<SortOption>('newest')
 
@@ -342,38 +344,28 @@ export default function HomePage() {
     <div className="h-screen flex flex-col bg-[var(--cream-50)]">
       {/* Header with Filter Bar */}
       <Header>
-        <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)]">
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Category chips */}
-            {(Object.keys(CATEGORY_CONFIG) as Category[]).map((category) => {
-              const config = CATEGORY_CONFIG[category]
-              const isActive = selectedCategories.has(category)
-              return (
-                <button
-                  key={category}
-                  onClick={() => toggleCategory(category)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all ${
-                    isActive
-                      ? 'bg-[var(--navy-600)] text-white'
-                      : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
-                  }`}
-                >
-                  <span>{config.icon}</span>
-                  <span className="hidden sm:inline">{t(`categories.${category}`).split(' ')[0]}</span>
-                </button>
-              )
-            })}
-
+        <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
+          <div className="flex items-center gap-2 flex-nowrap">
             {/* Price Range Dropdown */}
-            <div className="relative" ref={priceDropdownRef}>
+            <div className="relative shrink-0" ref={priceDropdownRef}>
               <button
-                onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}
+                ref={priceButtonRef}
+                onClick={() => {
+                  if (!isPriceDropdownOpen && priceButtonRef.current) {
+                    const rect = priceButtonRef.current.getBoundingClientRect()
+                    setPriceDropdownPosition({
+                      top: rect.bottom + 8,
+                      left: rect.left,
+                    })
+                  }
+                  setIsPriceDropdownOpen(!isPriceDropdownOpen)
+                }}
                 aria-expanded={isPriceDropdownOpen}
                 aria-controls={priceDropdownId}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[130px] ${
                   priceRange[0] > 0 || priceRange[1] < 500000
-                    ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
-                    : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
                 }`}
               >
                 <span>
@@ -390,7 +382,8 @@ export default function HomePage() {
               {isPriceDropdownOpen && (
                 <div
                   id={priceDropdownId}
-                  className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border border-[var(--cream-200)] p-4 z-50 min-w-[200px]"
+                  className="fixed bg-white rounded-lg shadow-lg border border-[var(--cream-200)] p-4 z-50 min-w-[200px]"
+                  style={{ top: priceDropdownPosition.top, left: priceDropdownPosition.left }}
                 >
                   <div className="flex flex-col gap-4">
                     {/* Max price label and value (top) */}
@@ -471,10 +464,10 @@ export default function HomePage() {
             <select
               value={selectedProjectType || ''}
               onChange={(e) => setSelectedProjectType((e.target.value as ProjectType) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all shrink-0 border-2 ${
                 selectedProjectType
-                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
-                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+                  ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                  : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)]'
               }`}
             >
               <option value="">{t('homepage.filters.projectType')}</option>
@@ -489,10 +482,10 @@ export default function HomePage() {
             <select
               value={selectedUrgency || ''}
               onChange={(e) => setSelectedUrgency((e.target.value as Urgency) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all shrink-0 border-2 ${
                 selectedUrgency
-                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
-                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+                  ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                  : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)]'
               }`}
             >
               <option value="">{t('homepage.filters.urgency')}</option>
@@ -507,10 +500,10 @@ export default function HomePage() {
             <select
               value={selectedStatus || ''}
               onChange={(e) => setSelectedStatus((e.target.value as Status) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all shrink-0 border-2 ${
                 selectedStatus
-                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
-                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+                  ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                  : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)]'
               }`}
             >
               <option value="">{t('homepage.filters.status')}</option>
@@ -525,10 +518,10 @@ export default function HomePage() {
             <select
               value={selectedCofinancing || ''}
               onChange={(e) => setSelectedCofinancing((e.target.value as CofinancingStatus) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all ${
+              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all shrink-0 border-2 ${
                 selectedCofinancing
-                  ? 'bg-[var(--navy-600)] text-white border-2 border-[var(--navy-600)]'
-                  : 'bg-white border border-[var(--cream-300)] text-[var(--navy-600)]'
+                  ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                  : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)]'
               }`}
             >
               <option value="">{t('homepage.filters.cofinancing')}</option>
@@ -539,11 +532,31 @@ export default function HomePage() {
               ))}
             </select>
 
+            {/* Category chips */}
+            {(Object.keys(CATEGORY_CONFIG) as Category[]).map((category) => {
+              const config = CATEGORY_CONFIG[category]
+              const isActive = selectedCategories.has(category)
+              return (
+                <button
+                  key={category}
+                  onClick={() => toggleCategory(category)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all shrink-0 border-2 ${
+                    isActive
+                      ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                      : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
+                  }`}
+                >
+                  <span>{config.icon}</span>
+                  <span className="hidden sm:inline">{t(`categories.${category}`).split(' ')[0]}</span>
+                </button>
+              )
+            })}
+
             {/* Clear filters */}
             {activeFilterCount > 0 && (
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm font-medium bg-[var(--navy-100)] text-[var(--navy-700)] hover:bg-[var(--navy-200)] transition-colors border border-[var(--navy-200)]"
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm font-medium bg-[var(--navy-100)] text-[var(--navy-700)] hover:bg-[var(--navy-200)] transition-colors border border-[var(--navy-200)] shrink-0"
               >
                 <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

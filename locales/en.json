@@ -276,6 +276,35 @@
       "dismiss": "Dismiss"
     }
   },
+  "footer": {
+    "aboutUs": "About Us",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact",
+    "builtFor": "Built to support Ukrainian infrastructure recovery"
+  },
+  "legal": {
+    "termsTitle": "Terms of Service",
+    "termsComingSoon": "Our Terms of Service are being finalized. This platform is currently in beta.",
+    "privacyTitle": "Privacy Policy",
+    "privacyComingSoon": "Our Privacy Policy is being finalized. We take data protection seriously and follow industry best practices."
+  },
+  "about": {
+    "title": "About Hromada",
+    "mission": "Hromada connects Ukrainian municipalities with donors to rebuild critical infrastructure damaged by war.",
+    "howItWorks": "How It Works",
+    "howItWorksText": "Municipalities submit infrastructure projects that need funding. We verify each submission and connect them with donors and 501(c)(3) organizations who can provide support.",
+    "contact": "Contact Us"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "Have questions about the Hromada platform? We're here to help.",
+    "generalInquiries": "General Inquiries",
+    "forMunicipalities": "For Municipalities",
+    "forMunicipalitiesText": "If you're a Ukrainian municipality looking to submit a project, please use the \"Submit a Project\" button in the header.",
+    "forDonors": "For Donors",
+    "forDonorsText": "Browse our projects and use the contact form on each project page to express your interest in supporting a specific municipality."
+  },
   "admin": {
     "title": "Admin Dashboard",
     "backToMap": "← Back to Map",

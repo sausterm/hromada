@@ -1,3 +1,13 @@
+/**
+ * Hromada Platform
+ *
+ * Copyright (c) 2025 Thomas Protzmann and Sloan Austermann
+ * All rights reserved.
+ *
+ * This source code is proprietary and confidential.
+ * Unauthorized copying, modification, or distribution is prohibited.
+ */
+
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -5,6 +15,7 @@ import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import { Footer } from "@/components/layout/Footer";
 import { locales, type Locale } from '@/i18n';
+import type { Metadata } from 'next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +40,20 @@ interface LocaleLayoutProps {
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'Hromada | Support Ukrainian Infrastructure',
+    description: 'Connect with Ukrainian municipalities to support infrastructure recovery',
+    authors: [{ name: 'Thomas Protzmann' }, { name: 'Sloan Austermann' }],
+    creator: 'Hromada Platform',
+    publisher: 'Hromada Platform',
+    robots: 'index, follow',
+    other: {
+      'copyright': '© 2025 Thomas Protzmann and Sloan Austermann. All rights reserved.',
+    },
+  };
 }
 
 export default async function LocaleLayout({

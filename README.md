@@ -1,4 +1,23 @@
-# Hromada 🇺🇦
+# Hromada | Громада
+
+> Connecting Ukrainian municipalities with infrastructure donors
+
+## Copyright & Ownership
+
+© 2025 Thomas Protzmann and Sloan Austermann. All rights reserved.
+
+This is proprietary software. Unauthorized copying, modification, distribution, or use is strictly prohibited without explicit written permission from the copyright holders.
+
+**Intellectual Property Notice:**
+- All code, designs, documentation, and related materials are protected by copyright law
+- The Hromada platform, its codebase, and associated intellectual property are owned by Thomas Protzmann and Sloan Austermann
+- No license is granted for use, modification, or distribution
+
+For licensing inquiries or permissions, contact: support@hromada.org
+
+---
+
+## About Hromada
 
 **Hromada** (громада) - Ukrainian word for "community"
 
@@ -182,7 +201,9 @@ The app can be deployed to any platform that supports Next.js:
 
 ## License
 
-MIT
+Proprietary - All Rights Reserved
+
+© 2025 Thomas Protzmann and Sloan Austermann
 
 ## Support
 

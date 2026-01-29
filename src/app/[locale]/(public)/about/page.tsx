@@ -9,19 +9,17 @@ export default function AboutPage() {
   const t = useTranslations()
 
   return (
-    <div className="min-h-screen bg-[var(--cream-50)]">
-      {/* Header */}
+    <div className="min-h-screen bg-[var(--cream-50)] flex flex-col">
       <Header />
 
-      {/* Content */}
-      <main className="max-w-3xl mx-auto px-4 py-12">
+      <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-6">
-          About Hromada
+          {t('about.title')}
         </h1>
 
         <div className="prose prose-lg text-[var(--navy-600)] space-y-6">
           <p className="text-xl text-[var(--navy-500)]">
-            Hromada connects American donors with Ukrainian communities in need of infrastructure support.
+            {t('about.mission')}
           </p>
 
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
@@ -37,8 +35,9 @@ export default function AboutPage() {
 
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              How It Works
+              {t('about.howItWorks')}
             </h2>
+            <p className="mb-4">{t('about.howItWorksText')}</p>
             <ul className="space-y-3">
               <li>
                 <strong>For Municipalities:</strong> Ukrainian community leaders submit their infrastructure
@@ -70,7 +69,7 @@ export default function AboutPage() {
 
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              Contact Us
+              {t('about.contact')}
             </h2>
             <p>
               Questions or feedback? Reach out to us at{' '}
@@ -94,15 +93,6 @@ export default function AboutPage() {
           </Link>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="mt-12 py-6 border-t border-[var(--cream-300)] bg-[var(--cream-100)]">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-xs text-[var(--navy-600)]">
-            <span className="font-medium">hromada</span> connects American donors with Ukrainian communities.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }

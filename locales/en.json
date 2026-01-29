@@ -1,4 +1,12 @@
 {
+  "blocked": {
+    "title": "Access Restricted",
+    "message": "Access to Hromada is not available from your location.",
+    "reasonTitle": "Why am I seeing this?",
+    "reason": "To protect Ukrainian infrastructure data and prevent potential security threats, access from certain regions is restricted. This platform contains information about critical infrastructure projects in Ukraine.",
+    "vpnTitle": "Using a VPN or Proxy?",
+    "vpnMessage": "If you believe this is an error and you are not accessing from a restricted location, please disable any VPN or proxy services and try again. If you continue to experience issues, please contact us."
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
@@ -281,7 +289,8 @@
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",
-    "builtFor": "Built to support Ukrainian infrastructure recovery"
+    "builtFor": "Built to support Ukrainian infrastructure recovery",
+    "geoRestrictions": "Service restricted in certain regions for security"
   },
   "legal": {
     "termsTitle": "Terms of Service",

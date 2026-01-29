@@ -44,9 +44,9 @@ export function Footer() {
             </Link>
           </div>
 
-          {/* Built with love message */}
+          {/* Built with love message and geo notice */}
           <p className="text-xs text-[var(--navy-400)] mt-4">
-            {t('builtFor')}
+            {t('builtFor')} · {t('geoRestrictions')}
           </p>
         </div>
       </div>

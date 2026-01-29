@@ -148,6 +148,10 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [itemsPerPage, setItemsPerPage] = useState<number>(20)
   const [currentPage, setCurrentPage] = useState(1)
 
+  // Multi-select for bulk actions
+  const [selectedProjectIds, setSelectedProjectIds] = useState<Set<string>>(new Set())
+  const [isDeleting, setIsDeleting] = useState(false)
+
   // Fetch projects from API
   useEffect(() => {
     async function fetchProjects() {
@@ -379,6 +383,77 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     }
   }
 
+  // Multi-select handlers
+  const toggleProjectSelection = (projectId: string) => {
+    setSelectedProjectIds((prev) => {
+      const newSet = new Set(prev)
+      if (newSet.has(projectId)) {
+        newSet.delete(projectId)
+      } else {
+        newSet.add(projectId)
+      }
+      return newSet
+    })
+  }
+
+  const toggleAllOnPage = () => {
+    const pageProjectIds = paginatedProjects.map((p) => p.id)
+    const allSelected = pageProjectIds.every((id) => selectedProjectIds.has(id))
+
+    if (allSelected) {
+      // Deselect all on page
+      setSelectedProjectIds((prev) => {
+        const newSet = new Set(prev)
+        pageProjectIds.forEach((id) => newSet.delete(id))
+        return newSet
+      })
+    } else {
+      // Select all on page
+      setSelectedProjectIds((prev) => {
+        const newSet = new Set(prev)
+        pageProjectIds.forEach((id) => newSet.add(id))
+        return newSet
+      })
+    }
+  }
+
+  const clearSelection = () => {
+    setSelectedProjectIds(new Set())
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedProjectIds.size === 0) return
+
+    const confirmMessage = t('admin.projects.confirmBulkDelete', { count: selectedProjectIds.size })
+    if (!confirm(confirmMessage)) return
+
+    setIsDeleting(true)
+
+    try {
+      const deletePromises = Array.from(selectedProjectIds).map((id) =>
+        fetch(`/api/projects/${id}`, { method: 'DELETE' })
+      )
+
+      const results = await Promise.all(deletePromises)
+      const failedCount = results.filter((r) => !r.ok).length
+
+      if (failedCount > 0) {
+        alert(t('admin.projects.bulkDeletePartialFail', { failed: failedCount, total: selectedProjectIds.size }))
+      } else {
+        alert(t('admin.projects.bulkDeleteSuccess', { count: selectedProjectIds.size }))
+      }
+
+      // Remove deleted projects from state
+      setProjects((prev) => prev.filter((p) => !selectedProjectIds.has(p.id)))
+      clearSelection()
+    } catch (error) {
+      console.error('Bulk delete failed:', error)
+      alert(t('admin.projects.bulkDeleteFail'))
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   const SortIcon = ({ field }: { field: SortField }) => (
     <span className="inline-flex flex-col ml-1">
       <svg
@@ -518,11 +593,49 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               </div>
             </div>
 
+            {/* Bulk Actions Toolbar */}
+            {selectedProjectIds.size > 0 && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm font-medium text-blue-800">
+                    {t('admin.projects.selectedCount', { count: selectedProjectIds.size })}
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={clearSelection}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    {t('admin.projects.clearSelection')}
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={handleBulkDelete}
+                    disabled={isDeleting}
+                    isLoading={isDeleting}
+                  >
+                    {t('admin.projects.deleteSelected')}
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <Card>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b">
                     <tr>
+                      <th className="p-4 w-12">
+                        <input
+                          type="checkbox"
+                          checked={paginatedProjects.length > 0 && paginatedProjects.every((p) => selectedProjectIds.has(p.id))}
+                          onChange={toggleAllOnPage}
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </th>
                       <th
                         className="text-left p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('facilityName')}
@@ -596,7 +709,15 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                       const statusConfig = STATUS_CONFIG[project.status]
 
                       return (
-                        <tr key={project.id} className="hover:bg-gray-50">
+                        <tr key={project.id} className={`hover:bg-gray-50 ${selectedProjectIds.has(project.id) ? 'bg-blue-50' : ''}`}>
+                          <td className="p-4">
+                            <input
+                              type="checkbox"
+                              checked={selectedProjectIds.has(project.id)}
+                              onChange={() => toggleProjectSelection(project.id)}
+                              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                          </td>
                           <td className="p-4">
                             <p className="font-medium text-gray-900">{project.facilityName}</p>
                           </td>
@@ -647,7 +768,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     })}
                     {paginatedProjects.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="p-8 text-center text-gray-500">
+                        <td colSpan={9} className="p-8 text-center text-gray-500">
                           {searchQuery ? t('admin.projects.noMatch') : t('admin.projects.noProjects')}
                         </td>
                       </tr>

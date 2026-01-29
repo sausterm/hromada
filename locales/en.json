@@ -354,6 +354,13 @@
       "searchPlaceholder": "Search projects...",
       "backToDashboard": "← Back to Dashboard",
       "notFound": "Project Not Found",
+      "selectedCount": "{count} selected",
+      "clearSelection": "Clear selection",
+      "deleteSelected": "Delete selected",
+      "confirmBulkDelete": "Are you sure you want to delete {count} projects? This cannot be undone.",
+      "bulkDeleteSuccess": "Successfully deleted {count} projects",
+      "bulkDeletePartialFail": "Deleted {total} projects, but {failed} failed",
+      "bulkDeleteFail": "Failed to delete projects",
       "table": {
         "facility": "Facility",
         "municipality": "Municipality",

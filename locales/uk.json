@@ -354,6 +354,13 @@
       "searchPlaceholder": "Пошук проєктів...",
       "backToDashboard": "← Назад до панелі",
       "notFound": "Проект не знайдено",
+      "selectedCount": "{count} вибрано",
+      "clearSelection": "Скасувати вибір",
+      "deleteSelected": "Видалити вибрані",
+      "confirmBulkDelete": "Ви впевнені, що хочете видалити {count} проєктів? Це не можна скасувати.",
+      "bulkDeleteSuccess": "Успішно видалено {count} проєктів",
+      "bulkDeletePartialFail": "Видалено {total} проєктів, але {failed} не вдалося",
+      "bulkDeleteFail": "Не вдалося видалити проєкти",
       "table": {
         "facility": "Об'єкт",
         "municipality": "Громада",

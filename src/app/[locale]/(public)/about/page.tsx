@@ -24,12 +24,10 @@ export default function AboutPage() {
 
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              Our Mission
+              {t('about.ourMission')}
             </h2>
             <p>
-              The word "hromada" (громада) means "community" in Ukrainian. Our platform serves as a bridge
-              between Ukrainian municipalities seeking support for critical infrastructure projects and
-              donors who want to make a direct, meaningful impact.
+              {t('about.ourMissionText')}
             </p>
           </section>
 
@@ -40,30 +38,27 @@ export default function AboutPage() {
             <p className="mb-4">{t('about.howItWorksText')}</p>
             <ul className="space-y-3">
               <li>
-                <strong>For Municipalities:</strong> Ukrainian community leaders submit their infrastructure
-                projects through our platform. Each project is reviewed before being published.
+                <strong>{t('about.forMunicipalities')}</strong> {t('about.forMunicipalitiesText')}
               </li>
               <li>
-                <strong>For Donors:</strong> Browse verified projects, filter by category, urgency, or
-                location, and connect directly with communities to provide support.
+                <strong>{t('about.forDonors')}</strong> {t('about.forDonorsText')}
               </li>
               <li>
-                <strong>Direct Connection:</strong> We facilitate introductions but do not process payments.
-                Donors work directly with municipalities to ensure transparency and accountability.
+                <strong>{t('about.directConnection')}</strong> {t('about.directConnectionText')}
               </li>
             </ul>
           </section>
 
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              Project Categories
+              {t('about.projectCategories')}
             </h2>
             <ul className="space-y-2">
-              <li><strong>{t('categories.HOSPITAL')}</strong> - Healthcare infrastructure and equipment</li>
-              <li><strong>{t('categories.SCHOOL')}</strong> - Educational facilities and resources</li>
-              <li><strong>{t('categories.WATER')}</strong> - Clean water and sanitation systems</li>
-              <li><strong>{t('categories.ENERGY')}</strong> - Solar panels, heat pumps, and power systems</li>
-              <li><strong>{t('categories.OTHER')}</strong> - Community buildings and essential services</li>
+              <li><strong>{t('categories.HOSPITAL')}</strong> - {t('about.categoryHospital')}</li>
+              <li><strong>{t('categories.SCHOOL')}</strong> - {t('about.categorySchool')}</li>
+              <li><strong>{t('categories.WATER')}</strong> - {t('about.categoryWater')}</li>
+              <li><strong>{t('categories.ENERGY')}</strong> - {t('about.categoryEnergy')}</li>
+              <li><strong>{t('categories.OTHER')}</strong> - {t('about.categoryOther')}</li>
             </ul>
           </section>
 
@@ -72,7 +67,7 @@ export default function AboutPage() {
               {t('about.contact')}
             </h2>
             <p>
-              Questions or feedback? Reach out to us at{' '}
+              {t('about.contactText')}{' '}
               <a href="mailto:support@hromada.org" className="text-[var(--navy-700)] underline">
                 support@hromada.org
               </a>
@@ -83,7 +78,7 @@ export default function AboutPage() {
         <div className="mt-12 flex gap-4">
           <Link href="/">
             <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
-              Browse Projects
+              {t('about.browseProjects')}
             </Button>
           </Link>
           <Link href="/submit-project">

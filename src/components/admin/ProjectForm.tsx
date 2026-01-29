@@ -24,6 +24,7 @@ interface ProjectFormProps {
   project?: Project | null
   onSubmit: (data: ProjectFormData) => Promise<void>
   onCancel: () => void
+  onDelete?: () => void
   isLoading?: boolean
 }
 
@@ -79,7 +80,7 @@ const initialFormData: ProjectFormData = {
   partnerOrganization: '',
 }
 
-export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectFormProps) {
+export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }: ProjectFormProps) {
   const [formData, setFormData] = useState<ProjectFormData>(initialFormData)
   const [errors, setErrors] = useState<Partial<Record<keyof ProjectFormData, string>>>({})
   const [isGeocoding, setIsGeocoding] = useState(false)
@@ -579,6 +580,11 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
             <Button type="submit" isLoading={isLoading} loadingText="Saving...">
               {isEditing ? 'Update Project' : 'Create Project'}
             </Button>
+            {isEditing && onDelete && (
+              <Button type="button" variant="danger" onClick={onDelete} disabled={isLoading}>
+                Delete Project
+              </Button>
+            )}
             <Button type="button" variant="ghost" onClick={onCancel}>
               Cancel
             </Button>

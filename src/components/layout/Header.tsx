@@ -15,32 +15,75 @@ export function Header({ children }: HeaderProps) {
   const locale = useLocale()
   const pathname = usePathname()
   const router = useRouter()
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false)
-  const langMenuRef = useRef<HTMLDivElement>(null)
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const navMenuRef = useRef<HTMLDivElement>(null)
+  const langMenuRef = useRef<HTMLDivElement>(null)
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
-        setIsLangMenuOpen(false)
-      }
       if (navMenuRef.current && !navMenuRef.current.contains(event.target as Node)) {
         setIsNavMenuOpen(false)
       }
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
+        setIsLangMenuOpen(false)
+      }
     }
 
-    if (isLangMenuOpen || isNavMenuOpen) {
+    if (isNavMenuOpen || isLangMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isLangMenuOpen, isNavMenuOpen])
+  }, [isNavMenuOpen, isLangMenuOpen])
 
   const switchLocale = (newLocale: Locale) => {
     router.replace(pathname, { locale: newLocale })
     setIsLangMenuOpen(false)
   }
+
+  // Flag components that fill the circular button
+  const USFlag = ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 40 40" className={className}>
+      <defs>
+        <clipPath id="circleClipUS">
+          <circle cx="20" cy="20" r="20" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#circleClipUS)">
+        {/* Red and white stripes */}
+        <rect fill="#B22234" width="40" height="40" />
+        <rect fill="#FFFFFF" y="3.08" width="40" height="3.08" />
+        <rect fill="#FFFFFF" y="9.23" width="40" height="3.08" />
+        <rect fill="#FFFFFF" y="15.38" width="40" height="3.08" />
+        <rect fill="#FFFFFF" y="21.54" width="40" height="3.08" />
+        <rect fill="#FFFFFF" y="27.69" width="40" height="3.08" />
+        <rect fill="#FFFFFF" y="33.85" width="40" height="3.08" />
+        {/* Blue canton */}
+        <rect fill="#3C3B6E" width="16" height="21.54" />
+      </g>
+    </svg>
+  )
+
+  const UkraineFlag = ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 40 40" className={className}>
+      <defs>
+        <clipPath id="circleClipUA">
+          <circle cx="20" cy="20" r="20" />
+        </clipPath>
+      </defs>
+      <g clipPath="url(#circleClipUA)">
+        {/* Blue top half */}
+        <rect fill="#005BBB" width="40" height="20" />
+        {/* Yellow bottom half */}
+        <rect fill="#FFD500" y="20" width="40" height="20" />
+      </g>
+    </svg>
+  )
+
+  const FlagComponent = locale === 'en' ? USFlag : UkraineFlag
+  const OtherFlagComponent = locale === 'en' ? UkraineFlag : USFlag
+  const otherLocale: Locale = locale === 'en' ? 'uk' : 'en'
 
   const isHomepage = pathname === '/'
 
@@ -54,18 +97,13 @@ export function Header({ children }: HeaderProps) {
     }
   }
 
-  const languageLabels: Record<Locale, { name: string; flag: string }> = {
-    en: { name: 'English', flag: '🇺🇸' },
-    uk: { name: 'Українська', flag: '🇺🇦' },
-  }
-
   return (
     <header className="sticky top-0 z-50 bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
       {/* Top Bar - Navigation */}
       <div className="px-4 lg:px-6 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Left - Menu Button */}
-          <div className="flex-1">
+          <div className="flex-1 flex items-center">
             <div className="relative" ref={navMenuRef}>
               <button
                 onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
@@ -159,43 +197,22 @@ export function Header({ children }: HeaderProps) {
             <div className="relative" ref={langMenuRef}>
               <button
                 onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)] transition-colors"
+                className="w-8 h-8 rounded-full overflow-hidden border border-[var(--cream-300)] hover:border-[var(--navy-400)] transition-colors"
                 aria-label={t('nav.language')}
               >
-                <span>{languageLabels[locale as Locale].flag}</span>
-                <span className="hidden sm:inline">{locale === 'uk' ? 'UA' : locale.toUpperCase()}</span>
-                <svg
-                  className={`h-4 w-4 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <FlagComponent className="w-full h-full" />
               </button>
 
               {/* Language Dropdown */}
               {isLangMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-1 z-50">
-                  {locales.map((loc) => (
-                    <button
-                      key={loc}
-                      onClick={() => switchLocale(loc)}
-                      className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
-                        locale === loc
-                          ? 'bg-[var(--navy-50)] text-[var(--navy-700)] font-medium'
-                          : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'
-                      }`}
-                    >
-                      <span>{languageLabels[loc].flag}</span>
-                      <span>{languageLabels[loc].name}</span>
-                      {locale === loc && (
-                        <svg className="h-4 w-4 ml-auto text-[var(--navy-600)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </button>
-                  ))}
+                <div className="absolute right-0 top-full mt-2 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] p-1.5 z-50">
+                  <button
+                    onClick={() => switchLocale(otherLocale)}
+                    className="w-8 h-8 rounded-full overflow-hidden border border-[var(--cream-300)] hover:border-[var(--navy-400)] transition-colors"
+                    title={otherLocale === 'uk' ? 'Українська' : 'English'}
+                  >
+                    <OtherFlagComponent className="w-full h-full" />
+                  </button>
                 </div>
               )}
             </div>

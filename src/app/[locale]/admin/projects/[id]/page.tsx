@@ -123,13 +123,10 @@ export default function EditProjectPage() {
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-4">
           <Link href="/admin" className="text-[var(--ukraine-600)] hover:underline text-sm">
             {t('admin.projects.backToDashboard')}
           </Link>
-          <Button variant="danger" size="sm" onClick={handleDelete} disabled={isSubmitting}>
-            {t('admin.projects.deleteProject')}
-          </Button>
         </div>
       </header>
 
@@ -144,6 +141,7 @@ export default function EditProjectPage() {
           project={project}
           onSubmit={handleSubmit}
           onCancel={() => router.push('/admin')}
+          onDelete={handleDelete}
           isLoading={isSubmitting}
         />
       </div>

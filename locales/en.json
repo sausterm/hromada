@@ -301,9 +301,25 @@
   "about": {
     "title": "About Hromada",
     "mission": "Hromada connects Ukrainian municipalities with donors to rebuild critical infrastructure damaged by war.",
+    "ourMission": "Our Mission",
+    "ourMissionText": "The word \"hromada\" (громада) means \"community\" in Ukrainian. Our platform serves as a bridge between Ukrainian municipalities seeking support for critical infrastructure projects and donors who want to make a direct, meaningful impact.",
     "howItWorks": "How It Works",
     "howItWorksText": "Municipalities submit infrastructure projects that need funding. We verify each submission and connect them with donors and 501(c)(3) organizations who can provide support.",
-    "contact": "Contact Us"
+    "forMunicipalities": "For Municipalities:",
+    "forMunicipalitiesText": "Ukrainian community leaders submit their infrastructure projects through our platform. Each project is reviewed before being published.",
+    "forDonors": "For Donors:",
+    "forDonorsText": "Browse verified projects, filter by category, urgency, or location, and connect directly with communities to provide support.",
+    "directConnection": "Direct Connection:",
+    "directConnectionText": "We facilitate introductions but do not process payments. Donors work directly with municipalities to ensure transparency and accountability.",
+    "projectCategories": "Project Categories",
+    "categoryHospital": "Healthcare infrastructure and equipment",
+    "categorySchool": "Educational facilities and resources",
+    "categoryWater": "Clean water and sanitation systems",
+    "categoryEnergy": "Solar panels, heat pumps, and power systems",
+    "categoryOther": "Community buildings and essential services",
+    "contact": "Contact Us",
+    "contactText": "Questions or feedback? Reach out to us at",
+    "browseProjects": "Browse Projects"
   },
   "contact": {
     "title": "Contact Us",

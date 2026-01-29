@@ -292,58 +292,10 @@ export default function ProjectDetailPage() {
               </Card>
             )}
 
-            {/* Location */}
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">{t('projectDetail.location')}</h3>
-                <p className="text-gray-600">{project.address}</p>
-                <a
-                  href={`https://www.google.com/maps?q=${project.cityLatitude},${project.cityLongitude}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--ukraine-600)] hover:underline text-sm mt-2 inline-block"
-                >
-                  {t('projectDetail.viewOnMap')}
-                </a>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Contact Info */}
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-4">{t('projectDetail.contact.title')}</h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-gray-500">{t('projectDetail.contact.contactPerson')}</p>
-                    <p className="font-medium text-gray-900">{project.contactName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">{t('projectDetail.contact.email')}</p>
-                    <a
-                      href={`mailto:${project.contactEmail}`}
-                      className="font-medium text-[var(--ukraine-600)] hover:underline"
-                    >
-                      {project.contactEmail}
-                    </a>
-                  </div>
-                  {project.contactPhone && (
-                    <div>
-                      <p className="text-sm text-gray-500">{t('projectDetail.contact.phone')}</p>
-                      <a
-                        href={`tel:${project.contactPhone}`}
-                        className="font-medium text-[var(--ukraine-600)] hover:underline"
-                      >
-                        {project.contactPhone}
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
             {/* Contact Form */}
             <ContactForm
               projectId={project.id}

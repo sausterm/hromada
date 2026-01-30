@@ -381,7 +381,7 @@ export default function HomePage() {
                 >
                   <div
                     id={priceDropdownId}
-                    className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-4 min-w-[200px]"
+                    className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28"
                   >
                   <div className="flex flex-col gap-4">
                     {/* Max price label and value (top) */}

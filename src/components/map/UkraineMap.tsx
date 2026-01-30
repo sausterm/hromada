@@ -278,9 +278,16 @@ function HighlightHandler({
 }) {
   const prevHighlightedRef = useRef<string | null>(null)
   const highlightedClusterRef = useRef<HTMLElement | null>(null)
+  const highlightedMarkerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    // Remove highlight from previous marker
+    // Remove highlight from previous marker element (tracked separately for reliability)
+    if (highlightedMarkerRef.current) {
+      highlightedMarkerRef.current.classList.remove('marker-highlighted')
+      highlightedMarkerRef.current = null
+    }
+
+    // Also try to remove from previous marker ref (backup)
     if (prevHighlightedRef.current && markerRefs.current[prevHighlightedRef.current]) {
       const prevMarker = markerRefs.current[prevHighlightedRef.current]
       const prevEl = prevMarker.getElement()
@@ -295,12 +302,27 @@ function HighlightHandler({
       highlightedClusterRef.current = null
     }
 
-    // Add highlight to current marker
+    // Add highlight to current marker (with small delay to ensure DOM is ready)
     if (highlightedProjectId && markerRefs.current[highlightedProjectId]) {
       const marker = markerRefs.current[highlightedProjectId]
+
+      const applyHighlight = (el: HTMLElement) => {
+        el.classList.add('marker-highlighted')
+        highlightedMarkerRef.current = el
+      }
+
+      // Try immediately first
       const el = marker.getElement()
       if (el) {
-        el.classList.add('marker-highlighted')
+        applyHighlight(el)
+      } else {
+        // If element not ready, retry after a short delay
+        setTimeout(() => {
+          const delayedEl = marker.getElement()
+          if (delayedEl) {
+            applyHighlight(delayedEl)
+          }
+        }, 50)
       }
     }
 

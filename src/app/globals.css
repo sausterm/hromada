@@ -189,14 +189,14 @@ body {
 }
 
 .marker-highlighted .custom-marker {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35);
+  transform: scale(1.2) !important;
+  box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35) !important;
 }
 
-/* Legacy: direct class on custom-marker (keeping for backwards compatibility) */
+/* Direct highlight class on custom-marker */
 .custom-marker.highlighted {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35);
+  transform: scale(1.2) !important;
+  box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.4), 0 4px 16px rgba(58, 54, 51, 0.35) !important;
   z-index: 1000 !important;
 }
 

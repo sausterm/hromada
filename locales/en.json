@@ -76,7 +76,7 @@
   "homepage": {
     "title": "Support Ukrainian Communities",
     "subtitle": "Connect with municipalities that need infrastructure support",
-    "searchPlaceholder": "Find projects or places...",
+    "searchPlaceholder": "Search projects or places...",
     "projectCount": "{count, plural, =0 {No projects} =1 {1 project} other {# projects}}",
     "totalProjects": "{count} total projects",
     "noProjectsFound": "No projects found",

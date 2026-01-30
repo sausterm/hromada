@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Header } from '@/components/layout/Header'
@@ -24,11 +24,11 @@ interface FormData {
   region: string
   // Project details
   facilityName: string
-  category: Category
+  category: Category | ''
   projectType: string
   briefDescription: string
   fullDescription: string
-  urgency: Urgency
+  urgency: Urgency | ''
   // Technical & financial
   estimatedCostUsd: string
   technicalPowerKw: string
@@ -57,11 +57,11 @@ const initialFormData: FormData = {
   municipalityEmail: '',
   region: '',
   facilityName: '',
-  category: 'OTHER',
+  category: '',
   projectType: '',
   briefDescription: '',
   fullDescription: '',
-  urgency: 'MEDIUM',
+  urgency: '',
   estimatedCostUsd: '',
   technicalPowerKw: '',
   numberOfPanels: '',
@@ -88,6 +88,18 @@ export default function SubmitProjectPage() {
   const [isGeocoding, setIsGeocoding] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+
+  // Dropdown states
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false)
+  const [isProjectTypeOpen, setIsProjectTypeOpen] = useState(false)
+  const [isUrgencyOpen, setIsUrgencyOpen] = useState(false)
+  const [isCofinancingOpen, setIsCofinancingOpen] = useState(false)
+
+  // Dropdown refs
+  const categoryButtonRef = useRef<HTMLButtonElement>(null)
+  const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
+  const urgencyButtonRef = useRef<HTMLButtonElement>(null)
+  const cofinancingButtonRef = useRef<HTMLButtonElement>(null)
 
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -273,32 +285,19 @@ export default function SubmitProjectPage() {
 
   return (
     <div className="min-h-screen bg-[var(--cream-50)]">
-      {/* Header */}
       <Header />
 
-      {/* Hero Section */}
-      <div className="bg-[var(--navy-700)] text-white py-12">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            {t('submitProject.title')}
-          </h1>
-          <p className="text-lg text-[var(--navy-100)] max-w-2xl mx-auto">
+      <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
+        <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-6">
+          {t('submitProject.title')}
+        </h1>
+
+        <div className="text-[var(--navy-600)] space-y-8">
+          <p className="text-xl leading-relaxed text-[var(--navy-500)]">
             {t('submitProject.subtitle')}
           </p>
-        </div>
-      </div>
 
-      {/* Form Instructions */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Back Button */}
-        <Link href="/" className="inline-flex items-center gap-2 text-[var(--navy-600)] hover:text-[var(--navy-800)] mb-6 group">
-          <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          <span className="font-medium">{t('submitProject.buttons.backToHome')}</span>
-        </Link>
-
-        <div className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)] mb-8">
+          <div className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
           <h2 className="font-semibold text-[var(--navy-700)] mb-3">{t('submitProject.beforeYouBegin')}</h2>
           <ul className="text-[var(--navy-600)] space-y-2 text-sm">
             <li>• {t('submitProject.description')}</li>
@@ -380,17 +379,54 @@ export default function SubmitProjectPage() {
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
                     {t('submitProject.fields.category')} <span className="text-red-600">*</span>
                   </label>
-                  <select
-                    value={formData.category}
-                    onChange={handleChange('category')}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--navy-200)] focus:border-[var(--navy-500)]"
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setIsCategoryOpen(true)}
+                    onMouseLeave={() => setIsCategoryOpen(false)}
                   >
-                    {(Object.keys(CATEGORY_CONFIG) as Category[]).map((cat) => (
-                      <option key={cat} value={cat}>
-                        {CATEGORY_CONFIG[cat].icon} {t(`categories.${cat}`)}
-                      </option>
-                    ))}
-                  </select>
+                    <button
+                      type="button"
+                      ref={categoryButtonRef}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-200)] focus:border-[var(--ukraine-500)] flex items-center justify-between transition-all duration-150"
+                    >
+                      <span>
+                        {formData.category
+                          ? `${CATEGORY_CONFIG[formData.category].icon} ${t(`categories.${formData.category}`)}`
+                          : `-- ${t('submitProject.fields.selectCategory')} --`}
+                      </span>
+                      <svg className={`h-4 w-4 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isCategoryOpen && categoryButtonRef.current && (
+                      <div
+                        className="fixed z-50 pt-1"
+                        style={{
+                          top: categoryButtonRef.current.getBoundingClientRect().bottom,
+                          left: categoryButtonRef.current.getBoundingClientRect().left,
+                          width: categoryButtonRef.current.getBoundingClientRect().width,
+                        }}
+                        onMouseEnter={() => setIsCategoryOpen(true)}
+                        onMouseLeave={() => setIsCategoryOpen(false)}
+                      >
+                        <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                          {(Object.keys(CATEGORY_CONFIG) as Category[]).map((cat) => (
+                            <button
+                              key={cat}
+                              type="button"
+                              onClick={() => {
+                                setFormData((prev) => ({ ...prev, category: cat }))
+                                setIsCategoryOpen(false)
+                              }}
+                              className={`w-full text-left px-4 py-2 text-sm transition-colors ${formData.category === cat ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                            >
+                              {CATEGORY_CONFIG[cat].icon} {t(`categories.${cat}`)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -399,37 +435,113 @@ export default function SubmitProjectPage() {
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
                     {t('submitProject.fields.projectType')} <span className="text-red-600">*</span>
                   </label>
-                  <select
-                    value={formData.projectType}
-                    onChange={handleChange('projectType')}
-                    className={`w-full rounded-lg border px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--navy-200)] focus:border-[var(--navy-500)] ${
-                      errors.projectType ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setIsProjectTypeOpen(true)}
+                    onMouseLeave={() => setIsProjectTypeOpen(false)}
                   >
-                    <option value="">{t('submitProject.fields.selectType')}</option>
-                    {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
-                      <option key={type} value={type}>
-                        {PROJECT_TYPE_CONFIG[type].icon} {t(`projectTypes.${type}`)}
-                      </option>
-                    ))}
-                  </select>
+                    <button
+                      type="button"
+                      ref={projectTypeButtonRef}
+                      className={`w-full rounded-lg border px-4 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-200)] focus:border-[var(--ukraine-500)] flex items-center justify-between transition-all duration-150 ${
+                        errors.projectType ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                    >
+                      <span>
+                        {formData.projectType
+                          ? `${PROJECT_TYPE_CONFIG[formData.projectType as ProjectType].icon} ${t(`projectTypes.${formData.projectType}`)}`
+                          : t('submitProject.fields.selectType')}
+                      </span>
+                      <svg className={`h-4 w-4 transition-transform ${isProjectTypeOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isProjectTypeOpen && projectTypeButtonRef.current && (
+                      <div
+                        className="fixed z-50 pt-1"
+                        style={{
+                          top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
+                          left: projectTypeButtonRef.current.getBoundingClientRect().left,
+                          width: projectTypeButtonRef.current.getBoundingClientRect().width,
+                        }}
+                        onMouseEnter={() => setIsProjectTypeOpen(true)}
+                        onMouseLeave={() => setIsProjectTypeOpen(false)}
+                      >
+                        <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                          {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
+                            <button
+                              key={type}
+                              type="button"
+                              onClick={() => {
+                                setFormData((prev) => ({ ...prev, projectType: type }))
+                                if (errors.projectType) {
+                                  setErrors((prev) => ({ ...prev, projectType: undefined }))
+                                }
+                                setIsProjectTypeOpen(false)
+                              }}
+                              className={`w-full text-left px-4 py-2 text-sm transition-colors ${formData.projectType === type ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                            >
+                              {PROJECT_TYPE_CONFIG[type].icon} {t(`projectTypes.${type}`)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   {errors.projectType && <p className="mt-1 text-sm text-red-600">{errors.projectType}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
                     {t('submitProject.fields.urgency')} <span className="text-red-600">*</span>
                   </label>
-                  <select
-                    value={formData.urgency}
-                    onChange={handleChange('urgency')}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--navy-200)] focus:border-[var(--navy-500)]"
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setIsUrgencyOpen(true)}
+                    onMouseLeave={() => setIsUrgencyOpen(false)}
                   >
-                    {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urg) => (
-                      <option key={urg} value={urg}>
-                        {t(`urgency.${urg}`)}
-                      </option>
-                    ))}
-                  </select>
+                    <button
+                      type="button"
+                      ref={urgencyButtonRef}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-200)] focus:border-[var(--ukraine-500)] flex items-center justify-between transition-all duration-150"
+                    >
+                      <span>
+                        {formData.urgency
+                          ? t(`urgency.${formData.urgency}`)
+                          : `-- ${t('submitProject.fields.selectUrgency')} --`}
+                      </span>
+                      <svg className={`h-4 w-4 transition-transform ${isUrgencyOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isUrgencyOpen && urgencyButtonRef.current && (
+                      <div
+                        className="fixed z-50 pt-1"
+                        style={{
+                          top: urgencyButtonRef.current.getBoundingClientRect().bottom,
+                          left: urgencyButtonRef.current.getBoundingClientRect().left,
+                          width: urgencyButtonRef.current.getBoundingClientRect().width,
+                        }}
+                        onMouseEnter={() => setIsUrgencyOpen(true)}
+                        onMouseLeave={() => setIsUrgencyOpen(false)}
+                      >
+                        <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                          {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urg) => (
+                            <button
+                              key={urg}
+                              type="button"
+                              onClick={() => {
+                                setFormData((prev) => ({ ...prev, urgency: urg }))
+                                setIsUrgencyOpen(false)
+                              }}
+                              className={`w-full text-left px-4 py-2 text-sm transition-colors ${formData.urgency === urg ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                            >
+                              {t(`urgency.${urg}`)}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -530,16 +642,59 @@ export default function SubmitProjectPage() {
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
                     {t('submitProject.fields.cofinancingAvailable')}
                   </label>
-                  <select
-                    value={formData.cofinancingAvailable}
-                    onChange={handleChange('cofinancingAvailable')}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--navy-200)] focus:border-[var(--navy-500)]"
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setIsCofinancingOpen(true)}
+                    onMouseLeave={() => setIsCofinancingOpen(false)}
                   >
-                    <option value="">{t('submitProject.fields.select')}</option>
-                    <option value="YES">{t('cofinancing.YES')}</option>
-                    <option value="NO">{t('cofinancing.NO')}</option>
-                    <option value="NEEDS_CLARIFICATION">{t('submitProject.fields.needsDiscussion')}</option>
-                  </select>
+                    <button
+                      type="button"
+                      ref={cofinancingButtonRef}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-200)] focus:border-[var(--ukraine-500)] flex items-center justify-between transition-all duration-150"
+                    >
+                      <span>
+                        {formData.cofinancingAvailable === 'YES' ? t('cofinancing.YES')
+                          : formData.cofinancingAvailable === 'NO' ? t('cofinancing.NO')
+                          : formData.cofinancingAvailable === 'NEEDS_CLARIFICATION' ? t('submitProject.fields.needsDiscussion')
+                          : t('submitProject.fields.select')}
+                      </span>
+                      <svg className={`h-4 w-4 transition-transform ${isCofinancingOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    {isCofinancingOpen && cofinancingButtonRef.current && (
+                      <div
+                        className="fixed z-50 pt-1"
+                        style={{
+                          top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
+                          left: cofinancingButtonRef.current.getBoundingClientRect().left,
+                          width: cofinancingButtonRef.current.getBoundingClientRect().width,
+                        }}
+                        onMouseEnter={() => setIsCofinancingOpen(true)}
+                        onMouseLeave={() => setIsCofinancingOpen(false)}
+                      >
+                        <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                          {[
+                            { value: 'YES', label: t('cofinancing.YES') },
+                            { value: 'NO', label: t('cofinancing.NO') },
+                            { value: 'NEEDS_CLARIFICATION', label: t('submitProject.fields.needsDiscussion') },
+                          ].map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              onClick={() => {
+                                setFormData((prev) => ({ ...prev, cofinancingAvailable: option.value }))
+                                setIsCofinancingOpen(false)
+                              }}
+                              className={`w-full text-left px-4 py-2 text-sm transition-colors ${formData.cofinancingAvailable === option.value ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {showCofinancingDetails && (
                   <div>
@@ -752,16 +907,8 @@ export default function SubmitProjectPage() {
             </Button>
           </div>
         </form>
-      </div>
-
-      {/* Footer */}
-      <footer className="mt-12 py-6 border-t border-[var(--cream-300)] bg-[var(--cream-100)]">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-xs text-[var(--navy-600)]">
-            <span className="font-medium">hromada</span> {t('homepage.footer')}
-          </p>
         </div>
-      </footer>
+      </main>
     </div>
   )
 }

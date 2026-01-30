@@ -232,9 +232,7 @@ Technical specifications:
 • Number of 540W panels: ${proj.panels || 'TBD'}
 • Estimated cost: $${proj.costUsd?.toLocaleString() || 'TBD'} USD
 
-Co-financing: ${proj.cofinance}
-
-This project is part of the "Renewables for Ukrainian Communities" initiative to provide energy resilience for critical social infrastructure through solar power.`
+Co-financing: ${proj.cofinance}`
 
       await prisma.project.create({
         data: {
@@ -312,9 +310,7 @@ Technical specifications:
 • Theoretical power: ${proj.powerKw} kW
 • Estimated cost: $${proj.costUsd.toLocaleString()} USD
 
-Co-financing: ${proj.cofinance}
-
-This project is part of the "Renewables for Ukrainian Communities" initiative to provide sustainable heating solutions for district heating systems.`
+Co-financing: ${proj.cofinance}`
 
       await prisma.project.create({
         data: {

@@ -115,9 +115,7 @@ Technical specifications:
 • Number of 540W panels: ${proj.panels}
 • Estimated cost: $${proj.costUsd.toLocaleString()} USD
 
-Co-financing: ${proj.cofinance}
-
-This project is part of the "Renewables for Ukrainian Communities" initiative to provide energy resilience for critical social infrastructure through solar power.`
+Co-financing: ${proj.cofinance}`
 
   try {
     await prisma.project.create({

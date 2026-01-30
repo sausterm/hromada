@@ -88,24 +88,20 @@ export default function HomePage() {
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000])
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
-  const [priceDropdownPosition, setPriceDropdownPosition] = useState({ top: 0, left: 0 })
-  const priceDropdownRef = useRef<HTMLDivElement>(null)
-  const priceButtonRef = useRef<HTMLButtonElement>(null)
+  const [isProjectTypeOpen, setIsProjectTypeOpen] = useState(false)
+  const [isUrgencyOpen, setIsUrgencyOpen] = useState(false)
+  const [isStatusOpen, setIsStatusOpen] = useState(false)
+  const [isCofinancingOpen, setIsCofinancingOpen] = useState(false)
+  const [isSortOpen, setIsSortOpen] = useState(false)
   const priceDropdownId = useId()
   const [sortBy, setSortBy] = useState<SortOption>('newest')
 
-  // Close price dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (priceDropdownRef.current && !priceDropdownRef.current.contains(event.target as Node)) {
-        setIsPriceDropdownOpen(false)
-      }
-    }
-    if (isPriceDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isPriceDropdownOpen])
+  // Refs for filter buttons to position dropdowns
+  const priceButtonRef = useRef<HTMLButtonElement>(null)
+  const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
+  const urgencyButtonRef = useRef<HTMLButtonElement>(null)
+  const statusButtonRef = useRef<HTMLButtonElement>(null)
+  const cofinancingButtonRef = useRef<HTMLButtonElement>(null)
 
   // Pagination for card list
   const ITEMS_PER_PAGE = 12
@@ -347,19 +343,13 @@ export default function HomePage() {
         <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
           <div className="flex items-center gap-2 flex-nowrap">
             {/* Price Range Dropdown */}
-            <div className="relative shrink-0" ref={priceDropdownRef}>
+            <div
+              className="relative shrink-0"
+              onMouseEnter={() => setIsPriceDropdownOpen(true)}
+              onMouseLeave={() => setIsPriceDropdownOpen(false)}
+            >
               <button
                 ref={priceButtonRef}
-                onClick={() => {
-                  if (!isPriceDropdownOpen && priceButtonRef.current) {
-                    const rect = priceButtonRef.current.getBoundingClientRect()
-                    setPriceDropdownPosition({
-                      top: rect.bottom + 8,
-                      left: rect.left,
-                    })
-                  }
-                  setIsPriceDropdownOpen(!isPriceDropdownOpen)
-                }}
                 aria-expanded={isPriceDropdownOpen}
                 aria-controls={priceDropdownId}
                 className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[130px] ${
@@ -379,12 +369,20 @@ export default function HomePage() {
               </button>
 
               {/* Dropdown panel */}
-              {isPriceDropdownOpen && (
+              {isPriceDropdownOpen && priceButtonRef.current && (
                 <div
-                  id={priceDropdownId}
-                  className="fixed bg-white rounded-lg shadow-lg border border-[var(--cream-200)] p-4 z-50 min-w-[200px]"
-                  style={{ top: priceDropdownPosition.top, left: priceDropdownPosition.left }}
+                  className="fixed z-50 pt-2"
+                  style={{
+                    top: priceButtonRef.current.getBoundingClientRect().bottom,
+                    left: priceButtonRef.current.getBoundingClientRect().left,
+                  }}
+                  onMouseEnter={() => setIsPriceDropdownOpen(true)}
+                  onMouseLeave={() => setIsPriceDropdownOpen(false)}
                 >
+                  <div
+                    id={priceDropdownId}
+                    className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-4 min-w-[200px]"
+                  >
                   <div className="flex flex-col gap-4">
                     {/* Max price label and value (top) */}
                     <div className="flex justify-between items-center">
@@ -456,81 +454,186 @@ export default function HomePage() {
                       </button>
                     )}
                   </div>
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Project Type dropdown */}
-            <select
-              value={selectedProjectType || ''}
-              onChange={(e) => setSelectedProjectType((e.target.value as ProjectType) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all shrink-0 border-2 ${
-                selectedProjectType
-                  ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                  : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)]'
-              }`}
+            <div
+              className="relative shrink-0"
+              onMouseEnter={() => setIsProjectTypeOpen(true)}
+              onMouseLeave={() => setIsProjectTypeOpen(false)}
             >
-              <option value="">{t('homepage.filters.projectType')}</option>
-              {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
-                <option key={type} value={type}>
-                  {t(`projectTypes.${type}`)}
-                </option>
-              ))}
-            </select>
+              <button
+                ref={projectTypeButtonRef}
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
+                  selectedProjectType
+                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                }`}
+              >
+                <span>{selectedProjectType ? t(`projectTypes.${selectedProjectType}`) : t('homepage.filters.projectType')}</span>
+                <svg className={`h-3.5 w-3.5 transition-transform ${isProjectTypeOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isProjectTypeOpen && projectTypeButtonRef.current && (
+                <div
+                  className="fixed z-50 pt-2"
+                  style={{
+                    top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
+                    left: projectTypeButtonRef.current.getBoundingClientRect().left,
+                  }}
+                  onMouseEnter={() => setIsProjectTypeOpen(true)}
+                  onMouseLeave={() => setIsProjectTypeOpen(false)}
+                >
+                  <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                    {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => setSelectedProjectType(selectedProjectType === type ? null : type)}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedProjectType === type ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                      >
+                        {t(`projectTypes.${type}`)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Urgency dropdown */}
-            <select
-              value={selectedUrgency || ''}
-              onChange={(e) => setSelectedUrgency((e.target.value as Urgency) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all shrink-0 border-2 ${
-                selectedUrgency
-                  ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                  : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)]'
-              }`}
+            <div
+              className="relative shrink-0"
+              onMouseEnter={() => setIsUrgencyOpen(true)}
+              onMouseLeave={() => setIsUrgencyOpen(false)}
             >
-              <option value="">{t('homepage.filters.urgency')}</option>
-              {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
-                <option key={urgency} value={urgency}>
-                  {t(`urgency.${urgency}`)}
-                </option>
-              ))}
-            </select>
+              <button
+                ref={urgencyButtonRef}
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
+                  selectedUrgency
+                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                }`}
+              >
+                <span>{selectedUrgency ? t(`urgency.${selectedUrgency}`) : t('homepage.filters.urgency')}</span>
+                <svg className={`h-3.5 w-3.5 transition-transform ${isUrgencyOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isUrgencyOpen && urgencyButtonRef.current && (
+                <div
+                  className="fixed z-50 pt-2"
+                  style={{
+                    top: urgencyButtonRef.current.getBoundingClientRect().bottom,
+                    left: urgencyButtonRef.current.getBoundingClientRect().left,
+                  }}
+                  onMouseEnter={() => setIsUrgencyOpen(true)}
+                  onMouseLeave={() => setIsUrgencyOpen(false)}
+                >
+                  <div className="w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                    {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
+                      <button
+                        key={urgency}
+                        onClick={() => setSelectedUrgency(selectedUrgency === urgency ? null : urgency)}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedUrgency === urgency ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                      >
+                        {t(`urgency.${urgency}`)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Status dropdown */}
-            <select
-              value={selectedStatus || ''}
-              onChange={(e) => setSelectedStatus((e.target.value as Status) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all shrink-0 border-2 ${
-                selectedStatus
-                  ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                  : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)]'
-              }`}
+            <div
+              className="relative shrink-0"
+              onMouseEnter={() => setIsStatusOpen(true)}
+              onMouseLeave={() => setIsStatusOpen(false)}
             >
-              <option value="">{t('homepage.filters.status')}</option>
-              {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
-                <option key={status} value={status}>
-                  {t(`status.${status}`)}
-                </option>
-              ))}
-            </select>
+              <button
+                ref={statusButtonRef}
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
+                  selectedStatus
+                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                }`}
+              >
+                <span>{selectedStatus ? t(`status.${selectedStatus}`) : t('homepage.filters.status')}</span>
+                <svg className={`h-3.5 w-3.5 transition-transform ${isStatusOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isStatusOpen && statusButtonRef.current && (
+                <div
+                  className="fixed z-50 pt-2"
+                  style={{
+                    top: statusButtonRef.current.getBoundingClientRect().bottom,
+                    left: statusButtonRef.current.getBoundingClientRect().left,
+                  }}
+                  onMouseEnter={() => setIsStatusOpen(true)}
+                  onMouseLeave={() => setIsStatusOpen(false)}
+                >
+                  <div className="w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                    {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => setSelectedStatus(selectedStatus === status ? null : status)}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedStatus === status ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                      >
+                        {t(`status.${status}`)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Cofinancing dropdown */}
-            <select
-              value={selectedCofinancing || ''}
-              onChange={(e) => setSelectedCofinancing((e.target.value as CofinancingStatus) || null)}
-              className={`px-3 py-1 rounded-full text-sm font-medium text-center focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] transition-all shrink-0 border-2 ${
-                selectedCofinancing
-                  ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                  : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)]'
-              }`}
+            <div
+              className="relative shrink-0"
+              onMouseEnter={() => setIsCofinancingOpen(true)}
+              onMouseLeave={() => setIsCofinancingOpen(false)}
             >
-              <option value="">{t('homepage.filters.cofinancing')}</option>
-              {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((status) => (
-                <option key={status} value={status}>
-                  {t(`cofinancing.${status}`)}
-                </option>
-              ))}
-            </select>
+              <button
+                ref={cofinancingButtonRef}
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
+                  selectedCofinancing
+                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                }`}
+              >
+                <span>{selectedCofinancing ? t(`cofinancing.${selectedCofinancing}`) : t('homepage.filters.cofinancing')}</span>
+                <svg className={`h-3.5 w-3.5 transition-transform ${isCofinancingOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isCofinancingOpen && cofinancingButtonRef.current && (
+                <div
+                  className="fixed z-50 pt-2"
+                  style={{
+                    top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
+                    left: cofinancingButtonRef.current.getBoundingClientRect().left,
+                  }}
+                  onMouseEnter={() => setIsCofinancingOpen(true)}
+                  onMouseLeave={() => setIsCofinancingOpen(false)}
+                >
+                  <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                    {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((cofinancing) => (
+                      <button
+                        key={cofinancing}
+                        onClick={() => setSelectedCofinancing(selectedCofinancing === cofinancing ? null : cofinancing)}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedCofinancing === cofinancing ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                      >
+                        {t(`cofinancing.${cofinancing}`)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Category chips */}
             {(Object.keys(CATEGORY_CONFIG) as Category[]).map((category) => {
@@ -617,18 +720,35 @@ export default function HomePage() {
               </div>
 
               {/* Sort dropdown */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] focus:outline-none focus:ring-1 focus:ring-[var(--navy-300)] shrink-0"
+              <div
+                className="relative shrink-0"
+                onMouseEnter={() => setIsSortOpen(true)}
+                onMouseLeave={() => setIsSortOpen(false)}
               >
-                <option value="newest">{t('homepage.sortOptions.newest')}</option>
-                <option value="oldest">{t('homepage.sortOptions.oldest')}</option>
-                <option value="highestCost">{t('homepage.sortOptions.highestCost')}</option>
-                <option value="lowestCost">{t('homepage.sortOptions.lowestCost')}</option>
-                <option value="mostUrgent">{t('homepage.sortOptions.mostUrgent')}</option>
-                <option value="alphabetical">{t('homepage.sortOptions.alphabetical')}</option>
-              </select>
+                <button
+                  className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] transition-all whitespace-nowrap"
+                >
+                  <span>{t(`homepage.sortOptions.${sortBy}`)}</span>
+                  <svg className={`h-3 w-3 transition-transform ${isSortOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {isSortOpen && (
+                  <div className="absolute right-0 top-full pt-2 z-50">
+                    <div className="w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                      {(['newest', 'oldest', 'highestCost', 'lowestCost', 'mostUrgent', 'alphabetical'] as SortOption[]).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => setSortBy(option)}
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors ${sortBy === option ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                        >
+                          {t(`homepage.sortOptions.${option}`)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Project count & funding - bold and visible */}
               <div className="shrink-0 whitespace-nowrap">

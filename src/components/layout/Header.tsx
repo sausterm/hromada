@@ -104,9 +104,13 @@ export function Header({ children }: HeaderProps) {
         <div className="flex items-center justify-between gap-4">
           {/* Left - Menu Button */}
           <div className="flex-1 flex items-center">
-            <div className="relative" ref={navMenuRef}>
+            <div
+              className="relative"
+              ref={navMenuRef}
+              onMouseEnter={() => setIsNavMenuOpen(true)}
+              onMouseLeave={() => setIsNavMenuOpen(false)}
+            >
               <button
-                onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
                 className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-[var(--navy-600)] hover:bg-[var(--navy-50)] hover:text-[var(--navy-800)] transition-colors"
                 aria-label={t('nav.menu')}
               >
@@ -123,7 +127,8 @@ export function Header({ children }: HeaderProps) {
 
               {/* Navigation Dropdown */}
               {isNavMenuOpen && (
-                <div className="absolute left-0 top-full mt-2 w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 z-50">
+                <div className="absolute left-0 top-full pt-2 z-50">
+                  <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
                   <Link
                     href="/"
                     onClick={() => setIsNavMenuOpen(false)}
@@ -168,6 +173,7 @@ export function Header({ children }: HeaderProps) {
                     </svg>
                     {t('nav.admin')}
                   </Link>
+                  </div>
                 </div>
               )}
             </div>
@@ -197,9 +203,13 @@ export function Header({ children }: HeaderProps) {
 
           {/* Right - Language Switcher */}
           <div className="flex-1 flex items-center justify-end">
-            <div className="relative" ref={langMenuRef}>
+            <div
+              className="relative"
+              ref={langMenuRef}
+              onMouseEnter={() => setIsLangMenuOpen(true)}
+              onMouseLeave={() => setIsLangMenuOpen(false)}
+            >
               <button
-                onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
                 className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
                 aria-label={t('nav.language')}
               >
@@ -210,16 +220,18 @@ export function Header({ children }: HeaderProps) {
 
               {/* Language Dropdown */}
               {isLangMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] p-1.5 z-50">
-                  <button
-                    onClick={() => switchLocale(otherLocale)}
-                    className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
-                    title={otherLocale === 'uk' ? 'Українська' : 'English'}
-                  >
-                    <div className="w-full h-full rounded-full overflow-hidden">
-                      <OtherFlagComponent className="w-full h-full" />
-                    </div>
-                  </button>
+                <div className="absolute right-0 top-full pt-2 z-50">
+                  <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] p-1.5">
+                    <button
+                      onClick={() => switchLocale(otherLocale)}
+                      className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
+                      title={otherLocale === 'uk' ? 'Українська' : 'English'}
+                    >
+                      <div className="w-full h-full rounded-full overflow-hidden">
+                        <OtherFlagComponent className="w-full h-full" />
+                      </div>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

@@ -17,8 +17,8 @@ export default function AboutPage() {
           {t('about.title')}
         </h1>
 
-        <div className="prose prose-lg text-[var(--navy-600)] space-y-6">
-          <p className="text-xl text-[var(--navy-500)]">
+        <div className="text-[var(--navy-600)] space-y-8">
+          <p className="text-xl leading-relaxed text-[var(--navy-500)]">
             {t('about.mission')}
           </p>
 
@@ -26,7 +26,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('about.statementOfPurpose')}
             </h2>
-            <p>
+            <p className="text-base leading-relaxed">
               {t('about.statementOfPurposeText')}
             </p>
           </section>
@@ -35,8 +35,8 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('about.howItWorks')}
             </h2>
-            <p className="mb-4">{t('about.howItWorksText')}</p>
-            <ul className="space-y-3">
+            <p className="text-base leading-relaxed mb-4">{t('about.howItWorksText')}</p>
+            <ul className="space-y-3 text-base leading-relaxed">
               <li>
                 <strong>{t('about.forMunicipalities')}</strong> {t('about.forMunicipalitiesText')}
               </li>
@@ -53,7 +53,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('about.projectCategories')}
             </h2>
-            <ul className="space-y-2">
+            <ul className="space-y-3 text-base leading-relaxed">
               <li><strong>{t('categories.HOSPITAL')}</strong> - {t('about.categoryHospital')}</li>
               <li><strong>{t('categories.SCHOOL')}</strong> - {t('about.categorySchool')}</li>
               <li><strong>{t('categories.WATER')}</strong> - {t('about.categoryWater')}</li>

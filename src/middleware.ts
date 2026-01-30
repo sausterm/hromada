@@ -10,6 +10,16 @@ import type { NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales } from './i18n';
 
+// Extend NextRequest type with Vercel's geo/ip data (available at edge runtime)
+interface NextRequestWithGeo extends NextRequest {
+  geo?: {
+    country?: string;
+    city?: string;
+    region?: string;
+  };
+  ip?: string;
+}
+
 // Countries to block (ISO 3166-1 alpha-2 country codes)
 const BLOCKED_COUNTRIES = ['RU', 'BY']; // Russia, Belarus
 
@@ -20,7 +30,7 @@ const intlMiddleware = createIntlMiddleware({
   localePrefix: 'always',
 });
 
-export default function middleware(request: NextRequest) {
+export default function middleware(request: NextRequestWithGeo) {
   // Get country from Vercel's geo data (automatically available)
   const country = request.geo?.country;
   const pathname = request.nextUrl.pathname;

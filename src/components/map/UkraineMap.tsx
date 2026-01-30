@@ -281,19 +281,15 @@ function HighlightHandler({
   const highlightedMarkerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    // Remove highlight from previous marker element (tracked separately for reliability)
+    // Remove highlight from previous marker element
     if (highlightedMarkerRef.current) {
-      highlightedMarkerRef.current.classList.remove('marker-highlighted')
-      highlightedMarkerRef.current = null
-    }
-
-    // Also try to remove from previous marker ref (backup)
-    if (prevHighlightedRef.current && markerRefs.current[prevHighlightedRef.current]) {
-      const prevMarker = markerRefs.current[prevHighlightedRef.current]
-      const prevEl = prevMarker.getElement()
-      if (prevEl) {
-        prevEl.classList.remove('marker-highlighted')
+      highlightedMarkerRef.current.classList.remove('highlighted')
+      // Reset z-index on parent
+      const parent = highlightedMarkerRef.current.parentElement
+      if (parent) {
+        parent.style.zIndex = ''
       }
+      highlightedMarkerRef.current = null
     }
 
     // Remove previous cluster highlight
@@ -302,27 +298,31 @@ function HighlightHandler({
       highlightedClusterRef.current = null
     }
 
-    // Add highlight to current marker (with small delay to ensure DOM is ready)
+    // Add highlight to current marker
     if (highlightedProjectId && markerRefs.current[highlightedProjectId]) {
       const marker = markerRefs.current[highlightedProjectId]
 
-      const applyHighlight = (el: HTMLElement) => {
-        el.classList.add('marker-highlighted')
-        highlightedMarkerRef.current = el
+      const applyHighlight = () => {
+        const el = marker.getElement()
+        if (el) {
+          // Find the .custom-marker div inside and add highlighted class directly
+          const customMarker = el.querySelector('.custom-marker') as HTMLElement
+          if (customMarker) {
+            customMarker.classList.add('highlighted')
+            highlightedMarkerRef.current = customMarker
+            // Also set z-index on parent for proper layering
+            el.style.zIndex = '1000'
+          }
+        }
       }
 
-      // Try immediately first
-      const el = marker.getElement()
-      if (el) {
-        applyHighlight(el)
-      } else {
-        // If element not ready, retry after a short delay
-        setTimeout(() => {
-          const delayedEl = marker.getElement()
-          if (delayedEl) {
-            applyHighlight(delayedEl)
-          }
-        }, 50)
+      // Try immediately, then retry after delay if needed
+      applyHighlight()
+      if (!highlightedMarkerRef.current) {
+        setTimeout(applyHighlight, 50)
+      }
+      if (!highlightedMarkerRef.current) {
+        setTimeout(applyHighlight, 150)
       }
     }
 

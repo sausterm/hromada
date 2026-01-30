@@ -116,12 +116,39 @@ export default function SubmitProjectPage() {
     return () => window.removeEventListener('scroll', handleScroll, true)
   }, [isCategoryOpen, isProjectTypeOpen, isUrgencyOpen, isCofinancingOpen])
 
+  // Format number with commas (e.g., 50000 -> "50,000")
+  const formatNumberWithCommas = (value: string): string => {
+    const num = value.replace(/[^\d.]/g, '')
+    const parts = num.split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return parts.join('.')
+  }
+
+  // Parse formatted number back to plain number string (e.g., "50,000" -> "50000")
+  const parseFormattedNumber = (value: string): string => {
+    return value.replace(/,/g, '')
+  }
+
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }))
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
+    }
+  }
+
+  // Special handler for numeric fields with comma formatting
+  const handleNumericChange = (field: keyof FormData) => (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const rawValue = parseFormattedNumber(e.target.value)
+    // Only allow digits and one decimal point
+    if (/^\d*\.?\d*$/.test(rawValue)) {
+      setFormData((prev) => ({ ...prev, [field]: rawValue }))
+      if (errors[field]) {
+        setErrors((prev) => ({ ...prev, [field]: undefined }))
+      }
     }
   }
 
@@ -610,11 +637,10 @@ export default function SubmitProjectPage() {
                     {t('submitProject.fields.estimatedCost')}
                   </label>
                   <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.estimatedCostUsd}
-                    onChange={handleChange('estimatedCostUsd')}
+                    type="text"
+                    inputMode="decimal"
+                    value={formatNumberWithCommas(formData.estimatedCostUsd)}
+                    onChange={handleNumericChange('estimatedCostUsd')}
                     placeholder={t('submitProject.fields.costPlaceholder')}
                     error={errors.estimatedCostUsd}
                   />
@@ -625,11 +651,10 @@ export default function SubmitProjectPage() {
                       {t('submitProject.fields.technicalPower')}
                     </label>
                     <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={formData.technicalPowerKw}
-                      onChange={handleChange('technicalPowerKw')}
+                      type="text"
+                      inputMode="decimal"
+                      value={formatNumberWithCommas(formData.technicalPowerKw)}
+                      onChange={handleNumericChange('technicalPowerKw')}
                       placeholder={t('submitProject.fields.technicalPowerPlaceholder')}
                       error={errors.technicalPowerKw}
                     />
@@ -641,10 +666,10 @@ export default function SubmitProjectPage() {
                       {t('submitProject.fields.numberOfPanels')}
                     </label>
                     <Input
-                      type="number"
-                      min="0"
-                      value={formData.numberOfPanels}
-                      onChange={handleChange('numberOfPanels')}
+                      type="text"
+                      inputMode="numeric"
+                      value={formatNumberWithCommas(formData.numberOfPanels)}
+                      onChange={handleNumericChange('numberOfPanels')}
                       placeholder={t('submitProject.fields.numberOfPanelsPlaceholder')}
                       error={errors.numberOfPanels}
                     />

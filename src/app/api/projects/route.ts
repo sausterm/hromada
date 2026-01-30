@@ -55,9 +55,9 @@ export async function GET(request: NextRequest) {
         ],
       })
       // Transform photos relation to photos string array for frontend compatibility
-      const transformedProjects = projects.map((project) => ({
+      const transformedProjects = projects.map((project: { photos: { url: string }[] } & Record<string, unknown>) => ({
         ...project,
-        photos: project.photos.map((img) => img.url),
+        photos: project.photos.map((img: { url: string }) => img.url),
       }))
       return NextResponse.json({ projects: transformedProjects, total: projects.length })
     }
@@ -90,9 +90,9 @@ export async function GET(request: NextRequest) {
     const nextCursor = hasMore ? items[items.length - 1]?.id : null
 
     // Transform photos relation to photos string array for frontend compatibility
-    const transformedItems = items.map((project) => ({
+    const transformedItems = items.map((project: { photos: { url: string }[] } & Record<string, unknown>) => ({
       ...project,
-      photos: project.photos.map((img) => img.url),
+      photos: project.photos.map((img: { url: string }) => img.url),
     }))
 
     return NextResponse.json({

@@ -33,6 +33,7 @@
   },
   "nav": {
     "siteName": "hromada | громада",
+    "headerSubtitle": "Створено для підтримки відновлюваної інфраструктури",
     "admin": "Адмін",
     "submitProject": "Подати проєкт",
     "aboutUs": "Про нас",
@@ -196,6 +197,8 @@
       "category": "Категорія",
       "projectType": "Тип проєкту",
       "selectType": "-- Виберіть тип --",
+      "selectCategory": "Виберіть категорію",
+      "selectUrgency": "Виберіть терміновість",
       "briefDescription": "Короткий опис",
       "briefDescriptionHelper": "Короткий опис для карток проєктів (макс. 150 символів)",
       "fullDescription": "Повний опис",

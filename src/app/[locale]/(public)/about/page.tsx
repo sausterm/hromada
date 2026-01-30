@@ -53,6 +53,9 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('about.projectCategories')}
             </h2>
+            <p className="text-base leading-relaxed mb-4 font-medium">
+              {t('about.categoryIntro')}
+            </p>
             <ul className="space-y-3 text-base leading-relaxed">
               <li><strong>{t('categories.HOSPITAL')}</strong> - {t('about.categoryHospital')}</li>
               <li><strong>{t('categories.SCHOOL')}</strong> - {t('about.categorySchool')}</li>

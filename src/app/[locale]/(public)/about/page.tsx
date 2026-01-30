@@ -24,10 +24,10 @@ export default function AboutPage() {
 
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              {t('about.ourMission')}
+              {t('about.statementOfPurpose')}
             </h2>
             <p>
-              {t('about.ourMissionText')}
+              {t('about.statementOfPurposeText')}
             </p>
           </section>
 

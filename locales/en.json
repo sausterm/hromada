@@ -300,9 +300,9 @@
   },
   "about": {
     "title": "About Hromada",
-    "mission": "Hromada connects Ukrainian municipalities with donors to rebuild critical infrastructure with a focus on renewable energy and sustainability.",
-    "ourMission": "Our Mission",
-    "ourMissionText": "The word \"hromada\" (громада) means \"community\" in Ukrainian. Our platform serves as a bridge between Ukrainian municipalities seeking support for renewable energy and infrastructure projects, and donors who want to make a direct, meaningful impact.",
+    "mission": "Hromada, \"community\" in Ukrainian, connects Ukrainian municipalities with donors to rebuild critical infrastructure with a focus on renewable energy and sustainability.",
+    "statementOfPurpose": "Statement of Purpose",
+    "statementOfPurposeText": "In the wake of the cessation of aid by the United States government, our goal is to restore the flow of support for the sustainable reconstruction of Ukrainian infrastructure. This platform serves as a transparent bridge between Ukrainian municipalities seeking support for renewable energy and infrastructure projects, and donors who want to make a direct, meaningful impact. The ultimate purpose is decentralizing Ukraine's power grids and building sustainable resilience against Russian attacks on critical infrastructure.",
     "howItWorks": "How It Works",
     "howItWorksText": "Municipalities submit infrastructure projects that need funding. We verify each submission and connect them with donors and 501(c)(3) organizations who can provide support.",
     "forMunicipalities": "For Municipalities:",

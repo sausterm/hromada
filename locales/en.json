@@ -163,11 +163,11 @@
   "submitProject": {
     "title": "Submit Your Infrastructure Project",
     "subtitle": "Municipal leaders: Submit your infrastructure project to connect with donors",
-    "description": "This form is for Ukrainian municipal officials to submit infrastructure projects that need donor support. Projects are reviewed by our team before being published.",
+    "description": "This form is for municipal officials to submit infrastructure projects that need donor support. Projects are reviewed by our team before being published.",
     "allFieldsRequired": "All fields marked with * are required",
     "beforeYouBegin": "Before You Begin",
     "formInstructions": [
-      "This form is for Ukrainian municipal officials to submit infrastructure projects that need donor support.",
+      "This form is for municipal officials to submit infrastructure projects that need donor support.",
       "Projects are reviewed by our team before being published on the platform.",
       "All fields marked with * are required.",
       "For security reasons, we only display city-level locations on the map - never exact facility addresses."

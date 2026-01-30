@@ -62,17 +62,6 @@ export default function AboutPage() {
             </ul>
           </section>
 
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              {t('about.contact')}
-            </h2>
-            <p>
-              {t('about.contactText')}{' '}
-              <a href="mailto:support@hromada.org" className="text-[var(--navy-700)] underline">
-                support@hromada.org
-              </a>
-            </p>
-          </section>
         </div>
 
         <div className="mt-12 flex gap-4">

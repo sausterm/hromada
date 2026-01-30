@@ -305,9 +305,6 @@ export default function SubmitProjectPage() {
             <li>• {t('submitProject.allFieldsRequired')}</li>
             <li>• {t('submitProject.securityNote')}</li>
           </ul>
-          <p className="text-sm text-[var(--navy-500)] mt-4">
-            {t('submitProject.questionsContact')} <a href="mailto:support@hromada.org" className="text-[var(--navy-700)] underline">support@hromada.org</a>
-          </p>
         </div>
 
         {/* Error Alert */}

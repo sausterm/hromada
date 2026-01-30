@@ -18,12 +18,6 @@ export default function PrivacyPage() {
           <p className="text-[var(--navy-600)]">
             {t('privacyComingSoon')}
           </p>
-          <p className="mt-4 text-[var(--navy-600)]">
-            For questions, contact:{' '}
-            <a href="mailto:support@hromada.org" className="text-[var(--navy-700)] underline">
-              support@hromada.org
-            </a>
-          </p>
         </div>
       </main>
     </div>

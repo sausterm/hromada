@@ -64,9 +64,9 @@
   },
   "projectTypes": {
     "SOLAR_PV": "Solar PV",
+    "BATTERY_STORAGE": "Battery Storage",
     "HEAT_PUMP": "Heat Pump",
-    "WATER_TREATMENT": "Water Treatment",
-    "GENERAL": "General Infrastructure"
+    "THERMO_MODERNIZATION": "Thermo-modernization"
   },
   "cofinancing": {
     "YES": "Yes",

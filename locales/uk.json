@@ -64,9 +64,9 @@
   },
   "projectTypes": {
     "SOLAR_PV": "Сонячні панелі",
+    "BATTERY_STORAGE": "Акумуляторні системи",
     "HEAT_PUMP": "Тепловий насос",
-    "WATER_TREATMENT": "Очистка води",
-    "GENERAL": "Загальна інфраструктура"
+    "THERMO_MODERNIZATION": "Термомодернізація"
   },
   "cofinancing": {
     "YES": "Так",

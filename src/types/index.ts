@@ -8,7 +8,7 @@ export type Urgency = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 export type Status = 'OPEN' | 'IN_DISCUSSION' | 'MATCHED' | 'FULFILLED'
 
 // Project type for renewable energy projects
-export type ProjectType = 'SOLAR_PV' | 'HEAT_PUMP' | 'WATER_TREATMENT' | 'GENERAL'
+export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION'
 
 // Co-financing availability status
 export type CofinancingStatus = 'YES' | 'NO' | 'NEEDS_CLARIFICATION'
@@ -119,9 +119,9 @@ export const STATUS_CONFIG: Record<Status, { label: string; color: string }> = {
 // Project type display info - warm palette
 export const PROJECT_TYPE_CONFIG: Record<ProjectType, { label: string; color: string; icon: string }> = {
   SOLAR_PV: { label: 'Solar PV', color: '#D4954A', icon: '☀️' },           // Warm amber
+  BATTERY_STORAGE: { label: 'Battery Storage', color: '#5B8FA8', icon: '🔋' }, // Muted teal
   HEAT_PUMP: { label: 'Heat Pump', color: '#C75B39', icon: '🔥' },         // Deep terracotta
-  WATER_TREATMENT: { label: 'Water Treatment', color: '#5B8FA8', icon: '💧' }, // Muted teal
-  GENERAL: { label: 'General', color: '#8B7355', icon: '🔧' },             // Warm taupe
+  THERMO_MODERNIZATION: { label: 'Thermo-modernization', color: '#8B7355', icon: '🏠' }, // Warm taupe
 }
 
 // Co-financing status display info

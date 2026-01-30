@@ -82,12 +82,16 @@ export function ShareButton({
   }
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
+    <div
+      className={`relative ${className}`}
+      ref={dropdownRef}
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
       <button
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()
-          setIsOpen(!isOpen)
         }}
         className={`inline-flex items-center justify-center transition-colors ${
           variant === 'icon'
@@ -111,9 +115,10 @@ export function ShareButton({
       {/* Dropdown menu */}
       {isOpen && (
         <div
-          className="absolute right-0 bottom-full mb-2 w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-1 z-50"
+          className="absolute right-0 bottom-full pb-2 w-48 z-50"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
+          <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-1">
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCopyLink(); }}
             className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[var(--navy-700)] hover:bg-[var(--cream-100)] transition-colors"
@@ -175,6 +180,7 @@ export function ShareButton({
             </svg>
             Share via Email
           </button>
+          </div>
         </div>
       )}
     </div>

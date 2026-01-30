@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Header } from '@/components/layout/Header'
@@ -100,6 +100,21 @@ export default function SubmitProjectPage() {
   const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
   const urgencyButtonRef = useRef<HTMLButtonElement>(null)
   const cofinancingButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Close dropdowns on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isCategoryOpen || isProjectTypeOpen || isUrgencyOpen || isCofinancingOpen) {
+        setIsCategoryOpen(false)
+        setIsProjectTypeOpen(false)
+        setIsUrgencyOpen(false)
+        setIsCofinancingOpen(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, true)
+    return () => window.removeEventListener('scroll', handleScroll, true)
+  }, [isCategoryOpen, isProjectTypeOpen, isUrgencyOpen, isCofinancingOpen])
 
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>

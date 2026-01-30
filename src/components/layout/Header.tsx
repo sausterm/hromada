@@ -191,7 +191,7 @@ export function Header({ children }: HeaderProps) {
               </button>
             </span>
             <span className="text-[0.7rem] sm:text-xs text-[var(--navy-500)] italic">
-              Built to support renewable Ukrainian infrastructure recovery
+              Built to support renewable infrastructure
             </span>
           </div>
 

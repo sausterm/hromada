@@ -44,8 +44,8 @@ jest.mock('next-intl', () => ({
       'cofinancing.NEEDS_CLARIFICATION': 'Needs Clarification',
       'projectTypes.SOLAR_PV': 'Solar PV',
       'projectTypes.HEAT_PUMP': 'Heat Pump',
-      'projectTypes.WATER_TREATMENT': 'Water Treatment',
-      'projectTypes.GENERAL': 'General',
+      'projectTypes.BATTERY_STORAGE': 'Battery Storage',
+      'projectTypes.THERMO_MODERNIZATION': 'Thermo-modernization',
       'common.projects': 'projects',
       'common.needed': 'needed',
     }
@@ -146,8 +146,8 @@ jest.mock('@/types', () => ({
   PROJECT_TYPE_CONFIG: {
     SOLAR_PV: {},
     HEAT_PUMP: {},
-    WATER_TREATMENT: {},
-    GENERAL: {},
+    BATTERY_STORAGE: {},
+    THERMO_MODERNIZATION: {},
   },
   formatCurrency: (value: number, options?: { compact?: boolean }) =>
     options?.compact ? `$${Math.round(value/1000)}K` : `$${value.toLocaleString()}`,

@@ -140,8 +140,8 @@ jest.mock('@/types', () => ({
   PROJECT_TYPE_CONFIG: {
     SOLAR_PV: { label: 'Solar PV' },
     HEAT_PUMP: { label: 'Heat Pump' },
-    WATER_TREATMENT: { label: 'Water Treatment' },
-    GENERAL: { label: 'General' },
+    BATTERY_STORAGE: { label: 'Battery Storage' },
+    THERMO_MODERNIZATION: { label: 'Thermo-modernization' },
   },
 }))
 
@@ -205,7 +205,7 @@ const mockProjectSubmissions = [
     municipalityEmail: 'new@municipality.ua',
     region: 'Odesa Oblast',
     category: 'WATER',
-    projectType: 'WATER_TREATMENT',
+    projectType: 'BATTERY_STORAGE',
     briefDescription: 'Water treatment project',
     fullDescription: 'Full description here',
     urgency: 'MEDIUM',

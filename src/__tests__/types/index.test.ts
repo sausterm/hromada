@@ -76,8 +76,8 @@ describe('Type configurations', () => {
     it('has all required project types', () => {
       expect(PROJECT_TYPE_CONFIG).toHaveProperty('SOLAR_PV')
       expect(PROJECT_TYPE_CONFIG).toHaveProperty('HEAT_PUMP')
-      expect(PROJECT_TYPE_CONFIG).toHaveProperty('WATER_TREATMENT')
-      expect(PROJECT_TYPE_CONFIG).toHaveProperty('GENERAL')
+      expect(PROJECT_TYPE_CONFIG).toHaveProperty('BATTERY_STORAGE')
+      expect(PROJECT_TYPE_CONFIG).toHaveProperty('THERMO_MODERNIZATION')
     })
 
     it('each project type has label, color, and icon', () => {

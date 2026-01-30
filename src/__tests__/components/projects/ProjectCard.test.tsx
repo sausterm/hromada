@@ -22,8 +22,8 @@ jest.mock('next-intl', () => ({
       'status.FULFILLED': 'Fulfilled',
       'projectTypes.SOLAR_PV': 'Solar PV',
       'projectTypes.HEAT_PUMP': 'Heat Pump',
-      'projectTypes.WATER_TREATMENT': 'Water Treatment',
-      'projectTypes.GENERAL': 'General',
+      'projectTypes.BATTERY_STORAGE': 'Battery Storage',
+      'projectTypes.THERMO_MODERNIZATION': 'Thermo-modernization',
       'projectDetail.viewDetails': 'View Details',
     }
     if (key === 'projectCard.postedAgo' && params?.time) {

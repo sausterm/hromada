@@ -53,3 +53,4 @@ config/secrets.*
 # Logs that might contain sensitive data
 logs/
 *.log
+Admin_accessKeys.csv

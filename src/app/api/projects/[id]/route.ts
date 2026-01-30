@@ -30,7 +30,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     // Transform photos relation to photos string array for frontend compatibility
     const transformedProject = {
       ...project,
-      photos: project.photos.map((img) => img.url),
+      photos: project.photos.map((img: { url: string }) => img.url),
     }
 
     return NextResponse.json({ project: transformedProject })

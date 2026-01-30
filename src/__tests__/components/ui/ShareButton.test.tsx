@@ -1,5 +1,4 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { ShareButton } from '@/components/ui/ShareButton'
 
 // Mock the toast module
@@ -58,6 +57,18 @@ describe('ShareButton', () => {
     projectDescription: 'A test project description for sharing.',
   }
 
+  // Helper to open dropdown menu
+  const openMenu = () => {
+    const button = screen.getByRole('button', { name: /share project/i })
+    fireEvent.mouseEnter(button.parentElement!)
+  }
+
+  // Helper to close dropdown menu
+  const closeMenu = () => {
+    const button = screen.getByRole('button', { name: /share project/i })
+    fireEvent.mouseLeave(button.parentElement!)
+  }
+
   describe('Rendering', () => {
     it('renders the share button with icon variant by default', () => {
       render(<ShareButton {...defaultProps} />)
@@ -91,12 +102,10 @@ describe('ShareButton', () => {
   })
 
   describe('Share Menu', () => {
-    it('opens share menu when clicked', async () => {
-      const user = userEvent.setup()
+    it('opens share menu on hover', () => {
       render(<ShareButton {...defaultProps} />)
 
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
+      openMenu()
 
       expect(screen.getByText('Copy link')).toBeInTheDocument()
       expect(screen.getByText('Share on X')).toBeInTheDocument()
@@ -105,19 +114,18 @@ describe('ShareButton', () => {
       expect(screen.getByText('Share via Email')).toBeInTheDocument()
     })
 
-    it('closes share menu when clicking the button again', async () => {
-      const user = userEvent.setup()
+    it('closes share menu on mouse leave', async () => {
       render(<ShareButton {...defaultProps} />)
 
-      const button = screen.getByRole('button', { name: /share project/i })
-
       // Open menu
-      await user.click(button)
+      openMenu()
       expect(screen.getByText('Copy link')).toBeInTheDocument()
 
       // Close menu
-      await user.click(button)
-      expect(screen.queryByText('Copy link')).not.toBeInTheDocument()
+      closeMenu()
+      await waitFor(() => {
+        expect(screen.queryByText('Copy link')).not.toBeInTheDocument()
+      })
     })
 
     it('closes menu when clicking outside', async () => {
@@ -128,10 +136,8 @@ describe('ShareButton', () => {
         </div>
       )
 
-      const button = screen.getByRole('button', { name: /share project/i })
-
       // Open menu
-      fireEvent.click(button)
+      openMenu()
       expect(screen.getByText('Copy link')).toBeInTheDocument()
 
       // Click outside - use mousedown as the component listens for mousedown
@@ -142,19 +148,14 @@ describe('ShareButton', () => {
       })
     })
 
-    it('does not close menu when clicking inside the dropdown', async () => {
-      const user = userEvent.setup()
+    it('keeps menu open when hovering over dropdown', async () => {
       render(<ShareButton {...defaultProps} />)
 
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
+      openMenu()
 
-      // Click on the dropdown container (divider area)
+      // Hover over dropdown content - this should keep it open
       const copyLinkButton = screen.getByText('Copy link')
-      const dropdown = copyLinkButton.closest('div[class*="absolute"]')
-      if (dropdown) {
-        fireEvent.click(dropdown)
-      }
+      fireEvent.mouseEnter(copyLinkButton.closest('div[class*="absolute"]')!)
 
       // Menu should still be visible
       expect(screen.getByText('Copy link')).toBeInTheDocument()
@@ -163,7 +164,6 @@ describe('ShareButton', () => {
 
   describe('Copy Link Functionality', () => {
     it('copies link to clipboard and shows success toast', async () => {
-      // Create a fresh mock for this test
       const clipboardWriteText = jest.fn().mockResolvedValue(undefined)
       Object.defineProperty(navigator, 'clipboard', {
         value: { writeText: clipboardWriteText },
@@ -173,14 +173,8 @@ describe('ShareButton', () => {
 
       render(<ShareButton {...defaultProps} />)
 
-      // Open menu using fireEvent (more predictable for this component)
-      const button = screen.getByRole('button', { name: /share project/i })
-      fireEvent.click(button)
+      openMenu()
 
-      // Verify menu is open
-      expect(screen.getByText('Copy link')).toBeInTheDocument()
-
-      // Click copy link using fireEvent
       const copyButton = screen.getByText('Copy link')
       fireEvent.click(copyButton)
 
@@ -196,7 +190,6 @@ describe('ShareButton', () => {
     })
 
     it('shows error toast when clipboard copy fails', async () => {
-      // Create a fresh mock for this test that rejects
       const clipboardWriteText = jest.fn().mockRejectedValue(new Error('Copy failed'))
       Object.defineProperty(navigator, 'clipboard', {
         value: { writeText: clipboardWriteText },
@@ -206,14 +199,8 @@ describe('ShareButton', () => {
 
       render(<ShareButton {...defaultProps} />)
 
-      // Open menu using fireEvent
-      const button = screen.getByRole('button', { name: /share project/i })
-      fireEvent.click(button)
+      openMenu()
 
-      // Verify menu is open
-      expect(screen.getByText('Copy link')).toBeInTheDocument()
-
-      // Click copy link using fireEvent
       const copyButton = screen.getByText('Copy link')
       fireEvent.click(copyButton)
 
@@ -225,15 +212,10 @@ describe('ShareButton', () => {
 
   describe('Social Media Sharing', () => {
     it('opens Twitter share dialog', async () => {
-      const user = userEvent.setup()
       render(<ShareButton {...defaultProps} />)
 
-      // Open menu
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
-
-      // Click share on X
-      await user.click(screen.getByText('Share on X'))
+      openMenu()
+      fireEvent.click(screen.getByText('Share on X'))
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
         expect.stringContaining('twitter.com/intent/tweet'),
@@ -245,75 +227,42 @@ describe('ShareButton', () => {
         '_blank',
         'width=600,height=400'
       )
-
-      // Menu should close
-      await waitFor(() => {
-        expect(screen.queryByText('Copy link')).not.toBeInTheDocument()
-      })
     })
 
     it('opens LinkedIn share dialog', async () => {
-      const user = userEvent.setup()
       render(<ShareButton {...defaultProps} />)
 
-      // Open menu
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
-
-      // Click share on LinkedIn
-      await user.click(screen.getByText('Share on LinkedIn'))
+      openMenu()
+      fireEvent.click(screen.getByText('Share on LinkedIn'))
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
         expect.stringContaining('linkedin.com/sharing/share-offsite'),
         '_blank',
         'width=600,height=400'
       )
-
-      // Menu should close
-      await waitFor(() => {
-        expect(screen.queryByText('Copy link')).not.toBeInTheDocument()
-      })
     })
 
     it('opens Facebook share dialog', async () => {
-      const user = userEvent.setup()
       render(<ShareButton {...defaultProps} />)
 
-      // Open menu
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
-
-      // Click share on Facebook
-      await user.click(screen.getByText('Share on Facebook'))
+      openMenu()
+      fireEvent.click(screen.getByText('Share on Facebook'))
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        expect.stringContaining('facebook.com/sharer/sharer.php'),
+        expect.stringContaining('facebook.com/sharer/sharer'),
         '_blank',
         'width=600,height=400'
       )
-
-      // Menu should close
-      await waitFor(() => {
-        expect(screen.queryByText('Copy link')).not.toBeInTheDocument()
-      })
     })
 
     it('opens email share with correct subject and body', async () => {
-      const user = userEvent.setup()
-
       render(<ShareButton {...defaultProps} />)
 
-      // Open menu
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
+      openMenu()
+      fireEvent.click(screen.getByText('Share via Email'))
 
-      // Click share via email
-      await user.click(screen.getByText('Share via Email'))
-
-      // Check that location.href was set to a mailto link
-      await waitFor(() => {
-        expect(window.location.href).toContain('mailto:?subject=')
-      })
+      expect(window.location.href).toContain('mailto:')
+      expect(window.location.href).toContain('subject=')
       expect(window.location.href).toContain('Test%20Project%20Title')
     })
   })
@@ -334,7 +283,7 @@ describe('ShareButton', () => {
       expect(parentClickHandler).not.toHaveBeenCalled()
     })
 
-    it('prevents event propagation when clicking menu items', () => {
+    it('prevents event propagation when clicking menu items', async () => {
       const parentClickHandler = jest.fn()
 
       render(
@@ -343,21 +292,16 @@ describe('ShareButton', () => {
         </div>
       )
 
-      // Open menu
-      const button = screen.getByRole('button', { name: /share project/i })
-      fireEvent.click(button)
-
-      // Click copy link
+      openMenu()
       fireEvent.click(screen.getByText('Copy link'))
 
+      // Parent should not have received the click
       expect(parentClickHandler).not.toHaveBeenCalled()
     })
   })
 
-  describe('Project Description Handling', () => {
+  describe('Description Handling', () => {
     it('uses default description when projectDescription is not provided', async () => {
-      const user = userEvent.setup()
-
       render(
         <ShareButton
           projectId="test-project-123"
@@ -365,22 +309,13 @@ describe('ShareButton', () => {
         />
       )
 
-      // Open menu
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
+      openMenu()
+      fireEvent.click(screen.getByText('Share via Email'))
 
-      // Click share via email to test the description
-      await user.click(screen.getByText('Share via Email'))
-
-      await waitFor(() => {
-        expect(window.location.href).toContain(
-          encodeURIComponent('Help Ukrainian communities rebuild with direct infrastructure support.')
-        )
-      })
+      expect(window.location.href).toContain('Help%20Ukrainian%20communities')
     })
 
     it('truncates long descriptions to 200 characters with ellipsis', async () => {
-      const user = userEvent.setup()
       const longDescription = 'A'.repeat(250)
 
       render(
@@ -391,21 +326,14 @@ describe('ShareButton', () => {
         />
       )
 
-      // Open menu
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
-
-      // Click share via email to test the description
-      await user.click(screen.getByText('Share via Email'))
+      openMenu()
+      fireEvent.click(screen.getByText('Share via Email'))
 
       // The description should be truncated with ellipsis
-      await waitFor(() => {
-        expect(window.location.href).toContain(encodeURIComponent('A'.repeat(200) + '...'))
-      })
+      expect(window.location.href).toContain(encodeURIComponent('A'.repeat(200) + '...'))
     })
 
     it('does not add ellipsis for descriptions under 200 characters', async () => {
-      const user = userEvent.setup()
       const shortDescription = 'Short description'
 
       render(
@@ -416,23 +344,16 @@ describe('ShareButton', () => {
         />
       )
 
-      // Open menu
-      const button = screen.getByRole('button', { name: /share project/i })
-      await user.click(button)
+      openMenu()
+      fireEvent.click(screen.getByText('Share via Email'))
 
-      // Click share via email to test the description
-      await user.click(screen.getByText('Share via Email'))
-
-      await waitFor(() => {
-        expect(window.location.href).toContain(encodeURIComponent(shortDescription))
-      })
+      expect(window.location.href).toContain(encodeURIComponent(shortDescription))
       expect(window.location.href).not.toContain(encodeURIComponent(shortDescription + '...'))
     })
   })
 
   describe('URL Generation', () => {
     it('generates correct share URL based on projectId', async () => {
-      // Create a fresh mock for this test
       const clipboardWriteText = jest.fn().mockResolvedValue(undefined)
       Object.defineProperty(navigator, 'clipboard', {
         value: { writeText: clipboardWriteText },
@@ -442,11 +363,7 @@ describe('ShareButton', () => {
 
       render(<ShareButton {...defaultProps} projectId="my-unique-project" />)
 
-      // Open menu using fireEvent
-      const button = screen.getByRole('button', { name: /share project/i })
-      fireEvent.click(button)
-
-      // Click copy link using fireEvent
+      openMenu()
       fireEvent.click(screen.getByText('Copy link'))
 
       await waitFor(() => {

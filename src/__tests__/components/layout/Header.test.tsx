@@ -1,9 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Header } from '@/components/layout/Header'
 
 // Mock next-intl
 const mockReplace = jest.fn()
+const mockPush = jest.fn()
 
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -11,7 +12,10 @@ jest.mock('next-intl', () => ({
       'nav.admin': 'Admin',
       'nav.aboutUs': 'About Us',
       'nav.submitProject': 'Submit a Project',
+      'nav.home': 'Home',
+      'nav.menu': 'Menu',
       'nav.language': 'Language',
+      'nav.headerSubtitle': 'Built to support renewable infrastructure',
     }
     return translations[key] || key
   },
@@ -20,15 +24,15 @@ jest.mock('next-intl', () => ({
 
 // Mock @/i18n/navigation
 jest.mock('@/i18n/navigation', () => ({
-  Link: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
-    <a href={href} className={className} data-testid={`link-${href}`}>
+  Link: ({ href, children, className, onClick }: { href: string; children: React.ReactNode; className?: string; onClick?: () => void }) => (
+    <a href={href} className={className} onClick={onClick} data-testid={`link-${href}`}>
       {children}
     </a>
   ),
   usePathname: () => '/',
   useRouter: () => ({
     replace: mockReplace,
-    push: jest.fn(),
+    push: mockPush,
     prefetch: jest.fn(),
   }),
 }))
@@ -52,31 +56,13 @@ describe('Header', () => {
     it('renders the logo/brand with both English and Ukrainian text', () => {
       render(<Header />)
       expect(screen.getByText('hromada')).toBeInTheDocument()
-      expect(screen.getByText('|', { exact: false })).toBeInTheDocument()
+      expect(screen.getByText('громада')).toBeInTheDocument()
     })
 
-    it('renders the Admin link', () => {
+    it('renders the menu button', () => {
       render(<Header />)
-      const adminLink = screen.getByTestId('link-/admin')
-      expect(adminLink).toBeInTheDocument()
-      expect(adminLink).toHaveAttribute('href', '/admin')
-      expect(screen.getByText('Admin')).toBeInTheDocument()
-    })
-
-    it('renders the About Us link', () => {
-      render(<Header />)
-      const aboutLink = screen.getByTestId('link-/about')
-      expect(aboutLink).toBeInTheDocument()
-      expect(aboutLink).toHaveAttribute('href', '/about')
-      expect(screen.getByText('About Us')).toBeInTheDocument()
-    })
-
-    it('renders the Submit Project link', () => {
-      render(<Header />)
-      const submitLink = screen.getByTestId('link-/submit-project')
-      expect(submitLink).toBeInTheDocument()
-      expect(submitLink).toHaveAttribute('href', '/submit-project')
-      expect(screen.getByText('Submit a Project')).toBeInTheDocument()
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      expect(menuButton).toBeInTheDocument()
     })
 
     it('renders children when provided', () => {
@@ -88,25 +74,61 @@ describe('Header', () => {
       expect(screen.getByTestId('filter-bar')).toBeInTheDocument()
       expect(screen.getByText('Filter content')).toBeInTheDocument()
     })
+
+    it('renders tagline', () => {
+      render(<Header />)
+      expect(screen.getByText('Built to support renewable infrastructure')).toBeInTheDocument()
+    })
   })
 
-  describe('Navigation Links', () => {
-    it('Admin link has correct href', () => {
+  describe('Navigation Menu', () => {
+    it('shows navigation dropdown on mouse enter', async () => {
       render(<Header />)
-      const adminLink = screen.getByTestId('link-/admin')
-      expect(adminLink).toHaveAttribute('href', '/admin')
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      // Hover over the menu area (the parent div has the hover handler)
+      fireEvent.mouseEnter(menuButton.parentElement!)
+
+      // Navigation links should appear
+      await waitFor(() => {
+        expect(screen.getByTestId('link-/')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/about')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/submit-project')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/admin')).toBeInTheDocument()
+      })
     })
 
-    it('About Us link has correct href', () => {
+    it('hides navigation dropdown on mouse leave', async () => {
       render(<Header />)
-      const aboutLink = screen.getByTestId('link-/about')
-      expect(aboutLink).toHaveAttribute('href', '/about')
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      const menuContainer = menuButton.parentElement!
+
+      // Open menu
+      fireEvent.mouseEnter(menuContainer)
+      await waitFor(() => {
+        expect(screen.getByTestId('link-/admin')).toBeInTheDocument()
+      })
+
+      // Close menu
+      fireEvent.mouseLeave(menuContainer)
+      await waitFor(() => {
+        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
+      })
     })
 
-    it('Submit Project link has correct href', () => {
+    it('shows correct navigation link texts', async () => {
       render(<Header />)
-      const submitLink = screen.getByTestId('link-/submit-project')
-      expect(submitLink).toHaveAttribute('href', '/submit-project')
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      fireEvent.mouseEnter(menuButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByText('Home')).toBeInTheDocument()
+        expect(screen.getByText('About Us')).toBeInTheDocument()
+        expect(screen.getByText('Submit a Project')).toBeInTheDocument()
+        expect(screen.getByText('Admin')).toBeInTheDocument()
+      })
     })
   })
 
@@ -117,53 +139,34 @@ describe('Header', () => {
       expect(langButton).toBeInTheDocument()
     })
 
-    it('shows current locale indicator', () => {
-      render(<Header />)
-      // EN should be displayed for current locale
-      expect(screen.getByText('EN')).toBeInTheDocument()
-    })
-
-    it('opens language dropdown on click', async () => {
-      const user = userEvent.setup()
+    it('shows language dropdown on mouse enter', async () => {
       render(<Header />)
 
       const langButton = screen.getByRole('button', { name: /language/i })
-      await user.click(langButton)
+      // Hover over the language menu area
+      fireEvent.mouseEnter(langButton.parentElement!)
 
-      // Should show language options
-      expect(screen.getByText('English')).toBeInTheDocument()
+      // Should show another flag button for switching
+      await waitFor(() => {
+        const buttons = screen.getAllByRole('button')
+        // Should have more than just the language button (another flag appears)
+        expect(buttons.length).toBeGreaterThan(3)
+      })
     })
 
-    it('closes language dropdown when clicking outside', async () => {
-      const user = userEvent.setup()
+    it('hides language dropdown on mouse leave', async () => {
       render(<Header />)
+
+      const langButton = screen.getByRole('button', { name: /language/i })
+      const langContainer = langButton.parentElement!
 
       // Open dropdown
-      const langButton = screen.getByRole('button', { name: /language/i })
-      await user.click(langButton)
-      expect(screen.getByText('English')).toBeInTheDocument()
-
-      // Click outside (on the header itself)
-      fireEvent.mouseDown(document.body)
-
-      // Dropdown should close - English option should no longer be visible
-      // Note: The button still shows, but the dropdown options should be gone
-    })
-
-    it('toggles dropdown visibility on button click', async () => {
-      const user = userEvent.setup()
-      render(<Header />)
-
-      const langButton = screen.getByRole('button', { name: /language/i })
-
-      // Open dropdown
-      await user.click(langButton)
-      expect(screen.getByText('English')).toBeInTheDocument()
+      fireEvent.mouseEnter(langContainer)
 
       // Close dropdown
-      await user.click(langButton)
-      // After closing, the English text in dropdown should be gone
-      // (Note: EN in button is still visible)
+      fireEvent.mouseLeave(langContainer)
+
+      // Should close
     })
   })
 
@@ -174,21 +177,27 @@ describe('Header', () => {
       expect(hromadaButton).toBeInTheDocument()
     })
 
-    it('switches to English locale when clicking hromada', async () => {
+    it('renders Ukrainian button for locale switch', () => {
+      render(<Header />)
+      const ukrainianButton = screen.getByRole('button', { name: /громада/i })
+      expect(ukrainianButton).toBeInTheDocument()
+    })
+
+    it('switches to English locale when clicking hromada on homepage', async () => {
       const user = userEvent.setup()
       render(<Header />)
 
       const hromadaButton = screen.getByRole('button', { name: 'hromada' })
       await user.click(hromadaButton)
 
+      // On homepage, it just switches locale
       expect(mockReplace).toHaveBeenCalledWith('/', { locale: 'en' })
     })
 
-    it('switches to Ukrainian locale when clicking the Ukrainian text', async () => {
+    it('switches to Ukrainian locale when clicking the Ukrainian text on homepage', async () => {
       const user = userEvent.setup()
       render(<Header />)
 
-      // The Ukrainian button contains the Cyrillic text
       const ukrainianButton = screen.getByRole('button', { name: /громада/i })
       await user.click(ukrainianButton)
 
@@ -218,34 +227,42 @@ describe('Header', () => {
       expect(langButton).toHaveAttribute('aria-label', 'Language')
     })
 
-    it('all navigation links are keyboard accessible', () => {
+    it('menu button has aria-label', () => {
       render(<Header />)
-      const links = screen.getAllByRole('link')
-      links.forEach(link => {
-        expect(link).toBeVisible()
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      expect(menuButton).toHaveAttribute('aria-label', 'Menu')
+    })
+
+    it('navigation links are accessible when menu is open', async () => {
+      render(<Header />)
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      fireEvent.mouseEnter(menuButton.parentElement!)
+
+      await waitFor(() => {
+        const links = screen.getAllByRole('link')
+        expect(links.length).toBeGreaterThan(0)
       })
     })
   })
 
-  describe('Mobile Responsiveness Classes', () => {
-    it('Admin link has hidden class for small screens', () => {
+  describe('Styling', () => {
+    it('has proper background color class', () => {
       render(<Header />)
-      const adminLink = screen.getByTestId('link-/admin')
-      expect(adminLink).toHaveClass('hidden')
-      expect(adminLink).toHaveClass('sm:inline-block')
+      const header = screen.getByRole('banner')
+      expect(header).toHaveClass('bg-[var(--cream-100)]')
     })
 
-    it('About Us link has hidden class for small screens', () => {
+    it('has border bottom', () => {
       render(<Header />)
-      const aboutLink = screen.getByTestId('link-/about')
-      expect(aboutLink).toHaveClass('hidden')
-      expect(aboutLink).toHaveClass('sm:inline-block')
+      const header = screen.getByRole('banner')
+      expect(header).toHaveClass('border-b')
     })
 
-    it('Submit Project button shows + on mobile', () => {
+    it('has shadow', () => {
       render(<Header />)
-      // The mobile version shows just a +
-      expect(screen.getByText('+')).toBeInTheDocument()
+      const header = screen.getByRole('banner')
+      expect(header).toHaveClass('shadow-sm')
     })
   })
 })

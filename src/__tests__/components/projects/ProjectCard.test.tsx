@@ -308,8 +308,10 @@ describe('ProjectCard', () => {
 
       render(<ProjectCard project={project} onClick={handleClick} />)
 
-      // With onClick, the card is a div with role="button"
-      const card = screen.getByRole('button')
+      // With onClick, the card is a div with role="button" and tabIndex=0
+      // There's also a ShareButton, so we need to get the right one
+      const buttons = screen.getAllByRole('button')
+      const card = buttons.find(el => el.tabIndex === 0)!
       await user.click(card)
 
       expect(handleClick).toHaveBeenCalledTimes(1)
@@ -321,7 +323,10 @@ describe('ProjectCard', () => {
 
       render(<ProjectCard project={project} onClick={handleClick} />)
 
-      const card = screen.getByRole('button')
+      // The card itself has role="button", but there's also ShareButton
+      // Get all buttons and find the card (which has tabIndex=0)
+      const buttons = screen.getAllByRole('button')
+      const card = buttons.find(el => el.tabIndex === 0)!
       fireEvent.keyDown(card, { key: 'Enter' })
       expect(handleClick).toHaveBeenCalledTimes(1)
 
@@ -333,35 +338,29 @@ describe('ProjectCard', () => {
       const project = createMockProject()
       render(<ProjectCard project={project} />)
 
-      const link = screen.getByTestId('link')
-      expect(link).toHaveAttribute('href', '/projects/test-project-123')
-    })
-
-    it('shows View Details link when onClick is provided', () => {
-      const handleClick = jest.fn()
-      const project = createMockProject()
-
-      render(<ProjectCard project={project} onClick={handleClick} />)
-
-      expect(screen.getByText('View Details →')).toBeInTheDocument()
+      // The card itself is wrapped in a Link (first one), and title also has a Link
+      const links = screen.getAllByTestId('link')
+      // The outer link should point to the project
+      expect(links[0]).toHaveAttribute('href', '/projects/test-project-123')
     })
   })
 
   describe('ShareButton', () => {
-    it('renders share button when onClick is not provided', () => {
+    it('renders share button', () => {
       const project = createMockProject()
       render(<ProjectCard project={project} />)
 
       expect(screen.getByTestId('share-button')).toBeInTheDocument()
     })
 
-    it('does not render share button when onClick is provided', () => {
+    it('renders share button with onClick handler too', () => {
       const handleClick = jest.fn()
       const project = createMockProject()
 
       render(<ProjectCard project={project} onClick={handleClick} />)
 
-      expect(screen.queryByTestId('share-button')).not.toBeInTheDocument()
+      // ShareButton is always rendered in the card content
+      expect(screen.getByTestId('share-button')).toBeInTheDocument()
     })
   })
 
@@ -373,8 +372,9 @@ describe('ProjectCard', () => {
 
       render(<ProjectCard project={project} onMouseEnter={handleMouseEnter} />)
 
-      const link = screen.getByTestId('link')
-      await user.hover(link)
+      // Get the outer link (first one)
+      const links = screen.getAllByTestId('link')
+      await user.hover(links[0])
 
       expect(handleMouseEnter).toHaveBeenCalledTimes(1)
     })
@@ -386,9 +386,10 @@ describe('ProjectCard', () => {
 
       render(<ProjectCard project={project} onMouseLeave={handleMouseLeave} />)
 
-      const link = screen.getByTestId('link')
-      await user.hover(link)
-      await user.unhover(link)
+      // Get the outer link (first one)
+      const links = screen.getAllByTestId('link')
+      await user.hover(links[0])
+      await user.unhover(links[0])
 
       expect(handleMouseLeave).toHaveBeenCalledTimes(1)
     })
@@ -399,18 +400,20 @@ describe('ProjectCard', () => {
       const project = createMockProject()
       render(<ProjectCard project={project} isHighlighted={true} />)
 
-      const link = screen.getByTestId('link')
-      expect(link.className).toContain('border-[var(--navy-600)]')
-      expect(link.className).toContain('ring-2')
+      // Get the outer link (first one) - it has the card styles
+      const links = screen.getAllByTestId('link')
+      expect(links[0].className).toContain('border-[var(--navy-600)]')
+      expect(links[0].className).toContain('ring-2')
     })
 
     it('does not apply highlighted styles when isHighlighted is false', () => {
       const project = createMockProject()
       render(<ProjectCard project={project} isHighlighted={false} />)
 
-      const link = screen.getByTestId('link')
-      expect(link.className).toContain('border-[var(--cream-300)]')
-      expect(link.className).not.toContain('ring-2')
+      // Get the outer link (first one) - it has the card styles
+      const links = screen.getAllByTestId('link')
+      expect(links[0].className).toContain('border-[var(--cream-300)]')
+      expect(links[0].className).not.toContain('ring-2')
     })
   })
 

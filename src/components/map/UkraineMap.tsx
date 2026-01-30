@@ -276,11 +276,15 @@ function HighlightHandler({
   markerRefs: React.MutableRefObject<Record<string, L.Marker>>
   clusterGroupRef: React.MutableRefObject<L.MarkerClusterGroup | null>
 }) {
-  const prevHighlightedRef = useRef<string | null>(null)
   const highlightedClusterRef = useRef<HTMLElement | null>(null)
   const highlightedMarkerRef = useRef<HTMLElement | null>(null)
+  const timeoutIdsRef = useRef<number[]>([])
 
   useEffect(() => {
+    // Cancel any pending timeouts from previous effect
+    timeoutIdsRef.current.forEach(id => clearTimeout(id))
+    timeoutIdsRef.current = []
+
     // Remove highlight from previous marker element
     if (highlightedMarkerRef.current) {
       highlightedMarkerRef.current.classList.remove('highlighted')
@@ -298,11 +302,17 @@ function HighlightHandler({
       highlightedClusterRef.current = null
     }
 
+    // Capture the current highlightedProjectId for closure
+    const currentProjectId = highlightedProjectId
+
     // Add highlight to current marker
-    if (highlightedProjectId && markerRefs.current[highlightedProjectId]) {
-      const marker = markerRefs.current[highlightedProjectId]
+    if (currentProjectId && markerRefs.current[currentProjectId]) {
+      const marker = markerRefs.current[currentProjectId]
 
       const applyHighlight = () => {
+        // Check if still the current highlighted project
+        if (highlightedMarkerRef.current) return // Already applied
+
         const el = marker.getElement()
         if (el) {
           // Find the .custom-marker div inside and add highlighted class directly
@@ -319,27 +329,29 @@ function HighlightHandler({
       // Try immediately, then retry after delay if needed
       applyHighlight()
       if (!highlightedMarkerRef.current) {
-        setTimeout(applyHighlight, 50)
+        const id1 = window.setTimeout(applyHighlight, 50)
+        timeoutIdsRef.current.push(id1)
       }
       if (!highlightedMarkerRef.current) {
-        setTimeout(applyHighlight, 150)
+        const id2 = window.setTimeout(applyHighlight, 150)
+        timeoutIdsRef.current.push(id2)
       }
     }
 
     // Handle cluster highlighting when marker is inside a cluster
-    if (highlightedProjectId && clusterGroupRef.current) {
-      let marker = markerRefs.current[highlightedProjectId]
+    if (currentProjectId && clusterGroupRef.current) {
+      let marker = markerRefs.current[currentProjectId]
 
       if (!marker) {
         clusterGroupRef.current.eachLayer((layer: any) => {
-          if (layer.projectId === highlightedProjectId) {
+          if (layer.projectId === currentProjectId) {
             marker = layer
           }
         })
       }
 
       if (marker) {
-        setTimeout(() => {
+        const clusterId = window.setTimeout(() => {
           try {
             const visibleParent = clusterGroupRef.current?.getVisibleParent(marker!)
             if (visibleParent && visibleParent !== marker) {
@@ -353,10 +365,15 @@ function HighlightHandler({
             // getVisibleParent might fail
           }
         }, 50)
+        timeoutIdsRef.current.push(clusterId)
       }
     }
 
-    prevHighlightedRef.current = highlightedProjectId ?? null
+    // Cleanup on unmount or before next effect
+    return () => {
+      timeoutIdsRef.current.forEach(id => clearTimeout(id))
+      timeoutIdsRef.current = []
+    }
   }, [highlightedProjectId, markerRefs, clusterGroupRef])
 
   return null

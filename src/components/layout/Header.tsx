@@ -220,7 +220,7 @@ export function Header({ children }: HeaderProps) {
 
               {/* Language Dropdown */}
               {isLangMenuOpen && (
-                <div className="absolute right-0 top-full pt-2 z-50">
+                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50">
                   <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] p-1.5">
                     <button
                       onClick={() => switchLocale(otherLocale)}

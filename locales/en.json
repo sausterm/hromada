@@ -36,7 +36,7 @@
     "headerSubtitle": "Built to support renewable infrastructure",
     "admin": "Admin",
     "submitProject": "Submit a Project",
-    "aboutUs": "About Us",
+    "aboutUs": "About Hromada",
     "home": "Home",
     "projects": "Projects",
     "language": "Language",
@@ -288,7 +288,7 @@
     }
   },
   "footer": {
-    "aboutUs": "About Us",
+    "aboutUs": "About Hromada",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",

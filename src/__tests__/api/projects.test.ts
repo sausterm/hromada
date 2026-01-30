@@ -50,6 +50,40 @@ describe('GET /api/projects', () => {
     expect(data.pagination.hasMore).toBe(false)
   })
 
+  it('transforms photos relation to URL array for paginated results', async () => {
+    const mockProjects = [
+      {
+        id: '1',
+        facilityName: 'Hospital A',
+        photos: [
+          { id: 'p1', url: 'https://example.com/photo1.jpg', sortOrder: 0 },
+          { id: 'p2', url: 'https://example.com/photo2.jpg', sortOrder: 1 },
+        ],
+      },
+      {
+        id: '2',
+        facilityName: 'School B',
+        photos: [
+          { id: 'p3', url: 'https://example.com/photo3.jpg', sortOrder: 0 },
+        ],
+      },
+    ]
+    ;(mockPrisma.project.findMany as jest.Mock).mockResolvedValue(mockProjects)
+
+    const request = new NextRequest('http://localhost/api/projects')
+    const response = await GET(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.projects[0].photos).toEqual([
+      'https://example.com/photo1.jpg',
+      'https://example.com/photo2.jpg',
+    ])
+    expect(data.projects[1].photos).toEqual([
+      'https://example.com/photo3.jpg',
+    ])
+  })
+
   it('returns all projects when ?all=true', async () => {
     const mockProjects = [
       { id: '1', facilityName: 'Hospital A', category: 'HOSPITAL', photos: [] },
@@ -70,6 +104,30 @@ describe('GET /api/projects', () => {
       include: { photos: { orderBy: { sortOrder: 'asc' } } },
       orderBy: [{ urgency: 'desc' }, { createdAt: 'desc' }],
     })
+  })
+
+  it('transforms photos relation to URL array when ?all=true', async () => {
+    const mockProjects = [
+      {
+        id: '1',
+        facilityName: 'Hospital A',
+        photos: [
+          { id: 'p1', url: 'https://example.com/photo1.jpg', sortOrder: 0 },
+          { id: 'p2', url: 'https://example.com/photo2.jpg', sortOrder: 1 },
+        ],
+      },
+    ]
+    ;(mockPrisma.project.findMany as jest.Mock).mockResolvedValue(mockProjects)
+
+    const request = new NextRequest('http://localhost/api/projects?all=true')
+    const response = await GET(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.projects[0].photos).toEqual([
+      'https://example.com/photo1.jpg',
+      'https://example.com/photo2.jpg',
+    ])
   })
 
   it('supports cursor-based pagination', async () => {

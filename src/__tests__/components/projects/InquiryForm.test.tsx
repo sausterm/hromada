@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { InquiryForm } from '@/components/projects/InquiryForm'
 
@@ -46,21 +46,21 @@ describe('InquiryForm', () => {
     expect(screen.getByText('Message is required')).toBeInTheDocument()
   })
 
-  // Note: This test is temporarily skipped due to React Testing Library state update timing issues
-  // The validation logic works correctly in the browser
+  // Note: Skipped due to timing issues with validation state updates
+  // The validation works correctly in the browser
   it.skip('shows validation error for invalid email', async () => {
     const user = userEvent.setup()
     render(<InquiryForm {...defaultProps} />)
 
-    await user.type(screen.getByLabelText(/Your Name/), 'John Doe')
-    await user.type(screen.getByLabelText(/Email Address/), 'not-valid')
-    await user.type(screen.getByLabelText(/Message/), 'This is a test message that is definitely long enough.')
+    fireEvent.change(screen.getByLabelText(/Your Name/), { target: { value: 'John Doe' } })
+    fireEvent.change(screen.getByLabelText(/Email Address/), { target: { value: 'not-valid' } })
+    fireEvent.change(screen.getByLabelText(/Message/), { target: { value: 'This is a test message that is definitely long enough.' } })
 
-    const submitButton = screen.getByRole('button', { name: /Send Inquiry/i })
-    await user.click(submitButton)
+    await user.click(screen.getByRole('button', { name: /Send Inquiry/i }))
 
-    const errorMessage = await screen.findByText('Please enter a valid email')
-    expect(errorMessage).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Please enter a valid email')).toBeInTheDocument()
+    })
   })
 
   it('shows validation error for short message', async () => {
@@ -88,9 +88,7 @@ describe('InquiryForm', () => {
     expect(screen.queryByText('Name is required')).not.toBeInTheDocument()
   })
 
-  // Note: This test is temporarily skipped due to async state timing issues
-  // The form submission works correctly in the browser
-  it.skip('submits form successfully', async () => {
+  it('submits form successfully', async () => {
     const user = userEvent.setup()
     ;(global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
@@ -99,18 +97,20 @@ describe('InquiryForm', () => {
 
     render(<InquiryForm {...defaultProps} />)
 
-    await user.type(screen.getByLabelText(/Your Name/), 'John Doe')
-    await user.type(screen.getByLabelText(/Email Address/), 'john@example.com')
-    await user.type(screen.getByLabelText(/Organization/), 'Test Org')
-    await user.type(screen.getByLabelText(/Message/), 'This is a detailed message about how I want to help with this project.')
+    // Use fireEvent for faster input
+    fireEvent.change(screen.getByLabelText(/Your Name/), { target: { value: 'John Doe' } })
+    fireEvent.change(screen.getByLabelText(/Email Address/), { target: { value: 'john@example.com' } })
+    fireEvent.change(screen.getByLabelText(/Organization/), { target: { value: 'Test Org' } })
+    fireEvent.change(screen.getByLabelText(/Message/), { target: { value: 'This is a detailed message about how I want to help with this project.' } })
     await user.click(screen.getByRole('button', { name: /Send Inquiry/i }))
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalled()
     })
 
-    const thankYou = await screen.findByText('Thank You!')
-    expect(thankYou).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Thank You!')).toBeInTheDocument()
+    })
     expect(mockOnSuccess).toHaveBeenCalled()
   })
 

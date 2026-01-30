@@ -39,6 +39,16 @@ describe('Badge', () => {
     expect(dot).toHaveStyle({ backgroundColor: '#ff0000' })
   })
 
+  it('renders dot with currentColor when dotColor is not provided', () => {
+    render(<Badge dot>With Default Dot</Badge>)
+
+    const badge = screen.getByText('With Default Dot')
+    const dot = badge.querySelector('span')
+
+    expect(dot).toBeInTheDocument()
+    expect(dot).toHaveStyle({ backgroundColor: 'currentColor' })
+  })
+
   it('does not render dot when dot prop is false', () => {
     render(<Badge>No Dot</Badge>)
 

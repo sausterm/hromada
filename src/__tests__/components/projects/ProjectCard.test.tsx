@@ -334,6 +334,26 @@ describe('ProjectCard', () => {
       expect(handleClick).toHaveBeenCalledTimes(2)
     })
 
+    it('stops propagation when clicking the title link inside a clickable card', async () => {
+      const user = userEvent.setup()
+      const handleCardClick = jest.fn()
+      const project = createMockProject({ facilityName: 'Test Facility Name' })
+
+      render(<ProjectCard project={project} onClick={handleCardClick} />)
+
+      // Find the title link (the one with the facility name text)
+      const titleLink = screen.getByText('Test Facility Name').closest('a')
+      expect(titleLink).toBeInTheDocument()
+
+      // Click on the title link - it should trigger stopPropagation
+      // to prevent the card's onClick from firing
+      await user.click(titleLink!)
+
+      // The card's onClick should not be called when clicking the title link
+      // because stopPropagation is called
+      expect(handleCardClick).not.toHaveBeenCalled()
+    })
+
     it('renders as a link when onClick is not provided', () => {
       const project = createMockProject()
       render(<ProjectCard project={project} />)

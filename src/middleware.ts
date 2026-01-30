@@ -23,6 +23,10 @@ interface NextRequestWithGeo extends NextRequest {
 // Countries to block (ISO 3166-1 alpha-2 country codes)
 const BLOCKED_COUNTRIES = ['RU', 'BY']; // Russia, Belarus
 
+// Site password protection
+const SITE_PASSWORD = 'hromada!2026';
+const AUTH_COOKIE_NAME = 'hromada_site_access';
+
 // Create the internationalization middleware
 const intlMiddleware = createIntlMiddleware({
   locales,
@@ -34,6 +38,24 @@ export default function middleware(request: NextRequestWithGeo) {
   // Get country from Vercel's geo data (automatically available)
   const country = request.geo?.country;
   const pathname = request.nextUrl.pathname;
+
+  // Check if accessing the password page or API (prevent redirect loop)
+  if (pathname.includes('/site-access') || pathname.startsWith('/api/')) {
+    return intlMiddleware(request);
+  }
+
+  // Check for site access cookie
+  const siteAccessCookie = request.cookies.get(AUTH_COOKIE_NAME);
+  if (!siteAccessCookie || siteAccessCookie.value !== SITE_PASSWORD) {
+    // Determine locale from URL or default to 'en'
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const locale = locales.includes(pathSegments[0] as any) ? pathSegments[0] : 'en';
+
+    // Redirect to password page
+    const url = new URL(`/${locale}/site-access`, request.url);
+    url.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(url);
+  }
 
   // Check if accessing the blocked page already (prevent redirect loop)
   if (pathname.includes('/blocked')) {

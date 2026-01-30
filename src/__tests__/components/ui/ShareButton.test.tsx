@@ -298,6 +298,26 @@ describe('ShareButton', () => {
       // Parent should not have received the click
       expect(parentClickHandler).not.toHaveBeenCalled()
     })
+
+    it('prevents event propagation when clicking the dropdown container', async () => {
+      const parentClickHandler = jest.fn()
+
+      render(
+        <div onClick={parentClickHandler}>
+          <ShareButton {...defaultProps} />
+        </div>
+      )
+
+      openMenu()
+
+      // Click directly on the dropdown container div (not on a button)
+      const dropdownContainer = screen.getByText('Copy link').closest('div[class*="absolute"]')
+      expect(dropdownContainer).toBeInTheDocument()
+      fireEvent.click(dropdownContainer!)
+
+      // Parent should not have received the click
+      expect(parentClickHandler).not.toHaveBeenCalled()
+    })
   })
 
   describe('Description Handling', () => {

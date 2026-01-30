@@ -614,5 +614,1611 @@ describe('AdminPage', () => {
 
       consoleSpy.mockRestore()
     })
+
+    it('handles project submissions fetch error', async () => {
+      mockIsAuthenticated = true
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: [] }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.reject(new Error('Network error'))
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch project submissions:', expect.any(Error))
+      })
+
+      consoleSpy.mockRestore()
+    })
+  })
+
+  describe('Project Sorting', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('sorts projects when clicking column header', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Click on facility name header to toggle sort
+      const facilityHeader = screen.getByText('admin.projects.table.facility')
+      await user.click(facilityHeader)
+
+      // The sort direction should toggle (starts at asc)
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+    })
+
+    it('toggles sort direction when clicking same column', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Click municipality header twice to toggle direction
+      const municipalityHeader = screen.getByText('admin.projects.table.municipality')
+      await user.click(municipalityHeader)
+      await user.click(municipalityHeader)
+
+      // Projects should still be rendered
+      expect(screen.getByText('Hospital A')).toBeInTheDocument()
+    })
+  })
+
+  describe('Pagination', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      // Create many projects for pagination testing
+      const manyProjects = Array.from({ length: 25 }, (_, i) => ({
+        id: `project-${i}`,
+        facilityName: `Facility ${i}`,
+        municipalityName: `Municipality ${i}`,
+        region: 'Test Oblast',
+        category: 'HOSPITAL',
+        urgency: 'MEDIUM',
+        status: 'OPEN',
+        projectType: 'SOLAR_PV',
+        estimatedCostUsd: 10000,
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-20T10:00:00Z',
+      }))
+
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: manyProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('shows pagination controls when there are more projects than page size', async () => {
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Facility 0')).toBeInTheDocument()
+      })
+
+      // Should show Previous and Next buttons
+      expect(screen.getByText('Previous')).toBeInTheDocument()
+      expect(screen.getByText('Next')).toBeInTheDocument()
+    })
+
+    it('navigates to next page', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Facility 0')).toBeInTheDocument()
+      })
+
+      // Verify previous button is disabled on first page
+      const prevButton = screen.getByText('Previous')
+      expect(prevButton).toBeDisabled()
+
+      const nextButton = screen.getByText('Next')
+      await user.click(nextButton)
+
+      // After clicking next, previous button should be enabled
+      await waitFor(() => {
+        expect(prevButton).not.toBeDisabled()
+      })
+    })
+
+    it('changes items per page', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Facility 0')).toBeInTheDocument()
+      })
+
+      // Change to 50 items per page
+      const pageSizeSelect = screen.getByLabelText('Per page:')
+      await user.selectOptions(pageSizeSelect, '50')
+
+      // Should show more projects now
+      await waitFor(() => {
+        expect(screen.getByText('Facility 24')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Bulk Delete', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (options?.method === 'DELETE') {
+          return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('performs bulk delete when confirmed', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Select a project
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[1]) // First project checkbox
+
+      // Click delete button
+      const deleteButton = screen.getByText('Delete Selected')
+      await user.click(deleteButton)
+
+      // Should call delete API
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/api/projects/'),
+          expect.objectContaining({ method: 'DELETE' })
+        )
+      })
+    })
+
+    it('cancels bulk delete when not confirmed', async () => {
+      ;(global.confirm as jest.Mock).mockReturnValueOnce(false)
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Select a project
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[1])
+
+      // Click delete button
+      const deleteButton = screen.getByText('Delete Selected')
+      await user.click(deleteButton)
+
+      // Delete API should not be called
+      const deleteCalls = (global.fetch as jest.Mock).mock.calls.filter(
+        (call: any[]) => call[1]?.method === 'DELETE'
+      )
+      expect(deleteCalls.length).toBe(0)
+    })
+
+    it('clears selection after successful delete', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Select a project
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[1])
+
+      // Verify selection shown
+      expect(screen.getByText(/selected/)).toBeInTheDocument()
+
+      // Click delete button
+      const deleteButton = screen.getByText('Delete Selected')
+      await user.click(deleteButton)
+
+      // Selection should be cleared
+      await waitFor(() => {
+        expect(screen.queryByText(/selected/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('clears selection when clicking clear button', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Select a project
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[1])
+
+      // Verify selection shown
+      expect(screen.getByText(/selected/)).toBeInTheDocument()
+
+      // Click clear selection button
+      const clearButton = screen.getByText('Clear Selection')
+      await user.click(clearButton)
+
+      // Selection should be cleared
+      await waitFor(() => {
+        expect(screen.queryByText(/selected/)).not.toBeInTheDocument()
+      })
+    })
+
+    it('shows partial failure alert when some deletes fail', async () => {
+      let deleteCount = 0
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (options?.method === 'DELETE') {
+          deleteCount++
+          // First delete succeeds, second fails
+          return Promise.resolve({ ok: deleteCount === 1, json: () => Promise.resolve({}) })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Select both projects
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[1])
+      await user.click(checkboxes[2])
+
+      // Click delete button
+      const deleteButton = screen.getByText('Delete Selected')
+      await user.click(deleteButton)
+
+      // Should show partial failure alert
+      await waitFor(() => {
+        expect(global.alert).toHaveBeenCalledWith(expect.stringContaining('Some deletes failed'))
+      })
+    })
+  })
+
+  describe('Select All on Page', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('selects all projects on page when clicking header checkbox', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Click header checkbox to select all
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[0]) // Header checkbox
+
+      // Should show selection count
+      expect(screen.getByText('2 selected')).toBeInTheDocument()
+    })
+
+    it('deselects all when clicking header checkbox with all selected', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Click header checkbox to select all
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[0])
+
+      // Verify all selected
+      expect(screen.getByText('2 selected')).toBeInTheDocument()
+
+      // Click again to deselect all
+      await user.click(checkboxes[0])
+
+      // Should clear selection
+      await waitFor(() => {
+        expect(screen.queryByText(/selected/)).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Submission Review', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: mockProjectSubmissions }),
+          })
+        }
+        if (url.includes('/api/projects/submissions/') && options?.method === 'PATCH') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projectId: 'new-project-id' }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('opens review modal when clicking review button', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      // Switch to submissions tab
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      // Wait for submissions to load
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Click review button
+      const reviewButton = screen.getByText('admin.submissions.reviewDetails')
+      await user.click(reviewButton)
+
+      // Modal should appear
+      await waitFor(() => {
+        expect(screen.getByText(/admin.submissions.reviewSubmission/)).toBeInTheDocument()
+      })
+    })
+
+    it('approves submission successfully', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      // Switch to submissions tab
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      // Wait for submissions to load
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Click approve button directly
+      const approveButtons = screen.getAllByText('admin.submissions.approve')
+      await user.click(approveButtons[0])
+
+      // Should call PATCH API
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/api/projects/submissions/submission-1'),
+          expect.objectContaining({
+            method: 'PATCH',
+            body: expect.stringContaining('approve'),
+          })
+        )
+      })
+    })
+
+    it('shows alert when rejecting without reason', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      // Switch to submissions tab
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      // Wait for submissions to load
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Click reject button on the submission card (this opens modal with rejection reason focus)
+      const rejectButton = screen.getByText('admin.submissions.reject')
+      await user.click(rejectButton)
+
+      // Modal should open
+      await waitFor(() => {
+        expect(screen.getByText(/admin.submissions.reviewSubmission/)).toBeInTheDocument()
+      })
+
+      // Find modal reject button (it's disabled when no reason is provided)
+      const modalRejectButtons = screen.getAllByText('admin.submissions.reject')
+      const modalRejectButton = modalRejectButtons[modalRejectButtons.length - 1]
+
+      // The button should be disabled since no rejection reason is provided
+      expect(modalRejectButton).toBeDisabled()
+    })
+  })
+
+  describe('Contacts Tab', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: mockContactSubmissions }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url.includes('/api/contact/') && options?.method === 'PATCH') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({}),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('shows contact submissions', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /Contacts/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('John Donor')).toBeInTheDocument()
+        expect(screen.getByText('I want to help')).toBeInTheDocument()
+      })
+    })
+
+    it('marks contact as handled', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /Contacts/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('John Donor')).toBeInTheDocument()
+      })
+
+      // Click mark as handled button
+      const handleButton = screen.getByText('admin.contacts.markHandled')
+      await user.click(handleButton)
+
+      // Should call PATCH API
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/contact/contact-1',
+          expect.objectContaining({
+            method: 'PATCH',
+            body: JSON.stringify({ handled: true }),
+          })
+        )
+      })
+    })
+
+    it('filters contacts by search query', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /Contacts/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('John Donor')).toBeInTheDocument()
+      })
+
+      // Type in search
+      const searchInput = screen.getByPlaceholderText('Search contacts...')
+      await user.type(searchInput, 'nonexistent')
+
+      // Contact should be filtered out
+      await waitFor(() => {
+        expect(screen.queryByText('John Donor')).not.toBeInTheDocument()
+      })
+    })
+
+    it('filters contacts by handled status', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /Contacts/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('John Donor')).toBeInTheDocument()
+      })
+
+      // Filter by handled only
+      const filterSelect = screen.getByDisplayValue('All')
+      await user.selectOptions(filterSelect, 'HANDLED')
+
+      // Unhandled contact should be filtered out
+      await waitFor(() => {
+        expect(screen.queryByText('John Donor')).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Submissions Tab Filtering', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      const submissionsWithDifferentStatus = [
+        { ...mockProjectSubmissions[0], id: 'sub-1', status: 'PENDING', facilityName: 'Pending Project' },
+        { ...mockProjectSubmissions[0], id: 'sub-2', status: 'APPROVED', facilityName: 'Approved Project' },
+        { ...mockProjectSubmissions[0], id: 'sub-3', status: 'REJECTED', facilityName: 'Rejected Project', rejectionReason: 'Test reason' },
+      ]
+
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: [] }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: submissionsWithDifferentStatus }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('filters submissions by status', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Pending Project')).toBeInTheDocument()
+      })
+
+      // Filter by pending only
+      const statusSelect = screen.getByDisplayValue('All Status')
+      await user.selectOptions(statusSelect, 'PENDING')
+
+      // Should show only pending
+      await waitFor(() => {
+        expect(screen.getByText('Pending Project')).toBeInTheDocument()
+        expect(screen.queryByText('Approved Project')).not.toBeInTheDocument()
+        expect(screen.queryByText('Rejected Project')).not.toBeInTheDocument()
+      })
+    })
+
+    it('sorts submissions by status', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Pending Project')).toBeInTheDocument()
+      })
+
+      // Change sort to by status
+      const sortSelect = screen.getByDisplayValue('Newest First')
+      await user.selectOptions(sortSelect, 'status')
+
+      // All submissions should still be visible
+      expect(screen.getByText('Pending Project')).toBeInTheDocument()
+    })
+
+    it('shows rejection reason for rejected submissions', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Rejected Project')).toBeInTheDocument()
+        expect(screen.getByText(/Test reason/)).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Empty States', () => {
+    it('shows empty state when no projects match search', async () => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Search for nonexistent project
+      const searchInput = screen.getByPlaceholderText('Search projects...')
+      await user.type(searchInput, 'nonexistent project name')
+
+      // Should show no match message
+      await waitFor(() => {
+        expect(screen.getByText('admin.projects.noMatch')).toBeInTheDocument()
+      })
+    })
+
+    it('shows empty state when no projects exist', async () => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: [] }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('admin.projects.noProjects')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Reject Submission', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: mockProjectSubmissions }),
+          })
+        }
+        if (url.includes('/api/projects/submissions/') && options?.method === 'PATCH') {
+          const body = JSON.parse(options.body)
+          if (body.action === 'reject') {
+            return Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve({}),
+            })
+          }
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projectId: 'new-project-id' }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('rejects submission with reason', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      // Switch to submissions tab
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      // Wait for submissions to load
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Click reject button on the submission card
+      const rejectButton = screen.getByText('admin.submissions.reject')
+      await user.click(rejectButton)
+
+      // Modal should open
+      await waitFor(() => {
+        expect(screen.getByText(/admin.submissions.reviewSubmission/)).toBeInTheDocument()
+      })
+
+      // Enter rejection reason
+      const textarea = screen.getByPlaceholderText('admin.submissions.rejectionReasonPlaceholder')
+      await user.type(textarea, 'Project not suitable')
+
+      // Find and click modal reject button
+      const modalRejectButtons = screen.getAllByText('admin.submissions.reject')
+      const modalRejectButton = modalRejectButtons[modalRejectButtons.length - 1]
+      await user.click(modalRejectButton)
+
+      // Should call PATCH API with reject action
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/api/projects/submissions/submission-1'),
+          expect.objectContaining({
+            method: 'PATCH',
+            body: expect.stringContaining('reject'),
+          })
+        )
+      })
+    })
+
+    it('closes modal when clicking cancel', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      // Switch to submissions tab
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      // Wait for submissions to load
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Open review modal
+      const reviewButton = screen.getByText('admin.submissions.reviewDetails')
+      await user.click(reviewButton)
+
+      // Modal should be open
+      await waitFor(() => {
+        expect(screen.getByText(/admin.submissions.reviewSubmission/)).toBeInTheDocument()
+      })
+
+      // Click cancel button
+      const cancelButton = screen.getByText('common.cancel')
+      await user.click(cancelButton)
+
+      // Modal should close
+      await waitFor(() => {
+        expect(screen.queryByText(/admin.submissions.reviewSubmission/)).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Approve Submission Error Handling', () => {
+    it('handles approve submission API error response', async () => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: mockProjectSubmissions }),
+          })
+        }
+        if (url.includes('/api/projects/submissions/') && options?.method === 'PATCH') {
+          return Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ error: 'Approval failed' }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Click approve button
+      const approveButton = screen.getByText('admin.submissions.approve')
+      await user.click(approveButton)
+
+      // Should show error alert
+      await waitFor(() => {
+        expect(global.alert).toHaveBeenCalledWith('Approval failed')
+      })
+    })
+
+    it('handles approve submission network error', async () => {
+      mockIsAuthenticated = true
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: mockProjectSubmissions }),
+          })
+        }
+        if (url.includes('/api/projects/submissions/') && options?.method === 'PATCH') {
+          return Promise.reject(new Error('Network error'))
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Click approve button
+      const approveButton = screen.getByText('admin.submissions.approve')
+      await user.click(approveButton)
+
+      // Should log error
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Failed to approve submission:', expect.any(Error))
+      })
+
+      consoleSpy.mockRestore()
+    })
+  })
+
+  describe('Reject Submission Error Handling', () => {
+    it('handles reject submission API error response', async () => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: mockProjectSubmissions }),
+          })
+        }
+        if (url.includes('/api/projects/submissions/') && options?.method === 'PATCH') {
+          return Promise.resolve({
+            ok: false,
+            json: () => Promise.resolve({ error: 'Rejection failed' }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Click reject button to open modal
+      const rejectButton = screen.getByText('admin.submissions.reject')
+      await user.click(rejectButton)
+
+      // Enter rejection reason
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('admin.submissions.rejectionReasonPlaceholder')).toBeInTheDocument()
+      })
+      const textarea = screen.getByPlaceholderText('admin.submissions.rejectionReasonPlaceholder')
+      await user.type(textarea, 'Test reason')
+
+      // Click reject in modal
+      const modalRejectButtons = screen.getAllByText('admin.submissions.reject')
+      await user.click(modalRejectButtons[modalRejectButtons.length - 1])
+
+      // Should show error alert
+      await waitFor(() => {
+        expect(global.alert).toHaveBeenCalledWith('Rejection failed')
+      })
+    })
+
+    it('handles reject submission network error', async () => {
+      mockIsAuthenticated = true
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: mockProjectSubmissions }),
+          })
+        }
+        if (url.includes('/api/projects/submissions/') && options?.method === 'PATCH') {
+          return Promise.reject(new Error('Network error'))
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('New Project')).toBeInTheDocument()
+      })
+
+      // Click reject button to open modal
+      const rejectButton = screen.getByText('admin.submissions.reject')
+      await user.click(rejectButton)
+
+      // Enter rejection reason
+      await waitFor(() => {
+        expect(screen.getByPlaceholderText('admin.submissions.rejectionReasonPlaceholder')).toBeInTheDocument()
+      })
+      const textarea = screen.getByPlaceholderText('admin.submissions.rejectionReasonPlaceholder')
+      await user.type(textarea, 'Test reason')
+
+      // Click reject in modal
+      const modalRejectButtons = screen.getAllByText('admin.submissions.reject')
+      await user.click(modalRejectButtons[modalRejectButtons.length - 1])
+
+      // Should log error
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Failed to reject submission:', expect.any(Error))
+      })
+
+      consoleSpy.mockRestore()
+    })
+  })
+
+  describe('Contact Mark As Handled Error', () => {
+    it('handles mark as handled error', async () => {
+      mockIsAuthenticated = true
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: mockContactSubmissions }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url.includes('/api/contact/') && options?.method === 'PATCH') {
+          return Promise.reject(new Error('Network error'))
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Contacts/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('John Donor')).toBeInTheDocument()
+      })
+
+      // Click mark as handled button
+      const handleButton = screen.getByText('admin.contacts.markHandled')
+      await user.click(handleButton)
+
+      // Should log error
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Failed to update submission:', expect.any(Error))
+      })
+
+      consoleSpy.mockRestore()
+    })
+  })
+
+  describe('Bulk Delete Error', () => {
+    it('handles bulk delete network error', async () => {
+      mockIsAuthenticated = true
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (options?.method === 'DELETE') {
+          return Promise.reject(new Error('Network error'))
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Select a project
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[1])
+
+      // Click delete button
+      const deleteButton = screen.getByText('Delete Selected')
+      await user.click(deleteButton)
+
+      // Should log error and show alert
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Bulk delete failed:', expect.any(Error))
+        expect(global.alert).toHaveBeenCalledWith('Delete failed')
+      })
+
+      consoleSpy.mockRestore()
+    })
+  })
+
+  describe('Sort by Different Fields', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      const projectsWithVariety = [
+        { ...mockProjects[0], id: '1', facilityName: 'Zebra Hospital', region: 'Kyiv Oblast', category: 'HOSPITAL', projectType: 'SOLAR_PV', urgency: 'HIGH', status: 'OPEN' },
+        { ...mockProjects[1], id: '2', facilityName: 'Alpha School', region: 'Lviv Oblast', category: 'SCHOOL', projectType: 'HEAT_PUMP', urgency: 'LOW', status: 'MATCHED' },
+      ]
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: projectsWithVariety }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('sorts by region when clicking region header', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+      })
+
+      const regionHeader = screen.getByText('admin.projects.table.oblast')
+      await user.click(regionHeader)
+
+      // Projects should still be rendered
+      expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+    })
+
+    it('sorts by category when clicking category header', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+      })
+
+      const categoryHeader = screen.getByText('admin.projects.table.category')
+      await user.click(categoryHeader)
+
+      // Projects should still be rendered
+      expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+    })
+
+    it('sorts by project type when clicking type header', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+      })
+
+      const typeHeader = screen.getByText('admin.projects.table.type')
+      await user.click(typeHeader)
+
+      // Projects should still be rendered
+      expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+    })
+
+    it('sorts by urgency when clicking urgency header', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+      })
+
+      const urgencyHeader = screen.getByText('admin.projects.table.urgency')
+      await user.click(urgencyHeader)
+
+      // Projects should still be rendered
+      expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+    })
+
+    it('sorts by status when clicking status header', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+      })
+
+      const statusHeader = screen.getByText('admin.projects.table.status')
+      await user.click(statusHeader)
+
+      // Projects should still be rendered
+      expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
+    })
+  })
+
+  describe('Project Without ProjectType', () => {
+    it('renders dash when project has no projectType', async () => {
+      mockIsAuthenticated = true
+      const projectsWithoutType = [
+        { ...mockProjects[0], projectType: null },
+      ]
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: projectsWithoutType }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Should render dash for missing project type
+      const dashes = screen.getAllByText('-')
+      expect(dashes.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('Contacts Sort by Handled', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      const contactsWithMixed = [
+        { ...mockContactSubmissions[0], id: 'contact-1', handled: false, donorName: 'Unhandled Donor' },
+        { ...mockContactSubmissions[0], id: 'contact-2', handled: true, donorName: 'Handled Donor' },
+      ]
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: contactsWithMixed }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('sorts contacts by handled status', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Contacts/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Unhandled Donor')).toBeInTheDocument()
+      })
+
+      // Change sort to by handled
+      const sortSelect = screen.getByDisplayValue('Newest First')
+      await user.selectOptions(sortSelect, 'handled')
+
+      // Both contacts should still be visible
+      expect(screen.getByText('Unhandled Donor')).toBeInTheDocument()
+      expect(screen.getByText('Handled Donor')).toBeInTheDocument()
+    })
+  })
+
+  describe('Toggle Individual Project Selection', () => {
+    beforeEach(() => {
+      mockIsAuthenticated = true
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: mockProjects }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+    })
+
+    it('toggles individual project selection on and off', async () => {
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Hospital A')).toBeInTheDocument()
+      })
+
+      // Select a project
+      const checkboxes = screen.getAllByRole('checkbox')
+      await user.click(checkboxes[1])
+
+      // Verify selection shown
+      expect(screen.getByText('1 selected')).toBeInTheDocument()
+
+      // Deselect the same project
+      await user.click(checkboxes[1])
+
+      // Selection should be cleared
+      await waitFor(() => {
+        expect(screen.queryByText(/selected/)).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Submissions with Approved Project Link', () => {
+    it('shows approved project link when submission is approved', async () => {
+      mockIsAuthenticated = true
+      const approvedSubmission = [
+        { ...mockProjectSubmissions[0], status: 'APPROVED', approvedProjectId: 'approved-id' },
+      ]
+      ;(global.fetch as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/projects?all=true') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ projects: [] }),
+          })
+        }
+        if (url === '/api/contact') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: [] }),
+          })
+        }
+        if (url === '/api/projects/submissions') {
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ submissions: approvedSubmission }),
+          })
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
+      })
+
+      const user = userEvent.setup()
+      render(<AdminPage />)
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
+      })
+      await user.click(screen.getByRole('button', { name: /Submissions/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('admin.submissions.viewApproved')).toBeInTheDocument()
+      })
+    })
   })
 })

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ContactForm } from '@/components/projects/ContactForm'
 
@@ -135,13 +135,12 @@ describe('ContactForm', () => {
     })
 
     it('shows red color when over limit', async () => {
-      const user = userEvent.setup()
       render(<ContactForm {...defaultProps} />)
 
       const messageInput = screen.getByLabelText(/Message/)
-      // Type a very long message (over 1000 chars)
+      // Use fireEvent.change for long text to avoid timeout
       const longMessage = 'a'.repeat(1001)
-      await user.type(messageInput, longMessage)
+      fireEvent.change(messageInput, { target: { value: longMessage } })
 
       const countElement = screen.getByText('1001/1000')
       expect(countElement).toHaveClass('text-red-500')
@@ -185,9 +184,10 @@ describe('ContactForm', () => {
 
       render(<ContactForm {...defaultProps} />)
 
-      await user.type(screen.getByLabelText(/Your Name/), 'Jane Smith')
-      await user.type(screen.getByLabelText(/Your Email/), 'jane@test.com')
-      await user.type(screen.getByLabelText(/Message/), 'I would like to donate to this wonderful project.')
+      // Use fireEvent for inputs to avoid interference from global event handlers
+      fireEvent.change(screen.getByLabelText(/Your Name/), { target: { value: 'Jane Smith' } })
+      fireEvent.change(screen.getByLabelText(/Your Email/), { target: { value: 'jane@test.com' } })
+      fireEvent.change(screen.getByLabelText(/Message/), { target: { value: 'I would like to donate to this wonderful project.' } })
       await user.click(screen.getByRole('button', { name: /Send Message/i }))
 
       await waitFor(() => {

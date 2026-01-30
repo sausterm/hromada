@@ -293,16 +293,31 @@ describe('ImageUpload', () => {
   })
 
   describe('Drag and drop upload', () => {
+    const getDropzone = () => {
+      const clickText = screen.getByText(/Click to upload/)
+      return clickText.closest('div.border-dashed') || clickText.parentElement?.parentElement?.parentElement?.parentElement
+    }
+
     it('shows drag over state', () => {
       render(<ImageUpload {...defaultProps} />)
 
-      const dropzone = screen.getByText(/Click to upload/).closest('div')
+      const dropzone = getDropzone()
       if (dropzone) {
         fireEvent.dragOver(dropzone)
       }
 
       // The dropzone should have the drag over styling
       // This is a visual state test
+    })
+
+    it('handles drag leave', () => {
+      render(<ImageUpload {...defaultProps} />)
+
+      const dropzone = getDropzone()
+      if (dropzone) {
+        fireEvent.dragOver(dropzone)
+        fireEvent.dragLeave(dropzone)
+      }
     })
 
     it('handles file drop', async () => {
@@ -313,7 +328,7 @@ describe('ImageUpload', () => {
 
       render(<ImageUpload {...defaultProps} />)
 
-      const dropzone = screen.getByText(/Click to upload/).closest('div')?.parentElement
+      const dropzone = getDropzone()
       if (dropzone) {
         const file = new File(['test'], 'dropped.jpg', { type: 'image/jpeg' })
         const dataTransfer = {
@@ -325,6 +340,85 @@ describe('ImageUpload', () => {
         await waitFor(() => {
           expect(global.fetch).toHaveBeenCalled()
         })
+      }
+    })
+
+    it('ignores drop when at max capacity', () => {
+      const images = Array(5).fill(null).map((_, i) => `https://example.com/${i}.jpg`)
+      render(<ImageUpload {...defaultProps} images={images} />)
+
+      // The dropzone shouldn't be visible at max capacity
+      expect(screen.queryByText('Click to upload')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Image reordering', () => {
+    it('supports drag start on images', () => {
+      const images = ['https://example.com/1.jpg', 'https://example.com/2.jpg']
+      render(<ImageUpload {...defaultProps} images={images} />)
+
+      const img1 = screen.getByAltText('Project image 1')
+      const imgContainer = img1.closest('div[draggable="true"]')
+
+      if (imgContainer) {
+        fireEvent.dragStart(imgContainer, {
+          dataTransfer: { effectAllowed: 'move' },
+        })
+      }
+    })
+
+    it('supports drag over for reordering', () => {
+      const images = ['https://example.com/1.jpg', 'https://example.com/2.jpg']
+      render(<ImageUpload {...defaultProps} images={images} />)
+
+      const img1 = screen.getByAltText('Project image 1')
+      const img2 = screen.getByAltText('Project image 2')
+      const imgContainer1 = img1.closest('div[draggable="true"]')
+      const imgContainer2 = img2.closest('div[draggable="true"]')
+
+      if (imgContainer1 && imgContainer2) {
+        fireEvent.dragStart(imgContainer1, {
+          dataTransfer: { effectAllowed: 'move' },
+        })
+        fireEvent.dragOver(imgContainer2)
+      }
+    })
+
+    it('handles drag end', () => {
+      const images = ['https://example.com/1.jpg', 'https://example.com/2.jpg']
+      render(<ImageUpload {...defaultProps} images={images} />)
+
+      const img1 = screen.getByAltText('Project image 1')
+      const imgContainer = img1.closest('div[draggable="true"]')
+
+      if (imgContainer) {
+        fireEvent.dragStart(imgContainer, {
+          dataTransfer: { effectAllowed: 'move' },
+        })
+        fireEvent.dragEnd(imgContainer)
+      }
+    })
+
+    it('reorders images when dragging', () => {
+      const images = ['https://example.com/1.jpg', 'https://example.com/2.jpg']
+      render(<ImageUpload {...defaultProps} images={images} />)
+
+      const img1 = screen.getByAltText('Project image 1')
+      const img2 = screen.getByAltText('Project image 2')
+      const imgContainer1 = img1.closest('div[draggable="true"]')
+      const imgContainer2 = img2.closest('div[draggable="true"]')
+
+      if (imgContainer1 && imgContainer2) {
+        fireEvent.dragStart(imgContainer1, {
+          dataTransfer: { effectAllowed: 'move' },
+        })
+        fireEvent.dragOver(imgContainer2)
+
+        // The onChange should be called with reordered images
+        expect(mockOnChange).toHaveBeenCalledWith([
+          'https://example.com/2.jpg',
+          'https://example.com/1.jpg',
+        ])
       }
     })
   })

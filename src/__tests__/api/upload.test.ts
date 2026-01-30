@@ -219,6 +219,25 @@ describe('/api/upload', () => {
 
       expect(response.status).toBe(201)
     })
+
+    it('returns 500 when an unexpected error occurs', async () => {
+      ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+
+      // Create a request that will throw when formData() is called
+      const request = {
+        formData: () => Promise.reject(new Error('FormData error')),
+      } as unknown as NextRequest
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      const response = await POST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(500)
+      expect(data.error).toBe('Failed to process upload')
+
+      consoleSpy.mockRestore()
+    })
   })
 
   describe('DELETE', () => {
@@ -293,6 +312,26 @@ describe('/api/upload', () => {
 
       expect(response.status).toBe(500)
       expect(data.error).toContain('File not found')
+
+      consoleSpy.mockRestore()
+    })
+
+    it('returns 500 when an unexpected error occurs', async () => {
+      ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+
+      // Make supabase storage throw an error
+      ;(supabase.storage.from as jest.Mock).mockImplementation(() => {
+        throw new Error('Unexpected storage error')
+      })
+
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      const request = createMockRequest('test.jpg')
+      const response = await DELETE(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(500)
+      expect(data.error).toBe('Failed to process delete')
 
       consoleSpy.mockRestore()
     })

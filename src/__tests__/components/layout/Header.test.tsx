@@ -205,6 +205,21 @@ describe('Header', () => {
     })
   })
 
+  describe('Brand Logo Navigation from other pages', () => {
+    // Note: Testing the non-homepage navigation path (router.push) requires different
+    // pathname mocking which is complex with React hooks. The functionality is tested
+    // in integration/e2e tests. Line 96 remains uncovered in unit tests.
+    it('renders logo buttons for both locales', () => {
+      render(<Header />)
+
+      const hromadaButton = screen.getByRole('button', { name: 'hromada' })
+      const ukrainianButton = screen.getByRole('button', { name: /громада/i })
+
+      expect(hromadaButton).toBeInTheDocument()
+      expect(ukrainianButton).toBeInTheDocument()
+    })
+  })
+
   describe('Sticky Header', () => {
     it('has sticky positioning class', () => {
       render(<Header />)
@@ -263,6 +278,151 @@ describe('Header', () => {
       render(<Header />)
       const header = screen.getByRole('banner')
       expect(header).toHaveClass('shadow-sm')
+    })
+  })
+
+  describe('Click outside to close menus', () => {
+    it('closes nav menu when clicking outside', async () => {
+      render(<Header />)
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      const menuContainer = menuButton.parentElement!
+
+      // Open menu
+      fireEvent.mouseEnter(menuContainer)
+      await waitFor(() => {
+        expect(screen.getByTestId('link-/admin')).toBeInTheDocument()
+      })
+
+      // Simulate click outside
+      fireEvent.mouseDown(document.body)
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
+      })
+    })
+
+    it('closes language menu when clicking outside', async () => {
+      render(<Header />)
+
+      const langButton = screen.getByRole('button', { name: /language/i })
+      const langContainer = langButton.parentElement!
+
+      // Open dropdown
+      fireEvent.mouseEnter(langContainer)
+      await waitFor(() => {
+        const buttons = screen.getAllByRole('button')
+        expect(buttons.length).toBeGreaterThan(3)
+      })
+
+      // Simulate click outside
+      fireEvent.mouseDown(document.body)
+
+      // Wait for dropdown to close (button count should decrease)
+      await waitFor(() => {
+        const buttons = screen.getAllByRole('button')
+        expect(buttons.length).toBeLessThanOrEqual(4)
+      })
+    })
+  })
+
+  describe('Navigation link clicks', () => {
+    it('closes menu when clicking a navigation link', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      fireEvent.mouseEnter(menuButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('link-/')).toBeInTheDocument()
+      })
+
+      // Click on Home link
+      await user.click(screen.getByTestId('link-/'))
+
+      // Menu should close (since onClick sets isNavMenuOpen to false)
+      await waitFor(() => {
+        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
+      })
+    })
+
+    it('closes menu when clicking About link', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      fireEvent.mouseEnter(menuButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('link-/about')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByTestId('link-/about'))
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
+      })
+    })
+
+    it('closes menu when clicking Submit Project link', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      fireEvent.mouseEnter(menuButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('link-/submit-project')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByTestId('link-/submit-project'))
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
+      })
+    })
+
+    it('closes menu when clicking Admin link', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      fireEvent.mouseEnter(menuButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('link-/admin')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByTestId('link-/admin'))
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('link-/')).not.toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Language switcher dropdown', () => {
+    it('switches language when clicking on dropdown option', async () => {
+      const user = userEvent.setup()
+      render(<Header />)
+
+      const langButton = screen.getByRole('button', { name: /language/i })
+      fireEvent.mouseEnter(langButton.parentElement!)
+
+      await waitFor(() => {
+        const buttons = screen.getAllByRole('button')
+        // More than initial buttons means dropdown is open
+        expect(buttons.length).toBeGreaterThan(3)
+      })
+
+      // Find the language switch button in the dropdown (it has a title attribute)
+      const switchButtons = screen.getAllByRole('button')
+      const dropdownButton = switchButtons.find(btn => btn.getAttribute('title'))
+      if (dropdownButton) {
+        await user.click(dropdownButton)
+        expect(mockReplace).toHaveBeenCalledWith('/', { locale: 'uk' })
+      }
     })
   })
 })

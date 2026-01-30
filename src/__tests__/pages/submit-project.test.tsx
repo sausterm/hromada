@@ -343,4 +343,299 @@ describe('SubmitProjectPage', () => {
       expect(screen.getByRole('main')).toBeInTheDocument()
     })
   })
+
+  describe('Form Submission', () => {
+    const fillRequiredFields = async (user: ReturnType<typeof userEvent.setup>) => {
+      await user.type(screen.getByPlaceholderText('e.g., Kharkiv City Council'), 'Test Municipality')
+      await user.type(screen.getByPlaceholderText('official@municipality.gov.ua'), 'muni@test.ua')
+      await user.type(screen.getByPlaceholderText('e.g., Regional Hospital #5'), 'Test Facility')
+      await user.type(screen.getByPlaceholderText(/Short summary/i), 'Brief description')
+      await user.type(screen.getByPlaceholderText(/Detailed project/i), 'Full description text here')
+      await user.type(screen.getByPlaceholderText('e.g., Kharkiv'), 'Kyiv')
+      await user.type(screen.getByPlaceholderText('e.g., 49.9935'), '50.4501')
+      await user.type(screen.getByPlaceholderText('e.g., 36.2304'), '30.5234')
+      await user.type(screen.getByPlaceholderText('e.g., Dr. Olena Kovalenko'), 'Contact Person')
+      await user.type(screen.getByPlaceholderText('contact@example.ua'), 'contact@test.ua')
+
+      // Select project type via dropdown hover
+      const projectTypeButton = screen.getByText('-- Select Type --')
+      fireEvent.mouseEnter(projectTypeButton.closest('div')!)
+      await waitFor(() => {
+        expect(screen.getByText(/Solar PV/)).toBeInTheDocument()
+      })
+      await user.click(screen.getByText(/Solar PV/))
+    }
+
+    it('submits form successfully', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ submission: { id: 'new-submission' } }),
+      })
+
+      render(<SubmitProjectPage />)
+      await fillRequiredFields(user)
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Project' })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+          '/api/projects/submissions',
+          expect.objectContaining({
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      })
+    })
+
+    it('shows success message after successful submission', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ submission: { id: 'new-submission' } }),
+      })
+
+      render(<SubmitProjectPage />)
+      await fillRequiredFields(user)
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Project' })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Submission Received!')).toBeInTheDocument()
+      })
+    })
+
+    it('shows error message on API failure', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({ error: 'Server error' }),
+      })
+
+      render(<SubmitProjectPage />)
+      await fillRequiredFields(user)
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Project' })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Server error')).toBeInTheDocument()
+      })
+    })
+
+    it('shows network error on fetch failure', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'))
+
+      render(<SubmitProjectPage />)
+      await fillRequiredFields(user)
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Project' })
+      await user.click(submitButton)
+
+      await waitFor(() => {
+        expect(screen.getByText('Network error')).toBeInTheDocument()
+      })
+    })
+
+    it('shows loading state during submission', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockImplementation(
+        () => new Promise((resolve) => setTimeout(() => resolve({ ok: true, json: () => ({}) }), 100))
+      )
+
+      render(<SubmitProjectPage />)
+      await fillRequiredFields(user)
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Project' })
+      await user.click(submitButton)
+
+      expect(screen.getByText('Submitting...')).toBeInTheDocument()
+    })
+  })
+
+  describe('Success State', () => {
+    it('shows back to home button on success', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ submission: { id: 'new-submission' } }),
+      })
+
+      render(<SubmitProjectPage />)
+
+      // Fill minimum fields quickly using fireEvent
+      fireEvent.change(screen.getByPlaceholderText('e.g., Kharkiv City Council'), { target: { value: 'Test' } })
+      fireEvent.change(screen.getByPlaceholderText('official@municipality.gov.ua'), { target: { value: 'test@test.ua' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., Regional Hospital #5'), { target: { value: 'Test' } })
+      fireEvent.change(screen.getByPlaceholderText(/Short summary/i), { target: { value: 'Brief' } })
+      fireEvent.change(screen.getByPlaceholderText(/Detailed project/i), { target: { value: 'Full description' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., Kharkiv'), { target: { value: 'Kyiv' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., 49.9935'), { target: { value: '50' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., 36.2304'), { target: { value: '30' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., Dr. Olena Kovalenko'), { target: { value: 'Test' } })
+      fireEvent.change(screen.getByPlaceholderText('contact@example.ua'), { target: { value: 'test@test.ua' } })
+
+      // Select project type
+      const projectTypeButton = screen.getByText('-- Select Type --')
+      fireEvent.mouseEnter(projectTypeButton.closest('div')!)
+      await waitFor(() => {
+        expect(screen.getByText(/Solar PV/)).toBeInTheDocument()
+      })
+      fireEvent.click(screen.getByText(/Solar PV/))
+
+      await user.click(screen.getByRole('button', { name: 'Submit Project' }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Back to Home')).toBeInTheDocument()
+      })
+    })
+
+    it('shows submit another button on success', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ submission: { id: 'new-submission' } }),
+      })
+
+      render(<SubmitProjectPage />)
+
+      // Fill minimum fields quickly using fireEvent
+      fireEvent.change(screen.getByPlaceholderText('e.g., Kharkiv City Council'), { target: { value: 'Test' } })
+      fireEvent.change(screen.getByPlaceholderText('official@municipality.gov.ua'), { target: { value: 'test@test.ua' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., Regional Hospital #5'), { target: { value: 'Test' } })
+      fireEvent.change(screen.getByPlaceholderText(/Short summary/i), { target: { value: 'Brief' } })
+      fireEvent.change(screen.getByPlaceholderText(/Detailed project/i), { target: { value: 'Full description' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., Kharkiv'), { target: { value: 'Kyiv' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., 49.9935'), { target: { value: '50' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., 36.2304'), { target: { value: '30' } })
+      fireEvent.change(screen.getByPlaceholderText('e.g., Dr. Olena Kovalenko'), { target: { value: 'Test' } })
+      fireEvent.change(screen.getByPlaceholderText('contact@example.ua'), { target: { value: 'test@test.ua' } })
+
+      // Select project type
+      const projectTypeButton = screen.getByText('-- Select Type --')
+      fireEvent.mouseEnter(projectTypeButton.closest('div')!)
+      await waitFor(() => {
+        expect(screen.getByText(/Solar PV/)).toBeInTheDocument()
+      })
+      fireEvent.click(screen.getByText(/Solar PV/))
+
+      await user.click(screen.getByRole('button', { name: 'Submit Project' }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Submit Another')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Cancel Button', () => {
+    it('renders cancel link to home', () => {
+      render(<SubmitProjectPage />)
+      const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+      expect(cancelButton.closest('a')).toHaveAttribute('href', '/')
+    })
+  })
+
+  describe('Dropdown Interactions', () => {
+    it('opens category dropdown on hover', async () => {
+      render(<SubmitProjectPage />)
+
+      const categoryButton = screen.getByText(/Select Category/)
+      fireEvent.mouseEnter(categoryButton.closest('div')!)
+
+      await waitFor(() => {
+        expect(screen.getByText(/Hospital \/ Medical/)).toBeInTheDocument()
+        expect(screen.getByText(/School \/ Education/)).toBeInTheDocument()
+      })
+    })
+
+    it('selects category from dropdown', async () => {
+      const user = userEvent.setup()
+      render(<SubmitProjectPage />)
+
+      const categoryButton = screen.getByText(/Select Category/)
+      fireEvent.mouseEnter(categoryButton.closest('div')!)
+
+      await waitFor(() => {
+        expect(screen.getByText(/Hospital \/ Medical/)).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByText(/Hospital \/ Medical/))
+
+      // The button should now show the selected category
+      await waitFor(() => {
+        expect(screen.getByText(/Hospital \/ Medical/)).toBeInTheDocument()
+      })
+    })
+
+    it('opens urgency dropdown on hover', async () => {
+      render(<SubmitProjectPage />)
+
+      const urgencyButton = screen.getByText(/Select Urgency/)
+      fireEvent.mouseEnter(urgencyButton.closest('div')!)
+
+      await waitFor(() => {
+        expect(screen.getByText('Low')).toBeInTheDocument()
+        expect(screen.getByText('Medium')).toBeInTheDocument()
+        expect(screen.getByText('High')).toBeInTheDocument()
+        expect(screen.getByText('Critical')).toBeInTheDocument()
+      })
+    })
+
+    it('opens project type dropdown on hover', async () => {
+      render(<SubmitProjectPage />)
+
+      const typeButton = screen.getByText('-- Select Type --')
+      fireEvent.mouseEnter(typeButton.closest('div')!)
+
+      await waitFor(() => {
+        expect(screen.getByText(/Solar PV/)).toBeInTheDocument()
+        expect(screen.getByText(/Heat Pump/)).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Conditional Fields', () => {
+    it('shows technical power field when Solar PV is selected', async () => {
+      const user = userEvent.setup()
+      render(<SubmitProjectPage />)
+
+      // Initially the technical power label shouldn't be visible (or should be hidden)
+      const typeButton = screen.getByText('-- Select Type --')
+      fireEvent.mouseEnter(typeButton.closest('div')!)
+
+      await waitFor(() => {
+        expect(screen.getByText(/Solar PV/)).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByText(/Solar PV/))
+
+      // Technical power field should now be visible
+      await waitFor(() => {
+        expect(screen.getByText('Technical Power (kW)')).toBeInTheDocument()
+      })
+    })
+
+    it('shows number of panels field when Solar PV is selected', async () => {
+      const user = userEvent.setup()
+      render(<SubmitProjectPage />)
+
+      const typeButton = screen.getByText('-- Select Type --')
+      fireEvent.mouseEnter(typeButton.closest('div')!)
+
+      await waitFor(() => {
+        expect(screen.getByText(/Solar PV/)).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByText(/Solar PV/))
+
+      // Number of panels field should now be visible
+      await waitFor(() => {
+        expect(screen.getByText('Number of Panels')).toBeInTheDocument()
+      })
+    })
+  })
 })

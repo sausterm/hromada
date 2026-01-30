@@ -140,4 +140,88 @@ describe('useAdminAuth', () => {
     expect(result.current.isAuthenticated).toBe(false)
     expect(mockFetch).toHaveBeenCalledWith('/api/auth/logout', { method: 'POST' })
   })
+
+  describe('Error handling', () => {
+    beforeEach(() => {
+      // Suppress console.error for these tests
+      jest.spyOn(console, 'error').mockImplementation(() => {})
+    })
+
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    it('sets isAuthenticated false when auth check fails', async () => {
+      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+
+      const { result } = renderHook(() => useAdminAuth())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      expect(result.current.isAuthenticated).toBe(false)
+      expect(console.error).toHaveBeenCalledWith(
+        'Failed to check auth status:',
+        expect.any(Error)
+      )
+    })
+
+    it('login returns false when fetch throws error', async () => {
+      // First call for initial auth check
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ authenticated: false }),
+      })
+
+      const { result } = renderHook(() => useAdminAuth())
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false)
+      })
+
+      // Mock login call to throw error
+      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+
+      let loginResult: boolean = true
+      await act(async () => {
+        loginResult = await result.current.login('password')
+      })
+
+      expect(loginResult).toBe(false)
+      expect(result.current.isAuthenticated).toBe(false)
+      expect(console.error).toHaveBeenCalledWith(
+        'Login failed:',
+        expect.any(Error)
+      )
+    })
+
+    it('logout sets isAuthenticated false even when fetch throws error', async () => {
+      // Start authenticated
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ authenticated: true }),
+      })
+
+      const { result } = renderHook(() => useAdminAuth())
+
+      await waitFor(() => {
+        expect(result.current.isAuthenticated).toBe(true)
+      })
+
+      // Mock logout call to throw error
+      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+
+      await act(async () => {
+        await result.current.logout()
+      })
+
+      // Should still set isAuthenticated to false even on error
+      expect(result.current.isAuthenticated).toBe(false)
+      expect(console.error).toHaveBeenCalledWith(
+        'Logout failed:',
+        expect.any(Error)
+      )
+    })
+  })
 })

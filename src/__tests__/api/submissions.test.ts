@@ -88,6 +88,18 @@ describe('GET /api/projects/submissions', () => {
     expect(response.status).toBe(401)
     expect(data.error).toBe('Unauthorized')
   })
+
+  it('returns 500 on database error', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.projectSubmission.findMany as jest.Mock).mockRejectedValue(new Error('Database error'))
+
+    const request = new NextRequest('http://localhost/api/projects/submissions')
+    const response = await GET(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Failed to fetch submissions')
+  })
 })
 
 describe('POST /api/projects/submissions', () => {
@@ -147,7 +159,7 @@ describe('POST /api/projects/submissions', () => {
     expect(data.error).toBe('facilityName is required')
   })
 
-  it('returns 400 for invalid email format', async () => {
+  it('returns 400 for invalid municipality email format', async () => {
     const request = new NextRequest('http://localhost/api/projects/submissions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -162,6 +174,23 @@ describe('POST /api/projects/submissions', () => {
 
     expect(response.status).toBe(400)
     expect(data.error).toBe('Invalid municipality email format')
+  })
+
+  it('returns 400 for invalid contact email format', async () => {
+    const request = new NextRequest('http://localhost/api/projects/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...validSubmission,
+        contactEmail: 'invalid-contact-email',
+      }),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Invalid contact email format')
   })
 
   it('returns 400 for briefDescription over 150 characters', async () => {
@@ -250,6 +279,22 @@ describe('POST /api/projects/submissions', () => {
     expect(response.status).toBe(429)
     expect(rateLimit).toHaveBeenCalled()
   })
+
+  it('returns 500 on database error', async () => {
+    ;(mockPrisma.projectSubmission.create as jest.Mock).mockRejectedValue(new Error('Database error'))
+
+    const request = new NextRequest('http://localhost/api/projects/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(validSubmission),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Failed to submit project')
+  })
 })
 
 describe('GET /api/projects/submissions/[id]', () => {
@@ -291,6 +336,18 @@ describe('GET /api/projects/submissions/[id]', () => {
 
     expect(response.status).toBe(404)
     expect(data.error).toBe('Submission not found')
+  })
+
+  it('returns 500 on database error', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.projectSubmission.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'))
+
+    const request = new NextRequest('http://localhost/api/projects/submissions/1')
+    const response = await getSubmission(request, createParams('1'))
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Failed to fetch submission')
   })
 })
 
@@ -459,6 +516,24 @@ describe('PATCH /api/projects/submissions/[id]', () => {
 
     expect(response.status).toBe(404)
     expect(data.error).toBe('Submission not found')
+  })
+
+  it('returns 500 on database error during approval', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.projectSubmission.findUnique as jest.Mock).mockResolvedValue(mockSubmission)
+    ;(mockPrisma.project.create as jest.Mock).mockRejectedValue(new Error('Database error'))
+
+    const request = new NextRequest('http://localhost/api/projects/submissions/1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'approve' }),
+    })
+
+    const response = await PATCH(request, createParams('1'))
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Failed to process submission')
   })
 })
 

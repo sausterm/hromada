@@ -125,6 +125,21 @@ describe('POST /api/auth/login', () => {
     expect(response.status).toBe(429)
     expect(rateLimit).toHaveBeenCalled()
   })
+
+  it('returns 500 when an unexpected error occurs', async () => {
+    // Create a request with invalid JSON to trigger the catch block
+    const request = new NextRequest('http://localhost/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'invalid json{',
+    })
+
+    const response = await loginPOST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Login failed')
+  })
 })
 
 describe('POST /api/auth/logout', () => {
@@ -139,6 +154,18 @@ describe('POST /api/auth/logout', () => {
     expect(response.status).toBe(200)
     expect(data.success).toBe(true)
     expect(mockCookies.delete).toHaveBeenCalledWith('hromada_admin_session')
+  })
+
+  it('returns 500 when cookie deletion fails', async () => {
+    mockCookies.delete.mockImplementationOnce(() => {
+      throw new Error('Cookie deletion failed')
+    })
+
+    const response = await logoutPOST()
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Logout failed')
   })
 })
 
@@ -211,6 +238,18 @@ describe('GET /api/auth/status', () => {
 
   it('returns authenticated: false when cookie has invalid base64', async () => {
     mockCookies.get.mockReturnValue({ value: '!!!invalid-base64!!!' })
+
+    const response = await statusGET()
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.authenticated).toBe(false)
+  })
+
+  it('returns authenticated: false when an unexpected error occurs', async () => {
+    mockCookies.get.mockImplementationOnce(() => {
+      throw new Error('Unexpected error')
+    })
 
     const response = await statusGET()
     const data = await response.json()

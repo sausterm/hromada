@@ -107,7 +107,7 @@
     }
   },
   "projectCard": {
-    "postedAgo": "Опубліковано {time}"
+    "postedAgo": "Додано {time}"
   },
   "projectDetail": {
     "backToProjects": "← Назад до проєктів",
@@ -121,7 +121,7 @@
     "contactInfo": "Контактна інформація",
     "location": "Розташування",
     "viewOnMap": "Переглянути на Google Maps →",
-    "postedTime": "Опубліковано {time}",
+    "postedTime": "Додано {time}",
     "urgencyLabel": "{level} терміновість",
     "providedInUkrainian": "Деталі проєкту надані громадою українською мовою",
     "specifications": {

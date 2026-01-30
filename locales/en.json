@@ -1,7 +1,7 @@
 {
   "blocked": {
     "title": "Access Restricted",
-    "message": "Access to Hromada is not available from your location.",
+    "message": "Access to hromada is not available from your location.",
     "reasonTitle": "Why am I seeing this?",
     "reason": "To protect Ukrainian infrastructure data and prevent potential security threats, access from certain regions is restricted. This platform contains information about critical infrastructure projects in Ukraine.",
     "vpnTitle": "Using a VPN or Proxy?",
@@ -36,7 +36,7 @@
     "headerSubtitle": "Built to support renewable infrastructure recovery",
     "admin": "Admin",
     "submitProject": "Submit a Project",
-    "aboutUs": "About Hromada",
+    "aboutUs": "About hromada",
     "home": "Home",
     "projects": "Projects",
     "language": "Language",
@@ -288,7 +288,7 @@
     }
   },
   "footer": {
-    "aboutUs": "About Hromada",
+    "aboutUs": "About hromada",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",
@@ -302,8 +302,8 @@
     "privacyComingSoon": "Our Privacy Policy is being finalized. We take data protection seriously and follow industry best practices."
   },
   "about": {
-    "title": "About Hromada",
-    "mission": "Hromada, \"community\" in Ukrainian, connects municipalities with donors to rebuild critical infrastructure, focusing on renewable energy and sustainability.",
+    "title": "About hromada",
+    "mission": "hromada, \"community\" in Ukrainian, connects municipalities with donors to rebuild critical infrastructure, focusing on renewable energy and sustainability.",
     "statementOfPurpose": "Statement of Purpose",
     "statementOfPurposeText": "Our goal is to restore the flow of support for the sustainable reconstruction of Ukrainian infrastructure in the wake of the cessation of aid by the United States government. This platform serves as a transparent bridge between Ukrainian municipalities seeking support for renewable energy and infrastructure projects, and donors who want to make a direct, meaningful impact. The ultimate purpose is the decentralization of Ukraine's power grids and the building of sustainable resilience against Russian attacks on critical infrastructure.",
     "howItWorks": "How It Works",
@@ -326,7 +326,7 @@
   },
   "contact": {
     "title": "Contact Us",
-    "description": "Have questions about the Hromada platform? We're here to help.",
+    "description": "Have questions about the hromada platform? We're here to help.",
     "generalInquiries": "General Inquiries",
     "forMunicipalities": "For Municipalities",
     "forMunicipalitiesText": "If you're a Ukrainian municipality looking to submit a project, please use the \"Submit a Project\" button in the header.",

@@ -181,9 +181,10 @@ function MapEventHandler({
           const markerSize = 40
           const padding = 20
 
-          // Calculate ideal position: marker in lower third with popup visible above
-          // We want the marker at roughly 2/3 down the map height
-          const idealMarkerY = mapSize.y * 0.65
+          // Calculate ideal position: marker near bottom with popup visible above
+          // Popup is ~380px tall, so marker needs to be low enough to fit it
+          // Position marker at 80% down the map height
+          const idealMarkerY = mapSize.y * 0.80
           const currentMarkerY = markerPoint.y
 
           // Calculate how much to pan
@@ -285,8 +286,9 @@ function FlyToProject({
         const lat = project.latitude || project.cityLatitude
         const lng = project.longitude || project.cityLongitude
         // Offset north (add to lat) to center view ABOVE the marker
-        // This puts the marker in the lower part of the view with room for popup above
-        const offsetLat = lat + 0.055
+        // This puts the marker near the bottom of the view with room for popup above
+        // Larger offset = marker appears lower on screen
+        const offsetLat = lat + 0.07
         map.flyTo([offsetLat, lng], 12, { duration: 0.5 })
 
         // Wait for fly animation to complete before opening popup

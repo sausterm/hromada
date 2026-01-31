@@ -410,6 +410,37 @@ body {
   box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.5), 0 4px 16px rgba(58, 54, 51, 0.35) !important;
 }
 
+/* Custom home/reset view button - above zoom controls */
+.leaflet-top.leaflet-right .leaflet-bar:first-child {
+  border: none !important;
+  border-radius: 9999px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(58, 54, 51, 0.15) !important;
+  margin-bottom: 8px !important;
+}
+
+.leaflet-top.leaflet-right .leaflet-bar:first-child a {
+  background-color: white !important;
+  color: var(--navy-600) !important;
+  border: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 9999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.15s ease !important;
+}
+
+.leaflet-top.leaflet-right .leaflet-bar:first-child a:hover {
+  background-color: var(--cream-100) !important;
+  color: var(--navy-700) !important;
+}
+
+.leaflet-top.leaflet-right .leaflet-bar:first-child a:active {
+  background-color: var(--cream-200) !important;
+}
+
 /* Custom Leaflet zoom control styles - pill design */
 .leaflet-control-zoom {
   border: none !important;

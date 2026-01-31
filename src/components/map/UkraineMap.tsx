@@ -276,6 +276,60 @@ const ProjectMarkers = memo(function ProjectMarkers({
   )
 })
 
+// Component to add a reset view button
+function ResetViewControl() {
+  const map = useMap()
+
+  useEffect(() => {
+    // Create custom control
+    const ResetControl = L.Control.extend({
+      options: {
+        position: 'topright' as L.ControlPosition,
+      },
+      onAdd: function () {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')
+        const button = L.DomUtil.create('a', '', container)
+        button.href = '#'
+        button.title = 'Reset view to Ukraine'
+        button.setAttribute('role', 'button')
+        button.setAttribute('aria-label', 'Reset view to Ukraine')
+        button.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; display: block; margin: 7px;">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+        `
+        button.style.width = '30px'
+        button.style.height = '30px'
+        button.style.lineHeight = '30px'
+        button.style.display = 'flex'
+        button.style.alignItems = 'center'
+        button.style.justifyContent = 'center'
+        button.style.color = '#333'
+        button.style.backgroundColor = '#fff'
+        button.style.cursor = 'pointer'
+
+        L.DomEvent.disableClickPropagation(container)
+        L.DomEvent.on(button, 'click', function (e) {
+          L.DomEvent.preventDefault(e)
+          map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
+        })
+
+        return container
+      },
+    })
+
+    const control = new ResetControl()
+    map.addControl(control)
+
+    return () => {
+      map.removeControl(control)
+    }
+  }, [map])
+
+  return null
+}
+
 // Component to handle highlighting via DOM manipulation (no re-renders)
 function HighlightHandler({
   highlightedProjectId,
@@ -416,6 +470,7 @@ export function UkraineMap({
         />
 
         <MapEventHandler projects={projects} onBoundsChange={onBoundsChange} />
+        <ResetViewControl />
 
         {flyToProjectId && (
           <FlyToProject

@@ -288,13 +288,20 @@ function FlyToProject({
         // This puts the marker in the lower part of the view with room for popup above
         const offsetLat = lat + 0.055
         map.flyTo([offsetLat, lng], 12, { duration: 0.5 })
-        setTimeout(() => {
-          const marker = markerRefs.current[projectId]
-          if (marker) {
-            marker.openPopup()
-          }
-          onComplete?.()
-        }, 600)
+
+        // Wait for fly animation to complete before opening popup
+        const onMoveEnd = () => {
+          map.off('moveend', onMoveEnd)
+          // Small additional delay to ensure map has fully settled
+          setTimeout(() => {
+            const marker = markerRefs.current[projectId]
+            if (marker) {
+              marker.openPopup()
+            }
+            onComplete?.()
+          }, 100)
+        }
+        map.on('moveend', onMoveEnd)
       }
     }
   }, [projectId, projects, map, markerRefs, onComplete])

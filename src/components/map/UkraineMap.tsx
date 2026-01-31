@@ -14,6 +14,9 @@ import 'react-leaflet-cluster/dist/assets/MarkerCluster.Default.css'
 const UKRAINE_CENTER: [number, number] = [48.3794, 31.1656]
 const UKRAINE_ZOOM = 6
 
+// Store previous view for restoring after popup close
+let savedMapView: { center: [number, number]; zoom: number } | null = null
+
 // Create custom icon for each category
 function createCategoryIcon(category: Category): L.DivIcon {
   const config = CATEGORY_CONFIG[category]
@@ -180,13 +183,22 @@ function MapEventHandler({
 
       popupOpenTimeRef.current = null
 
+      // Capture the saved view and clear it
+      const viewToRestore = savedMapView
+      savedMapView = null
+
       // Delay zoom out to allow new popup to open first
       zoomOutTimeoutRef.current = window.setTimeout(() => {
         zoomOutTimeoutRef.current = null
         // Only zoom out if map container still exists
         if (map.getContainer()) {
           try {
-            map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
+            // Return to previous view, or default to Ukraine if no saved view
+            if (viewToRestore) {
+              map.flyTo(viewToRestore.center, viewToRestore.zoom, { duration: 0.4 })
+            } else {
+              map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
+            }
           } catch {
             // Map may be unmounting, ignore
           }
@@ -230,6 +242,13 @@ function FlyToProject({
     if (projectId) {
       const project = projects.find((p) => p.id === projectId)
       if (project) {
+        // Save current view before flying
+        const currentCenter = map.getCenter()
+        savedMapView = {
+          center: [currentCenter.lat, currentCenter.lng],
+          zoom: map.getZoom(),
+        }
+
         const lat = project.latitude || project.cityLatitude
         const lng = project.longitude || project.cityLongitude
         map.flyTo([lat, lng], 12, { duration: 0.4 })

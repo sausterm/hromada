@@ -273,9 +273,12 @@ function getOffsetPositions(projects: Project[]): Map<string, [number, number]> 
     coordGroups.set(key, group)
   })
 
-  // Calculate offsets for groups with multiple markers
-  // Offset is approximately 50 meters at the equator
-  const offsetDistance = 0.0005
+  // Marker size is 36px, need ~45px between centers for buffer
+  // At zoom 12 (where clustering disables), ~26m per pixel at Ukraine's latitude
+  // So need ~1170m (0.0105 degrees) between marker centers
+  // For circular arrangement, radius = distance / 2 for 2 markers
+  // Use larger offset to ensure no overlap at any zoom level after disaggregation
+  const baseOffsetDistance = 0.006 // ~670m, gives ~1340m between opposite markers
 
   coordGroups.forEach((group, key) => {
     const [baseLat, baseLng] = key.split(',').map(Number)
@@ -285,11 +288,15 @@ function getOffsetPositions(projects: Project[]): Map<string, [number, number]> 
       positionMap.set(group[0].id, [baseLat, baseLng])
     } else {
       // Multiple markers, spread them in a circle
+      // Increase radius for larger groups to maintain spacing
+      const offsetDistance = baseOffsetDistance * (group.length > 2 ? 1 + (group.length - 2) * 0.3 : 1)
       const angleStep = (2 * Math.PI) / group.length
       group.forEach((project, index) => {
         const angle = angleStep * index - Math.PI / 2 // Start from top
         const offsetLat = baseLat + offsetDistance * Math.cos(angle)
-        const offsetLng = baseLng + offsetDistance * Math.sin(angle)
+        // Adjust longitude offset for latitude (Mercator projection)
+        const lngAdjustment = 1 / Math.cos(baseLat * Math.PI / 180)
+        const offsetLng = baseLng + offsetDistance * Math.sin(angle) * lngAdjustment
         positionMap.set(project.id, [offsetLat, offsetLng])
       })
     }

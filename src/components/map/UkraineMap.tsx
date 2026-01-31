@@ -152,7 +152,14 @@ function MapEventHandler({
     moveend: updateBounds,
     zoomend: updateBounds,
     popupclose: () => {
-      map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
+      // Only zoom out if map container still exists (not during unmount)
+      if (map.getContainer()) {
+        try {
+          map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
+        } catch {
+          // Map may be unmounting, ignore
+        }
+      }
     },
   })
 

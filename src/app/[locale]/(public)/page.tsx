@@ -107,6 +107,18 @@ export default function HomePage() {
   const ITEMS_PER_PAGE = 12
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
 
+  // Track if map is visible (lg breakpoint = 1024px)
+  const [isMapVisible, setIsMapVisible] = useState(false)
+
+  useEffect(() => {
+    const checkMapVisibility = () => {
+      setIsMapVisible(window.innerWidth >= 1024)
+    }
+    checkMapVisibility()
+    window.addEventListener('resize', checkMapVisibility)
+    return () => window.removeEventListener('resize', checkMapVisibility)
+  }, [])
+
   // Filtered projects based on search and filters
   const filteredProjects = useMemo(() => {
     let result = allProjects
@@ -210,11 +222,15 @@ export default function HomePage() {
   }, [filteredProjects, sortBy, locale])
 
   // Projects visible in current map bounds (uses sorted projects)
+  // When map is not visible (mobile/narrow screens), show all projects
   const projectsInView = useMemo(() => {
+    if (!isMapVisible) {
+      return sortedProjects
+    }
     return sortedProjects.filter((p) =>
       visibleProjects.some((vp) => vp.id === p.id)
     )
-  }, [sortedProjects, visibleProjects])
+  }, [sortedProjects, visibleProjects, isMapVisible])
 
   // Paginated projects for the card list
   const paginatedProjects = useMemo(() => {

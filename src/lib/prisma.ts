@@ -12,10 +12,12 @@ export function getPrisma(): PrismaClient {
     return globalForPrisma.prisma
   }
 
-  // Create connection pool
+  // Create connection pool - enable SSL for Supabase connections
+  const connectionString = process.env.DATABASE_URL || ''
+  const isRemoteDb = connectionString.includes('supabase.co')
   const pool = globalForPrisma.pool ?? new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+    connectionString,
+    ssl: isRemoteDb ? { rejectUnauthorized: false } : undefined,
   })
 
   // Create Prisma adapter

@@ -123,6 +123,7 @@ function MapEventHandler({
 }) {
   const map = useMap()
   const zoomOutTimeoutRef = useRef<number | null>(null)
+  const popupOpenTimeRef = useRef<number | null>(null)
 
   const updateBounds = useCallback(() => {
     if (!onBoundsChange) return
@@ -153,6 +154,8 @@ function MapEventHandler({
     moveend: updateBounds,
     zoomend: updateBounds,
     popupopen: () => {
+      // Track when popup opened
+      popupOpenTimeRef.current = Date.now()
       // Cancel any pending zoom-out when a new popup opens
       if (zoomOutTimeoutRef.current) {
         clearTimeout(zoomOutTimeoutRef.current)
@@ -164,6 +167,19 @@ function MapEventHandler({
       if (zoomOutTimeoutRef.current) {
         clearTimeout(zoomOutTimeoutRef.current)
       }
+
+      // Only zoom out if popup was open for at least 500ms
+      // This prevents zoom-out when quickly switching between markers
+      const popupWasOpenLongEnough = popupOpenTimeRef.current &&
+        (Date.now() - popupOpenTimeRef.current) > 500
+
+      if (!popupWasOpenLongEnough) {
+        popupOpenTimeRef.current = null
+        return
+      }
+
+      popupOpenTimeRef.current = null
+
       // Delay zoom out to allow new popup to open first
       zoomOutTimeoutRef.current = window.setTimeout(() => {
         zoomOutTimeoutRef.current = null
@@ -175,7 +191,7 @@ function MapEventHandler({
             // Map may be unmounting, ignore
           }
         }
-      }, 200)
+      }, 150)
     },
   })
 

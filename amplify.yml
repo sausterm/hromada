@@ -5,6 +5,21 @@ frontend:
       commands:
         - npm install
         - npx prisma generate
+        # Create .env.production for runtime environment variables
+        - |
+          echo "DATABASE_URL=$DATABASE_URL" >> .env.production
+          echo "DIRECT_URL=$DIRECT_URL" >> .env.production
+          echo "DB_HOST=$DB_HOST" >> .env.production
+          echo "DB_PORT=$DB_PORT" >> .env.production
+          echo "DB_NAME=$DB_NAME" >> .env.production
+          echo "DB_USER=$DB_USER" >> .env.production
+          echo "DB_PASSWORD=$DB_PASSWORD" >> .env.production
+          echo "HROMADA_ADMIN_SECRET=$HROMADA_ADMIN_SECRET" >> .env.production
+          echo "RESEND_API_KEY=$RESEND_API_KEY" >> .env.production
+          echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> .env.production
+          echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> .env.production
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> .env.production
+          echo "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" >> .env.production
     build:
       commands:
         - npm run build

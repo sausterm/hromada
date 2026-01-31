@@ -174,37 +174,29 @@ function MapEventHandler({
 
           // Get the map container size
           const mapSize = map.getSize()
-          const popupPoint = map.latLngToContainerPoint(popupLatLng)
+          const markerPoint = map.latLngToContainerPoint(popupLatLng)
 
-          // The popup card is ~400px tall and appears above the marker
-          // Check if we need to pan to show it fully
-          const popupHeight = 420
-          const markerHeight = 40
-          const topPadding = 20
-          const bottomPadding = 60
+          // The popup card is ~380px tall and appears above the marker
+          const popupHeight = 380
+          const markerSize = 40
+          const padding = 20
 
-          // Calculate how much the popup extends above the marker point
-          const popupTop = popupPoint.y - popupHeight
-          const markerBottom = popupPoint.y + markerHeight
+          // Calculate ideal position: marker in lower third with popup visible above
+          // We want the marker at roughly 2/3 down the map height
+          const idealMarkerY = mapSize.y * 0.65
+          const currentMarkerY = markerPoint.y
 
-          let panY = 0
+          // Calculate how much to pan
+          const panY = currentMarkerY - idealMarkerY
 
-          // If popup top is above visible area, pan down (negative panY)
-          if (popupTop < topPadding) {
-            panY = popupTop - topPadding
-          }
-          // If marker bottom is below visible area, pan up (positive panY)
-          else if (markerBottom > mapSize.y - bottomPadding) {
-            panY = markerBottom - (mapSize.y - bottomPadding)
-          }
-
-          if (panY !== 0) {
-            map.panBy([0, panY], { animate: true, duration: 0.3 })
+          // Only pan if marker is significantly off from ideal position
+          if (Math.abs(panY) > 30) {
+            map.panBy([0, panY], { animate: true, duration: 0.25 })
           }
         } catch {
           // Ignore errors
         }
-      }, 50)
+      }, 100)
     },
     popupclose: () => {
       // Cancel any existing timeout

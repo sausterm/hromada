@@ -53,6 +53,7 @@ export default function HomePage() {
   const t = useTranslations()
   const locale = useLocale()
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
+  const listContainerRef = useRef<HTMLDivElement | null>(null)
 
   // State
   const [allProjects, setAllProjects] = useState<Project[]>([])
@@ -275,8 +276,13 @@ export default function HomePage() {
     setHighlightedProjectId(project.id)
     setFlyToProjectId(project.id)
     const cardElement = cardRefs.current[project.id]
-    if (cardElement) {
-      cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    const container = listContainerRef.current
+    if (cardElement && container) {
+      // Scroll within the list container only, not the page
+      const containerRect = container.getBoundingClientRect()
+      const cardRect = cardElement.getBoundingClientRect()
+      const scrollTop = container.scrollTop + (cardRect.top - containerRect.top) - (containerRect.height / 2) + (cardRect.height / 2)
+      container.scrollTo({ top: scrollTop, behavior: 'smooth' })
     }
   }, [])
 
@@ -693,7 +699,7 @@ export default function HomePage() {
       {/* Main Content - Split Screen */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left Panel - Project List */}
-        <div className="w-full lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-50)]">
+        <div ref={listContainerRef} className="w-full lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-50)]">
           {/* Results Header - Single Line */}
           <div className="sticky top-0 z-10 bg-[var(--cream-100)] px-4 py-2.5 border-b border-[var(--cream-300)]">
             <div className="flex items-center gap-3">

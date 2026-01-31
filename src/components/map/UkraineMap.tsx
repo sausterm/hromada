@@ -284,7 +284,7 @@ function ResetViewControl() {
     // Create custom control
     const ResetControl = L.Control.extend({
       options: {
-        position: 'topright' as L.ControlPosition,
+        position: 'topleft' as L.ControlPosition,
       },
       onAdd: function () {
         const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control')

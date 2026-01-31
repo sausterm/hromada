@@ -411,7 +411,7 @@ body {
 }
 
 /* Custom home/reset view button - above zoom controls */
-.leaflet-top.leaflet-right .leaflet-bar:first-child {
+.leaflet-top.leaflet-left .leaflet-bar:first-child {
   border: none !important;
   border-radius: 9999px !important;
   overflow: hidden;
@@ -419,7 +419,7 @@ body {
   margin-bottom: 8px !important;
 }
 
-.leaflet-top.leaflet-right .leaflet-bar:first-child a {
+.leaflet-top.leaflet-left .leaflet-bar:first-child a {
   background-color: white !important;
   color: var(--navy-600) !important;
   border: none !important;
@@ -432,12 +432,12 @@ body {
   transition: all 0.15s ease !important;
 }
 
-.leaflet-top.leaflet-right .leaflet-bar:first-child a:hover {
+.leaflet-top.leaflet-left .leaflet-bar:first-child a:hover {
   background-color: var(--cream-100) !important;
   color: var(--navy-700) !important;
 }
 
-.leaflet-top.leaflet-right .leaflet-bar:first-child a:active {
+.leaflet-top.leaflet-left .leaflet-bar:first-child a:active {
   background-color: var(--cream-200) !important;
 }
 

@@ -291,19 +291,21 @@ function FlyToProject({
         const marker = markerRefs.current[projectId]
 
         // If we're already at zoom 12+ (clusters disabled) and marker is visible,
-        // the user clicked directly on the marker - popup is already open, just adjust position
+        // no need to fly - just open popup and let popupopen handler center it
         if (currentZoom >= 12 && marker) {
           const bounds = map.getBounds()
           const markerInView = bounds.contains([lat, lng])
 
           if (markerInView) {
-            // Marker already visible and clicked - popup opened automatically
-            // Just save view for restore and let popupopen handler adjust position
+            // Save current view for restore
             const currentCenter = map.getCenter()
             savedMapView = {
               center: [currentCenter.lat, currentCenter.lng],
               zoom: currentZoom,
             }
+            // Open popup (may already be open if marker was clicked directly)
+            // popupopen handler will center it
+            marker.openPopup()
             onComplete?.()
             return
           }

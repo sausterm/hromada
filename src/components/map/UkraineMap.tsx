@@ -151,6 +151,9 @@ function MapEventHandler({
   useMapEvents({
     moveend: updateBounds,
     zoomend: updateBounds,
+    popupclose: () => {
+      map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
+    },
   })
 
   useEffect(() => {

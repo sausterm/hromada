@@ -66,7 +66,9 @@
     "SOLAR_PV": "Сонячні панелі",
     "BATTERY_STORAGE": "Акумуляторні системи",
     "HEAT_PUMP": "Тепловий насос",
-    "THERMO_MODERNIZATION": "Термомодернізація"
+    "THERMO_MODERNIZATION": "Термомодернізація",
+    "WATER_TREATMENT": "Водоочищення",
+    "GENERAL": "Загальний"
   },
   "cofinancing": {
     "YES": "Так",

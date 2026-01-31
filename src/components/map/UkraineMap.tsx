@@ -251,10 +251,8 @@ function FlyToProject({
 
         const lat = project.latitude || project.cityLatitude
         const lng = project.longitude || project.cityLongitude
-        // Offset south so popup (which appears above marker) is fully visible
-        // The popup card is tall (~350px), so we need a larger offset at zoom 12
-        const offsetLat = lat - 0.045
-        map.flyTo([offsetLat, lng], 12, { duration: 0.4 })
+        // Fly to marker position - autoPan on the popup will adjust view after
+        map.flyTo([lat, lng], 12, { duration: 0.4 })
         setTimeout(() => {
           const marker = markerRefs.current[projectId]
           if (marker) {
@@ -378,7 +376,14 @@ const ProjectMarkers = memo(function ProjectMarkers({
               mouseout: () => onProjectHover?.(null),
             }}
           >
-            <Popup maxWidth={300} minWidth={280}>
+            <Popup
+              maxWidth={300}
+              minWidth={280}
+              autoPan={true}
+              autoPanPaddingTopLeft={[10, 150]}
+              autoPanPaddingBottomRight={[10, 10]}
+              keepInView={true}
+            >
               <ProjectPopup project={project} />
             </Popup>
           </Marker>

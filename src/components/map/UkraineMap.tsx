@@ -322,10 +322,10 @@ function FlyToProject({
         // Close any already-open popup first (from marker click)
         map.closePopup()
 
-        // Use a conservative offset - the popupopen handler will fine-tune
-        // At zoom 12: ~0.01 degrees ≈ 45px, so 0.015 degrees ≈ 67px below center
-        // This gets us in the ballpark, popupopen adjusts for exact popup height
-        const offsetLat = lat + 0.015
+        // Use offset to position marker below center, leaving room for popup above
+        // At zoom 12: ~0.01 degrees ≈ 45px, so 0.025 degrees ≈ 112px below center
+        // This ensures the full popup (including X button) and marker are visible
+        const offsetLat = lat + 0.025
         map.flyTo([offsetLat, lng], 12, { duration: 0.5 })
 
         // Wait for fly animation to complete before opening popup

@@ -15,6 +15,7 @@ export function getPrisma(): PrismaClient {
   // Create connection pool
   const pool = globalForPrisma.pool ?? new Pool({
     connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
   })
 
   // Create Prisma adapter

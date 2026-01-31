@@ -15,10 +15,25 @@ export function getPrisma(): PrismaClient {
   // Create connection pool - enable SSL for Supabase connections
   const connectionString = process.env.DATABASE_URL || ''
   const isRemoteDb = connectionString.includes('supabase.co')
-  const pool = globalForPrisma.pool ?? new Pool({
-    connectionString,
-    ssl: isRemoteDb ? { rejectUnauthorized: false } : undefined,
-  })
+
+  // Parse connection string to avoid URL encoding issues
+  let poolConfig: any = { connectionString }
+
+  if (isRemoteDb && process.env.DB_HOST) {
+    // Use explicit parameters if provided (for production)
+    poolConfig = {
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT || '5432'),
+      database: process.env.DB_NAME || 'postgres',
+      user: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD,
+      ssl: { rejectUnauthorized: false },
+    }
+  } else if (isRemoteDb) {
+    poolConfig.ssl = { rejectUnauthorized: false }
+  }
+
+  const pool = globalForPrisma.pool ?? new Pool(poolConfig)
 
   // Create Prisma adapter
   const adapter = new PrismaPg(pool)

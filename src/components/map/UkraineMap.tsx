@@ -251,7 +251,10 @@ function FlyToProject({
 
         const lat = project.latitude || project.cityLatitude
         const lng = project.longitude || project.cityLongitude
-        map.flyTo([lat, lng], 12, { duration: 0.4 })
+        // Offset south slightly so popup (which appears above marker) is fully visible
+        // At zoom 12, ~0.015 degrees gives room for the popup card above the marker
+        const offsetLat = lat - 0.015
+        map.flyTo([offsetLat, lng], 12, { duration: 0.4 })
         setTimeout(() => {
           const marker = markerRefs.current[projectId]
           if (marker) {

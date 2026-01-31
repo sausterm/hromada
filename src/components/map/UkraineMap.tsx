@@ -327,14 +327,13 @@ const ProjectMarkers = memo(function ProjectMarkers({
       chunkedLoading
       iconCreateFunction={createClusterIcon}
       maxClusterRadius={60}
-      spiderfyOnMaxZoom={true}
+      spiderfyOnMaxZoom={false}
       showCoverageOnHover={false}
       zoomToBoundsOnClick={true}
       disableClusteringAtZoom={12}
       removeOutsideVisibleBounds={true}
       animate={true}
       animateAddingMarkers={false}
-      spiderfyDistanceMultiplier={1.5}
     >
       {projects.map((project) => {
         const position = offsetPositions.get(project.id)

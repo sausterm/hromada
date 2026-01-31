@@ -39,7 +39,7 @@ function SiteAccessForm() {
             <h1 className="font-logo text-[var(--navy-700)] text-3xl">
               hromada | громада
             </h1>
-            <p className="text-sm text-[var(--navy-500)] mt-2 italic">
+            <p className="text-sm text-[var(--navy-500)] mt-2 italic whitespace-nowrap">
               Built to support renewable infrastructure recovery
             </p>
           </div>

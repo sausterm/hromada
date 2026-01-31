@@ -168,36 +168,48 @@ function MapEventHandler({
       // Ensure popup and marker are both visible by panning if needed
       setTimeout(() => {
         try {
+          // Only adjust if we're at or near the target zoom level (12)
+          // Skip adjustment if zoomed out, since we're likely about to flyTo
+          const currentZoom = map.getZoom()
+          if (currentZoom < 10) return
+
           const popup = e.popup
           const popupLatLng = popup.getLatLng()
           if (!popupLatLng) return
+
+          // Get actual popup element to measure its real height
+          const popupEl = popup.getElement()
+          const popupHeight = popupEl ? popupEl.offsetHeight : 350
 
           // Get the map container size
           const mapSize = map.getSize()
           const markerPoint = map.latLngToContainerPoint(popupLatLng)
 
-          // The popup card is ~380px tall and appears above the marker
-          const popupHeight = 380
-          const markerSize = 40
-          const padding = 20
+          const markerRadius = 20 // Half of marker size (36px)
+          const topPadding = 15
+          const bottomPadding = 25
 
-          // Calculate ideal position: marker near bottom with popup visible above
-          // Popup is ~380px tall, so marker needs to be low enough to fit it
-          // Position marker at 80% down the map height
-          const idealMarkerY = mapSize.y * 0.80
+          // Ideal marker Y is where the popup fits above with padding
+          // Marker should be at: topPadding + popupHeight + markerRadius from top
+          const idealMarkerY = topPadding + popupHeight + markerRadius
+
+          // But don't push marker too close to bottom - max 85% down
+          const maxMarkerY = mapSize.y * 0.85 - markerRadius
+
+          // Use the lesser of ideal position or max position
+          const targetMarkerY = Math.min(idealMarkerY, maxMarkerY)
+
           const currentMarkerY = markerPoint.y
+          const panY = currentMarkerY - targetMarkerY
 
-          // Calculate how much to pan
-          const panY = currentMarkerY - idealMarkerY
-
-          // Only pan if marker is significantly off from ideal position
-          if (Math.abs(panY) > 30) {
+          // Only pan if adjustment is meaningful
+          if (Math.abs(panY) > 20) {
             map.panBy([0, panY], { animate: true, duration: 0.25 })
           }
         } catch {
           // Ignore errors
         }
-      }, 100)
+      }, 150)
     },
     popupclose: () => {
       // Cancel any existing timeout
@@ -276,6 +288,30 @@ function FlyToProject({
     if (projectId) {
       const project = projects.find((p) => p.id === projectId)
       if (project) {
+        const lat = project.latitude || project.cityLatitude
+        const lng = project.longitude || project.cityLongitude
+        const currentZoom = map.getZoom()
+        const marker = markerRefs.current[projectId]
+
+        // If we're already at zoom 12+ (clusters disabled) and marker is visible,
+        // the user clicked directly on the marker - popup is already open, just adjust position
+        if (currentZoom >= 12 && marker) {
+          const bounds = map.getBounds()
+          const markerInView = bounds.contains([lat, lng])
+
+          if (markerInView) {
+            // Marker already visible and clicked - popup opened automatically
+            // Just save view for restore and let popupopen handler adjust position
+            const currentCenter = map.getCenter()
+            savedMapView = {
+              center: [currentCenter.lat, currentCenter.lng],
+              zoom: currentZoom,
+            }
+            onComplete?.()
+            return
+          }
+        }
+
         // Save current view before flying
         const currentCenter = map.getCenter()
         savedMapView = {
@@ -283,25 +319,25 @@ function FlyToProject({
           zoom: map.getZoom(),
         }
 
-        const lat = project.latitude || project.cityLatitude
-        const lng = project.longitude || project.cityLongitude
-        // Offset north (add to lat) to center view ABOVE the marker
-        // This puts the marker near the bottom of the view with room for popup above
-        // Larger offset = marker appears lower on screen
-        const offsetLat = lat + 0.07
+        // Close any already-open popup first (from marker click)
+        map.closePopup()
+
+        // Use a conservative offset - the popupopen handler will fine-tune
+        // At zoom 12: ~0.01 degrees ≈ 45px, so 0.015 degrees ≈ 67px below center
+        // This gets us in the ballpark, popupopen adjusts for exact popup height
+        const offsetLat = lat + 0.015
         map.flyTo([offsetLat, lng], 12, { duration: 0.5 })
 
         // Wait for fly animation to complete before opening popup
         const onMoveEnd = () => {
           map.off('moveend', onMoveEnd)
-          // Small additional delay to ensure map has fully settled
           setTimeout(() => {
             const marker = markerRefs.current[projectId]
             if (marker) {
               marker.openPopup()
             }
             onComplete?.()
-          }, 100)
+          }, 50)
         }
         map.on('moveend', onMoveEnd)
       }

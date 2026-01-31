@@ -286,7 +286,7 @@ function FlyToProject({
         const lng = project.longitude || project.cityLongitude
         // Offset north (add to lat) to center view ABOVE the marker
         // This puts the marker in the lower part of the view with room for popup above
-        const offsetLat = lat + 0.035
+        const offsetLat = lat + 0.05
         map.flyTo([offsetLat, lng], 12, { duration: 0.4 })
         setTimeout(() => {
           const marker = markerRefs.current[projectId]

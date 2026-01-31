@@ -152,14 +152,26 @@ function MapEventHandler({
     moveend: updateBounds,
     zoomend: updateBounds,
     popupclose: () => {
-      // Only zoom out if map container still exists (not during unmount)
-      if (map.getContainer()) {
-        try {
-          map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
-        } catch {
-          // Map may be unmounting, ignore
+      // Delay zoom out to check if another popup is opening (e.g., clicking between markers)
+      setTimeout(() => {
+        // Only zoom out if map container still exists and no popup is currently open
+        if (map.getContainer()) {
+          try {
+            // Check if any popup is currently open on the map
+            let hasOpenPopup = false
+            map.eachLayer((layer: any) => {
+              if (layer.getPopup && layer.getPopup()?.isOpen()) {
+                hasOpenPopup = true
+              }
+            })
+            if (!hasOpenPopup) {
+              map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
+            }
+          } catch {
+            // Map may be unmounting, ignore
+          }
         }
-      }
+      }, 100)
     },
   })
 

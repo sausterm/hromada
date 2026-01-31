@@ -271,11 +271,10 @@ export default function HomePage() {
     setHighlightedProjectId(projectId)
   }, [])
 
-  // Handle marker click - scroll to card in list (no fly-to since user already clicked the marker)
+  // Handle marker click - scroll to card in list and zoom
   const handleMarkerClick = useCallback((project: Project) => {
     setHighlightedProjectId(project.id)
-    // Don't call setFlyToProjectId - the marker is already clicked and popup opens automatically
-    // flyTo is only for when clicking cards in the list to navigate TO a marker
+    setFlyToProjectId(project.id)
     const cardElement = cardRefs.current[project.id]
     const container = listContainerRef.current
     if (cardElement && container) {

@@ -185,18 +185,16 @@ function MapEventHandler({
           const mapSize = map.getSize()
           const markerPoint = map.latLngToContainerPoint(popupLatLng)
 
-          const topPadding = 30 // Ensure X button and top of popup are fully visible
-          const bottomPadding = 40 // Ensure marker is visible with some buffer
+          const markerSize = 36
 
-          // Ideal marker Y is where the popup fits above with padding
-          // Marker should be at: topPadding + popupHeight from top
-          const idealMarkerY = topPadding + popupHeight
+          // Calculate to center the popup+marker combo vertically
+          // Total content height = popup + marker
+          // Equal padding = (mapHeight - contentHeight) / 2
+          const totalContentHeight = popupHeight + markerSize
+          const equalPadding = Math.max(20, (mapSize.y - totalContentHeight) / 2)
 
-          // But don't push marker too close to bottom
-          const maxMarkerY = mapSize.y - bottomPadding
-
-          // Use the lesser of ideal position or max position
-          const targetMarkerY = Math.min(idealMarkerY, maxMarkerY)
+          // Marker Y = top padding + popup height
+          const targetMarkerY = equalPadding + popupHeight
 
           const currentMarkerY = markerPoint.y
           const panY = currentMarkerY - targetMarkerY
@@ -322,9 +320,9 @@ function FlyToProject({
         map.closePopup()
 
         // Use offset to position marker below center, leaving room for popup above
-        // At zoom 12: ~0.01 degrees ≈ 45px, so 0.04 degrees ≈ 180px below center
-        // This ensures the full popup (including X button) and marker are visible
-        const offsetLat = lat + 0.04
+        // At zoom 12: ~0.01 degrees ≈ 45px, so 0.05 degrees ≈ 225px below center
+        // This centers the popup+marker combo vertically in the map view
+        const offsetLat = lat + 0.05
         map.flyTo([offsetLat, lng], 12, { duration: 0.5 })
 
         // Wait for fly animation to complete before opening popup

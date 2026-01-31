@@ -122,6 +122,7 @@ function MapEventHandler({
   onBoundsChange?: (bounds: MapBounds, visibleProjects: Project[]) => void
 }) {
   const map = useMap()
+  const zoomOutTimeoutRef = useRef<number | null>(null)
 
   const updateBounds = useCallback(() => {
     if (!onBoundsChange) return
@@ -151,29 +152,41 @@ function MapEventHandler({
   useMapEvents({
     moveend: updateBounds,
     zoomend: updateBounds,
+    popupopen: () => {
+      // Cancel any pending zoom-out when a new popup opens
+      if (zoomOutTimeoutRef.current) {
+        clearTimeout(zoomOutTimeoutRef.current)
+        zoomOutTimeoutRef.current = null
+      }
+    },
     popupclose: () => {
-      // Delay zoom out to check if another popup is opening (e.g., clicking between markers)
-      setTimeout(() => {
-        // Only zoom out if map container still exists and no popup is currently open
+      // Cancel any existing timeout
+      if (zoomOutTimeoutRef.current) {
+        clearTimeout(zoomOutTimeoutRef.current)
+      }
+      // Delay zoom out to allow new popup to open first
+      zoomOutTimeoutRef.current = window.setTimeout(() => {
+        zoomOutTimeoutRef.current = null
+        // Only zoom out if map container still exists
         if (map.getContainer()) {
           try {
-            // Check if any popup is currently open on the map
-            let hasOpenPopup = false
-            map.eachLayer((layer: any) => {
-              if (layer.getPopup && layer.getPopup()?.isOpen()) {
-                hasOpenPopup = true
-              }
-            })
-            if (!hasOpenPopup) {
-              map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
-            }
+            map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
           } catch {
             // Map may be unmounting, ignore
           }
         }
-      }, 100)
+      }, 200)
     },
   })
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (zoomOutTimeoutRef.current) {
+        clearTimeout(zoomOutTimeoutRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(updateBounds, 100)

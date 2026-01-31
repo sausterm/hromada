@@ -185,16 +185,15 @@ function MapEventHandler({
           const mapSize = map.getSize()
           const markerPoint = map.latLngToContainerPoint(popupLatLng)
 
-          const markerRadius = 20 // Half of marker size (36px)
-          const topPadding = 15
-          const bottomPadding = 25
+          const topPadding = 30 // Ensure X button and top of popup are fully visible
+          const bottomPadding = 40 // Ensure marker is visible with some buffer
 
           // Ideal marker Y is where the popup fits above with padding
-          // Marker should be at: topPadding + popupHeight + markerRadius from top
-          const idealMarkerY = topPadding + popupHeight + markerRadius
+          // Marker should be at: topPadding + popupHeight from top
+          const idealMarkerY = topPadding + popupHeight
 
-          // But don't push marker too close to bottom - max 85% down
-          const maxMarkerY = mapSize.y * 0.85 - markerRadius
+          // But don't push marker too close to bottom
+          const maxMarkerY = mapSize.y - bottomPadding
 
           // Use the lesser of ideal position or max position
           const targetMarkerY = Math.min(idealMarkerY, maxMarkerY)
@@ -202,8 +201,8 @@ function MapEventHandler({
           const currentMarkerY = markerPoint.y
           const panY = currentMarkerY - targetMarkerY
 
-          // Only pan if adjustment is meaningful
-          if (Math.abs(panY) > 20) {
+          // Pan if adjustment is needed (even small adjustments)
+          if (Math.abs(panY) > 10) {
             map.panBy([0, panY], { animate: true, duration: 0.25 })
           }
         } catch {
@@ -323,9 +322,9 @@ function FlyToProject({
         map.closePopup()
 
         // Use offset to position marker below center, leaving room for popup above
-        // At zoom 12: ~0.01 degrees ≈ 45px, so 0.025 degrees ≈ 112px below center
+        // At zoom 12: ~0.01 degrees ≈ 45px, so 0.04 degrees ≈ 180px below center
         // This ensures the full popup (including X button) and marker are visible
-        const offsetLat = lat + 0.025
+        const offsetLat = lat + 0.04
         map.flyTo([offsetLat, lng], 12, { duration: 0.5 })
 
         // Wait for fly animation to complete before opening popup

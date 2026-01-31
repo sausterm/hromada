@@ -156,7 +156,7 @@ function MapEventHandler({
   useMapEvents({
     moveend: updateBounds,
     zoomend: updateBounds,
-    popupopen: () => {
+    popupopen: (e) => {
       // Track when popup opened
       popupOpenTimeRef.current = Date.now()
       // Cancel any pending zoom-out when a new popup opens
@@ -164,6 +164,47 @@ function MapEventHandler({
         clearTimeout(zoomOutTimeoutRef.current)
         zoomOutTimeoutRef.current = null
       }
+
+      // Ensure popup and marker are both visible by panning if needed
+      setTimeout(() => {
+        try {
+          const popup = e.popup
+          const popupLatLng = popup.getLatLng()
+          if (!popupLatLng) return
+
+          // Get the map container size
+          const mapSize = map.getSize()
+          const popupPoint = map.latLngToContainerPoint(popupLatLng)
+
+          // The popup card is ~400px tall and appears above the marker
+          // Check if we need to pan to show it fully
+          const popupHeight = 420
+          const markerHeight = 40
+          const topPadding = 20
+          const bottomPadding = 60
+
+          // Calculate how much the popup extends above the marker point
+          const popupTop = popupPoint.y - popupHeight
+          const markerBottom = popupPoint.y + markerHeight
+
+          let panY = 0
+
+          // If popup top is above visible area, pan down (negative panY)
+          if (popupTop < topPadding) {
+            panY = popupTop - topPadding
+          }
+          // If marker bottom is below visible area, pan up (positive panY)
+          else if (markerBottom > mapSize.y - bottomPadding) {
+            panY = markerBottom - (mapSize.y - bottomPadding)
+          }
+
+          if (panY !== 0) {
+            map.panBy([0, panY], { animate: true, duration: 0.3 })
+          }
+        } catch {
+          // Ignore errors
+        }
+      }, 50)
     },
     popupclose: () => {
       // Cancel any existing timeout
@@ -381,10 +422,7 @@ const ProjectMarkers = memo(function ProjectMarkers({
             <Popup
               maxWidth={300}
               minWidth={280}
-              autoPan={true}
-              autoPanPaddingTopLeft={[10, 50]}
-              autoPanPaddingBottomRight={[10, 80]}
-              keepInView={true}
+              autoPan={false}
             >
               <ProjectPopup project={project} />
             </Popup>

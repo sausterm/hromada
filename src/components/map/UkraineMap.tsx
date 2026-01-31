@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef, memo } from 'react'
+import { useState, useCallback, useEffect, useRef, memo, useMemo } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import L from 'leaflet'
@@ -256,6 +256,48 @@ interface ProjectMarkersProps {
   onProjectHover?: (project: Project | null) => void
 }
 
+// Calculate offset positions for markers sharing the same coordinates
+function getOffsetPositions(projects: Project[]): Map<string, [number, number]> {
+  const positionMap = new Map<string, [number, number]>()
+
+  // Group projects by their coordinates
+  const coordGroups = new Map<string, Project[]>()
+  projects.forEach((project) => {
+    const lat = project.latitude || project.cityLatitude
+    const lng = project.longitude || project.cityLongitude
+    if (!lat || !lng) return
+
+    const key = `${lat},${lng}`
+    const group = coordGroups.get(key) || []
+    group.push(project)
+    coordGroups.set(key, group)
+  })
+
+  // Calculate offsets for groups with multiple markers
+  // Offset is approximately 50 meters at the equator
+  const offsetDistance = 0.0005
+
+  coordGroups.forEach((group, key) => {
+    const [baseLat, baseLng] = key.split(',').map(Number)
+
+    if (group.length === 1) {
+      // Single marker, no offset needed
+      positionMap.set(group[0].id, [baseLat, baseLng])
+    } else {
+      // Multiple markers, spread them in a circle
+      const angleStep = (2 * Math.PI) / group.length
+      group.forEach((project, index) => {
+        const angle = angleStep * index - Math.PI / 2 // Start from top
+        const offsetLat = baseLat + offsetDistance * Math.cos(angle)
+        const offsetLng = baseLng + offsetDistance * Math.sin(angle)
+        positionMap.set(project.id, [offsetLat, offsetLng])
+      })
+    }
+  })
+
+  return positionMap
+}
+
 const ProjectMarkers = memo(function ProjectMarkers({
   projects,
   markerRefs,
@@ -269,6 +311,9 @@ const ProjectMarkers = memo(function ProjectMarkers({
     }
   }, [clusterGroupRef])
 
+  // Calculate offset positions for markers with shared coordinates
+  const offsetPositions = useMemo(() => getOffsetPositions(projects), [projects])
+
   return (
     <MarkerClusterGroup
       ref={clusterGroupCallback}
@@ -278,22 +323,20 @@ const ProjectMarkers = memo(function ProjectMarkers({
       spiderfyOnMaxZoom={true}
       showCoverageOnHover={false}
       zoomToBoundsOnClick={true}
-      disableClusteringAtZoom={19}
+      disableClusteringAtZoom={12}
       removeOutsideVisibleBounds={true}
       animate={true}
       animateAddingMarkers={false}
       spiderfyDistanceMultiplier={1.5}
     >
       {projects.map((project) => {
-        const lat = project.latitude || project.cityLatitude
-        const lng = project.longitude || project.cityLongitude
-
-        if (!lat || !lng) return null
+        const position = offsetPositions.get(project.id)
+        if (!position) return null
 
         return (
           <Marker
             key={project.id}
-            position={[lat, lng]}
+            position={position}
             icon={categoryIcons[project.category]}
             ref={(ref) => {
               if (ref) {

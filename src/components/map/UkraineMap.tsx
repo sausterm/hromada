@@ -251,8 +251,10 @@ function FlyToProject({
 
         const lat = project.latitude || project.cityLatitude
         const lng = project.longitude || project.cityLongitude
-        // Fly to marker position - autoPan on the popup will adjust view after
-        map.flyTo([lat, lng], 12, { duration: 0.4 })
+        // Offset slightly south to position marker in lower third of view
+        // This leaves room for popup above while keeping marker visible
+        const offsetLat = lat - 0.025
+        map.flyTo([offsetLat, lng], 12, { duration: 0.4 })
         setTimeout(() => {
           const marker = markerRefs.current[projectId]
           if (marker) {
@@ -380,8 +382,8 @@ const ProjectMarkers = memo(function ProjectMarkers({
               maxWidth={300}
               minWidth={280}
               autoPan={true}
-              autoPanPaddingTopLeft={[10, 150]}
-              autoPanPaddingBottomRight={[10, 10]}
+              autoPanPaddingTopLeft={[10, 50]}
+              autoPanPaddingBottomRight={[10, 80]}
               keepInView={true}
             >
               <ProjectPopup project={project} />

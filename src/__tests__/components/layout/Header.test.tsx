@@ -15,7 +15,7 @@ jest.mock('next-intl', () => ({
       'nav.home': 'Home',
       'nav.menu': 'Menu',
       'nav.language': 'Language',
-      'nav.headerSubtitle': 'Built to support renewable infrastructure',
+      'nav.headerSubtitle': 'Built to support Ukrainian renewable infrastructure recovery',
     }
     return translations[key] || key
   },
@@ -77,7 +77,7 @@ describe('Header', () => {
 
     it('renders tagline', () => {
       render(<Header />)
-      expect(screen.getByText('Built to support renewable infrastructure')).toBeInTheDocument()
+      expect(screen.getByText('Built to support Ukrainian renewable infrastructure recovery')).toBeInTheDocument()
     })
   })
 

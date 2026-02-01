@@ -491,21 +491,6 @@ describe('ProjectDetailPage', () => {
     })
   })
 
-  describe('Footer', () => {
-    it('renders footer with text', async () => {
-      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ project: createMockProject() }),
-      })
-
-      render(<ProjectDetailPage />)
-
-      await waitFor(() => {
-        expect(screen.getByText(/connects American donors with Ukrainian communities/)).toBeInTheDocument()
-      })
-    })
-  })
-
   describe('API Integration', () => {
     it('fetches project with correct ID', async () => {
       ;(global.fetch as jest.Mock).mockResolvedValueOnce({

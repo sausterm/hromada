@@ -34,10 +34,11 @@ function createCategoryIcon(category: Category): L.DivIcon {
         border-radius: 50%;
         border: 3px solid white;
         box-shadow: 0 3px 12px rgba(58, 54, 51, 0.25);
-        font-size: 16px;
         background-color: ${config.color};
       ">
-        ${config.icon}
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+          ${config.icon}
+        </svg>
       </div>
     `,
     iconSize: [size, size],

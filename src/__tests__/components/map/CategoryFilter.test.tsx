@@ -81,7 +81,7 @@ describe('CategoryFilter', () => {
     })
   })
 
-  it('renders icons for each category', () => {
+  it('renders SVG icons for each category', () => {
     render(
       <CategoryFilter
         activeCategories={allCategories}
@@ -89,9 +89,12 @@ describe('CategoryFilter', () => {
       />
     )
 
-    // Check for emoji icons
-    Object.values(CATEGORY_CONFIG).forEach((config) => {
-      expect(screen.getByText(config.icon)).toBeInTheDocument()
+    // Check that SVG icons are rendered (one per category button)
+    const buttons = screen.getAllByRole('button')
+    buttons.forEach((button) => {
+      const svg = button.querySelector('svg')
+      expect(svg).toBeInTheDocument()
+      expect(svg).toHaveAttribute('viewBox', '0 0 24 24')
     })
   })
 

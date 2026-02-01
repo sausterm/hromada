@@ -671,7 +671,16 @@ export default function HomePage() {
                       : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
                   }`}
                 >
-                  <span>{config.icon}</span>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                    dangerouslySetInnerHTML={{ __html: config.icon }}
+                  />
                   <span className="hidden sm:inline">{t(`categories.${category}`).split(' ')[0]}</span>
                 </button>
               )

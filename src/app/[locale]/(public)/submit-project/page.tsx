@@ -431,10 +431,24 @@ export default function SubmitProjectPage() {
                       ref={categoryButtonRef}
                       className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-200)] focus:border-[var(--ukraine-500)] flex items-center justify-between transition-all duration-150"
                     >
-                      <span>
-                        {formData.category
-                          ? `${CATEGORY_CONFIG[formData.category].icon} ${t(`categories.${formData.category}`)}`
-                          : `-- ${t('submitProject.fields.selectCategory')} --`}
+                      <span className="flex items-center gap-2">
+                        {formData.category ? (
+                          <>
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="w-4 h-4"
+                              dangerouslySetInnerHTML={{ __html: CATEGORY_CONFIG[formData.category].icon }}
+                            />
+                            {t(`categories.${formData.category}`)}
+                          </>
+                        ) : (
+                          `-- ${t('submitProject.fields.selectCategory')} --`
+                        )}
                       </span>
                       <svg className={`h-4 w-4 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -460,9 +474,19 @@ export default function SubmitProjectPage() {
                                 setFormData((prev) => ({ ...prev, category: cat }))
                                 setIsCategoryOpen(false)
                               }}
-                              className={`w-full text-left px-4 py-2 text-sm transition-colors ${formData.category === cat ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                              className={`w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2 ${formData.category === cat ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
                             >
-                              {CATEGORY_CONFIG[cat].icon} {t(`categories.${cat}`)}
+                              <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="w-4 h-4"
+                                dangerouslySetInnerHTML={{ __html: CATEGORY_CONFIG[cat].icon }}
+                              />
+                              {t(`categories.${cat}`)}
                             </button>
                           ))}
                         </div>

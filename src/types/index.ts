@@ -92,12 +92,33 @@ export interface ContactSubmission {
 }
 
 // Category display info for map - warm humanitarian palette
+// Icons are SVG path data from Lucide icons (viewBox="0 0 24 24", stroke-based)
 export const CATEGORY_CONFIG: Record<Category, { label: string; color: string; icon: string }> = {
-  HOSPITAL: { label: 'Hospital / Medical', color: '#C75B39', icon: '🏥' },      // Deep terracotta
-  SCHOOL: { label: 'School / Education', color: '#7B9E6B', icon: '🏫' },        // Sage green
-  WATER: { label: 'Water Utility', color: '#5B8FA8', icon: '💧' },              // Muted teal
-  ENERGY: { label: 'Energy Infrastructure', color: '#D4954A', icon: '⚡' },     // Warm amber
-  OTHER: { label: 'Other Infrastructure', color: '#8B7355', icon: '🏗️' },      // Warm taupe
+  HOSPITAL: {
+    label: 'Hospital / Medical',
+    color: '#C75B39',  // Deep terracotta
+    icon: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>'  // HeartPulse
+  },
+  SCHOOL: {
+    label: 'School / Education',
+    color: '#7B9E6B',  // Sage green
+    icon: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>'  // GraduationCap
+  },
+  WATER: {
+    label: 'Water Utility',
+    color: '#5B8FA8',  // Muted teal
+    icon: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>'  // Droplet
+  },
+  ENERGY: {
+    label: 'Energy Infrastructure',
+    color: '#D4954A',  // Warm amber
+    icon: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>'  // Zap/Bolt
+  },
+  OTHER: {
+    label: 'Other Infrastructure',
+    color: '#8B7355',  // Warm taupe
+    icon: '<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>'  // Factory
+  },
 }
 
 // Urgency display info - warm palette

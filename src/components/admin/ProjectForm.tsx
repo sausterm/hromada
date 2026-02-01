@@ -274,7 +274,7 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
                 >
                   {(Object.keys(CATEGORY_CONFIG) as Category[]).map((cat) => (
                     <option key={cat} value={cat}>
-                      {CATEGORY_CONFIG[cat].icon} {CATEGORY_CONFIG[cat].label}
+                      {CATEGORY_CONFIG[cat].label}
                     </option>
                   ))}
                 </select>

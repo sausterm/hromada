@@ -142,7 +142,16 @@ export function ProjectCard({
                 color: PROJECT_TYPE_CONFIG[project.projectType].color,
               }}
             >
-              <span>{PROJECT_TYPE_CONFIG[project.projectType].icon}</span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-3 h-3"
+                dangerouslySetInnerHTML={{ __html: PROJECT_TYPE_CONFIG[project.projectType].icon }}
+              />
               <span>{t(`projectTypes.${project.projectType}`)}</span>
             </span>
           )}

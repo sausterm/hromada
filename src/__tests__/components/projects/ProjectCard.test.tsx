@@ -226,12 +226,15 @@ describe('ProjectCard', () => {
   })
 
   describe('Project Type', () => {
-    it('renders project type badge for SOLAR_PV', () => {
+    it('renders project type badge for SOLAR_PV with SVG icon', () => {
       const project = createMockProject({ projectType: 'SOLAR_PV' })
       render(<ProjectCard project={project} />)
 
       expect(screen.getByText('Solar PV')).toBeInTheDocument()
-      expect(screen.getByText('☀️')).toBeInTheDocument()
+      // Project type badge should contain an SVG icon
+      const badge = screen.getByText('Solar PV').closest('span')
+      const svg = badge?.parentElement?.querySelector('svg')
+      expect(svg).toBeInTheDocument()
     })
 
     it('renders project type badge for HEAT_PUMP', () => {

@@ -461,7 +461,7 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
                   <option value="">-- Select Type --</option>
                   {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
                     <option key={type} value={type}>
-                      {PROJECT_TYPE_CONFIG[type].icon} {PROJECT_TYPE_CONFIG[type].label}
+                      {PROJECT_TYPE_CONFIG[type].label}
                     </option>
                   ))}
                 </select>

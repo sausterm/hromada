@@ -138,11 +138,28 @@ export const STATUS_CONFIG: Record<Status, { label: string; color: string }> = {
 }
 
 // Project type display info - warm palette
+// Icons are SVG path data from Lucide icons (viewBox="0 0 24 24", stroke-based)
 export const PROJECT_TYPE_CONFIG: Record<ProjectType, { label: string; color: string; icon: string }> = {
-  SOLAR_PV: { label: 'Solar PV', color: '#D4954A', icon: '☀️' },           // Warm amber
-  BATTERY_STORAGE: { label: 'Battery Storage', color: '#5B8FA8', icon: '🔋' }, // Muted teal
-  HEAT_PUMP: { label: 'Heat Pump', color: '#C75B39', icon: '🔥' },         // Deep terracotta
-  THERMO_MODERNIZATION: { label: 'Thermo-modernization', color: '#8B7355', icon: '🏠' }, // Warm taupe
+  SOLAR_PV: {
+    label: 'Solar PV',
+    color: '#D4954A',  // Warm amber
+    icon: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>'  // Sun
+  },
+  BATTERY_STORAGE: {
+    label: 'Battery Storage',
+    color: '#5B8FA8',  // Muted teal
+    icon: '<rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="22" x2="22" y1="11" y2="13"/>'  // Battery
+  },
+  HEAT_PUMP: {
+    label: 'Heat Pump',
+    color: '#C75B39',  // Deep terracotta
+    icon: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'  // Flame
+  },
+  THERMO_MODERNIZATION: {
+    label: 'Thermo-modernization',
+    color: '#8B7355',  // Warm taupe
+    icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'  // Home
+  },
 }
 
 // Co-financing status display info

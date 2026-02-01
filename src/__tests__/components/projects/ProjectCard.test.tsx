@@ -160,12 +160,15 @@ describe('ProjectCard', () => {
       expect(screen.getByText('Other Infrastructure')).toBeInTheDocument()
     })
 
-    it('renders category icon', () => {
+    it('renders category icon as SVG', () => {
       const project = createMockProject({ category: 'HOSPITAL' })
       render(<ProjectCard project={project} />)
 
-      // Hospital icon emoji
-      expect(screen.getByText('🏥')).toBeInTheDocument()
+      // Category badge should contain an SVG icon
+      const categoryBadge = screen.getByText('Hospital / Medical').closest('div')
+      const svg = categoryBadge?.querySelector('svg')
+      expect(svg).toBeInTheDocument()
+      expect(svg).toHaveAttribute('viewBox', '0 0 24 24')
     })
   })
 

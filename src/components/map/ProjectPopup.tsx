@@ -18,9 +18,9 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
   const statusConfig = STATUS_CONFIG[project.status]
 
   return (
-    <div className="w-72 h-[360px] p-0 bg-[var(--cream-100)] flex flex-col">
+    <div className="w-72 h-[390px] p-0 bg-[var(--cream-100)] flex flex-col">
       {/* Photo - always same height */}
-      <div className="w-full h-24 bg-[var(--cream-200)] rounded-t-lg overflow-hidden flex-shrink-0">
+      <div className="w-full h-28 bg-[var(--cream-200)] rounded-t-lg overflow-hidden flex-shrink-0">
         {project.photos && project.photos.length > 0 ? (
           <img
             src={project.photos[0]}

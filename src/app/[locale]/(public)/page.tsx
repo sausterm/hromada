@@ -525,50 +525,6 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Urgency dropdown */}
-            <div
-              className="relative shrink-0"
-              onMouseEnter={() => setIsUrgencyOpen(true)}
-              onMouseLeave={() => setIsUrgencyOpen(false)}
-            >
-              <button
-                ref={urgencyButtonRef}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
-                  selectedUrgency
-                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
-                }`}
-              >
-                <span>{selectedUrgency ? t(`urgency.${selectedUrgency}`) : t('homepage.filters.urgency')}</span>
-                <svg className={`h-3.5 w-3.5 transition-transform ${isUrgencyOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {isUrgencyOpen && urgencyButtonRef.current && (
-                <div
-                  className="fixed z-50 pt-2"
-                  style={{
-                    top: urgencyButtonRef.current.getBoundingClientRect().bottom,
-                    left: urgencyButtonRef.current.getBoundingClientRect().left,
-                  }}
-                  onMouseEnter={() => setIsUrgencyOpen(true)}
-                  onMouseLeave={() => setIsUrgencyOpen(false)}
-                >
-                  <div className="w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
-                    {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
-                      <button
-                        key={urgency}
-                        onClick={() => setSelectedUrgency(selectedUrgency === urgency ? null : urgency)}
-                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedUrgency === urgency ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
-                      >
-                        {t(`urgency.${urgency}`)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Status dropdown */}
             <div
               className="relative shrink-0"
@@ -606,6 +562,50 @@ export default function HomePage() {
                         className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedStatus === status ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
                       >
                         {t(`status.${status}`)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Urgency dropdown */}
+            <div
+              className="relative shrink-0"
+              onMouseEnter={() => setIsUrgencyOpen(true)}
+              onMouseLeave={() => setIsUrgencyOpen(false)}
+            >
+              <button
+                ref={urgencyButtonRef}
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
+                  selectedUrgency
+                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                }`}
+              >
+                <span>{selectedUrgency ? t(`urgency.${selectedUrgency}`) : t('homepage.filters.urgency')}</span>
+                <svg className={`h-3.5 w-3.5 transition-transform ${isUrgencyOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isUrgencyOpen && urgencyButtonRef.current && (
+                <div
+                  className="fixed z-50 pt-2"
+                  style={{
+                    top: urgencyButtonRef.current.getBoundingClientRect().bottom,
+                    left: urgencyButtonRef.current.getBoundingClientRect().left,
+                  }}
+                  onMouseEnter={() => setIsUrgencyOpen(true)}
+                  onMouseLeave={() => setIsUrgencyOpen(false)}
+                >
+                  <div className="w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                    {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
+                      <button
+                        key={urgency}
+                        onClick={() => setSelectedUrgency(selectedUrgency === urgency ? null : urgency)}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedUrgency === urgency ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                      >
+                        {t(`urgency.${urgency}`)}
                       </button>
                     ))}
                   </div>

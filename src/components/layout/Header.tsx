@@ -97,6 +97,11 @@ export function Header({ children }: HeaderProps) {
     }
   }
 
+  const handleIconClick = () => {
+    // Navigate to homepage in current locale
+    router.push('/', { locale: locale as Locale })
+  }
+
   return (
     <header className="sticky top-0 z-50 bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
       {/* Top Bar - Navigation */}
@@ -188,22 +193,28 @@ export function Header({ children }: HeaderProps) {
               >
                 hromada
               </button>
-              <svg
-                viewBox="0 0 48 30"
-                className="inline-block w-6 h-4 sm:w-8 sm:h-5 lg:w-10 lg:h-6 mx-2 self-center"
-                style={{ transform: 'rotate(-38deg)' }}
+              <button
+                onClick={handleIconClick}
+                className="hover:opacity-70 transition-opacity cursor-pointer mx-2 self-center"
+                aria-label="Go to homepage"
               >
-                <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>
-                <line x1="16" y1="0" x2="16" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                <line x1="32" y1="0" x2="32" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                <line x1="0" y1="15" x2="48" y2="15" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                <circle cx="16" cy="15" r="2.5" fill="var(--cream-100)"/>
-                <circle cx="32" cy="15" r="2.5" fill="var(--cream-100)"/>
-                <circle cx="0" cy="0" r="2.5" fill="var(--cream-100)"/>
-                <circle cx="48" cy="0" r="2.5" fill="var(--cream-100)"/>
-                <circle cx="0" cy="30" r="2.5" fill="var(--cream-100)"/>
-                <circle cx="48" cy="30" r="2.5" fill="var(--cream-100)"/>
-              </svg>
+                <svg
+                  viewBox="0 0 48 30"
+                  className="inline-block w-6 h-4 sm:w-8 sm:h-5 lg:w-10 lg:h-6"
+                  style={{ transform: 'rotate(-38deg)' }}
+                >
+                  <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>
+                  <line x1="16" y1="0" x2="16" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                  <line x1="32" y1="0" x2="32" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                  <line x1="0" y1="15" x2="48" y2="15" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                  <circle cx="16" cy="15" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="32" cy="15" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="0" cy="0" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="48" cy="0" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="0" cy="30" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="48" cy="30" r="2.5" fill="var(--cream-100)"/>
+                </svg>
+              </button>
               <button
                 onClick={() => handleLogoClick('uk')}
                 className={`${locale === 'uk' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}

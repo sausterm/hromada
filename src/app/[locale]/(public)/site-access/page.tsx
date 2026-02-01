@@ -1,35 +1,38 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import Cookies from 'js-cookie'
+import { useSearchParams } from 'next/navigation'
 
 function SiteAccessForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setIsLoading(true)
 
-    // Verify password
-    if (password === 'hromada!2026') {
-      // Set cookie for 7 days, available across entire site
-      Cookies.set('hromada_site_access', password, {
-        expires: 7,
-        path: '/',
-        sameSite: 'lax'
+    try {
+      // Use API route to set cookie server-side
+      const response = await fetch('/api/auth/site-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
       })
 
-      // Redirect to original destination or home
-      const redirect = searchParams.get('redirect') || '/'
-      router.push(redirect)
-    } else {
-      setError('Incorrect password')
+      if (response.ok) {
+        // Redirect using window.location to ensure full page load with new cookie
+        const redirect = searchParams.get('redirect') || '/'
+        window.location.href = redirect
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Incorrect password')
+        setIsLoading(false)
+      }
+    } catch {
+      setError('Something went wrong. Please try again.')
       setIsLoading(false)
     }
   }

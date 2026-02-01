@@ -85,7 +85,16 @@ export function ProjectCard({
           className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium text-white flex items-center gap-1.5 shadow-sm"
           style={{ backgroundColor: categoryConfig.color }}
         >
-          <span>{categoryConfig.icon}</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="w-3.5 h-3.5"
+            dangerouslySetInnerHTML={{ __html: categoryConfig.icon }}
+          />
           <span>{t(`categories.${project.category}`)}</span>
         </div>
 

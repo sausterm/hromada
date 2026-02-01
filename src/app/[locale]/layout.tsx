@@ -50,6 +50,11 @@ export async function generateMetadata(): Promise<Metadata> {
     creator: 'Hromada Platform',
     publisher: 'Hromada Platform',
     robots: 'index, follow',
+    icons: {
+      icon: '/icon.svg',
+      shortcut: '/icon.svg',
+      apple: '/apple-icon.png',
+    },
     openGraph: {
       title: 'hromada | Support Ukrainian renewable infrastructure',
       description: 'Connect with Ukrainian municipalities to support renewable infrastructure recovery for hospitals, schools, and essential services.',

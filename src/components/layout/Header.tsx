@@ -190,7 +190,7 @@ export function Header({ children }: HeaderProps) {
               </button>
               <svg
                 viewBox="0 0 48 30"
-                className="inline-block w-8 h-5 sm:w-10 sm:h-6 lg:w-12 lg:h-8 mx-2 self-center"
+                className="inline-block w-6 h-4 sm:w-8 sm:h-5 lg:w-10 lg:h-6 mx-2 self-center"
                 style={{ transform: 'rotate(-38deg)' }}
               >
                 <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>

@@ -181,14 +181,18 @@ export function Header({ children }: HeaderProps) {
 
           {/* Center - Logo */}
           <div className="flex flex-col items-center flex-shrink-0">
-            <span className="font-logo text-[var(--navy-700)] text-[2rem] sm:text-[2.5rem] lg:text-[3rem] leading-tight">
+            <span className="font-logo text-[var(--navy-700)] text-[2rem] sm:text-[2.5rem] lg:text-[3rem] leading-tight flex items-center">
               <button
                 onClick={() => handleLogoClick('en')}
                 className={`${locale === 'en' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}
               >
                 hromada
               </button>
-              <span className="font-normal"> | </span>
+              <img
+                src="/icon.svg"
+                alt=""
+                className="inline-block w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-2"
+              />
               <button
                 onClick={() => handleLogoClick('uk')}
                 className={`${locale === 'uk' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}

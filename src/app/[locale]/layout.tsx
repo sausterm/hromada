@@ -44,7 +44,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'hromada | support renewable infrastructure',
+    title: 'hromada | support renewable infrastructure recovery',
     description: 'Connect with Ukrainian municipalities to support infrastructure recovery',
     authors: [{ name: 'Thomas D. Protzman' }, { name: 'Sloan Austermann' }],
     creator: 'Hromada Platform',

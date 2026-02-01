@@ -18,9 +18,9 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
   const statusConfig = STATUS_CONFIG[project.status]
 
   return (
-    <div className="w-72 h-[420px] p-0 bg-[var(--cream-100)] flex flex-col">
+    <div className="w-72 h-[360px] p-0 bg-[var(--cream-100)] flex flex-col">
       {/* Photo - always same height */}
-      <div className="w-full h-32 bg-[var(--cream-200)] rounded-t-lg overflow-hidden flex-shrink-0">
+      <div className="w-full h-24 bg-[var(--cream-200)] rounded-t-lg overflow-hidden flex-shrink-0">
         {project.photos && project.photos.length > 0 ? (
           <img
             src={project.photos[0]}
@@ -63,12 +63,12 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         </p>
 
         {/* Description preview - fixed 2 lines */}
-        <p className="text-xs text-[var(--navy-600)] line-clamp-2 h-8 mb-3 flex-shrink-0">
+        <p className="text-xs text-[var(--navy-600)] line-clamp-2 h-8 mb-2 flex-shrink-0">
           {localized.briefDescription || localized.fullDescription}
         </p>
 
         {/* Project Type & Cost - fixed height */}
-        <div className="flex items-center gap-2 mb-3 h-6 flex-shrink-0">
+        <div className="flex items-center gap-2 mb-2 h-6 flex-shrink-0">
           {project.projectType && (
             <span
               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium"
@@ -89,7 +89,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         </div>
 
         {/* Urgency - fixed height */}
-        <div className="flex items-center gap-1 mb-3 h-4 flex-shrink-0">
+        <div className="flex items-center gap-1 mb-2 h-4 flex-shrink-0">
           {project.urgency !== 'LOW' && (
             <>
               <span

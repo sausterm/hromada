@@ -18,8 +18,12 @@ function SiteAccessForm() {
 
     // Verify password
     if (password === 'hromada!2026') {
-      // Set cookie for 7 days
-      Cookies.set('hromada_site_access', password, { expires: 7 })
+      // Set cookie for 7 days, available across entire site
+      Cookies.set('hromada_site_access', password, {
+        expires: 7,
+        path: '/',
+        sameSite: 'lax'
+      })
 
       // Redirect to original destination or home
       const redirect = searchParams.get('redirect') || '/'

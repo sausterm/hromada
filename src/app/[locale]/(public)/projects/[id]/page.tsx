@@ -147,7 +147,19 @@ export default function ProjectDetailPage() {
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mb-4">
                 <Badge dot dotColor={categoryConfig.color}>
-                  {categoryConfig.icon} {t(`categories.${project.category}`)}
+                  <span className="inline-flex items-center gap-1.5">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-4 h-4"
+                      dangerouslySetInnerHTML={{ __html: categoryConfig.icon }}
+                    />
+                    {t(`categories.${project.category}`)}
+                  </span>
                 </Badge>
                 <Badge
                   variant={project.status === 'OPEN' ? 'success' : 'default'}

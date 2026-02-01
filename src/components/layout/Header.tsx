@@ -188,11 +188,22 @@ export function Header({ children }: HeaderProps) {
               >
                 hromada
               </button>
-              <img
-                src="/icon.svg"
-                alt=""
-                className="inline-block w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-2"
-              />
+              <svg
+                viewBox="0 0 48 30"
+                className="inline-block w-8 h-5 sm:w-10 sm:h-6 lg:w-12 lg:h-8 mx-2 self-center"
+                style={{ transform: 'rotate(-38deg)' }}
+              >
+                <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>
+                <line x1="16" y1="0" x2="16" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                <line x1="32" y1="0" x2="32" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                <line x1="0" y1="15" x2="48" y2="15" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                <circle cx="16" cy="15" r="2.5" fill="var(--cream-100)"/>
+                <circle cx="32" cy="15" r="2.5" fill="var(--cream-100)"/>
+                <circle cx="0" cy="0" r="2.5" fill="var(--cream-100)"/>
+                <circle cx="48" cy="0" r="2.5" fill="var(--cream-100)"/>
+                <circle cx="0" cy="30" r="2.5" fill="var(--cream-100)"/>
+                <circle cx="48" cy="30" r="2.5" fill="var(--cream-100)"/>
+              </svg>
               <button
                 onClick={() => handleLogoClick('uk')}
                 className={`${locale === 'uk' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}

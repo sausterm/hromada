@@ -18,7 +18,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
   const statusConfig = STATUS_CONFIG[project.status]
 
   return (
-    <div className="w-72 h-[390px] p-0 bg-[var(--cream-100)] flex flex-col">
+    <div className="w-72 h-[380px] p-0 bg-[var(--cream-100)] flex flex-col">
       {/* Photo - always same height */}
       <div className="w-full h-28 bg-[var(--cream-200)] rounded-t-lg overflow-hidden flex-shrink-0">
         {project.photos && project.photos.length > 0 ? (
@@ -34,7 +34,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         )}
       </div>
 
-      <div className="p-3 flex flex-col flex-1">
+      <div className="p-3 pb-4 flex flex-col flex-1">
         {/* Category & Status badges */}
         <div className="flex items-center gap-2 mb-2 flex-shrink-0">
           <Badge
@@ -103,13 +103,10 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
           )}
         </div>
 
-        {/* Spacer to push button to bottom */}
-        <div className="flex-1" />
-
         {/* View details link */}
         <Link
           href={`/projects/${project.id}`}
-          className="block w-full text-center py-2 px-4 bg-[var(--navy-600)] text-sm font-medium rounded-lg hover:bg-[var(--navy-700)] transition-colors flex-shrink-0"
+          className="block w-full text-center py-2 px-4 bg-[var(--navy-600)] text-sm font-medium rounded-lg hover:bg-[var(--navy-700)] transition-colors flex-shrink-0 mt-auto"
           style={{ color: '#F5F1E8' }}
         >
           {t('projectDetail.viewDetails')}

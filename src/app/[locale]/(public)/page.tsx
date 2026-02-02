@@ -409,7 +409,7 @@ export default function HomePage() {
                   className="fixed z-50 pt-2"
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
-                    left: priceButtonRef.current.getBoundingClientRect().left,
+                    left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
                   }}
                   onMouseEnter={() => setIsPriceDropdownOpen(true)}
                   onMouseLeave={() => setIsPriceDropdownOpen(false)}
@@ -476,7 +476,7 @@ export default function HomePage() {
                     {/* Reset button */}
                     <button
                       onClick={() => setPriceRange([0, 500000])}
-                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-2"
+                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-1"
                     >
                       Reset
                     </button>
@@ -562,7 +562,7 @@ export default function HomePage() {
                   className="fixed z-50 pt-2"
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
-                    left: powerButtonRef.current.getBoundingClientRect().left,
+                    left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
                   }}
                   onMouseEnter={() => setIsPowerDropdownOpen(true)}
                   onMouseLeave={() => setIsPowerDropdownOpen(false)}
@@ -629,7 +629,7 @@ export default function HomePage() {
                     {/* Reset button */}
                     <button
                       onClick={() => setPowerRange([0, 500])}
-                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-2"
+                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-1"
                     >
                       Reset
                     </button>

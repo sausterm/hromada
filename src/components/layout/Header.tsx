@@ -205,13 +205,14 @@ export function Header({ children }: HeaderProps) {
               </button>
               <button
                 onClick={handleIconClick}
-                className="hover:opacity-70 transition-opacity cursor-pointer mx-2 self-center"
+                className="cursor-pointer mx-2 self-center group"
                 aria-label="Go to homepage"
+                style={{ perspective: '100px' }}
               >
                 <svg
                   viewBox="0 0 48 30"
-                  className="inline-block w-6 h-4 sm:w-8 sm:h-5 lg:w-10 lg:h-6"
-                  style={{ transform: 'rotate(-38deg)' }}
+                  className="inline-block w-6 h-4 sm:w-8 sm:h-5 lg:w-10 lg:h-6 logo-flip"
+                  style={{ transform: 'rotate(-38deg)', transformStyle: 'preserve-3d' }}
                 >
                   <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>
                   <line x1="16" y1="0" x2="16" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
@@ -224,6 +225,15 @@ export function Header({ children }: HeaderProps) {
                   <circle cx="0" cy="30" r="2.5" fill="var(--cream-100)"/>
                   <circle cx="48" cy="30" r="2.5" fill="var(--cream-100)"/>
                 </svg>
+                <style jsx>{`
+                  @keyframes logoFlip {
+                    0% { transform: rotate(-38deg) rotateY(0deg); }
+                    100% { transform: rotate(-38deg) rotateY(360deg); }
+                  }
+                  .group:hover .logo-flip {
+                    animation: logoFlip 0.6s ease-in-out;
+                  }
+                `}</style>
               </button>
               <button
                 onClick={() => handleLogoClick('uk')}

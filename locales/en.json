@@ -106,6 +106,7 @@
       "cofinancing": "Co-financing",
       "projectType": "Project Type",
       "price": "Price",
+      "power": "Power (kW)",
       "clear": "Clear"
     }
   },

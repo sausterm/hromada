@@ -88,17 +88,21 @@ export default function HomePage() {
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000])
+  const [powerRange, setPowerRange] = useState<[number, number]>([0, 500])
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
+  const [isPowerDropdownOpen, setIsPowerDropdownOpen] = useState(false)
   const [isProjectTypeOpen, setIsProjectTypeOpen] = useState(false)
   const [isUrgencyOpen, setIsUrgencyOpen] = useState(false)
   const [isStatusOpen, setIsStatusOpen] = useState(false)
   const [isCofinancingOpen, setIsCofinancingOpen] = useState(false)
   const [isSortOpen, setIsSortOpen] = useState(false)
   const priceDropdownId = useId()
+  const powerDropdownId = useId()
   const [sortBy, setSortBy] = useState<SortOption>('newest')
 
   // Refs for filter buttons to position dropdowns
   const priceButtonRef = useRef<HTMLButtonElement>(null)
+  const powerButtonRef = useRef<HTMLButtonElement>(null)
   const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
   const urgencyButtonRef = useRef<HTMLButtonElement>(null)
   const statusButtonRef = useRef<HTMLButtonElement>(null)
@@ -177,8 +181,17 @@ export default function HomePage() {
       })
     }
 
+    // Power range filter
+    const [minPower, maxPower] = powerRange
+    if (minPower > 0 || maxPower < 500) {
+      result = result.filter((p) => {
+        if (p.technicalPowerKw === undefined || p.technicalPowerKw === null) return true
+        return p.technicalPowerKw >= minPower && p.technicalPowerKw <= maxPower
+      })
+    }
+
     return result
-  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange, locale])
+  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange, powerRange, locale])
 
   // Sorted projects
   const sortedProjects = useMemo(() => {
@@ -520,6 +533,113 @@ export default function HomePage() {
                         {t(`projectTypes.${type}`)}
                       </button>
                     ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Power Range Dropdown */}
+            <div
+              className="relative shrink-0"
+              onMouseEnter={() => setIsPowerDropdownOpen(true)}
+              onMouseLeave={() => setIsPowerDropdownOpen(false)}
+            >
+              <button
+                ref={powerButtonRef}
+                aria-expanded={isPowerDropdownOpen}
+                aria-controls={powerDropdownId}
+                className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[130px] ${
+                  powerRange[0] > 0 || powerRange[1] < 500
+                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                }`}
+              >
+                <span>
+                  {powerRange[0] > 0 || powerRange[1] < 500
+                    ? `${powerRange[0]} - ${powerRange[1] >= 500 ? '500+' : powerRange[1]} kW`
+                    : t('homepage.filters.power')}
+                </span>
+                <svg className={`h-3.5 w-3.5 transition-transform ${isPowerDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown panel */}
+              {isPowerDropdownOpen && powerButtonRef.current && (
+                <div
+                  className="fixed z-50 pt-2"
+                  style={{
+                    top: powerButtonRef.current.getBoundingClientRect().bottom,
+                    left: powerButtonRef.current.getBoundingClientRect().left,
+                  }}
+                  onMouseEnter={() => setIsPowerDropdownOpen(true)}
+                  onMouseLeave={() => setIsPowerDropdownOpen(false)}
+                >
+                  <div
+                    id={powerDropdownId}
+                    className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28"
+                  >
+                  <div className="flex flex-col gap-4">
+                    {/* Max power label and value (top) */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-[var(--navy-500)]">Max</span>
+                      <span className="text-sm font-medium text-[var(--navy-700)]">
+                        {powerRange[1] >= 500 ? '500+' : powerRange[1]} kW
+                      </span>
+                    </div>
+
+                    {/* Vertical slider container */}
+                    <div className="relative h-32 flex justify-center">
+                      {/* Track background */}
+                      <div className="absolute w-1.5 h-full bg-[var(--cream-300)] rounded-full" />
+                      {/* Active track */}
+                      <div
+                        className="absolute w-1.5 bg-[var(--navy-500)] rounded-full pointer-events-none"
+                        style={{
+                          top: `${(1 - powerRange[1] / 500) * 100}%`,
+                          bottom: `${(powerRange[0] / 500) * 100}%`,
+                        }}
+                      />
+                      {/* Max slider (top - higher values) */}
+                      <input
+                        type="range"
+                        min={0}
+                        max={500}
+                        step={10}
+                        value={powerRange[1]}
+                        onChange={(e) => {
+                          const val = Number(e.target.value)
+                          if (val > powerRange[0]) {
+                            setPowerRange([powerRange[0], val])
+                          }
+                        }}
+                        className="absolute h-full w-32 appearance-none bg-transparent pointer-events-none cursor-pointer z-[4] origin-center -rotate-90 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
+                      />
+                      {/* Min slider (bottom - lower values) */}
+                      <input
+                        type="range"
+                        min={0}
+                        max={500}
+                        step={10}
+                        value={powerRange[0]}
+                        onChange={(e) => {
+                          const val = Number(e.target.value)
+                          if (val < powerRange[1]) {
+                            setPowerRange([val, powerRange[1]])
+                          }
+                        }}
+                        className="absolute h-full w-32 appearance-none bg-transparent pointer-events-none cursor-pointer z-[3] origin-center -rotate-90 [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--navy-600)] [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[var(--navy-600)] [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-grab"
+                      />
+                    </div>
+
+                    {/* Min power label and value (bottom) */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-[var(--navy-500)]">Min</span>
+                      <span className="text-sm font-medium text-[var(--navy-700)]">
+                        {powerRange[0]} kW
+                      </span>
+                    </div>
+                  </div>
                   </div>
                 </div>
               )}

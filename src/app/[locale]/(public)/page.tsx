@@ -419,8 +419,6 @@ export default function HomePage() {
                     className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28"
                   >
                   <div className="flex flex-col gap-2 items-center">
-                    {/* Max label (top) */}
-                    <span className="text-xs text-[var(--navy-500)]">Max</span>
                     {/* Max value */}
                     <span className="text-sm font-medium text-[var(--navy-700)]">
                       ${priceRange[1] >= 500000 ? '500k+' : priceRange[1] >= 1000 ? `${Math.round(priceRange[1] / 1000)}k` : priceRange[1]}
@@ -474,8 +472,6 @@ export default function HomePage() {
                     <span className="text-sm font-medium text-[var(--navy-700)]">
                       ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : priceRange[0] >= 1000 ? `${Math.round(priceRange[0] / 1000)}k` : priceRange[0]}
                     </span>
-                    {/* Min label (bottom) */}
-                    <span className="text-xs text-[var(--navy-500)]">Min</span>
 
                     {/* Reset button */}
                     {(priceRange[0] > 0 || priceRange[1] < 500000) && (
@@ -578,8 +574,6 @@ export default function HomePage() {
                     className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28"
                   >
                   <div className="flex flex-col gap-2 items-center">
-                    {/* Max label (top) */}
-                    <span className="text-xs text-[var(--navy-500)]">Max</span>
                     {/* Max value */}
                     <span className="text-sm font-medium text-[var(--navy-700)]">
                       {powerRange[1] >= 500 ? '500+' : powerRange[1]} kW
@@ -633,8 +627,6 @@ export default function HomePage() {
                     <span className="text-sm font-medium text-[var(--navy-700)]">
                       {powerRange[0]} kW
                     </span>
-                    {/* Min label (bottom) */}
-                    <span className="text-xs text-[var(--navy-500)]">Min</span>
 
                     {/* Reset button */}
                     {(powerRange[0] > 0 || powerRange[1] < 500) && (

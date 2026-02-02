@@ -32,6 +32,19 @@ export default function ContactPage() {
               {t('forDonorsText')}
             </p>
           </div>
+
+          <div className="bg-[var(--cream-100)] p-6 rounded-lg mt-4 border border-[var(--cream-300)]">
+            <h3 className="font-semibold text-[var(--navy-700)] mb-2">{t('generalInquiries')}</h3>
+            <p className="text-[var(--navy-600)]">
+              {t('generalInquiriesText')}{' '}
+              <a
+                href="mailto:admin@hromadaproject.org"
+                className="text-[var(--ukraine-blue)] hover:underline font-medium"
+              >
+                admin@hromadaproject.org
+              </a>
+            </p>
+          </div>
         </div>
       </main>
     </div>

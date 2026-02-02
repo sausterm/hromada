@@ -298,11 +298,14 @@ function FlyToProject({
           const markerInView = bounds.contains([lat, lng])
 
           if (markerInView) {
-            // Save current view for restore
-            const currentCenter = map.getCenter()
-            savedMapView = {
-              center: [currentCenter.lat, currentCenter.lng],
-              zoom: currentZoom,
+            // Only save view if we don't already have one saved
+            // This preserves the original view when switching between projects
+            if (!savedMapView) {
+              const currentCenter = map.getCenter()
+              savedMapView = {
+                center: [currentCenter.lat, currentCenter.lng],
+                zoom: currentZoom,
+              }
             }
             // Open popup (may already be open if marker was clicked directly)
             // popupopen handler will center it
@@ -312,11 +315,14 @@ function FlyToProject({
           }
         }
 
-        // Save current view before flying
-        const currentCenter = map.getCenter()
-        savedMapView = {
-          center: [currentCenter.lat, currentCenter.lng],
-          zoom: map.getZoom(),
+        // Only save current view if we don't already have one saved
+        // This preserves the original view when switching between projects
+        if (!savedMapView) {
+          const currentCenter = map.getCenter()
+          savedMapView = {
+            center: [currentCenter.lat, currentCenter.lng],
+            zoom: map.getZoom(),
+          }
         }
 
         // Close any already-open popup first (from marker click)

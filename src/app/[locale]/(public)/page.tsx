@@ -540,7 +540,7 @@ export default function HomePage() {
                 ref={powerButtonRef}
                 aria-expanded={isPowerDropdownOpen}
                 aria-controls={powerDropdownId}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 ${
+                className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[155px] ${
                   powerRange[0] > 0 || powerRange[1] < 500
                     ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
                     : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'

@@ -418,14 +418,13 @@ export default function HomePage() {
                     id={priceDropdownId}
                     className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28"
                   >
-                  <div className="flex flex-col gap-4">
-                    {/* Max price label and value (top) */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-[var(--navy-500)]">Max</span>
-                      <span className="text-sm font-medium text-[var(--navy-700)]">
-                        ${priceRange[1] >= 500000 ? '500k+' : priceRange[1] >= 1000 ? `${Math.round(priceRange[1] / 1000)}k` : priceRange[1]}
-                      </span>
-                    </div>
+                  <div className="flex flex-col gap-2 items-center">
+                    {/* Max label (top) */}
+                    <span className="text-xs text-[var(--navy-500)]">Max</span>
+                    {/* Max value */}
+                    <span className="text-sm font-medium text-[var(--navy-700)]">
+                      ${priceRange[1] >= 500000 ? '500k+' : priceRange[1] >= 1000 ? `${Math.round(priceRange[1] / 1000)}k` : priceRange[1]}
+                    </span>
 
                     {/* Vertical slider container */}
                     <div className="relative h-32 flex justify-center">
@@ -471,19 +470,18 @@ export default function HomePage() {
                       />
                     </div>
 
-                    {/* Min price label and value (bottom) */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-[var(--navy-500)]">Min</span>
-                      <span className="text-sm font-medium text-[var(--navy-700)]">
-                        ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : priceRange[0] >= 1000 ? `${Math.round(priceRange[0] / 1000)}k` : priceRange[0]}
-                      </span>
-                    </div>
+                    {/* Min value */}
+                    <span className="text-sm font-medium text-[var(--navy-700)]">
+                      ${priceRange[0] >= 1000000 ? `${(priceRange[0] / 1000000).toFixed(1)}M` : priceRange[0] >= 1000 ? `${Math.round(priceRange[0] / 1000)}k` : priceRange[0]}
+                    </span>
+                    {/* Min label (bottom) */}
+                    <span className="text-xs text-[var(--navy-500)]">Min</span>
 
                     {/* Reset button */}
                     {(priceRange[0] > 0 || priceRange[1] < 500000) && (
                       <button
                         onClick={() => setPriceRange([0, 500000])}
-                        className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline"
+                        className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-1"
                       >
                         Reset
                       </button>
@@ -579,14 +577,13 @@ export default function HomePage() {
                     id={powerDropdownId}
                     className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28"
                   >
-                  <div className="flex flex-col gap-4">
-                    {/* Max power label and value (top) */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-[var(--navy-500)]">Max</span>
-                      <span className="text-sm font-medium text-[var(--navy-700)]">
-                        {powerRange[1] >= 500 ? '500+' : powerRange[1]} kW
-                      </span>
-                    </div>
+                  <div className="flex flex-col gap-2 items-center">
+                    {/* Max label (top) */}
+                    <span className="text-xs text-[var(--navy-500)]">Max</span>
+                    {/* Max value */}
+                    <span className="text-sm font-medium text-[var(--navy-700)]">
+                      {powerRange[1] >= 500 ? '500+' : powerRange[1]} kW
+                    </span>
 
                     {/* Vertical slider container */}
                     <div className="relative h-32 flex justify-center">
@@ -632,13 +629,22 @@ export default function HomePage() {
                       />
                     </div>
 
-                    {/* Min power label and value (bottom) */}
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-[var(--navy-500)]">Min</span>
-                      <span className="text-sm font-medium text-[var(--navy-700)]">
-                        {powerRange[0]} kW
-                      </span>
-                    </div>
+                    {/* Min value */}
+                    <span className="text-sm font-medium text-[var(--navy-700)]">
+                      {powerRange[0]} kW
+                    </span>
+                    {/* Min label (bottom) */}
+                    <span className="text-xs text-[var(--navy-500)]">Min</span>
+
+                    {/* Reset button */}
+                    {(powerRange[0] > 0 || powerRange[1] < 500) && (
+                      <button
+                        onClick={() => setPowerRange([0, 500])}
+                        className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-1"
+                      >
+                        Reset
+                      </button>
+                    )}
                   </div>
                   </div>
                 </div>

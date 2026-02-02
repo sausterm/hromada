@@ -476,7 +476,7 @@ export default function HomePage() {
                     {/* Reset button */}
                     <button
                       onClick={() => setPriceRange([0, 500000])}
-                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] mt-2"
+                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-2"
                     >
                       Reset
                     </button>
@@ -629,7 +629,7 @@ export default function HomePage() {
                     {/* Reset button */}
                     <button
                       onClick={() => setPowerRange([0, 500])}
-                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] mt-2"
+                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-2"
                     >
                       Reset
                     </button>

@@ -8,10 +8,10 @@ describe('LoadingSpinner', () => {
       expect(container.firstChild).toBeInTheDocument()
     })
 
-    it('renders spinning animation element', () => {
+    it('renders flip animation element', () => {
       const { container } = render(<LoadingSpinner />)
-      const spinningElement = container.querySelector('.animate-spin')
-      expect(spinningElement).toBeInTheDocument()
+      const flippingElement = container.querySelector('.animate-flip')
+      expect(flippingElement).toBeInTheDocument()
     })
   })
 
@@ -56,10 +56,10 @@ describe('LoadingSpinner', () => {
       expect(svg).toBeInTheDocument()
     })
 
-    it('has animate-spin class on wrapper', () => {
+    it('has flip animation on SVG element', () => {
       const { container } = render(<LoadingSpinner />)
-      const wrapper = container.firstChild as HTMLElement
-      expect(wrapper).toHaveClass('animate-spin')
+      const svg = container.querySelector('svg')
+      expect(svg).toHaveClass('animate-flip')
     })
   })
 })

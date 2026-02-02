@@ -13,8 +13,15 @@ export function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerPr
   }
 
   return (
-    <div className={`${sizeClasses[size]} ${className} animate-spin`}>
-      <svg viewBox="0 0 120 120" className="w-full h-full">
+    <div
+      className={`${sizeClasses[size]} ${className}`}
+      style={{ perspective: '200px' }}
+    >
+      <svg
+        viewBox="0 0 120 120"
+        className="w-full h-full animate-flip"
+        style={{ transformStyle: 'preserve-3d' }}
+      >
         <circle cx="60" cy="60" r="55" fill="#f5f0e8" />
         <g transform="translate(60,60) rotate(-38) scale(1.4)">
           <rect x="-24" y="-15" width="48" height="30" rx="3" fill="#1a2744" />
@@ -29,6 +36,19 @@ export function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerPr
           <circle cx="24" cy="15" r="2.5" fill="#f5f0e8" />
         </g>
       </svg>
+      <style jsx>{`
+        @keyframes flip {
+          0% {
+            transform: rotateY(0deg);
+          }
+          100% {
+            transform: rotateY(360deg);
+          }
+        }
+        .animate-flip {
+          animation: flip 1.5s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   )
 }

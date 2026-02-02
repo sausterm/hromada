@@ -7,17 +7,28 @@ interface LoadingSpinnerProps {
 
 export function LoadingSpinner({ size = 'md', className = '' }: LoadingSpinnerProps) {
   const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-6 h-6',
-    lg: 'w-10 h-10',
+    sm: 'w-6 h-6',
+    md: 'w-10 h-10',
+    lg: 'w-16 h-16',
   }
 
   return (
-    <div className={`${sizeClasses[size]} ${className}`}>
-      <div
-        className="animate-spin rounded-full border-2 border-gray-300 border-t-[var(--ukraine-600)]"
-        style={{ width: '100%', height: '100%' }}
-      />
+    <div className={`${sizeClasses[size]} ${className} animate-spin`}>
+      <svg viewBox="0 0 120 120" className="w-full h-full">
+        <circle cx="60" cy="60" r="55" fill="#f5f0e8" />
+        <g transform="translate(60,60) rotate(-38) scale(1.4)">
+          <rect x="-24" y="-15" width="48" height="30" rx="3" fill="#1a2744" />
+          <line x1="-8" y1="-15" x2="-8" y2="15" stroke="#f5f0e8" strokeWidth="1.5" />
+          <line x1="8" y1="-15" x2="8" y2="15" stroke="#f5f0e8" strokeWidth="1.5" />
+          <line x1="-24" y1="0" x2="24" y2="0" stroke="#f5f0e8" strokeWidth="1.5" />
+          <circle cx="-8" cy="0" r="2.5" fill="#f5f0e8" />
+          <circle cx="8" cy="0" r="2.5" fill="#f5f0e8" />
+          <circle cx="-24" cy="-15" r="2.5" fill="#f5f0e8" />
+          <circle cx="24" cy="-15" r="2.5" fill="#f5f0e8" />
+          <circle cx="-24" cy="15" r="2.5" fill="#f5f0e8" />
+          <circle cx="24" cy="15" r="2.5" fill="#f5f0e8" />
+        </g>
+      </svg>
     </div>
   )
 }

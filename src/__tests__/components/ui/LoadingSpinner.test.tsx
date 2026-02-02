@@ -19,19 +19,19 @@ describe('LoadingSpinner', () => {
     it('renders small size correctly', () => {
       const { container } = render(<LoadingSpinner size="sm" />)
       const wrapper = container.firstChild as HTMLElement
-      expect(wrapper).toHaveClass('w-4', 'h-4')
+      expect(wrapper).toHaveClass('w-6', 'h-6')
     })
 
     it('renders medium size correctly (default)', () => {
       const { container } = render(<LoadingSpinner />)
       const wrapper = container.firstChild as HTMLElement
-      expect(wrapper).toHaveClass('w-6', 'h-6')
+      expect(wrapper).toHaveClass('w-10', 'h-10')
     })
 
     it('renders large size correctly', () => {
       const { container } = render(<LoadingSpinner size="lg" />)
       const wrapper = container.firstChild as HTMLElement
-      expect(wrapper).toHaveClass('w-10', 'h-10')
+      expect(wrapper).toHaveClass('w-16', 'h-16')
     })
   })
 
@@ -45,21 +45,21 @@ describe('LoadingSpinner', () => {
     it('combines size class with custom className', () => {
       const { container } = render(<LoadingSpinner size="lg" className="my-spinner" />)
       const wrapper = container.firstChild as HTMLElement
-      expect(wrapper).toHaveClass('w-10', 'h-10', 'my-spinner')
+      expect(wrapper).toHaveClass('w-16', 'h-16', 'my-spinner')
     })
   })
 
   describe('Styling', () => {
-    it('has rounded border style', () => {
+    it('renders SVG solar panel icon', () => {
       const { container } = render(<LoadingSpinner />)
-      const spinningElement = container.querySelector('.animate-spin')
-      expect(spinningElement).toHaveClass('rounded-full')
+      const svg = container.querySelector('svg')
+      expect(svg).toBeInTheDocument()
     })
 
-    it('has border styling for spinner effect', () => {
+    it('has animate-spin class on wrapper', () => {
       const { container } = render(<LoadingSpinner />)
-      const spinningElement = container.querySelector('.animate-spin')
-      expect(spinningElement).toHaveClass('border-2')
+      const wrapper = container.firstChild as HTMLElement
+      expect(wrapper).toHaveClass('animate-spin')
     })
   })
 })

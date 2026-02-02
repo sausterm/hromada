@@ -1427,7 +1427,7 @@ export default function AdminDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--cream-50)]">
         <LoadingSpinner size="lg" />
       </div>
     )

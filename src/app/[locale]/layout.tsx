@@ -60,20 +60,11 @@ export async function generateMetadata(): Promise<Metadata> {
       description: 'Connect with Ukrainian municipalities to support renewable infrastructure recovery for hospitals, schools, and essential services.',
       siteName: 'hromada',
       type: 'website',
-      images: [
-        {
-          url: '/icon.svg',
-          width: 120,
-          height: 120,
-          alt: 'hromada logo',
-        },
-      ],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: 'hromada | Support Ukrainian renewable infrastructure',
       description: 'Connect with Ukrainian municipalities to support renewable infrastructure recovery.',
-      images: ['/icon.svg'],
     },
     other: {
       'copyright': '© 2025 Thomas D. Protzman and Sloan Austermann. All rights reserved.',

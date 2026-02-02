@@ -474,14 +474,12 @@ export default function HomePage() {
                     </span>
 
                     {/* Reset button */}
-                    {(priceRange[0] > 0 || priceRange[1] < 500000) && (
-                      <button
-                        onClick={() => setPriceRange([0, 500000])}
-                        className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-1"
-                      >
-                        Reset
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setPriceRange([0, 500000])}
+                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] mt-2"
+                    >
+                      Reset
+                    </button>
                   </div>
                   </div>
                 </div>
@@ -629,14 +627,12 @@ export default function HomePage() {
                     </span>
 
                     {/* Reset button */}
-                    {(powerRange[0] > 0 || powerRange[1] < 500) && (
-                      <button
-                        onClick={() => setPowerRange([0, 500])}
-                        className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] underline mt-1"
-                      >
-                        Reset
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setPowerRange([0, 500])}
+                      className="text-xs text-[var(--navy-500)] hover:text-[var(--navy-700)] mt-2"
+                    >
+                      Reset
+                    </button>
                   </div>
                   </div>
                 </div>

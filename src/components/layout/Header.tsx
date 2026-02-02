@@ -231,7 +231,7 @@ export function Header({ children }: HeaderProps) {
                     100% { transform: rotate(-38deg) rotateY(360deg); }
                   }
                   .group:hover .logo-flip {
-                    animation: logoFlip 0.6s ease-in-out;
+                    animation: logoFlip 1.2s ease-in-out;
                   }
                 `}</style>
               </button>

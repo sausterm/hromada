@@ -225,7 +225,7 @@ body {
   font-size: 18px !important;
   font-weight: 400 !important;
   color: var(--navy-400) !important;
-  background: white !important;
+  background: var(--cream-50) !important;
   border-radius: 50% !important;
   display: flex !important;
   align-items: center !important;

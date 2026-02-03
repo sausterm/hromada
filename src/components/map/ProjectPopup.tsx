@@ -16,7 +16,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
   const urgencyConfig = URGENCY_CONFIG[project.urgency]
 
   return (
-    <div className="w-64 bg-white rounded-xl overflow-hidden shadow-xl border border-gray-100">
+    <div className="w-64 bg-[var(--cream-50)] rounded-xl overflow-hidden shadow-xl border border-[var(--cream-200)]">
       {/* Colored accent bar */}
       <div
         className="h-1.5"
@@ -76,7 +76,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         </p>
 
         {/* Divider */}
-        <div className="border-t border-gray-100 my-3" />
+        <div className="border-t border-[var(--cream-200)] my-3" />
 
         {/* Cost & Co-financing Row */}
         <div className="flex items-center gap-2 mb-3">

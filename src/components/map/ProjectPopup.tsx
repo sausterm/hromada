@@ -53,9 +53,11 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         </div>
 
         {/* Title */}
-        <h3 className="font-semibold text-[var(--navy-700)] text-sm leading-tight line-clamp-2 mb-1">
-          {localized.facilityName}
-        </h3>
+        <Link href={`/projects/${project.id}`}>
+          <h3 className="font-semibold text-[var(--navy-700)] text-sm leading-tight line-clamp-2 mb-1 hover:text-[var(--ukraine-blue)] transition-colors cursor-pointer">
+            {localized.facilityName}
+          </h3>
+        </Link>
 
         {/* Municipality */}
         <p className="text-xs text-[var(--navy-500)] mb-2">

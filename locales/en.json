@@ -106,6 +106,7 @@
       "cofinancing": "Co-financing",
       "projectType": "Project Type",
       "price": "Price",
+      "panels": "Panels (540W)",
       "power": "Power (kW)",
       "clear": "Clear"
     }

@@ -11,12 +11,9 @@ import {
   type Project,
   type Category,
   type Urgency,
-  type Status,
   type CofinancingStatus,
   type ProjectType,
   CATEGORY_CONFIG,
-  URGENCY_CONFIG,
-  STATUS_CONFIG,
   COFINANCING_CONFIG,
   PROJECT_TYPE_CONFIG,
   formatCurrency,
@@ -83,8 +80,6 @@ export default function HomePage() {
   const [flyToProjectId, setFlyToProjectId] = useState<string | null>(null) // Separate state for zoom-on-click
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set())
-  const [selectedUrgency, setSelectedUrgency] = useState<Urgency | null>(null)
-  const [selectedStatus, setSelectedStatus] = useState<Status | null>(null)
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000])
@@ -92,8 +87,6 @@ export default function HomePage() {
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false)
   const [isPowerDropdownOpen, setIsPowerDropdownOpen] = useState(false)
   const [isProjectTypeOpen, setIsProjectTypeOpen] = useState(false)
-  const [isUrgencyOpen, setIsUrgencyOpen] = useState(false)
-  const [isStatusOpen, setIsStatusOpen] = useState(false)
   const [isCofinancingOpen, setIsCofinancingOpen] = useState(false)
   const [isSortOpen, setIsSortOpen] = useState(false)
   const priceDropdownId = useId()
@@ -104,8 +97,6 @@ export default function HomePage() {
   const priceButtonRef = useRef<HTMLButtonElement>(null)
   const powerButtonRef = useRef<HTMLButtonElement>(null)
   const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
-  const urgencyButtonRef = useRef<HTMLButtonElement>(null)
-  const statusButtonRef = useRef<HTMLButtonElement>(null)
   const cofinancingButtonRef = useRef<HTMLButtonElement>(null)
 
   // Pagination for card list
@@ -152,16 +143,6 @@ export default function HomePage() {
       result = result.filter((p) => selectedCategories.has(p.category))
     }
 
-    // Urgency filter
-    if (selectedUrgency) {
-      result = result.filter((p) => p.urgency === selectedUrgency)
-    }
-
-    // Status filter
-    if (selectedStatus) {
-      result = result.filter((p) => p.status === selectedStatus)
-    }
-
     // Cofinancing filter
     if (selectedCofinancing) {
       result = result.filter((p) => p.cofinancingAvailable === selectedCofinancing)
@@ -191,7 +172,7 @@ export default function HomePage() {
     }
 
     return result
-  }, [allProjects, searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange, powerRange, locale])
+  }, [allProjects, searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange, locale])
 
   // Sorted projects
   const sortedProjects = useMemo(() => {
@@ -256,7 +237,7 @@ export default function HomePage() {
   // Reset pagination when filters change
   useEffect(() => {
     setDisplayCount(ITEMS_PER_PAGE)
-  }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, priceRange])
+  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange])
 
   // Show more projects
   const showMoreProjects = useCallback(() => {
@@ -337,11 +318,10 @@ export default function HomePage() {
   const clearFilters = useCallback(() => {
     setSearchQuery('')
     setSelectedCategories(new Set())
-    setSelectedUrgency(null)
-    setSelectedStatus(null)
     setSelectedCofinancing(null)
     setSelectedProjectType(null)
     setPriceRange([0, 500000])
+    setPowerRange([0, 500])
     setSortBy('newest')
   }, [])
 
@@ -350,13 +330,12 @@ export default function HomePage() {
     let count = 0
     if (searchQuery.trim()) count++
     count += selectedCategories.size
-    if (selectedUrgency) count++
-    if (selectedStatus) count++
     if (selectedCofinancing) count++
     if (selectedProjectType) count++
     if (priceRange[0] > 0 || priceRange[1] < 500000) count++
+    if (powerRange[0] > 0 || powerRange[1] < 500) count++
     return count
-  }, [searchQuery, selectedCategories, selectedUrgency, selectedStatus, selectedCofinancing, selectedProjectType, priceRange])
+  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange])
 
   // Total funding needed for visible projects
   const totalFundingNeeded = useMemo(() => {
@@ -485,6 +464,35 @@ export default function HomePage() {
                 </div>
               )}
             </div>
+
+            {/* Category chips */}
+            {(Object.keys(CATEGORY_CONFIG) as Category[]).map((category) => {
+              const config = CATEGORY_CONFIG[category]
+              const isActive = selectedCategories.has(category)
+              return (
+                <button
+                  key={category}
+                  onClick={() => toggleCategory(category)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all shrink-0 border-2 ${
+                    isActive
+                      ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
+                      : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
+                  }`}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                    dangerouslySetInnerHTML={{ __html: config.icon }}
+                  />
+                  <span className="hidden sm:inline">{t(`categories.${category}`).split(' ')[0]}</span>
+                </button>
+              )
+            })}
 
             {/* Project Type dropdown */}
             <div
@@ -639,94 +647,6 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* Status dropdown */}
-            <div
-              className="relative shrink-0"
-              onMouseEnter={() => setIsStatusOpen(true)}
-              onMouseLeave={() => setIsStatusOpen(false)}
-            >
-              <button
-                ref={statusButtonRef}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
-                  selectedStatus
-                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
-                }`}
-              >
-                <span>{selectedStatus ? t(`status.${selectedStatus}`) : t('homepage.filters.status')}</span>
-                <svg className={`h-3.5 w-3.5 transition-transform ${isStatusOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {isStatusOpen && statusButtonRef.current && (
-                <div
-                  className="fixed z-50 pt-2"
-                  style={{
-                    top: statusButtonRef.current.getBoundingClientRect().bottom,
-                    left: statusButtonRef.current.getBoundingClientRect().left,
-                  }}
-                  onMouseEnter={() => setIsStatusOpen(true)}
-                  onMouseLeave={() => setIsStatusOpen(false)}
-                >
-                  <div className="w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
-                    {(Object.keys(STATUS_CONFIG) as Status[]).map((status) => (
-                      <button
-                        key={status}
-                        onClick={() => setSelectedStatus(selectedStatus === status ? null : status)}
-                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedStatus === status ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
-                      >
-                        {t(`status.${status}`)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Urgency dropdown */}
-            <div
-              className="relative shrink-0"
-              onMouseEnter={() => setIsUrgencyOpen(true)}
-              onMouseLeave={() => setIsUrgencyOpen(false)}
-            >
-              <button
-                ref={urgencyButtonRef}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
-                  selectedUrgency
-                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
-                }`}
-              >
-                <span>{selectedUrgency ? t(`urgency.${selectedUrgency}`) : t('homepage.filters.urgency')}</span>
-                <svg className={`h-3.5 w-3.5 transition-transform ${isUrgencyOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {isUrgencyOpen && urgencyButtonRef.current && (
-                <div
-                  className="fixed z-50 pt-2"
-                  style={{
-                    top: urgencyButtonRef.current.getBoundingClientRect().bottom,
-                    left: urgencyButtonRef.current.getBoundingClientRect().left,
-                  }}
-                  onMouseEnter={() => setIsUrgencyOpen(true)}
-                  onMouseLeave={() => setIsUrgencyOpen(false)}
-                >
-                  <div className="w-48 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
-                    {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urgency) => (
-                      <button
-                        key={urgency}
-                        onClick={() => setSelectedUrgency(selectedUrgency === urgency ? null : urgency)}
-                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${selectedUrgency === urgency ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
-                      >
-                        {t(`urgency.${urgency}`)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Cofinancing dropdown */}
             <div
               className="relative shrink-0"
@@ -770,35 +690,6 @@ export default function HomePage() {
                 </div>
               )}
             </div>
-
-            {/* Category chips */}
-            {(Object.keys(CATEGORY_CONFIG) as Category[]).map((category) => {
-              const config = CATEGORY_CONFIG[category]
-              const isActive = selectedCategories.has(category)
-              return (
-                <button
-                  key={category}
-                  onClick={() => toggleCategory(category)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all shrink-0 border-2 ${
-                    isActive
-                      ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                      : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
-                  }`}
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-4 h-4"
-                    dangerouslySetInnerHTML={{ __html: config.icon }}
-                  />
-                  <span className="hidden sm:inline">{t(`categories.${category}`).split(' ')[0]}</span>
-                </button>
-              )
-            })}
 
             {/* Clear filters */}
             {activeFilterCount > 0 && (

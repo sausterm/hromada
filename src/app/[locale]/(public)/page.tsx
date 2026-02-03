@@ -365,7 +365,7 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[var(--cream-50)]">
+      <div className="h-screen flex items-center justify-center bg-[var(--cream-100)]">
         <LoadingSpinner size="lg" />
       </div>
     )

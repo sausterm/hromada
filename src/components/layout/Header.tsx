@@ -256,10 +256,12 @@ export function Header({ children }: HeaderProps) {
               onMouseLeave={() => setIsLangMenuOpen(false)}
             >
               <button
-                className="w-8 h-8 rounded-full overflow-hidden hover:opacity-80 transition-opacity"
+                className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
                 aria-label={t('nav.language')}
               >
-                <FlagComponent className="w-full h-full" />
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  <FlagComponent className="w-full h-full" />
+                </div>
               </button>
 
               {/* Language Dropdown */}
@@ -268,10 +270,12 @@ export function Header({ children }: HeaderProps) {
                   <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] p-1.5">
                     <button
                       onClick={() => switchLocale(otherLocale)}
-                      className="w-8 h-8 rounded-full overflow-hidden hover:opacity-80 transition-opacity"
+                      className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
                       title={otherLocale === 'uk' ? 'Українська' : 'English'}
                     >
-                      <OtherFlagComponent className="w-full h-full" />
+                      <div className="w-full h-full rounded-full overflow-hidden">
+                        <OtherFlagComponent className="w-full h-full" />
+                      </div>
                     </button>
                   </div>
                 </div>

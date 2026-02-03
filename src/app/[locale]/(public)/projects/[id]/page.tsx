@@ -259,7 +259,7 @@ export default function ProjectDetailPage() {
                       <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.estimatedCost')}</p>
                       {project.estimatedCostUsd ? (
                         <p className="font-bold text-xl text-[var(--navy-700)]">
-                          {formatCurrency(project.estimatedCostUsd, { compact: true, showPrefix: true })}
+                          {formatCurrency(project.estimatedCostUsd, { compact: true })}
                         </p>
                       ) : (
                         <p className="text-gray-400 text-sm">{t('common.notSpecified')}</p>

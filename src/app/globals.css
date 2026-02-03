@@ -200,14 +200,45 @@ body {
   z-index: 1000 !important;
 }
 
-/* Leaflet popup customization */
+/* Leaflet popup customization - minimal wrapper */
 .leaflet-popup-content-wrapper {
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(58, 54, 51, 0.15);
+  background: transparent !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
-.leaflet-popup-tip {
-  box-shadow: 0 4px 20px rgba(58, 54, 51, 0.15);
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.leaflet-popup-tip-container {
+  display: none !important;
+}
+
+.leaflet-popup-close-button {
+  top: 8px !important;
+  right: 8px !important;
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  color: var(--navy-400) !important;
+  background: white !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+  z-index: 10 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.leaflet-popup-close-button:hover {
+  color: var(--navy-700) !important;
+  background: var(--cream-100) !important;
 }
 
 /* Map cluster styles */

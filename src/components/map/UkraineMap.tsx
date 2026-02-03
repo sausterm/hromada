@@ -166,6 +166,15 @@ function MapEventHandler({
         zoomOutTimeoutRef.current = null
       }
 
+      // Save the current view if not already saved (for direct marker clicks)
+      if (!savedMapView) {
+        const currentCenter = map.getCenter()
+        savedMapView = {
+          center: [currentCenter.lat, currentCenter.lng],
+          zoom: map.getZoom(),
+        }
+      }
+
       // Ensure popup and marker are both visible by panning if needed
       setTimeout(() => {
         try {

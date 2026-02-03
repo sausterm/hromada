@@ -80,22 +80,42 @@ export function ProjectCard({
           </div>
         )}
 
-        {/* Category Badge */}
-        <div
-          className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium text-white flex items-center gap-1.5 shadow-sm"
-          style={{ backgroundColor: categoryConfig.color }}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-3.5 h-3.5"
-            dangerouslySetInnerHTML={{ __html: categoryConfig.icon }}
-          />
-          <span>{t(`categories.${project.category}`)}</span>
+        {/* Category & Project Type Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          <div
+            className="px-2.5 py-1 rounded-full text-xs font-medium text-white flex items-center gap-1.5 shadow-sm"
+            style={{ backgroundColor: categoryConfig.color }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-3.5 h-3.5"
+              dangerouslySetInnerHTML={{ __html: categoryConfig.icon }}
+            />
+            <span>{t(`categories.${project.category}`)}</span>
+          </div>
+          {project.projectType && (
+            <div
+              className="px-2.5 py-1 rounded-full text-xs font-medium text-white flex items-center gap-1.5 shadow-sm w-fit"
+              style={{ backgroundColor: PROJECT_TYPE_CONFIG[project.projectType].color }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-3.5 h-3.5"
+                dangerouslySetInnerHTML={{ __html: PROJECT_TYPE_CONFIG[project.projectType].icon }}
+              />
+              <span>{t(`projectTypes.${project.projectType}`)}</span>
+            </div>
+          )}
         </div>
 
         {/* Urgency Badge (only show if high or critical) */}
@@ -127,32 +147,16 @@ export function ProjectCard({
           {localized.municipalityName}{project.region && `, ${project.region.replace(' Oblast', '')}`}
         </p>
 
-        {/* Cost & Project Type Row - fixed height */}
+        {/* Cost & Cofinancing Row - fixed height */}
         <div className="flex items-center gap-2 flex-wrap mb-2 min-h-[1.5rem]">
           {project.estimatedCostUsd && (
             <span className="inline-flex items-center px-2 py-0.5 rounded bg-[var(--navy-100)] text-[var(--navy-700)] text-sm font-bold">
-              {formatCurrency(project.estimatedCostUsd, { compact: true, showPrefix: true })}
+              {formatCurrency(project.estimatedCostUsd, { compact: true })}
             </span>
           )}
-          {project.projectType && (
-            <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium"
-              style={{
-                backgroundColor: `${PROJECT_TYPE_CONFIG[project.projectType].color}20`,
-                color: PROJECT_TYPE_CONFIG[project.projectType].color,
-              }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-3 h-3"
-                dangerouslySetInnerHTML={{ __html: PROJECT_TYPE_CONFIG[project.projectType].icon }}
-              />
-              <span>{t(`projectTypes.${project.projectType}`)}</span>
+          {project.cofinancingAvailable === 'YES' && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+              {t('projectDetail.cofinancingAvailable')}
             </span>
           )}
         </div>

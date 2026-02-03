@@ -228,7 +228,7 @@ export function Header({ children }: HeaderProps) {
                 <style jsx>{`
                   @keyframes logoFlip {
                     0% { transform: rotate(-38deg) rotateY(0deg); }
-                    100% { transform: rotate(-38deg) rotateY(360deg); }
+                    100% { transform: rotate(-38deg) rotateY(-360deg); }
                   }
                   .group:hover .logo-flip {
                     animation: logoFlip 1.2s ease-in-out;

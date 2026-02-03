@@ -521,6 +521,10 @@ function ResetViewControl() {
         L.DomEvent.disableClickPropagation(container)
         L.DomEvent.on(button, 'click', function (e) {
           L.DomEvent.preventDefault(e)
+          // Clear saved view so popupclose doesn't try to restore it
+          savedMapView = null
+          // Close any open popup
+          map.closePopup()
           map.flyTo(UKRAINE_CENTER, UKRAINE_ZOOM, { duration: 0.4 })
         })
 

@@ -43,8 +43,39 @@ function SiteAccessForm() {
         <div className="bg-white rounded-xl shadow-lg border border-[var(--cream-300)] p-8">
           {/* Logo */}
           <div className="text-center mb-8">
-            <h1 className="font-logo text-[var(--navy-700)] text-3xl">
-              hromada | громада
+            <h1 className="font-logo text-[var(--navy-700)] text-3xl flex items-center justify-center">
+              <span>hromada</span>
+              <span
+                className="mx-2 inline-block group cursor-pointer"
+                style={{ perspective: '100px' }}
+              >
+                <svg
+                  viewBox="0 0 48 30"
+                  className="w-8 h-5 logo-flip"
+                  style={{ transform: 'rotate(-38deg)', transformStyle: 'preserve-3d' }}
+                >
+                  <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>
+                  <line x1="16" y1="0" x2="16" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                  <line x1="32" y1="0" x2="32" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                  <line x1="0" y1="15" x2="48" y2="15" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                  <circle cx="16" cy="15" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="32" cy="15" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="0" cy="0" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="48" cy="0" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="0" cy="30" r="2.5" fill="var(--cream-100)"/>
+                  <circle cx="48" cy="30" r="2.5" fill="var(--cream-100)"/>
+                </svg>
+                <style jsx>{`
+                  @keyframes logoFlip {
+                    0% { transform: rotate(-38deg) rotateY(0deg); }
+                    100% { transform: rotate(-38deg) rotateY(360deg); }
+                  }
+                  .group:hover .logo-flip {
+                    animation: logoFlip 1.2s ease-in-out;
+                  }
+                `}</style>
+              </span>
+              <span>громада</span>
             </h1>
             <p className="text-sm text-[var(--navy-500)] mt-2 italic whitespace-nowrap">
               Built to support renewable infrastructure recovery

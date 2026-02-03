@@ -78,18 +78,33 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         {/* Divider */}
         <div className="border-t border-gray-100 my-3" />
 
-        {/* Cost & Details Row */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            {project.estimatedCostUsd && (
-              <span className="text-lg font-bold text-[var(--navy-700)]">
-                {formatCurrency(project.estimatedCostUsd, { compact: true })}
-              </span>
-            )}
-          </div>
+        {/* Cost & Co-financing Row */}
+        <div className="flex items-center gap-2 mb-3">
+          {project.estimatedCostUsd && (
+            <span className="text-lg font-bold text-[var(--navy-700)]">
+              {formatCurrency(project.estimatedCostUsd, { compact: true })}
+            </span>
+          )}
           {project.cofinancingAvailable === 'YES' && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-600 border border-green-200">
-              {t('projectDetail.cofinancingAvailable')}
+            <span
+              className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600"
+              title={t('projectDetail.cofinancingAvailable')}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-3.5 h-3.5"
+              >
+                <path d="m11 17 2 2a1 1 0 1 0 3-3" />
+                <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" />
+                <path d="m21 3 1 11h-2" />
+                <path d="M3 3 2 14h2" />
+                <path d="m10 10-3.66 3.66a2 2 0 0 0 .28 3.13l.47.28a5.79 5.79 0 0 0 7.06-.87l.88-.88" />
+              </svg>
             </span>
           )}
         </div>

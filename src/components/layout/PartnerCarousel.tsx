@@ -69,7 +69,7 @@ export function PartnerCarousel() {
   }, [isPaused])
 
   return (
-    <section className="bg-[var(--cream-50)] py-6 border-t border-[var(--cream-300)] overflow-hidden">
+    <section className="bg-[var(--cream-100)] py-6 border-t border-[var(--cream-300)] overflow-hidden">
       <div className="container mx-auto px-4 mb-4">
         <h2 className="text-center text-lg font-semibold text-[var(--navy-600)]">
           {t('partners.title')}
@@ -83,8 +83,8 @@ export function PartnerCarousel() {
         onMouseLeave={() => setIsPaused(false)}
       >
         {/* Gradient masks for smooth edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--cream-50)] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--cream-50)] to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />
 
         {/* Scrolling track */}
         <div

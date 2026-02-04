@@ -114,15 +114,32 @@ export function Header({ children }: HeaderProps) {
                 className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-[var(--navy-600)] hover:bg-[var(--navy-50)] hover:text-[var(--navy-800)] transition-colors"
                 aria-label={t('nav.menu')}
               >
-                {isNavMenuOpen ? (
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                )}
+                <div className="relative w-6 h-6">
+                  {/* Top line - rotates to form top-left to bottom-right of X */}
+                  <span
+                    className="absolute left-0 h-0.5 w-6 bg-current rounded-full transition-all duration-300 ease-in-out"
+                    style={{
+                      top: isNavMenuOpen ? '11px' : '4px',
+                      transform: isNavMenuOpen ? 'rotate(45deg)' : 'rotate(0deg)'
+                    }}
+                  />
+                  {/* Middle line - fades out */}
+                  <span
+                    className="absolute left-0 top-[11px] h-0.5 w-6 bg-current rounded-full transition-all duration-300 ease-in-out"
+                    style={{
+                      opacity: isNavMenuOpen ? 0 : 1,
+                      transform: isNavMenuOpen ? 'translateX(-8px)' : 'translateX(0)'
+                    }}
+                  />
+                  {/* Bottom line - rotates to form bottom-left to top-right of X */}
+                  <span
+                    className="absolute left-0 h-0.5 w-6 bg-current rounded-full transition-all duration-300 ease-in-out"
+                    style={{
+                      top: isNavMenuOpen ? '11px' : '18px',
+                      transform: isNavMenuOpen ? 'rotate(-45deg)' : 'rotate(0deg)'
+                    }}
+                  />
+                </div>
               </button>
 
               {/* Navigation Dropdown */}

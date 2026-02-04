@@ -160,6 +160,13 @@ body {
   background: var(--cream-100);
 }
 
+/* Custom marker wrapper - ensure proper positioning */
+.custom-marker-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 /* Custom marker styles - warm colors */
 .custom-marker {
   display: flex;

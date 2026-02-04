@@ -36,7 +36,7 @@ function createCategoryIcon(category: Category): L.DivIcon {
         box-shadow: 0 3px 12px rgba(58, 54, 51, 0.25);
         background-color: ${config.color};
       ">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; display: block;">
           ${config.icon}
         </svg>
       </div>
@@ -87,8 +87,10 @@ function createClusterIcon(cluster: { getChildCount: () => number }): L.DivIcon 
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         color: white;
         font-size: ${fontSize}px;
-        font-weight: 700;
+        font-weight: 600;
         font-family: system-ui, -apple-system, sans-serif;
+        line-height: 1;
+        text-align: center;
       ">
         ${count}
       </div>

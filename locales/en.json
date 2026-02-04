@@ -345,6 +345,8 @@
   "transparency": {
     "title": "Transparency",
     "intro": "We take trust seriously. Every project on hromada goes through a verification process to ensure authenticity and protect both donors and municipalities.",
+    "civilianOnlyTitle": "Civilian Infrastructure Only",
+    "civilianOnlyText": "hromada exclusively funds civilian infrastructure projects—hospitals, schools, water utilities, and renewable energy systems. We do not fund, facilitate, or support any military equipment, dual-use technology, or defense-related projects. Our mission is humanitarian: helping Ukrainian communities maintain essential services and build sustainable energy independence.",
     "verificationTitle": "Project Verification",
     "verificationText": "Each project submission is reviewed by our team before being published. We verify the municipality's identity, confirm the project details, and ensure the information is accurate.",
     "directConnectionTitle": "Direct Connection",

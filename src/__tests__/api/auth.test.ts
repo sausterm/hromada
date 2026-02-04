@@ -3,6 +3,29 @@
  */
 
 import { NextRequest } from 'next/server'
+
+// Create mock storage that persists across jest.mock hoisting
+const mockStorage = {
+  jwtVerify: jest.fn(),
+}
+
+jest.mock('jose', () => ({
+  SignJWT: jest.fn().mockImplementation((payload) => {
+    return {
+      setProtectedHeader: jest.fn().mockReturnThis(),
+      setIssuedAt: jest.fn().mockReturnThis(),
+      setExpirationTime: jest.fn().mockReturnThis(),
+      sign: jest.fn().mockImplementation(async () => {
+        // Create a mock JWT that encodes the payload
+        const header = Buffer.from(JSON.stringify({ alg: 'HS256' })).toString('base64url')
+        const payloadStr = Buffer.from(JSON.stringify(payload)).toString('base64url')
+        return `${header}.${payloadStr}.mock-signature`
+      }),
+    }
+  }),
+  jwtVerify: (...args: unknown[]) => mockStorage.jwtVerify(...args),
+}))
+
 import { POST as loginPOST } from '@/app/api/auth/login/route'
 import { POST as logoutPOST } from '@/app/api/auth/logout/route'
 import { GET as statusGET } from '@/app/api/auth/status/route'
@@ -41,6 +64,25 @@ jest.mock('bcryptjs', () => ({
   hash: jest.fn(),
 }))
 
+// Mock security module
+jest.mock('@/lib/security', () => ({
+  isAccountLocked: jest.fn(() => false),
+  handleFailedLogin: jest.fn(() => Promise.resolve({ locked: false, attemptsRemaining: 4 })),
+  handleSuccessfulLogin: jest.fn(() => Promise.resolve()),
+  logAuditEvent: jest.fn(() => Promise.resolve()),
+  AuditAction: {
+    LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+    LOGIN_FAILED: 'LOGIN_FAILED',
+    LOGIN_BLOCKED_LOCKED: 'LOGIN_BLOCKED_LOCKED',
+    LOGIN_BLOCKED_INACTIVE: 'LOGIN_BLOCKED_INACTIVE',
+  },
+  getClientIp: jest.fn(() => '127.0.0.1'),
+  getUserAgent: jest.fn(() => 'test-agent'),
+  SECURITY_CONFIG: {
+    LOCKOUT_DURATION_MINUTES: 15,
+  },
+}))
+
 // Mock auth functions for status tests
 const mockGetUserById = jest.fn()
 jest.mock('@/lib/auth', () => {
@@ -54,6 +96,9 @@ jest.mock('@/lib/auth', () => {
 import { rateLimit } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+
+// Reference to the mock for use in tests
+const mockJwtVerify = mockStorage.jwtVerify
 
 describe('POST /api/auth/login', () => {
   const originalEnv = process.env
@@ -161,6 +206,10 @@ describe('POST /api/auth/login', () => {
         passwordHash: 'hashed-password',
         name: 'Test User',
         role: 'PARTNER',
+        isActive: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        sessionVersion: 1,
       })
       ;(bcrypt.compare as jest.Mock).mockResolvedValue(false)
 
@@ -185,6 +234,10 @@ describe('POST /api/auth/login', () => {
         name: 'Test User',
         organization: 'Test Org',
         role: 'PARTNER',
+        isActive: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        sessionVersion: 1,
       }
       ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
       ;(bcrypt.compare as jest.Mock).mockResolvedValue(true)
@@ -226,6 +279,10 @@ describe('POST /api/auth/login', () => {
         passwordHash: 'hashed-password',
         name: 'Admin User',
         role: 'ADMIN',
+        isActive: true,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        sessionVersion: 1,
       }
       ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
 
@@ -311,6 +368,8 @@ describe('GET /api/auth/status', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     process.env = { ...originalEnv, HROMADA_ADMIN_SECRET: 'test-secret-123' }
+    // Default: jwtVerify throws (invalid token)
+    mockJwtVerify.mockRejectedValue(new Error('Invalid JWT'))
   })
 
   afterAll(() => {
@@ -350,13 +409,18 @@ describe('GET /api/auth/status', () => {
   })
 
   it('returns authenticated: true with user session', async () => {
-    const sessionData = {
-      userId: 'user-1',
-      email: 'test@example.com',
-      role: 'PARTNER',
-    }
-    const validToken = Buffer.from(JSON.stringify(sessionData)).toString('base64')
+    // Use a valid JWT token
+    const validToken = 'valid-jwt-token'
     mockCookies.get.mockReturnValue({ value: validToken })
+
+    // Mock jwtVerify to return valid PARTNER payload
+    mockJwtVerify.mockResolvedValue({
+      payload: {
+        userId: 'user-1',
+        email: 'test@example.com',
+        role: 'PARTNER',
+      },
+    })
 
     // Mock getUserById to return the user with PARTNER role
     mockGetUserById.mockResolvedValue({
@@ -414,6 +478,54 @@ describe('GET /api/auth/status', () => {
     mockCookies.get.mockImplementationOnce(() => {
       throw new Error('Unexpected error')
     })
+
+    const response = await statusGET()
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.authenticated).toBe(false)
+  })
+
+  it('SECURITY: rejects forged unsigned session tokens', async () => {
+    // This is the critical security test - forged tokens should be rejected
+    // An attacker could try to create a fake admin session with plain base64
+    const forgedToken = Buffer.from(JSON.stringify({
+      userId: 'hacker-id',
+      email: 'hacker@evil.com',
+      role: 'ADMIN',
+    })).toString('base64')
+    mockCookies.get.mockReturnValue({ value: forgedToken })
+
+    const response = await statusGET()
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    // Forged token should NOT authenticate
+    expect(data.authenticated).toBe(false)
+  })
+
+  it('SECURITY: rejects tampered JWT tokens', async () => {
+    // Tampered token that jwtVerify will reject
+    const tamperedToken = 'header.tamperedPayload.invalidSignature'
+    mockCookies.get.mockReturnValue({ value: tamperedToken })
+
+    // jwtVerify rejects tampered tokens (signature mismatch)
+    mockJwtVerify.mockRejectedValue(new Error('signature verification failed'))
+
+    const response = await statusGET()
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    // Tampered token should NOT authenticate
+    expect(data.authenticated).toBe(false)
+  })
+
+  it('SECURITY: rejects expired JWT tokens', async () => {
+    const expiredToken = 'expired-jwt-token'
+    mockCookies.get.mockReturnValue({ value: expiredToken })
+
+    // jwtVerify rejects expired tokens
+    mockJwtVerify.mockRejectedValue(new Error('jwt expired'))
 
     const response = await statusGET()
     const data = await response.json()

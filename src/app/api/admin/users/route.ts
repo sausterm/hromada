@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyAdminAuth, hashPassword, getUserByEmail } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { UserRole } from '@prisma/client'
+import { validatePasswordStrength, logAuditEvent, AuditAction, getClientIp, getUserAgent } from '@/lib/security'
 
 // GET /api/admin/users - List all users (admin only)
 export async function GET(request: NextRequest) {
@@ -67,10 +68,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate password length
-    if (password.length < 8) {
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(password)
+    if (!passwordValidation.valid) {
       return NextResponse.json(
-        { error: 'Password must be at least 8 characters' },
+        { error: passwordValidation.errors.join('. ') },
         { status: 400 }
       )
     }
@@ -108,6 +110,14 @@ export async function POST(request: NextRequest) {
         role: true,
         createdAt: true,
       },
+    })
+
+    // Audit log
+    await logAuditEvent(AuditAction.USER_CREATED, {
+      userId: user.id,
+      ipAddress: getClientIp(request),
+      userAgent: getUserAgent(request),
+      details: `User created: ${user.email} with role ${user.role}`,
     })
 
     return NextResponse.json({ user }, { status: 201 })

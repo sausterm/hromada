@@ -171,17 +171,44 @@ enum UserRole {
 }
 
 model User {
-  id             String   @id @default(cuid())
-  email          String   @unique
-  passwordHash   String
-  name           String
-  organization   String?
-  role           UserRole @default(PARTNER)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  passwordHash        String
+  name                String
+  organization        String?
+  role                UserRole  @default(PARTNER)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Security fields
+  isActive            Boolean   @default(true)
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  sessionVersion      Int       @default(1)  // Increment to invalidate all sessions
+  lastLoginAt         DateTime?
+  lastLoginIp         String?
+  passwordChangedAt   DateTime  @default(now())
 
   projectSubmissions ProjectSubmission[]
+  auditLogs          AuditLog[]
 
   @@index([email])
   @@index([role])
+  @@index([isActive])
+}
+
+/// Security audit log for tracking important events
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, PASSWORD_CHANGE, etc.
+  ipAddress String?
+  userAgent String?
+  details   String?  @db.VarChar(1000)
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }

@@ -3,7 +3,28 @@
  */
 
 import { NextRequest } from 'next/server'
-import { verifyAdminAuth, unauthorizedResponse } from '@/lib/auth'
+
+// Create mock storage that persists across jest.mock hoisting
+const mockStorage = {
+  jwtVerify: jest.fn(),
+}
+
+jest.mock('jose', () => ({
+  SignJWT: jest.fn().mockImplementation((payload) => {
+    return {
+      setProtectedHeader: jest.fn().mockReturnThis(),
+      setIssuedAt: jest.fn().mockReturnThis(),
+      setExpirationTime: jest.fn().mockReturnThis(),
+      sign: jest.fn().mockImplementation(async () => {
+        // Create a mock JWT that encodes the payload
+        const header = Buffer.from(JSON.stringify({ alg: 'HS256' })).toString('base64url')
+        const payloadStr = Buffer.from(JSON.stringify(payload)).toString('base64url')
+        return `${header}.${payloadStr}.mock-signature`
+      }),
+    }
+  }),
+  jwtVerify: (...args: unknown[]) => mockStorage.jwtVerify(...args),
+}))
 
 // Mock next/headers cookies
 const mockCookies = {
@@ -14,6 +35,11 @@ jest.mock('next/headers', () => ({
   cookies: jest.fn(() => Promise.resolve(mockCookies)),
 }))
 
+import { verifyAdminAuth, unauthorizedResponse, createSignedToken } from '@/lib/auth'
+
+// Reference to the mock for use in tests
+const mockJwtVerify = mockStorage.jwtVerify
+
 describe('verifyAdminAuth', () => {
   const originalEnv = process.env
 
@@ -21,6 +47,8 @@ describe('verifyAdminAuth', () => {
     jest.clearAllMocks()
     process.env = { ...originalEnv, HROMADA_ADMIN_SECRET: 'test-secret-123' }
     mockCookies.get.mockReturnValue(undefined)
+    // Default: jwtVerify throws (invalid token)
+    mockJwtVerify.mockRejectedValue(new Error('Invalid JWT'))
   })
 
   afterAll(() => {
@@ -77,7 +105,7 @@ describe('verifyAdminAuth', () => {
   })
 
   describe('Cookie authentication', () => {
-    it('returns true for valid session cookie', async () => {
+    it('returns true for valid legacy session cookie', async () => {
       const validToken = Buffer.from('test-secret-123:1234567890').toString('base64')
       mockCookies.get.mockReturnValue({ value: validToken })
 
@@ -86,6 +114,42 @@ describe('verifyAdminAuth', () => {
       const result = await verifyAdminAuth(request)
       expect(result).toBe(true)
       expect(mockCookies.get).toHaveBeenCalledWith('hromada_session')
+    })
+
+    it('returns true for valid JWT session with ADMIN role', async () => {
+      const validToken = 'valid-jwt-token'
+      mockCookies.get.mockReturnValue({ value: validToken })
+      // Mock jwtVerify to return valid ADMIN payload
+      mockJwtVerify.mockResolvedValue({
+        payload: {
+          userId: 'admin-user-1',
+          email: 'admin@example.com',
+          role: 'ADMIN',
+        },
+      })
+
+      const request = new NextRequest('http://localhost/api/test')
+
+      const result = await verifyAdminAuth(request)
+      expect(result).toBe(true)
+    })
+
+    it('returns false for valid JWT session with non-ADMIN role', async () => {
+      const validToken = 'valid-jwt-token'
+      mockCookies.get.mockReturnValue({ value: validToken })
+      // Mock jwtVerify to return valid PARTNER payload
+      mockJwtVerify.mockResolvedValue({
+        payload: {
+          userId: 'partner-user-1',
+          email: 'partner@example.com',
+          role: 'PARTNER',
+        },
+      })
+
+      const request = new NextRequest('http://localhost/api/test')
+
+      const result = await verifyAdminAuth(request)
+      expect(result).toBe(false)
     })
 
     it('returns false for invalid session cookie secret', async () => {
@@ -118,6 +182,63 @@ describe('verifyAdminAuth', () => {
 
     it('handles invalid base64 in cookie gracefully', async () => {
       mockCookies.get.mockReturnValue({ value: '!!!not-base64!!!' })
+
+      const request = new NextRequest('http://localhost/api/test')
+
+      const result = await verifyAdminAuth(request)
+      expect(result).toBe(false)
+    })
+  })
+
+  describe('Security: forged token rejection', () => {
+    it('SECURITY: rejects forged unsigned admin token', async () => {
+      // Attacker tries to create a fake admin session with plain base64
+      const forgedToken = Buffer.from(JSON.stringify({
+        userId: 'hacker',
+        email: 'hacker@evil.com',
+        role: 'ADMIN',
+      })).toString('base64')
+      mockCookies.get.mockReturnValue({ value: forgedToken })
+      // jwtVerify should reject this (default mock behavior)
+      mockJwtVerify.mockRejectedValue(new Error('Invalid JWT'))
+
+      const request = new NextRequest('http://localhost/api/test')
+
+      const result = await verifyAdminAuth(request)
+      expect(result).toBe(false)
+    })
+
+    it('SECURITY: rejects tampered JWT with modified payload', async () => {
+      // Attacker has a tampered token
+      const tamperedToken = 'header.tamperedPayload.signature'
+      mockCookies.get.mockReturnValue({ value: tamperedToken })
+      // jwtVerify should reject tampered tokens (signature won't match)
+      mockJwtVerify.mockRejectedValue(new Error('signature verification failed'))
+
+      const request = new NextRequest('http://localhost/api/test')
+
+      const result = await verifyAdminAuth(request)
+      expect(result).toBe(false)
+    })
+
+    it('SECURITY: rejects JWT signed with different secret', async () => {
+      // Attacker creates their own JWT with a different secret
+      const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJoYWNrZXIiLCJyb2xlIjoiQURNSU4ifQ.invalid-signature'
+      mockCookies.get.mockReturnValue({ value: fakeJwt })
+      // jwtVerify should reject tokens signed with wrong secret
+      mockJwtVerify.mockRejectedValue(new Error('signature verification failed'))
+
+      const request = new NextRequest('http://localhost/api/test')
+
+      const result = await verifyAdminAuth(request)
+      expect(result).toBe(false)
+    })
+
+    it('SECURITY: rejects expired JWT tokens', async () => {
+      const expiredToken = 'expired-jwt-token'
+      mockCookies.get.mockReturnValue({ value: expiredToken })
+      // jwtVerify should reject expired tokens
+      mockJwtVerify.mockRejectedValue(new Error('jwt expired'))
 
       const request = new NextRequest('http://localhost/api/test')
 

@@ -12,6 +12,17 @@ jest.mock('@/lib/auth', () => ({
   getUserByEmail: jest.fn(),
 }))
 
+// Mock security module
+jest.mock('@/lib/security', () => ({
+  validatePasswordStrength: jest.fn(() => ({ valid: true, errors: [] })),
+  logAuditEvent: jest.fn(),
+  AuditAction: {
+    USER_CREATED: 'USER_CREATED',
+  },
+  getClientIp: jest.fn(() => '127.0.0.1'),
+  getUserAgent: jest.fn(() => 'test-agent'),
+}))
+
 // Mock prisma
 jest.mock('@/lib/prisma', () => ({
   prisma: {
@@ -25,6 +36,7 @@ jest.mock('@/lib/prisma', () => ({
 
 import { verifyAdminAuth, hashPassword, getUserByEmail } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { validatePasswordStrength } from '@/lib/security'
 
 describe('GET /api/admin/users', () => {
   beforeEach(() => {
@@ -155,6 +167,11 @@ describe('POST /api/admin/users', () => {
 
   it('returns 400 for weak password', async () => {
     ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    // Mock password validation to fail
+    ;(validatePasswordStrength as jest.Mock).mockReturnValue({
+      valid: false,
+      errors: ['Password must be at least 12 characters'],
+    })
 
     const request = new NextRequest('http://localhost/api/admin/users', {
       method: 'POST',
@@ -169,7 +186,10 @@ describe('POST /api/admin/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toContain('8 characters')
+    expect(data.error).toContain('12 characters')
+
+    // Reset mock for other tests
+    ;(validatePasswordStrength as jest.Mock).mockReturnValue({ valid: true, errors: [] })
   })
 
   it('defaults invalid role to PARTNER', async () => {

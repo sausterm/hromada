@@ -6,6 +6,16 @@ import {
   createSession,
   createLegacyAdminSession,
 } from '@/lib/auth'
+import {
+  isAccountLocked,
+  handleFailedLogin,
+  handleSuccessfulLogin,
+  logAuditEvent,
+  AuditAction,
+  getClientIp,
+  getUserAgent,
+  SECURITY_CONFIG,
+} from '@/lib/security'
 
 // POST /api/auth/login - Authenticate user and set secure cookie
 export async function POST(request: NextRequest) {
@@ -31,6 +41,11 @@ export async function POST(request: NextRequest) {
       }
 
       if (password !== adminSecret) {
+        await logAuditEvent(AuditAction.LOGIN_FAILED, {
+          ipAddress: getClientIp(request),
+          userAgent: getUserAgent(request),
+          details: 'Legacy admin login failed - invalid password',
+        })
         return NextResponse.json(
           { error: 'Invalid password' },
           { status: 401 }
@@ -39,6 +54,11 @@ export async function POST(request: NextRequest) {
 
       // Create legacy admin session
       await createLegacyAdminSession()
+      await logAuditEvent(AuditAction.LOGIN_SUCCESS, {
+        ipAddress: getClientIp(request),
+        userAgent: getUserAgent(request),
+        details: 'Legacy admin login',
+      })
       return NextResponse.json({ success: true, role: 'ADMIN' })
     }
 
@@ -56,7 +76,21 @@ export async function POST(request: NextRequest) {
       // Try to find user by email to get their role, or default to ADMIN
       const user = await getUserByEmail(email)
       if (user) {
-        await createSession(user.id, user.email, user.role)
+        // Check if account is active
+        if (!user.isActive) {
+          await logAuditEvent(AuditAction.LOGIN_BLOCKED_INACTIVE, {
+            userId: user.id,
+            ipAddress: getClientIp(request),
+            userAgent: getUserAgent(request),
+          })
+          return NextResponse.json(
+            { error: 'Account is deactivated' },
+            { status: 403 }
+          )
+        }
+
+        await createSession(user.id, user.email, user.role, user.sessionVersion)
+        await handleSuccessfulLogin(user, request)
         return NextResponse.json({
           success: true,
           role: user.role,
@@ -71,6 +105,11 @@ export async function POST(request: NextRequest) {
       } else {
         // Legacy admin login without user record
         await createLegacyAdminSession()
+        await logAuditEvent(AuditAction.LOGIN_SUCCESS, {
+          ipAddress: getClientIp(request),
+          userAgent: getUserAgent(request),
+          details: 'Legacy admin login (no user record)',
+        })
         return NextResponse.json({ success: true, role: 'ADMIN' })
       }
     }
@@ -88,9 +127,50 @@ export async function POST(request: NextRequest) {
     }
 
     if (!user) {
+      // Don't reveal whether email exists
+      await logAuditEvent(AuditAction.LOGIN_FAILED, {
+        ipAddress: getClientIp(request),
+        userAgent: getUserAgent(request),
+        details: `Login attempt for non-existent email: ${email.substring(0, 3)}***`,
+      })
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
+      )
+    }
+
+    // Check if account is active
+    if (!user.isActive) {
+      await logAuditEvent(AuditAction.LOGIN_BLOCKED_INACTIVE, {
+        userId: user.id,
+        ipAddress: getClientIp(request),
+        userAgent: getUserAgent(request),
+      })
+      return NextResponse.json(
+        { error: 'Account is deactivated' },
+        { status: 403 }
+      )
+    }
+
+    // Check if account is locked
+    if (isAccountLocked(user)) {
+      const lockRemaining = user.lockedUntil
+        ? Math.ceil((user.lockedUntil.getTime() - Date.now()) / 60000)
+        : SECURITY_CONFIG.LOCKOUT_DURATION_MINUTES
+
+      await logAuditEvent(AuditAction.LOGIN_BLOCKED_LOCKED, {
+        userId: user.id,
+        ipAddress: getClientIp(request),
+        userAgent: getUserAgent(request),
+        details: `Account locked, ${lockRemaining} minutes remaining`,
+      })
+
+      return NextResponse.json(
+        {
+          error: 'Account is temporarily locked due to too many failed attempts',
+          lockedMinutes: lockRemaining,
+        },
+        { status: 423 }
       )
     }
 
@@ -107,15 +187,31 @@ export async function POST(request: NextRequest) {
     }
 
     if (!isValidPassword) {
+      // Handle failed login (increment attempts, possibly lock account)
+      const { locked, attemptsRemaining } = await handleFailedLogin(user, request)
+
+      if (locked) {
+        return NextResponse.json(
+          {
+            error: 'Account locked due to too many failed attempts',
+            lockedMinutes: SECURITY_CONFIG.LOCKOUT_DURATION_MINUTES,
+          },
+          { status: 423 }
+        )
+      }
+
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        {
+          error: 'Invalid email or password',
+          attemptsRemaining,
+        },
         { status: 401 }
       )
     }
 
-    // Create session
+    // Create session with sessionVersion for revocation support
     try {
-      await createSession(user.id, user.email, user.role)
+      await createSession(user.id, user.email, user.role, user.sessionVersion)
     } catch (sessionError) {
       console.error('Session creation error:', sessionError)
       return NextResponse.json(
@@ -123,6 +219,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Handle successful login (reset attempts, update lastLogin)
+    await handleSuccessfulLogin(user, request)
 
     return NextResponse.json({
       success: true,

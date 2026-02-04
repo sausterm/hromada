@@ -10,6 +10,20 @@ import type { NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { locales } from './i18n';
 
+// Security headers to apply to all responses
+const securityHeaders: Record<string, string> = {
+  // Prevent clickjacking
+  'X-Frame-Options': 'DENY',
+  // Prevent MIME type sniffing
+  'X-Content-Type-Options': 'nosniff',
+  // Enable XSS filter
+  'X-XSS-Protection': '1; mode=block',
+  // Referrer policy
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  // Permissions policy (disable unnecessary features)
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
 // Extend NextRequest type with Vercel's geo/ip data (available at edge runtime)
 interface NextRequestWithGeo extends NextRequest {
   geo?: {
@@ -34,6 +48,20 @@ const intlMiddleware = createIntlMiddleware({
   localePrefix: 'always',
 });
 
+/**
+ * Apply security headers to a response
+ */
+function applySecurityHeaders(response: NextResponse): NextResponse {
+  for (const [key, value] of Object.entries(securityHeaders)) {
+    response.headers.set(key, value);
+  }
+  // Add HSTS in production
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+  return response;
+}
+
 export default function middleware(request: NextRequestWithGeo) {
   // Get country from Vercel's geo data (automatically available)
   const country = request.geo?.country;
@@ -41,7 +69,8 @@ export default function middleware(request: NextRequestWithGeo) {
 
   // Check if accessing the password page or API (prevent redirect loop)
   if (pathname.includes('/site-access') || pathname.startsWith('/api/')) {
-    return intlMiddleware(request);
+    const response = intlMiddleware(request);
+    return applySecurityHeaders(response);
   }
 
   // Check for site access cookie
@@ -54,12 +83,14 @@ export default function middleware(request: NextRequestWithGeo) {
     // Redirect to password page
     const url = new URL(`/${locale}/site-access`, request.url);
     url.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(url);
+    const response = NextResponse.redirect(url);
+    return applySecurityHeaders(response);
   }
 
   // Check if accessing the blocked page already (prevent redirect loop)
   if (pathname.includes('/blocked')) {
-    return intlMiddleware(request);
+    const response = intlMiddleware(request);
+    return applySecurityHeaders(response);
   }
 
   // If country is blocked, redirect to blocked page
@@ -80,11 +111,13 @@ export default function middleware(request: NextRequestWithGeo) {
     const locale = locales.includes(pathSegments[0] as any) ? pathSegments[0] : 'en';
 
     // Redirect to blocked page
-    return NextResponse.redirect(new URL(`/${locale}/blocked`, request.url));
+    const response = NextResponse.redirect(new URL(`/${locale}/blocked`, request.url));
+    return applySecurityHeaders(response);
   }
 
   // For all other requests, continue with i18n middleware
-  return intlMiddleware(request);
+  const response = intlMiddleware(request);
+  return applySecurityHeaders(response);
 }
 
 export const config = {

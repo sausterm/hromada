@@ -11,6 +11,10 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
+  // Transform jose package which uses ES modules
+  transformIgnorePatterns: [
+    '/node_modules/(?!(jose)/)',
+  ],
   // Run tests sequentially to avoid parallel execution issues with shared mocks
   maxWorkers: 1,
   collectCoverageFrom: [

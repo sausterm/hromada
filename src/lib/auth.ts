@@ -1,17 +1,39 @@
 import { cookies } from 'next/headers'
 import { NextRequest } from 'next/server'
 import bcrypt from 'bcryptjs'
+import { SignJWT, jwtVerify, JWTPayload } from 'jose'
 import { prisma } from '@/lib/prisma'
 import type { UserRole } from '@prisma/client'
 
 const COOKIE_NAME = 'hromada_session'
 const SALT_ROUNDS = 12
+const JWT_EXPIRATION = '7d'
+
+/**
+ * Get the secret key for JWT signing
+ * Falls back to HROMADA_ADMIN_SECRET for backward compatibility
+ */
+function getSecretKey(): Uint8Array {
+  const secret = process.env.SESSION_SECRET || process.env.HROMADA_ADMIN_SECRET
+  if (!secret) {
+    throw new Error('SESSION_SECRET or HROMADA_ADMIN_SECRET environment variable is required')
+  }
+  return new TextEncoder().encode(secret)
+}
 
 export interface SessionData {
   userId?: string
   email?: string
   role?: UserRole
+  sessionVersion?: number
   isLegacyAdmin?: boolean
+}
+
+interface JWTSessionPayload extends JWTPayload {
+  userId?: string
+  email?: string
+  role?: UserRole
+  sessionVersion?: number
 }
 
 /**
@@ -47,7 +69,47 @@ export async function getUserById(id: string) {
 }
 
 /**
+ * Validate a session against database state
+ * Checks: user exists, is active, not locked, session version matches
+ */
+export async function validateSessionWithDatabase(session: SessionData): Promise<{
+  valid: boolean
+  reason?: string
+  user?: Awaited<ReturnType<typeof getUserById>>
+}> {
+  if (!session.userId) {
+    return { valid: false, reason: 'No user ID in session' }
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+  })
+
+  if (!user) {
+    return { valid: false, reason: 'User not found' }
+  }
+
+  if (!user.isActive) {
+    return { valid: false, reason: 'Account deactivated' }
+  }
+
+  if (user.lockedUntil && new Date() < user.lockedUntil) {
+    return { valid: false, reason: 'Account locked' }
+  }
+
+  // Check session version (allows invalidating all sessions)
+  if (session.sessionVersion !== undefined && session.sessionVersion !== user.sessionVersion) {
+    return { valid: false, reason: 'Session revoked' }
+  }
+
+  return { valid: true, user }
+}
+
+/**
  * Parse the session cookie and return session data
+ * Supports:
+ * 1. New JWT-signed sessions (secure)
+ * 2. Legacy base64 admin sessions (for backward compatibility, will be phased out)
  */
 export async function getSessionData(): Promise<SessionData | null> {
   try {
@@ -58,20 +120,37 @@ export async function getSessionData(): Promise<SessionData | null> {
       return null
     }
 
-    const decoded = Buffer.from(sessionCookie.value, 'base64').toString()
+    const token = sessionCookie.value
 
-    // Try to parse as JSON (new format with user data)
+    // Method 1: Try to verify as JWT (new secure format)
     try {
-      const sessionData = JSON.parse(decoded) as SessionData
-      return sessionData
+      const secret = getSecretKey()
+      const { payload } = await jwtVerify(token, secret)
+      const sessionPayload = payload as JWTSessionPayload
+
+      return {
+        userId: sessionPayload.userId,
+        email: sessionPayload.email,
+        role: sessionPayload.role,
+        sessionVersion: sessionPayload.sessionVersion,
+      }
     } catch {
-      // Fall back to legacy format (secret:timestamp)
+      // Not a valid JWT, try legacy formats
+    }
+
+    // Method 2: Legacy base64 format (for backward compatibility during transition)
+    try {
+      const decoded = Buffer.from(token, 'base64').toString()
+
+      // Legacy admin format (secret:timestamp)
       const [secret] = decoded.split(':')
       const adminSecret = process.env.HROMADA_ADMIN_SECRET
 
       if (adminSecret && secret === adminSecret) {
         return { isLegacyAdmin: true, role: 'ADMIN' as UserRole }
       }
+    } catch {
+      // Invalid base64
     }
 
     return null
@@ -81,19 +160,24 @@ export async function getSessionData(): Promise<SessionData | null> {
 }
 
 /**
- * Create a session cookie for a user
+ * Create a signed JWT session cookie for a user
  */
-export async function createSession(userId: string, email: string, role: UserRole) {
-  const sessionData: SessionData = {
+export async function createSession(userId: string, email: string, role: UserRole, sessionVersion: number = 1) {
+  const secret = getSecretKey()
+
+  const token = await new SignJWT({
     userId,
     email,
     role,
-  }
-
-  const sessionToken = Buffer.from(JSON.stringify(sessionData)).toString('base64')
+    sessionVersion,
+  } as JWTSessionPayload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(JWT_EXPIRATION)
+    .sign(secret)
 
   const cookieStore = await cookies()
-  cookieStore.set(COOKIE_NAME, sessionToken, {
+  cookieStore.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -201,4 +285,22 @@ export function unauthorizedResponse() {
     status: 401,
     headers: { 'Content-Type': 'application/json' },
   })
+}
+
+/**
+ * Create a signed JWT token (for testing purposes)
+ * This is exported to allow tests to create valid tokens
+ */
+export async function createSignedToken(payload: {
+  userId?: string
+  email?: string
+  role?: UserRole
+}): Promise<string> {
+  const secret = getSecretKey()
+
+  return new SignJWT(payload as JWTSessionPayload)
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(JWT_EXPIRATION)
+    .sign(secret)
 }

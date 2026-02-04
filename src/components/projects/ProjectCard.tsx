@@ -155,7 +155,10 @@ export function ProjectCard({
             </span>
           )}
           {project.cofinancingAvailable === 'YES' && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+            <span
+              className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-600"
+              title={t('projectDetail.cofinancingAvailable')}
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -171,7 +174,6 @@ export function ProjectCard({
                 <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" />
                 <path d="M3 4h8" />
               </svg>
-              {t('projectDetail.cofinancingAvailable')}
             </span>
           )}
         </div>

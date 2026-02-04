@@ -21,7 +21,7 @@ import {
 } from '@/types'
 
 // Sort options type
-type SortOption = 'newest' | 'oldest' | 'highestCost' | 'lowestCost' | 'mostUrgent' | 'alphabetical'
+type SortOption = 'newest' | 'oldest' | 'highestCost' | 'lowestCost' | 'alphabetical'
 
 // Urgency priority for sorting
 const URGENCY_PRIORITY: Record<Urgency, number> = {
@@ -772,7 +772,7 @@ export default function HomePage() {
                 {isSortOpen && (
                   <div className="absolute right-0 top-full pt-2 z-50">
                     <div className="w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
-                      {(['newest', 'oldest', 'highestCost', 'lowestCost', 'mostUrgent', 'alphabetical'] as SortOption[]).map((option) => (
+                      {(['newest', 'oldest', 'highestCost', 'lowestCost', 'alphabetical'] as SortOption[]).map((option) => (
                         <button
                           key={option}
                           onClick={() => setSortBy(option)}

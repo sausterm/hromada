@@ -274,7 +274,7 @@ export function Header({ children }: HeaderProps) {
               onClick={() => switchLocale(otherLocale)}
               onMouseEnter={() => setIsLangHovered(true)}
               onMouseLeave={() => setIsLangHovered(false)}
-              className="w-10 h-10 rounded-full bg-[var(--cream-100)] flex items-center justify-center p-1"
+              className="w-10 h-10 rounded-full bg-[var(--cream-100)] hover:bg-[var(--navy-50)] transition-colors flex items-center justify-center p-1"
               aria-label={t('nav.language')}
               title={otherLocale === 'uk' ? 'Українська' : 'English'}
               style={{ perspective: '100px' }}

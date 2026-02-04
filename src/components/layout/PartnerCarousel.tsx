@@ -13,8 +13,9 @@ const partners = [
 export function PartnerCarousel() {
   const t = useTranslations()
 
-  // Duplicate partners array for seamless infinite scroll
-  const duplicatedPartners = [...partners, ...partners, ...partners, ...partners]
+  // Duplicate partners array exactly once for seamless infinite scroll
+  // With 2 copies and -50% translation, the reset is seamless
+  const duplicatedPartners = [...partners, ...partners]
 
   return (
     <section className="bg-[var(--cream-50)] py-6 border-t border-[var(--cream-300)] overflow-hidden">
@@ -54,16 +55,17 @@ export function PartnerCarousel() {
 
       <style jsx>{`
         @keyframes scroll {
-          0% {
+          from {
             transform: translateX(0);
           }
-          100% {
+          to {
             transform: translateX(-50%);
           }
         }
 
         .animate-scroll {
-          animation: scroll 30s linear infinite;
+          animation: scroll 20s linear infinite;
+          will-change: transform;
         }
 
         .animate-scroll:hover {

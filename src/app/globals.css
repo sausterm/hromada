@@ -533,3 +533,8 @@ body {
 .leaflet-control-attribution a {
   color: var(--navy-500) !important;
 }
+
+/* Partner logos - convert to navy blue */
+.partner-logo-navy {
+  filter: grayscale(100%) brightness(0.3) sepia(100%) hue-rotate(180deg) saturate(300%) brightness(0.9);
+}

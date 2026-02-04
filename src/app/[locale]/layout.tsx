@@ -14,6 +14,7 @@ import { notFound } from 'next/navigation';
 import { Geist, Geist_Mono, Outfit } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import { Footer } from "@/components/layout/Footer";
+import { PartnerCarousel } from "@/components/layout/PartnerCarousel";
 import { locales, type Locale } from '@/i18n';
 import type { Metadata } from 'next';
 
@@ -102,6 +103,7 @@ export default async function LocaleLayout({
             <div className="flex-1 flex flex-col">
               {children}
             </div>
+            <PartnerCarousel />
             <Footer />
           </ToastProvider>
         </NextIntlClientProvider>

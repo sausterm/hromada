@@ -1,4 +1,7 @@
 {
+  "partners": {
+    "title": "Our Partners:"
+  },
   "blocked": {
     "title": "Access Restricted",
     "message": "Access to hromada is not available from your location.",

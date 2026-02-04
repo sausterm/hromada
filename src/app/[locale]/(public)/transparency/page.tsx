@@ -36,8 +36,13 @@ export default function TransparencyPage() {
 
           <section className="bg-green-50 rounded-xl p-6 border-2 border-green-200">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 flex items-center gap-2">
-              <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 18v-7" />
+                <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
+                <path d="M14 18v-7" />
+                <path d="M18 18v-7" />
+                <path d="M3 22h18" />
+                <path d="M6 18v-7" />
               </svg>
               {t('transparency.civilianOnlyTitle')}
             </h2>

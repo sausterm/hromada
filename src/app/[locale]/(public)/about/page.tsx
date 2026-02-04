@@ -63,6 +63,9 @@ export default function AboutPage() {
               <li><strong>{t('categories.ENERGY')}</strong> - {t('about.categoryEnergy')}</li>
               <li><strong>{t('categories.OTHER')}</strong> - {t('about.categoryOther')}</li>
             </ul>
+            <p className="text-sm text-[var(--navy-500)] mt-4 italic">
+              {t('about.civilianOnly')}
+            </p>
           </section>
 
         </div>

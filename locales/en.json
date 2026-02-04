@@ -328,6 +328,7 @@
     "categoryWater": "Water and sanitation systems",
     "categoryEnergy": "Energy infrastructure projects",
     "categoryOther": "Community buildings and essential services",
+    "civilianOnly": "All projects are strictly civilian infrastructure. We do not fund military or dual-use equipment.",
     "contact": "Contact Us",
     "contactText": "Questions or feedback? Reach out to us at",
     "browseProjects": "Browse Projects"

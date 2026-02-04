@@ -670,14 +670,14 @@ export default function PartnerNewProjectPage() {
 
           {/* Submit */}
           <div className="flex gap-4">
+            <Link href="/partner">
+              <Button type="button" variant="outline">
+                {t('admin.projects.backToDashboard')}
+              </Button>
+            </Link>
             <Button type="submit" isLoading={isSubmitting} className="flex-1">
               {t('submitProject.buttons.submit')}
             </Button>
-            <Link href="/partner">
-              <Button type="button" variant="ghost">
-                {t('submitProject.buttons.cancel')}
-              </Button>
-            </Link>
           </div>
         </form>
       </main>

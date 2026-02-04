@@ -177,16 +177,6 @@ export function Header({ children }: HeaderProps) {
                     {t('nav.transparency')}
                   </Link>
                   <Link
-                    href="/submit-project"
-                    onClick={() => setIsNavMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--navy-600)] hover:bg-[var(--cream-100)] transition-colors"
-                  >
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    {t('nav.submitProject')}
-                  </Link>
-                  <Link
                     href="/contact"
                     onClick={() => setIsNavMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--navy-600)] hover:bg-[var(--cream-100)] transition-colors"

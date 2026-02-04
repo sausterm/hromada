@@ -18,8 +18,8 @@ export function PartnerCarousel() {
   const positionRef = useRef(0)
   const singleSetWidthRef = useRef(0)
 
-  // Duplicate for seamless loop
-  const duplicatedPartners = [...partners, ...partners]
+  // Triplicate for seamless loop (extra buffer prevents edge glitches)
+  const duplicatedPartners = [...partners, ...partners, ...partners]
 
   useEffect(() => {
     const track = trackRef.current
@@ -48,9 +48,10 @@ export function PartnerCarousel() {
       if (!isPaused && singleSetWidthRef.current > 0) {
         positionRef.current -= speed
 
-        // Reset position seamlessly when we've scrolled one full set
+        // Reset position seamlessly using modulo for smoother wrapping
+        // This avoids the "jump" that can happen with a hard reset to 0
         if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
-          positionRef.current = 0
+          positionRef.current = positionRef.current % singleSetWidthRef.current
         }
 
         if (track) {

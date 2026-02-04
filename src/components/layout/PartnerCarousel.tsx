@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { useEffect, useRef, useState } from 'react'
 
 const partners = [
   { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/' },
@@ -12,10 +13,60 @@ const partners = [
 
 export function PartnerCarousel() {
   const t = useTranslations()
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [isPaused, setIsPaused] = useState(false)
+  const positionRef = useRef(0)
+  const singleSetWidthRef = useRef(0)
 
-  // Duplicate partners array exactly once for seamless infinite scroll
-  // With 2 copies and -50% translation, the reset is seamless
+  // Duplicate for seamless loop
   const duplicatedPartners = [...partners, ...partners]
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+
+    // Calculate width of one set of partners
+    const calculateWidth = () => {
+      const children = track.children
+      let width = 0
+      for (let i = 0; i < partners.length; i++) {
+        const child = children[i] as HTMLElement
+        if (child) {
+          width += child.offsetWidth + 64 // 64px = mx-8 (32px each side)
+        }
+      }
+      singleSetWidthRef.current = width
+    }
+
+    calculateWidth()
+    window.addEventListener('resize', calculateWidth)
+
+    let animationId: number
+    const speed = 0.5 // pixels per frame
+
+    const animate = () => {
+      if (!isPaused && singleSetWidthRef.current > 0) {
+        positionRef.current -= speed
+
+        // Reset position seamlessly when we've scrolled one full set
+        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
+          positionRef.current = 0
+        }
+
+        if (track) {
+          track.style.transform = `translateX(${positionRef.current}px)`
+        }
+      }
+      animationId = requestAnimationFrame(animate)
+    }
+
+    animationId = requestAnimationFrame(animate)
+
+    return () => {
+      cancelAnimationFrame(animationId)
+      window.removeEventListener('resize', calculateWidth)
+    }
+  }, [isPaused])
 
   return (
     <section className="bg-[var(--cream-50)] py-6 border-t border-[var(--cream-300)] overflow-hidden">
@@ -26,13 +77,20 @@ export function PartnerCarousel() {
       </div>
 
       {/* Carousel container */}
-      <div className="relative">
+      <div
+        className="relative"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
         {/* Gradient masks for smooth edges */}
         <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--cream-50)] to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--cream-50)] to-transparent z-10 pointer-events-none" />
 
         {/* Scrolling track */}
-        <div className="flex animate-scroll items-center">
+        <div
+          ref={trackRef}
+          className="flex items-center will-change-transform"
+        >
           {duplicatedPartners.map((partner, index) => (
             <a
               key={`${partner.name}-${index}`}
@@ -52,26 +110,6 @@ export function PartnerCarousel() {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes scroll {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
-        }
-
-        .animate-scroll {
-          animation: scroll 20s linear infinite;
-          will-change: transform;
-        }
-
-        .animate-scroll:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </section>
   )
 }

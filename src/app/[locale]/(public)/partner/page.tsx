@@ -91,17 +91,16 @@ export default function PartnerDashboardPage() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Link href="/" className="text-xl font-bold text-[var(--ukraine-600)]">
-              Hromada
+              hromada
             </Link>
             <Badge variant="info">{t('partner.title')}</Badge>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-right text-sm">
-              <p className="font-medium text-gray-900">{user?.name}</p>
-              {user?.organization && (
-                <p className="text-gray-500">{user.organization}</p>
-              )}
-            </div>
+            {user?.email && (
+              <span className="text-sm text-gray-500">
+                {t('admin.loggedInAs')}: <span className="font-medium text-gray-700">{user.email}</span>
+              </span>
+            )}
             <Button variant="ghost" onClick={logout}>
               {t('admin.nav.logout')}
             </Button>

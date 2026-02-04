@@ -454,6 +454,7 @@
   "admin": {
     "title": "Admin Dashboard",
     "backToMap": "← Back to Map",
+    "loggedInAs": "Logged in as",
     "login": {
       "title": "Admin Login",
       "subtitle": "Enter the admin password to continue",

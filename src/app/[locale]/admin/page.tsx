@@ -83,7 +83,7 @@ interface User {
   }
 }
 
-function Dashboard({ onLogout }: { onLogout: () => void }) {
+function Dashboard({ onLogout, userEmail }: { onLogout: () => void; userEmail?: string }) {
   const t = useTranslations()
   const [projects, setProjects] = useState<Project[]>([])
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmissionWithProject[]>([])
@@ -646,13 +646,20 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <Link href="/" className="text-xl font-bold text-[var(--ukraine-600)]">
-              Hromada
+              hromada
             </Link>
             <Badge variant="secondary">{t('nav.admin')}</Badge>
           </div>
-          <Button variant="ghost" onClick={onLogout}>
-            {t('admin.nav.logout')}
-          </Button>
+          <div className="flex items-center gap-4">
+            {userEmail && (
+              <span className="text-sm text-gray-500">
+                {t('admin.loggedInAs')}: <span className="font-medium text-gray-700">{userEmail}</span>
+              </span>
+            )}
+            <Button variant="ghost" onClick={onLogout}>
+              {t('admin.nav.logout')}
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -1692,7 +1699,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 }
 
 export default function AdminDashboardPage() {
-  const { isAuthenticated, isLoading, login, logout, isAdmin, role } = useAuth()
+  const { isAuthenticated, isLoading, login, logout, isAdmin, role, user } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -1724,5 +1731,5 @@ export default function AdminDashboardPage() {
     )
   }
 
-  return <Dashboard onLogout={logout} />
+  return <Dashboard onLogout={logout} userEmail={user?.email} />
 }

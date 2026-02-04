@@ -16,8 +16,8 @@ export function PartnerCarousel() {
   const duplicatedPartners = [...partners, ...partners, ...partners, ...partners]
 
   return (
-    <section className="bg-[var(--cream-50)] py-12 border-t border-[var(--cream-300)] overflow-hidden">
-      <div className="container mx-auto px-4 mb-8">
+    <section className="bg-[var(--cream-50)] py-6 border-t border-[var(--cream-300)] overflow-hidden">
+      <div className="container mx-auto px-4 mb-4">
         <h2 className="text-center text-lg font-semibold text-[var(--navy-600)]">
           {t('partners.title')}
         </h2>

@@ -73,9 +73,61 @@ export default function TransparencyPage() {
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('transparency.partnersTitle')}
             </h2>
-            <p className="text-base leading-relaxed">
+            <p className="text-base leading-relaxed mb-4">
               {t('transparency.partnersText')}
             </p>
+            <ul className="space-y-3">
+              <li>
+                <a
+                  href="https://en.ecoaction.org.ua/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--navy-600)] hover:text-[var(--navy-800)] underline underline-offset-2"
+                >
+                  NGO Ecoaction
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://ecoclubrivne.org/en/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--navy-600)] hover:text-[var(--navy-800)] underline underline-offset-2"
+                >
+                  NGO Ecoclub
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.energyactua.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--navy-600)] hover:text-[var(--navy-800)] underline underline-offset-2"
+                >
+                  Energy Act For Ukraine
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://repowerua.org/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--navy-600)] hover:text-[var(--navy-800)] underline underline-offset-2"
+                >
+                  RePower Ukraine
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.greenpeace.org/ukraine/en/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--navy-600)] hover:text-[var(--navy-800)] underline underline-offset-2"
+                >
+                  Greenpeace Ukraine
+                </a>
+              </li>
+            </ul>
           </section>
         </div>
 

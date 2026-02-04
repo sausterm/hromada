@@ -16,30 +16,25 @@ export function Header({ children }: HeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false)
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
+  const [isLangHovered, setIsLangHovered] = useState(false)
   const navMenuRef = useRef<HTMLDivElement>(null)
-  const langMenuRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdowns when clicking outside
+  // Close nav dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (navMenuRef.current && !navMenuRef.current.contains(event.target as Node)) {
         setIsNavMenuOpen(false)
       }
-      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
-        setIsLangMenuOpen(false)
-      }
     }
 
-    if (isNavMenuOpen || isLangMenuOpen) {
+    if (isNavMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isNavMenuOpen, isLangMenuOpen])
+  }, [isNavMenuOpen])
 
   const switchLocale = (newLocale: Locale) => {
     router.replace(pathname, { locale: newLocale })
-    setIsLangMenuOpen(false)
   }
 
   // Flag components that fill the circular button
@@ -188,15 +183,14 @@ export function Header({ children }: HeaderProps) {
                   <div className="my-2 border-t border-[var(--cream-300)]" />
 
                   <Link
-                    href="/admin"
+                    href="/login"
                     onClick={() => setIsNavMenuOpen(false)}
                     className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--navy-600)] hover:bg-[var(--cream-100)] transition-colors"
                   >
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
-                    {t('nav.admin')}
+                    {t('nav.login')}
                   </Link>
                   </div>
                 </div>
@@ -259,38 +253,39 @@ export function Header({ children }: HeaderProps) {
 
           {/* Right - Language Switcher */}
           <div className="flex-1 flex items-center justify-end">
-            <div
-              className="relative"
-              ref={langMenuRef}
-              onMouseEnter={() => setIsLangMenuOpen(true)}
-              onMouseLeave={() => setIsLangMenuOpen(false)}
+            <button
+              onClick={() => switchLocale(otherLocale)}
+              onMouseEnter={() => setIsLangHovered(true)}
+              onMouseLeave={() => setIsLangHovered(false)}
+              className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5 group"
+              aria-label={t('nav.language')}
+              title={otherLocale === 'uk' ? 'Українська' : 'English'}
+              style={{ perspective: '100px' }}
             >
-              <button
-                className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
-                aria-label={t('nav.language')}
+              <div
+                className="w-full h-full rounded-full overflow-hidden transition-transform duration-300"
+                style={{
+                  transformStyle: 'preserve-3d',
+                  transform: isLangHovered ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                }}
               >
-                <div className="w-full h-full rounded-full overflow-hidden">
+                <div className="absolute inset-0 backface-hidden">
                   <FlagComponent className="w-full h-full" />
                 </div>
-              </button>
-
-              {/* Language Dropdown */}
-              {isLangMenuOpen && (
-                <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 z-50">
-                  <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] p-1.5">
-                    <button
-                      onClick={() => switchLocale(otherLocale)}
-                      className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
-                      title={otherLocale === 'uk' ? 'Українська' : 'English'}
-                    >
-                      <div className="w-full h-full rounded-full overflow-hidden">
-                        <OtherFlagComponent className="w-full h-full" />
-                      </div>
-                    </button>
-                  </div>
+                <div
+                  className="absolute inset-0 backface-hidden"
+                  style={{ transform: 'rotateY(180deg)' }}
+                >
+                  <OtherFlagComponent className="w-full h-full" />
                 </div>
-              )}
-            </div>
+              </div>
+              <style jsx>{`
+                .backface-hidden {
+                  backface-visibility: hidden;
+                  -webkit-backface-visibility: hidden;
+                }
+              `}</style>
+            </button>
           </div>
         </div>
       </div>

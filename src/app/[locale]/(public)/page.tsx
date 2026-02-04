@@ -153,21 +153,25 @@ export default function HomePage() {
       result = result.filter((p) => p.projectType === selectedProjectType)
     }
 
-    // Price range filter
+    // Price range filter (when max is at 500k, include everything above too)
     const [minPrice, maxPrice] = priceRange
     if (minPrice > 0 || maxPrice < 500000) {
       result = result.filter((p) => {
         if (p.estimatedCostUsd === undefined || p.estimatedCostUsd === null) return true
-        return p.estimatedCostUsd >= minPrice && p.estimatedCostUsd <= maxPrice
+        const meetsMin = p.estimatedCostUsd >= minPrice
+        const meetsMax = maxPrice >= 500000 ? true : p.estimatedCostUsd <= maxPrice
+        return meetsMin && meetsMax
       })
     }
 
-    // Power range filter
+    // Power range filter (when max is at 500kW, include everything above too)
     const [minPower, maxPower] = powerRange
     if (minPower > 0 || maxPower < 500) {
       result = result.filter((p) => {
         if (p.technicalPowerKw === undefined || p.technicalPowerKw === null) return true
-        return p.technicalPowerKw >= minPower && p.technicalPowerKw <= maxPower
+        const meetsMin = p.technicalPowerKw >= minPower
+        const meetsMax = maxPower >= 500 ? true : p.technicalPowerKw <= maxPower
+        return meetsMin && meetsMax
       })
     }
 

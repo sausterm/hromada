@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, getLocalizedProject } from '@/types'
+import { type Project, CATEGORY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, getLocalizedProject } from '@/types'
 
 interface ProjectPopupProps {
   project: Project
@@ -13,7 +13,6 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
   const locale = useLocale()
   const localized = getLocalizedProject(project, locale)
   const categoryConfig = CATEGORY_CONFIG[project.category]
-  const urgencyConfig = URGENCY_CONFIG[project.urgency]
 
   return (
     <div className="w-64 bg-[var(--cream-50)] rounded-xl overflow-hidden shadow-xl border border-[var(--cream-200)]">
@@ -108,19 +107,6 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
             </span>
           )}
         </div>
-
-        {/* Urgency */}
-        {project.urgency !== 'LOW' && (
-          <div className="flex items-center gap-1.5 mb-3">
-            <span
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: urgencyConfig.color }}
-            />
-            <span className="text-xs font-medium" style={{ color: urgencyConfig.color }}>
-              {t('projectDetail.urgencyLabel', { level: t(`urgency.${project.urgency}`) })}
-            </span>
-          </div>
-        )}
 
         {/* View details link */}
         <Link

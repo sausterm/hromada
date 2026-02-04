@@ -32,7 +32,7 @@ function createCategoryIcon(category: Category): L.DivIcon {
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        border: 3px solid white;
+        border: 2px solid white;
         box-shadow: 0 3px 12px rgba(58, 54, 51, 0.25);
         background-color: ${config.color};
       ">
@@ -83,7 +83,7 @@ function createClusterIcon(cluster: { getChildCount: () => number }): L.DivIcon 
         justify-content: center;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--navy-600) 0%, var(--navy-700) 100%);
-        border: 3px solid white;
+        border: 2px solid white;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         color: white;
         font-size: ${fontSize}px;

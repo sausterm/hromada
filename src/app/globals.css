@@ -173,7 +173,7 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: 3px solid white;
+  border: 2px solid white;
   box-shadow: 0 3px 12px rgba(58, 54, 51, 0.25);
   font-size: 16px;
   /* No transition - prevents animation when highlighting from card hover */

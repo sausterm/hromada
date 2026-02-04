@@ -42,7 +42,8 @@
     "projects": "Projects",
     "language": "Language",
     "switchLanguage": "Switch to Ukrainian",
-    "menu": "Menu"
+    "menu": "Menu",
+    "trust": "Trust & Verification"
   },
   "categories": {
     "HOSPITAL": "Hospital / Medical",
@@ -340,6 +341,16 @@
     "forMunicipalitiesText": "If you're a Ukrainian municipality looking to submit a project, please use the \"Submit a Project\" button in the header.",
     "forDonors": "For Donors",
     "forDonorsText": "Browse our projects and use the contact form on each project page to express your interest in supporting a specific municipality."
+  },
+  "trust": {
+    "title": "Trust & Verification",
+    "intro": "We take trust seriously. Every project on hromada goes through a verification process to ensure authenticity and protect both donors and municipalities.",
+    "verificationTitle": "Project Verification",
+    "verificationText": "Each project submission is reviewed by our team before being published. We verify the municipality's identity, confirm the project details, and ensure the information is accurate.",
+    "transparencyTitle": "Transparency",
+    "transparencyText": "We don't process any payments. Donors connect directly with municipalities, ensuring full transparency in how funds are used. This direct connection means you always know exactly where your support is going.",
+    "partnersTitle": "Our Partners",
+    "partnersText": "We work with trusted NGOs and organizations on the ground in Ukraine who help verify projects and facilitate connections between donors and communities."
   },
   "admin": {
     "title": "Admin Dashboard",

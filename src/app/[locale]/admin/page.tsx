@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { Link } from '@/i18n/navigation'
-import { useAdminAuth } from '@/hooks/useAdminAuth'
+import { Link, useRouter } from '@/i18n/navigation'
+import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -59,67 +59,6 @@ function transformProject(data: any): Project {
   }
 }
 
-function LoginForm({ onLogin }: { onLogin: (password: string) => Promise<boolean> }) {
-  const t = useTranslations()
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
-
-    if (!password.trim()) {
-      setError(t('admin.login.passwordRequired'))
-      setIsLoading(false)
-      return
-    }
-
-    const success = await onLogin(password)
-    if (!success) {
-      setError(t('admin.login.error'))
-    }
-    setIsLoading(false)
-  }
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{t('admin.login.title')}</CardTitle>
-          <p className="text-gray-500 text-sm mt-1">{t('admin.login.subtitle')}</p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                {t('admin.login.password')}
-              </label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder={t('admin.login.passwordPlaceholder')}
-                error={error}
-              />
-            </div>
-            <Button type="submit" fullWidth isLoading={isLoading}>
-              {t('admin.login.loginButton')}
-            </Button>
-          </form>
-          <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-[var(--ukraine-600)] hover:underline">
-              {t('admin.backToMap')}
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
 interface ContactSubmissionWithProject extends ContactSubmission {
   project: Pick<Project, 'id' | 'facilityName' | 'municipalityName' | 'contactEmail'>
 }
@@ -131,6 +70,19 @@ type SortDirection = 'asc' | 'desc'
 type SubmissionSortField = 'recency' | 'status'
 type ContactSortField = 'recency' | 'handled'
 
+// User type for admin dashboard
+interface User {
+  id: string
+  email: string
+  name: string
+  organization: string | null
+  role: 'ADMIN' | 'PARTNER' | 'NONPROFIT_MANAGER'
+  createdAt: string
+  _count?: {
+    projectSubmissions: number
+  }
+}
+
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const t = useTranslations()
   const [projects, setProjects] = useState<Project[]>([])
@@ -139,7 +91,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [isLoadingProjects, setIsLoadingProjects] = useState(true)
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(true)
   const [isLoadingProjectSubmissions, setIsLoadingProjectSubmissions] = useState(true)
-  const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'contacts'>('projects')
+  const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'contacts' | 'users'>('projects')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortField, setSortField] = useState<SortField>('facilityName')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
@@ -165,6 +117,21 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   // Multi-select for bulk actions
   const [selectedProjectIds, setSelectedProjectIds] = useState<Set<string>>(new Set())
   const [isDeleting, setIsDeleting] = useState(false)
+
+  // Users management
+  const [users, setUsers] = useState<User[]>([])
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true)
+  const [showUserForm, setShowUserForm] = useState(false)
+  const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [userFormData, setUserFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    organization: '',
+    role: 'PARTNER' as 'ADMIN' | 'PARTNER' | 'NONPROFIT_MANAGER',
+  })
+  const [userFormError, setUserFormError] = useState('')
+  const [isSubmittingUser, setIsSubmittingUser] = useState(false)
 
   // Fetch projects from API
   useEffect(() => {
@@ -219,6 +186,124 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     }
     fetchProjectSubmissions()
   }, [])
+
+  // Fetch users (admin only)
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const response = await fetch('/api/admin/users')
+        if (response.ok) {
+          const data = await response.json()
+          setUsers(data.users || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch users:', error)
+      } finally {
+        setIsLoadingUsers(false)
+      }
+    }
+    fetchUsers()
+  }, [])
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setUserFormError('')
+    setIsSubmittingUser(true)
+
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userFormData),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setUsers((prev) => [data.user, ...prev])
+        setShowUserForm(false)
+        setUserFormData({ name: '', email: '', password: '', organization: '', role: 'PARTNER' })
+        alert(t('users.createSuccess'))
+      } else {
+        const data = await response.json()
+        setUserFormError(data.error || 'Failed to create user')
+      }
+    } catch (error) {
+      console.error('Failed to create user:', error)
+      setUserFormError('Failed to create user')
+    } finally {
+      setIsSubmittingUser(false)
+    }
+  }
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editingUser) return
+    setUserFormError('')
+    setIsSubmittingUser(true)
+
+    try {
+      const updateData: Record<string, unknown> = {
+        name: userFormData.name,
+        organization: userFormData.organization,
+        role: userFormData.role,
+      }
+      if (userFormData.password) {
+        updateData.password = userFormData.password
+      }
+
+      const response = await fetch(`/api/admin/users/${editingUser.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setUsers((prev) => prev.map((u) => (u.id === editingUser.id ? data.user : u)))
+        setEditingUser(null)
+        setShowUserForm(false)
+        setUserFormData({ name: '', email: '', password: '', organization: '', role: 'PARTNER' })
+        alert(t('users.updateSuccess'))
+      } else {
+        const data = await response.json()
+        setUserFormError(data.error || 'Failed to update user')
+      }
+    } catch (error) {
+      console.error('Failed to update user:', error)
+      setUserFormError('Failed to update user')
+    } finally {
+      setIsSubmittingUser(false)
+    }
+  }
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm(t('users.deleteConfirm'))) return
+
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        setUsers((prev) => prev.filter((u) => u.id !== userId))
+        alert(t('users.deleteSuccess'))
+      }
+    } catch (error) {
+      console.error('Failed to delete user:', error)
+    }
+  }
+
+  const openEditUser = (user: User) => {
+    setEditingUser(user)
+    setUserFormData({
+      name: user.name,
+      email: user.email,
+      password: '',
+      organization: user.organization || '',
+      role: user.role,
+    })
+    setShowUserForm(true)
+  }
 
   const handleApproveSubmission = async (submissionId: string) => {
     setIsProcessing(true)
@@ -629,6 +714,12 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 {unhandledCount}
               </Badge>
             )}
+          </Button>
+          <Button
+            variant={activeTab === 'users' ? 'primary' : 'ghost'}
+            onClick={() => setActiveTab('users')}
+          >
+            {t('admin.nav.users')}
           </Button>
         </div>
 
@@ -1417,13 +1508,205 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             )}
           </div>
         )}
+
+        {activeTab === 'users' && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl font-semibold">{t('users.title')} ({users.length})</h2>
+              <Button onClick={() => {
+                setEditingUser(null)
+                setUserFormData({ name: '', email: '', password: '', organization: '', role: 'PARTNER' })
+                setShowUserForm(true)
+              }}>
+                {t('users.addNew')}
+              </Button>
+            </div>
+
+            {/* User Form Modal */}
+            {showUserForm && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <Card className="w-full max-w-md">
+                  <CardHeader>
+                    <CardTitle>{editingUser ? t('users.form.editTitle') : t('users.form.title')}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <form onSubmit={editingUser ? handleUpdateUser : handleCreateUser} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('users.form.name')} *
+                        </label>
+                        <Input
+                          value={userFormData.name}
+                          onChange={(e) => setUserFormData((prev) => ({ ...prev, name: e.target.value }))}
+                          placeholder={t('users.form.namePlaceholder')}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('users.form.email')} *
+                        </label>
+                        <Input
+                          type="email"
+                          value={userFormData.email}
+                          onChange={(e) => setUserFormData((prev) => ({ ...prev, email: e.target.value }))}
+                          placeholder={t('users.form.emailPlaceholder')}
+                          required
+                          disabled={!!editingUser}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('users.form.password')} {!editingUser && '*'}
+                        </label>
+                        <Input
+                          type="password"
+                          value={userFormData.password}
+                          onChange={(e) => setUserFormData((prev) => ({ ...prev, password: e.target.value }))}
+                          placeholder={t('users.form.passwordPlaceholder')}
+                          required={!editingUser}
+                        />
+                        {editingUser && (
+                          <p className="text-xs text-gray-500 mt-1">Leave blank to keep current password</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('users.form.organization')}
+                        </label>
+                        <Input
+                          value={userFormData.organization}
+                          onChange={(e) => setUserFormData((prev) => ({ ...prev, organization: e.target.value }))}
+                          placeholder={t('users.form.organizationPlaceholder')}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          {t('users.form.role')} *
+                        </label>
+                        <select
+                          value={userFormData.role}
+                          onChange={(e) => setUserFormData((prev) => ({ ...prev, role: e.target.value as 'ADMIN' | 'PARTNER' | 'NONPROFIT_MANAGER' }))}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="PARTNER">{t('users.roles.PARTNER')}</option>
+                          <option value="NONPROFIT_MANAGER">{t('users.roles.NONPROFIT_MANAGER')}</option>
+                          <option value="ADMIN">{t('users.roles.ADMIN')}</option>
+                        </select>
+                      </div>
+
+                      {userFormError && (
+                        <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{userFormError}</p>
+                      )}
+
+                      <div className="flex gap-3 pt-4">
+                        <Button type="submit" isLoading={isSubmittingUser}>
+                          {editingUser ? t('users.form.updateButton') : t('users.form.createButton')}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => {
+                            setShowUserForm(false)
+                            setEditingUser(null)
+                            setUserFormError('')
+                          }}
+                        >
+                          {t('users.form.cancel')}
+                        </Button>
+                      </div>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {isLoadingUsers ? (
+              <div className="flex justify-center py-8">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : users.length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-gray-500">{t('users.noUsers')}</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b">
+                      <tr>
+                        <th className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.name')}</th>
+                        <th className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.email')}</th>
+                        <th className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.organization')}</th>
+                        <th className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.role')}</th>
+                        <th className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.created')}</th>
+                        <th className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.actions')}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {users.map((user) => (
+                        <tr key={user.id} className="hover:bg-gray-50">
+                          <td className="p-4">
+                            <p className="font-medium text-gray-900">{user.name}</p>
+                            {user._count?.projectSubmissions ? (
+                              <p className="text-xs text-gray-500">{user._count.projectSubmissions} submissions</p>
+                            ) : null}
+                          </td>
+                          <td className="p-4 text-gray-600">{user.email}</td>
+                          <td className="p-4 text-gray-500">{user.organization || '-'}</td>
+                          <td className="p-4 text-center">
+                            <Badge
+                              variant={user.role === 'ADMIN' ? 'danger' : user.role === 'PARTNER' ? 'info' : 'success'}
+                              size="sm"
+                            >
+                              {t(`users.roles.${user.role}`)}
+                            </Badge>
+                          </td>
+                          <td className="p-4 text-center text-gray-500 text-sm">
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="p-4 text-center">
+                            <div className="flex gap-2 justify-center">
+                              <Button variant="ghost" size="sm" onClick={() => openEditUser(user)}>
+                                {t('common.edit')}
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50" onClick={() => handleDeleteUser(user.id)}>
+                                {t('common.delete')}
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
 export default function AdminDashboardPage() {
-  const { isAuthenticated, isLoading, login, logout } = useAdminAuth()
+  const { isAuthenticated, isLoading, login, logout, isAdmin, role } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/login')
+    } else if (!isLoading && isAuthenticated && !isAdmin()) {
+      // Redirect non-admins to appropriate dashboard
+      if (role === 'PARTNER' || role === 'NONPROFIT_MANAGER') {
+        router.push('/partner')
+      } else {
+        router.push('/')
+      }
+    }
+  }, [isLoading, isAuthenticated, isAdmin, role, router])
 
   if (isLoading) {
     return (
@@ -1433,8 +1716,12 @@ export default function AdminDashboardPage() {
     )
   }
 
-  if (!isAuthenticated) {
-    return <LoginForm onLogin={login} />
+  if (!isAuthenticated || !isAdmin()) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--cream-100)]">
+        <LoadingSpinner size="lg" />
+      </div>
+    )
   }
 
   return <Dashboard onLogout={logout} />

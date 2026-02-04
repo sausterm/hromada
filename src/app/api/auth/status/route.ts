@@ -1,36 +1,44 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { getSessionData, getUserById } from '@/lib/auth'
 
-const COOKIE_NAME = 'hromada_admin_session'
-
-// GET /api/auth/status - Check if user is authenticated
+// GET /api/auth/status - Check if user is authenticated and return user info
 export async function GET() {
   try {
-    const cookieStore = await cookies()
-    const sessionCookie = cookieStore.get(COOKIE_NAME)
+    const session = await getSessionData()
 
-    if (!sessionCookie?.value) {
+    if (!session) {
       return NextResponse.json({ authenticated: false })
     }
 
-    // Validate the session token
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-    if (!adminSecret) {
-      return NextResponse.json({ authenticated: false })
+    // Legacy admin session
+    if (session.isLegacyAdmin) {
+      return NextResponse.json({
+        authenticated: true,
+        role: 'ADMIN',
+        isLegacyAdmin: true,
+      })
     }
 
-    // Decode and verify the token contains the correct secret
-    try {
-      const decoded = Buffer.from(sessionCookie.value, 'base64').toString()
-      const [secret] = decoded.split(':')
+    // New session format - fetch user details
+    if (session.userId) {
+      const user = await getUserById(session.userId)
 
-      if (secret === adminSecret) {
-        return NextResponse.json({ authenticated: true })
+      if (user) {
+        return NextResponse.json({
+          authenticated: true,
+          role: user.role,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            organization: user.organization,
+            role: user.role,
+          },
+        })
       }
-    } catch {
-      // Invalid token format
     }
 
+    // Session exists but no valid user found
     return NextResponse.json({ authenticated: false })
   } catch (error) {
     console.error('Auth status check error:', error)

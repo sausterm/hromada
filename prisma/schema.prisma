@@ -114,10 +114,13 @@ model ProjectSubmission {
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
   photos               String[]         @default([])
+  submittedByUserId    String?
+  submittedByUser      User?            @relation(fields: [submittedByUserId], references: [id])
 
   @@index([status])
   @@index([createdAt])
   @@index([municipalityEmail])
+  @@index([submittedByUserId])
 }
 
 enum Category {
@@ -159,4 +162,26 @@ enum SubmissionStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum UserRole {
+  ADMIN
+  PARTNER
+  NONPROFIT_MANAGER
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  passwordHash   String
+  name           String
+  organization   String?
+  role           UserRole @default(PARTNER)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  projectSubmissions ProjectSubmission[]
+
+  @@index([email])
+  @@index([role])
 }

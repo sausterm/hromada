@@ -35,6 +35,7 @@
     "siteName": "hromada | громада",
     "headerSubtitle": "Built to support Ukrainian renewable infrastructure recovery",
     "admin": "Admin",
+    "login": "Login",
     "submitProject": "Submit a Project",
     "contact": "Contact",
     "aboutUs": "About",
@@ -356,6 +357,90 @@
     "partnersText": "We work with trusted NGOs and organizations on the ground in Ukraine who help verify projects and facilitate connections between donors and communities.",
     "visitTrustCenter": "Visit Trust Center"
   },
+  "login": {
+    "title": "Sign In",
+    "subtitle": "Enter your credentials to access your account",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "loginButton": "Sign In",
+    "backToHome": "← Back to Home",
+    "emailPasswordRequired": "Email and password are required",
+    "invalidCredentials": "Invalid email or password"
+  },
+  "partner": {
+    "title": "Partner Dashboard",
+    "welcome": "Welcome, {name}",
+    "organization": "Organization: {org}",
+    "stats": {
+      "totalSubmissions": "Total Submissions",
+      "pending": "Pending Review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "projects": {
+      "title": "Your Projects",
+      "addNew": "+ Submit New Project",
+      "noProjects": "You haven't submitted any projects yet.",
+      "viewDetails": "View Details",
+      "edit": "Edit",
+      "status": "Status",
+      "submittedAt": "Submitted",
+      "table": {
+        "facility": "Facility",
+        "municipality": "Municipality",
+        "category": "Category",
+        "status": "Status",
+        "submitted": "Submitted"
+      }
+    },
+    "submission": {
+      "title": "Submit New Project",
+      "description": "Fill out the form below to submit a new project for review.",
+      "success": "Project submitted successfully! It will be reviewed by our team.",
+      "error": "Failed to submit project. Please try again."
+    }
+  },
+  "users": {
+    "title": "User Management",
+    "addNew": "+ Add User",
+    "noUsers": "No users found.",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "organization": "Organization",
+      "role": "Role",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "form": {
+      "title": "Create New User",
+      "editTitle": "Edit User",
+      "name": "Name",
+      "namePlaceholder": "John Doe",
+      "email": "Email",
+      "emailPlaceholder": "john@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Minimum 8 characters",
+      "organization": "Organization",
+      "organizationPlaceholder": "NGO Name (optional)",
+      "role": "Role",
+      "selectRole": "Select a role",
+      "createButton": "Create User",
+      "updateButton": "Update User",
+      "cancel": "Cancel"
+    },
+    "roles": {
+      "ADMIN": "Administrator",
+      "PARTNER": "Partner",
+      "NONPROFIT_MANAGER": "Nonprofit Manager"
+    },
+    "deleteConfirm": "Are you sure you want to delete this user?",
+    "deleteSuccess": "User deleted successfully",
+    "createSuccess": "User created successfully",
+    "updateSuccess": "User updated successfully"
+  },
   "admin": {
     "title": "Admin Dashboard",
     "backToMap": "← Back to Map",
@@ -373,6 +458,7 @@
       "projects": "Projects",
       "submissions": "Project Submissions",
       "contacts": "Contact Submissions",
+      "users": "Users",
       "importProjects": "Import Projects",
       "logout": "Logout"
     },

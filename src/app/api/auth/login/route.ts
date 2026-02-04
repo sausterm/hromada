@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import {
+  getUserByEmail,
+  verifyPassword,
+  createSession,
+  createLegacyAdminSession,
+} from '@/lib/auth'
 
-const COOKIE_NAME = 'hromada_admin_session'
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
-
-// POST /api/auth/login - Authenticate admin and set secure cookie
+// POST /api/auth/login - Authenticate user and set secure cookie
 export async function POST(request: NextRequest) {
   // Rate limit: 5 attempts per minute per IP (brute force protection)
   const rateLimitResponse = rateLimit(request, RATE_LIMITS.login)
@@ -15,51 +17,128 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { password } = body
+    const { email, password } = body
 
-    if (!password) {
+    // Support legacy password-only login for backward compatibility
+    if (!email && password) {
+      const adminSecret = process.env.HROMADA_ADMIN_SECRET
+
+      if (!adminSecret) {
+        return NextResponse.json(
+          { error: 'Server configuration error' },
+          { status: 500 }
+        )
+      }
+
+      if (password !== adminSecret) {
+        return NextResponse.json(
+          { error: 'Invalid password' },
+          { status: 401 }
+        )
+      }
+
+      // Create legacy admin session
+      await createLegacyAdminSession()
+      return NextResponse.json({ success: true, role: 'ADMIN' })
+    }
+
+    // Email/password login
+    if (!email || !password) {
       return NextResponse.json(
-        { error: 'Password is required' },
+        { error: 'Email and password are required' },
         { status: 400 }
       )
     }
 
+    // First, check if this is an admin using the legacy password
     const adminSecret = process.env.HROMADA_ADMIN_SECRET
+    if (adminSecret && password === adminSecret) {
+      // Try to find user by email to get their role, or default to ADMIN
+      const user = await getUserByEmail(email)
+      if (user) {
+        await createSession(user.id, user.email, user.role)
+        return NextResponse.json({
+          success: true,
+          role: user.role,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            organization: user.organization,
+            role: user.role,
+          },
+        })
+      } else {
+        // Legacy admin login without user record
+        await createLegacyAdminSession()
+        return NextResponse.json({ success: true, role: 'ADMIN' })
+      }
+    }
 
-    if (!adminSecret) {
-      console.error('HROMADA_ADMIN_SECRET not configured')
+    // Look up user by email
+    let user
+    try {
+      user = await getUserByEmail(email)
+    } catch (dbError) {
+      console.error('Database error looking up user:', dbError)
       return NextResponse.json(
-        { error: 'Server configuration error' },
+        { error: 'Database connection error' },
         { status: 500 }
       )
     }
 
-    if (password !== adminSecret) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Invalid password' },
+        { error: 'Invalid email or password' },
         { status: 401 }
       )
     }
 
-    // Create a session token (in production, use a proper session library)
-    // For now, we use a simple HMAC of the secret + timestamp
-    const sessionToken = Buffer.from(`${adminSecret}:${Date.now()}`).toString('base64')
+    // Verify password
+    let isValidPassword
+    try {
+      isValidPassword = await verifyPassword(password, user.passwordHash)
+    } catch (bcryptError) {
+      console.error('Bcrypt error:', bcryptError)
+      return NextResponse.json(
+        { error: 'Password verification error' },
+        { status: 500 }
+      )
+    }
 
-    // Set httpOnly secure cookie
-    const cookieStore = await cookies()
-    cookieStore.set(COOKIE_NAME, sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: COOKIE_MAX_AGE,
-      path: '/',
+    if (!isValidPassword) {
+      return NextResponse.json(
+        { error: 'Invalid email or password' },
+        { status: 401 }
+      )
+    }
+
+    // Create session
+    try {
+      await createSession(user.id, user.email, user.role)
+    } catch (sessionError) {
+      console.error('Session creation error:', sessionError)
+      return NextResponse.json(
+        { error: 'Session creation error' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      role: user.role,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        organization: user.organization,
+        role: user.role,
+      },
     })
-
-    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { error: 'Login failed' },
+      { error: 'Login failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

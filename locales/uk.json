@@ -35,6 +35,7 @@
     "siteName": "hromada | громада",
     "headerSubtitle": "Створено для підтримки відновлення інфраструктури",
     "admin": "Адмін",
+    "login": "Увійти",
     "submitProject": "Подати проєкт",
     "contact": "Контакти",
     "aboutUs": "Про нас",
@@ -356,6 +357,90 @@
     "partnersText": "Ми співпрацюємо з надійними НУО та організаціями в Україні, які допомагають верифікувати проєкти та сприяють зв'язку між донорами та громадами.",
     "visitTrustCenter": "Відвідати Trust Center"
   },
+  "login": {
+    "title": "Вхід",
+    "subtitle": "Введіть свої дані для входу в обліковий запис",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Пароль",
+    "passwordPlaceholder": "Введіть ваш пароль",
+    "loginButton": "Увійти",
+    "backToHome": "← На головну",
+    "emailPasswordRequired": "Email та пароль обов'язкові",
+    "invalidCredentials": "Невірний email або пароль"
+  },
+  "partner": {
+    "title": "Панель партнера",
+    "welcome": "Вітаємо, {name}",
+    "organization": "Організація: {org}",
+    "stats": {
+      "totalSubmissions": "Всього подань",
+      "pending": "На розгляді",
+      "approved": "Схвалено",
+      "rejected": "Відхилено"
+    },
+    "projects": {
+      "title": "Ваші проєкти",
+      "addNew": "+ Подати новий проєкт",
+      "noProjects": "Ви ще не подали жодного проєкту.",
+      "viewDetails": "Детальніше",
+      "edit": "Редагувати",
+      "status": "Статус",
+      "submittedAt": "Подано",
+      "table": {
+        "facility": "Об'єкт",
+        "municipality": "Громада",
+        "category": "Категорія",
+        "status": "Статус",
+        "submitted": "Подано"
+      }
+    },
+    "submission": {
+      "title": "Подати новий проєкт",
+      "description": "Заповніть форму нижче, щоб подати новий проєкт на розгляд.",
+      "success": "Проєкт успішно подано! Його розгляне наша команда.",
+      "error": "Не вдалося подати проєкт. Спробуйте ще раз."
+    }
+  },
+  "users": {
+    "title": "Управління користувачами",
+    "addNew": "+ Додати користувача",
+    "noUsers": "Користувачів не знайдено.",
+    "table": {
+      "name": "Ім'я",
+      "email": "Email",
+      "organization": "Організація",
+      "role": "Роль",
+      "created": "Створено",
+      "actions": "Дії"
+    },
+    "form": {
+      "title": "Створити нового користувача",
+      "editTitle": "Редагувати користувача",
+      "name": "Ім'я",
+      "namePlaceholder": "Іван Петренко",
+      "email": "Email",
+      "emailPlaceholder": "ivan@example.com",
+      "password": "Пароль",
+      "passwordPlaceholder": "Мінімум 8 символів",
+      "organization": "Організація",
+      "organizationPlaceholder": "Назва НУО (необов'язково)",
+      "role": "Роль",
+      "selectRole": "Виберіть роль",
+      "createButton": "Створити користувача",
+      "updateButton": "Оновити користувача",
+      "cancel": "Скасувати"
+    },
+    "roles": {
+      "ADMIN": "Адміністратор",
+      "PARTNER": "Партнер",
+      "NONPROFIT_MANAGER": "Менеджер НУО"
+    },
+    "deleteConfirm": "Ви впевнені, що хочете видалити цього користувача?",
+    "deleteSuccess": "Користувача успішно видалено",
+    "createSuccess": "Користувача успішно створено",
+    "updateSuccess": "Користувача успішно оновлено"
+  },
   "admin": {
     "title": "Панель адміністратора",
     "backToMap": "← Назад до карти",
@@ -373,6 +458,7 @@
       "projects": "Проекти",
       "submissions": "Подані проєкти",
       "contacts": "Контактні запити",
+      "users": "Користувачі",
       "importProjects": "Імпорт проєктів",
       "logout": "Вийти"
     },

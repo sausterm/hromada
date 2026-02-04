@@ -1,14 +1,10 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { clearSession } from '@/lib/auth'
 
-const COOKIE_NAME = 'hromada_admin_session'
-
-// POST /api/auth/logout - Clear admin session cookie
+// POST /api/auth/logout - Clear session cookie
 export async function POST() {
   try {
-    const cookieStore = await cookies()
-    cookieStore.delete(COOKIE_NAME)
-
+    await clearSession()
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Logout error:', error)

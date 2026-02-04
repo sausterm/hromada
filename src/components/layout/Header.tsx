@@ -257,34 +257,35 @@ export function Header({ children }: HeaderProps) {
               onClick={() => switchLocale(otherLocale)}
               onMouseEnter={() => setIsLangHovered(true)}
               onMouseLeave={() => setIsLangHovered(false)}
-              className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5 group"
+              className="w-8 h-8 rounded-full bg-white border border-[var(--cream-400)] hover:border-[var(--navy-400)] transition-colors flex items-center justify-center p-0.5"
               aria-label={t('nav.language')}
               title={otherLocale === 'uk' ? 'Українська' : 'English'}
               style={{ perspective: '100px' }}
             >
               <div
-                className="w-full h-full rounded-full overflow-hidden transition-transform duration-300"
+                className="relative w-full h-full transition-transform duration-300"
                 style={{
                   transformStyle: 'preserve-3d',
                   transform: isLangHovered ? 'rotateY(180deg)' : 'rotateY(0deg)'
                 }}
               >
-                <div className="absolute inset-0 backface-hidden">
+                <div
+                  className="absolute inset-0 rounded-full overflow-hidden"
+                  style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                >
                   <FlagComponent className="w-full h-full" />
                 </div>
                 <div
-                  className="absolute inset-0 backface-hidden"
-                  style={{ transform: 'rotateY(180deg)' }}
+                  className="absolute inset-0 rounded-full overflow-hidden"
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    transform: 'rotateY(180deg)'
+                  }}
                 >
                   <OtherFlagComponent className="w-full h-full" />
                 </div>
               </div>
-              <style jsx>{`
-                .backface-hidden {
-                  backface-visibility: hidden;
-                  -webkit-backface-visibility: hidden;
-                }
-              `}</style>
             </button>
           </div>
         </div>

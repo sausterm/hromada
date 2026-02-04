@@ -17,7 +17,17 @@ export function PartnerCarousel() {
   const trackRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
   const positionRef = useRef(0)
+
+  // Only show on demo site and localhost
+  useEffect(() => {
+    const hostname = window.location.hostname
+    const showCarousel = hostname === 'demo.hromadaproject.org' ||
+                         hostname === 'localhost' ||
+                         hostname === '127.0.0.1'
+    setIsVisible(showCarousel)
+  }, [])
   const singleSetWidthRef = useRef(0)
 
   // Triplicate for seamless loop (extra buffer prevents edge glitches)
@@ -94,6 +104,9 @@ export function PartnerCarousel() {
       container.removeEventListener('wheel', handleWheel)
     }
   }, [isPaused])
+
+  // Don't render on production site
+  if (!isVisible) return null
 
   return (
     <section className="bg-[var(--cream-100)] py-6 border-t border-[var(--cream-300)] overflow-hidden">

@@ -3,10 +3,10 @@
 import { useTranslations } from 'next-intl'
 
 const partners = [
-  { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png' },
-  { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png' },
-  { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png' },
-  { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png' },
+  { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/' },
+  { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/' },
+  { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/' },
+  { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/' },
 ]
 
 export function PartnerCarousel() {
@@ -16,7 +16,7 @@ export function PartnerCarousel() {
   const duplicatedPartners = [...partners, ...partners, ...partners, ...partners]
 
   return (
-    <section className="bg-[var(--cream-100)] py-12 border-t border-[var(--cream-300)] overflow-hidden">
+    <section className="bg-[var(--cream-50)] py-12 border-t border-[var(--cream-300)] overflow-hidden">
       <div className="container mx-auto px-4 mb-8">
         <h2 className="text-center text-lg font-semibold text-[var(--navy-600)]">
           {t('partners.title')}
@@ -26,15 +26,18 @@ export function PartnerCarousel() {
       {/* Carousel container */}
       <div className="relative">
         {/* Gradient masks for smooth edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--cream-50)] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--cream-50)] to-transparent z-10 pointer-events-none" />
 
         {/* Scrolling track */}
-        <div className="flex animate-scroll">
+        <div className="flex animate-scroll items-center">
           {duplicatedPartners.map((partner, index) => (
-            <div
+            <a
               key={`${partner.name}-${index}`}
-              className="flex-shrink-0 mx-8 flex items-center justify-center"
+              href={partner.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-shrink-0 mx-8 flex items-center justify-center hover:opacity-70 transition-opacity"
               style={{ minWidth: '180px' }}
             >
               <img
@@ -43,7 +46,7 @@ export function PartnerCarousel() {
                 className="h-12 w-auto object-contain partner-logo-navy"
                 loading="lazy"
               />
-            </div>
+            </a>
           ))}
         </div>
       </div>

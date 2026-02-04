@@ -350,7 +350,8 @@
     "directConnectionTitle": "Direct Connection",
     "directConnectionText": "We process donations and transfer funds directly to the recipient municipality. Full transparency means you always know exactly which project and community your contribution supports.",
     "partnersTitle": "Our Partners",
-    "partnersText": "We work with trusted NGOs and organizations on the ground in Ukraine who help verify projects and facilitate connections between donors and communities."
+    "partnersText": "We work with trusted NGOs and organizations on the ground in Ukraine who help verify projects and facilitate connections between donors and communities.",
+    "visitTrustCenter": "Visit Trust Center"
   },
   "admin": {
     "title": "Admin Dashboard",

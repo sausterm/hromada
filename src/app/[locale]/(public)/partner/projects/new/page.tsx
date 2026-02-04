@@ -10,11 +10,10 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { PublicImageUpload } from '@/components/forms/PublicImageUpload'
 import {
   type Category,
-  type Urgency,
   CATEGORY_CONFIG,
-  URGENCY_CONFIG,
   PROJECT_TYPE_CONFIG,
 } from '@/types'
 
@@ -27,7 +26,6 @@ interface FormData {
   projectType: string
   briefDescription: string
   fullDescription: string
-  urgency: Urgency | ''
   estimatedCostUsd: string
   technicalPowerKw: string
   numberOfPanels: string
@@ -43,6 +41,7 @@ interface FormData {
   partnerOrganization: string
   projectSubtype: string
   additionalNotes: string
+  photos: string[]
 }
 
 const initialFormData: FormData = {
@@ -54,7 +53,6 @@ const initialFormData: FormData = {
   projectType: '',
   briefDescription: '',
   fullDescription: '',
-  urgency: '',
   estimatedCostUsd: '',
   technicalPowerKw: '',
   numberOfPanels: '',
@@ -70,6 +68,7 @@ const initialFormData: FormData = {
   partnerOrganization: '',
   projectSubtype: '',
   additionalNotes: '',
+  photos: [],
 }
 
 export default function PartnerNewProjectPage() {
@@ -107,6 +106,10 @@ export default function PartnerNewProjectPage() {
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
     }
+  }
+
+  const handlePhotosChange = (photos: string[]) => {
+    setFormData((prev) => ({ ...prev, photos }))
   }
 
   const geocodeCity = async () => {
@@ -392,21 +395,6 @@ export default function PartnerNewProjectPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('submitProject.fields.urgency')}
-                </label>
-                <select
-                  value={formData.urgency}
-                  onChange={handleChange('urgency')}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">-- {t('submitProject.fields.selectUrgency')} --</option>
-                  {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urg) => (
-                    <option key={urg} value={urg}>{t(`urgency.${urg}`)}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('submitProject.fields.briefDescription')} *
                 </label>
                 <Input
@@ -657,6 +645,26 @@ export default function PartnerNewProjectPage() {
                   maxLength={1000}
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Project Photos */}
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {t('submitProject.photos.title')}{' '}
+                <span className="text-gray-400 font-normal">({t('submitProject.sections.optional')})</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500 mb-4">
+                {t('submitProject.photos.description')}
+              </p>
+              <PublicImageUpload
+                images={formData.photos}
+                onChange={handlePhotosChange}
+                maxImages={5}
+              />
             </CardContent>
           </Card>
 

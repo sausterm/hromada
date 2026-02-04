@@ -43,9 +43,6 @@ export default function AboutPage() {
               <li>
                 <strong>{t('about.forDonors')}</strong> {t('about.forDonorsText')}
               </li>
-              <li>
-                <strong>{t('about.directConnection')}</strong> {t('about.directConnectionText')}
-              </li>
             </ul>
           </section>
 

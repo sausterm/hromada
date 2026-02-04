@@ -105,7 +105,7 @@ export function PartnerCarousel() {
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className="h-12 w-auto object-contain mix-blend-multiply"
+                className="h-12 w-auto object-contain"
                 loading="lazy"
               />
             </a>

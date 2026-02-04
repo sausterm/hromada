@@ -15,6 +15,7 @@ const partners = [
 export function PartnerCarousel() {
   const t = useTranslations()
   const trackRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
   const positionRef = useRef(0)
   const singleSetWidthRef = useRef(0)
@@ -24,7 +25,8 @@ export function PartnerCarousel() {
 
   useEffect(() => {
     const track = trackRef.current
-    if (!track) return
+    const container = containerRef.current
+    if (!track || !container) return
 
     // Calculate width of one set of partners
     const calculateWidth = () => {
@@ -41,6 +43,28 @@ export function PartnerCarousel() {
 
     calculateWidth()
     window.addEventListener('resize', calculateWidth)
+
+    // Handle manual scroll when paused
+    const handleWheel = (e: WheelEvent) => {
+      if (isPaused && singleSetWidthRef.current > 0) {
+        e.preventDefault()
+        // Use deltaX for horizontal scroll, or deltaY if no horizontal movement
+        const delta = e.deltaX !== 0 ? e.deltaX : e.deltaY
+        positionRef.current -= delta
+
+        // Wrap position seamlessly
+        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
+          positionRef.current = positionRef.current % singleSetWidthRef.current
+        }
+        if (positionRef.current > 0) {
+          positionRef.current = positionRef.current - singleSetWidthRef.current
+        }
+
+        track.style.transform = `translateX(${positionRef.current}px)`
+      }
+    }
+
+    container.addEventListener('wheel', handleWheel, { passive: false })
 
     let animationId: number
     const speed = 0.5 // pixels per frame
@@ -67,6 +91,7 @@ export function PartnerCarousel() {
     return () => {
       cancelAnimationFrame(animationId)
       window.removeEventListener('resize', calculateWidth)
+      container.removeEventListener('wheel', handleWheel)
     }
   }, [isPaused])
 
@@ -80,7 +105,8 @@ export function PartnerCarousel() {
 
       {/* Carousel container */}
       <div
-        className="relative"
+        ref={containerRef}
+        className="relative cursor-grab active:cursor-grabbing"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >

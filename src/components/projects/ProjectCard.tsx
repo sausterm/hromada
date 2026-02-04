@@ -2,7 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, formatRelativeTime, getLocalizedProject } from '@/types'
+import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, formatRelativeTime, getLocalizedProject } from '@/types'
 import { ShareButton } from '@/components/ui/ShareButton'
 
 interface ProjectCardProps {
@@ -25,7 +25,6 @@ export function ProjectCard({
   const localized = getLocalizedProject(project, locale)
   const categoryConfig = CATEGORY_CONFIG[project.category]
   const urgencyConfig = URGENCY_CONFIG[project.urgency]
-  const statusConfig = STATUS_CONFIG[project.status]
 
   const mainPhoto = project.photos?.[0]
 
@@ -188,22 +187,10 @@ export function ProjectCard({
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-[var(--cream-300)]">
-          <div className="flex items-center gap-2">
-            {/* Status Badge */}
-            <span
-              className="inline-flex items-center justify-center px-2 py-0.5 rounded-full text-xs font-medium text-center"
-              style={{
-                backgroundColor: `${statusConfig.color}20`,
-                color: statusConfig.color,
-              }}
-            >
-              {t(`status.${project.status}`)}
-            </span>
-            {/* Posted time */}
-            <span className="text-xs text-[var(--navy-400)] whitespace-nowrap" suppressHydrationWarning>
-              {t('projectCard.postedAgo', { time: formatRelativeTime(project.createdAt) })}
-            </span>
-          </div>
+          {/* Posted time */}
+          <span className="text-xs text-[var(--navy-400)] whitespace-nowrap" suppressHydrationWarning>
+            {t('projectCard.postedAgo', { time: formatRelativeTime(project.createdAt) })}
+          </span>
 
           {/* Share Button */}
           <ShareButton

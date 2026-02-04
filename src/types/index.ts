@@ -208,40 +208,44 @@ export function formatPower(kw: number): string {
   return `${kw.toLocaleString()} kW`
 }
 
-// Utility function to format relative time (e.g., "2 days ago")
-export function formatRelativeTime(date: Date): string {
+// Type for translation function (compatible with next-intl's useTranslations)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TranslationFunction = (key: string, params?: any) => string
+
+// Utility function to format relative time with translations
+export function formatRelativeTime(date: Date, t: TranslationFunction): string {
   const now = new Date()
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
   if (diffInSeconds < 60) {
-    return 'just now'
+    return t('time.justNow')
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60)
   if (diffInMinutes < 60) {
-    return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'} ago`
+    return t('time.minutesAgo', { count: diffInMinutes })
   }
 
   const diffInHours = Math.floor(diffInMinutes / 60)
   if (diffInHours < 24) {
-    return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`
+    return t('time.hoursAgo', { count: diffInHours })
   }
 
   const diffInDays = Math.floor(diffInHours / 24)
   if (diffInDays < 7) {
-    return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`
+    return t('time.daysAgo', { count: diffInDays })
   }
 
   const diffInWeeks = Math.floor(diffInDays / 7)
   if (diffInWeeks < 4) {
-    return `${diffInWeeks} ${diffInWeeks === 1 ? 'week' : 'weeks'} ago`
+    return t('time.weeksAgo', { count: diffInWeeks })
   }
 
   const diffInMonths = Math.floor(diffInDays / 30)
   if (diffInMonths < 12) {
-    return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`
+    return t('time.monthsAgo', { count: diffInMonths })
   }
 
   const diffInYears = Math.floor(diffInDays / 365)
-  return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`
+  return t('time.yearsAgo', { count: diffInYears })
 }

@@ -186,75 +186,98 @@ describe('Utility functions', () => {
   })
 
   describe('formatRelativeTime', () => {
+    // Mock translation function that simulates English translations
+    const mockT = (key: string, params?: Record<string, unknown>): string => {
+      const count = params?.count as number
+      switch (key) {
+        case 'time.justNow':
+          return 'just now'
+        case 'time.minutesAgo':
+          return count === 1 ? '1 minute ago' : `${count} minutes ago`
+        case 'time.hoursAgo':
+          return count === 1 ? '1 hour ago' : `${count} hours ago`
+        case 'time.daysAgo':
+          return count === 1 ? '1 day ago' : `${count} days ago`
+        case 'time.weeksAgo':
+          return count === 1 ? '1 week ago' : `${count} weeks ago`
+        case 'time.monthsAgo':
+          return count === 1 ? '1 month ago' : `${count} months ago`
+        case 'time.yearsAgo':
+          return count === 1 ? '1 year ago' : `${count} years ago`
+        default:
+          return key
+      }
+    }
+
     it('returns "just now" for times less than a minute ago', () => {
       const now = new Date()
-      expect(formatRelativeTime(now)).toBe('just now')
+      expect(formatRelativeTime(now, mockT)).toBe('just now')
 
       const thirtySecsAgo = new Date(Date.now() - 30 * 1000)
-      expect(formatRelativeTime(thirtySecsAgo)).toBe('just now')
+      expect(formatRelativeTime(thirtySecsAgo, mockT)).toBe('just now')
     })
 
     it('returns minutes ago for times less than an hour ago', () => {
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000)
-      expect(formatRelativeTime(oneMinuteAgo)).toBe('1 minute ago')
+      expect(formatRelativeTime(oneMinuteAgo, mockT)).toBe('1 minute ago')
 
       const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-      expect(formatRelativeTime(fiveMinutesAgo)).toBe('5 minutes ago')
+      expect(formatRelativeTime(fiveMinutesAgo, mockT)).toBe('5 minutes ago')
 
       const fiftyNineMinutesAgo = new Date(Date.now() - 59 * 60 * 1000)
-      expect(formatRelativeTime(fiftyNineMinutesAgo)).toBe('59 minutes ago')
+      expect(formatRelativeTime(fiftyNineMinutesAgo, mockT)).toBe('59 minutes ago')
     })
 
     it('returns hours ago for times less than a day ago', () => {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
-      expect(formatRelativeTime(oneHourAgo)).toBe('1 hour ago')
+      expect(formatRelativeTime(oneHourAgo, mockT)).toBe('1 hour ago')
 
       const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000)
-      expect(formatRelativeTime(threeHoursAgo)).toBe('3 hours ago')
+      expect(formatRelativeTime(threeHoursAgo, mockT)).toBe('3 hours ago')
 
       const twentyThreeHoursAgo = new Date(Date.now() - 23 * 60 * 60 * 1000)
-      expect(formatRelativeTime(twentyThreeHoursAgo)).toBe('23 hours ago')
+      expect(formatRelativeTime(twentyThreeHoursAgo, mockT)).toBe('23 hours ago')
     })
 
     it('returns days ago for times less than a week ago', () => {
       const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(oneDayAgo)).toBe('1 day ago')
+      expect(formatRelativeTime(oneDayAgo, mockT)).toBe('1 day ago')
 
       const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(threeDaysAgo)).toBe('3 days ago')
+      expect(formatRelativeTime(threeDaysAgo, mockT)).toBe('3 days ago')
 
       const sixDaysAgo = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(sixDaysAgo)).toBe('6 days ago')
+      expect(formatRelativeTime(sixDaysAgo, mockT)).toBe('6 days ago')
     })
 
     it('returns weeks ago for times less than a month ago', () => {
       const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(oneWeekAgo)).toBe('1 week ago')
+      expect(formatRelativeTime(oneWeekAgo, mockT)).toBe('1 week ago')
 
       const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(twoWeeksAgo)).toBe('2 weeks ago')
+      expect(formatRelativeTime(twoWeeksAgo, mockT)).toBe('2 weeks ago')
 
       const threeWeeksAgo = new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(threeWeeksAgo)).toBe('3 weeks ago')
+      expect(formatRelativeTime(threeWeeksAgo, mockT)).toBe('3 weeks ago')
     })
 
     it('returns months ago for times less than a year ago', () => {
       const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(oneMonthAgo)).toBe('1 month ago')
+      expect(formatRelativeTime(oneMonthAgo, mockT)).toBe('1 month ago')
 
       const threeMonthsAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(threeMonthsAgo)).toBe('3 months ago')
+      expect(formatRelativeTime(threeMonthsAgo, mockT)).toBe('3 months ago')
 
       const elevenMonthsAgo = new Date(Date.now() - 330 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(elevenMonthsAgo)).toBe('11 months ago')
+      expect(formatRelativeTime(elevenMonthsAgo, mockT)).toBe('11 months ago')
     })
 
     it('returns years ago for times over a year ago', () => {
       const oneYearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(oneYearAgo)).toBe('1 year ago')
+      expect(formatRelativeTime(oneYearAgo, mockT)).toBe('1 year ago')
 
       const twoYearsAgo = new Date(Date.now() - 730 * 24 * 60 * 60 * 1000)
-      expect(formatRelativeTime(twoYearsAgo)).toBe('2 years ago')
+      expect(formatRelativeTime(twoYearsAgo, mockT)).toBe('2 years ago')
     })
   })
 

@@ -31,6 +31,15 @@
     "total": "всього",
     "notSpecified": "Не вказано"
   },
+  "time": {
+    "justNow": "щойно",
+    "minutesAgo": "{count, plural, =1 {1 хвилину тому} few {# хвилини тому} other {# хвилин тому}}",
+    "hoursAgo": "{count, plural, =1 {1 годину тому} few {# години тому} other {# годин тому}}",
+    "daysAgo": "{count, plural, =1 {1 день тому} few {# дні тому} other {# днів тому}}",
+    "weeksAgo": "{count, plural, =1 {1 тиждень тому} few {# тижні тому} other {# тижнів тому}}",
+    "monthsAgo": "{count, plural, =1 {1 місяць тому} few {# місяці тому} other {# місяців тому}}",
+    "yearsAgo": "{count, plural, =1 {1 рік тому} few {# роки тому} other {# років тому}}"
+  },
   "nav": {
     "siteName": "hromada | громада",
     "headerSubtitle": "Створено для підтримки відновлення інфраструктури",

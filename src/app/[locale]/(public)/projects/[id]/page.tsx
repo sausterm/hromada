@@ -194,7 +194,7 @@ export default function ProjectDetailPage() {
                   {localized.municipalityName}
                 </p>
                 <span className="text-sm text-gray-400" suppressHydrationWarning>
-                  {t('projectDetail.postedTime', { time: formatRelativeTime(project.createdAt) })}
+                  {t('projectDetail.postedTime', { time: formatRelativeTime(project.createdAt, t) })}
                 </span>
               </div>
 

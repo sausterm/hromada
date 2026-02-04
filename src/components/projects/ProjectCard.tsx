@@ -189,7 +189,7 @@ export function ProjectCard({
         <div className="flex items-center justify-between pt-2 border-t border-[var(--cream-300)]">
           {/* Posted time */}
           <span className="text-xs text-[var(--navy-400)] whitespace-nowrap" suppressHydrationWarning>
-            {t('projectCard.postedAgo', { time: formatRelativeTime(project.createdAt) })}
+            {t('projectCard.postedAgo', { time: formatRelativeTime(project.createdAt, t) })}
           </span>
 
           {/* Share Button */}

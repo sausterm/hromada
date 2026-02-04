@@ -280,7 +280,7 @@ export function Header({ children }: HeaderProps) {
               style={{ perspective: '100px' }}
             >
               <div
-                className="relative w-full h-full transition-transform duration-300"
+                className="relative w-full h-full transition-transform duration-500 ease-in-out"
                 style={{
                   transformStyle: 'preserve-3d',
                   transform: isLangHovered ? 'rotateY(180deg)' : 'rotateY(0deg)'

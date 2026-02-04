@@ -85,7 +85,7 @@ describe('verifyAdminAuth', () => {
 
       const result = await verifyAdminAuth(request)
       expect(result).toBe(true)
-      expect(mockCookies.get).toHaveBeenCalledWith('hromada_admin_session')
+      expect(mockCookies.get).toHaveBeenCalledWith('hromada_session')
     })
 
     it('returns false for invalid session cookie secret', async () => {

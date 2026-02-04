@@ -24,6 +24,47 @@ import {
 } from '@/types'
 import { ShareButton } from '@/components/ui/ShareButton'
 
+// Partner organizations configuration with logos and links
+const PARTNER_CONFIG: Record<string, { logo: string; url: string; name: string }> = {
+  'ecoaction': {
+    logo: '/partners/EcoactionLogo.png',
+    url: 'https://en.ecoaction.org.ua/',
+    name: 'NGO Ecoaction',
+  },
+  'ecoclub': {
+    logo: '/partners/EcoclubLogo.png',
+    url: 'https://ecoclubrivne.org/en/',
+    name: 'NGO Ecoclub',
+  },
+  'energy act': {
+    logo: '/partners/energyactukrainelogo.png',
+    url: 'https://www.energyactua.com/',
+    name: 'Energy Act For Ukraine',
+  },
+  'repower': {
+    logo: '/partners/RePowerUkraineLogo.png',
+    url: 'https://repowerua.org/',
+    name: 'RePower Ukraine',
+  },
+  'greenpeace': {
+    logo: '/partners/greenpeacelogo.png',
+    url: 'https://www.greenpeace.org/ukraine/en/',
+    name: 'Greenpeace Ukraine',
+  },
+}
+
+// Helper to find partner config by organization name
+function findPartnerConfig(orgName: string | undefined) {
+  if (!orgName) return null
+  const lowerName = orgName.toLowerCase()
+  for (const [key, config] of Object.entries(PARTNER_CONFIG)) {
+    if (lowerName.includes(key)) {
+      return config
+    }
+  }
+  return null
+}
+
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {
   return {
@@ -302,12 +343,36 @@ export default function ProjectDetailPage() {
                     )}
 
                     {/* Partner Organization */}
-                    {project.partnerOrganization && (
-                      <div className="sm:col-span-2">
-                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.partnerOrganization')}</p>
-                        <p className="font-medium text-gray-900">{project.partnerOrganization}</p>
-                      </div>
-                    )}
+                    {project.partnerOrganization && (() => {
+                      const partnerConfig = findPartnerConfig(project.partnerOrganization)
+                      return (
+                        <div className="sm:col-span-2">
+                          <p className="text-sm text-gray-500 mb-2">{t('projectDetail.specifications.partnerOrganization')}</p>
+                          {partnerConfig ? (
+                            <a
+                              href={partnerConfig.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-3 group"
+                            >
+                              <img
+                                src={partnerConfig.logo}
+                                alt={partnerConfig.name}
+                                className="h-10 w-auto object-contain"
+                              />
+                              <span className="font-medium text-gray-900 group-hover:text-[var(--navy-600)] transition-colors">
+                                {project.partnerOrganization}
+                              </span>
+                              <svg className="w-4 h-4 text-gray-400 group-hover:text-[var(--navy-600)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          ) : (
+                            <p className="font-medium text-gray-900">{project.partnerOrganization}</p>
+                          )}
+                        </div>
+                      )
+                    })()}
                   </div>
                 </CardContent>
               </Card>

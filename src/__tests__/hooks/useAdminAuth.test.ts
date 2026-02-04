@@ -72,12 +72,12 @@ describe('useAdminAuth', () => {
       json: async () => ({ success: true }),
     })
 
-    let loginResult: boolean = false
+    let loginResult: { success: boolean; role?: string } = { success: false }
     await act(async () => {
       loginResult = await result.current.login('my-password')
     })
 
-    expect(loginResult).toBe(true)
+    expect(loginResult.success).toBe(true)
     expect(result.current.isAuthenticated).toBe(true)
     expect(mockFetch).toHaveBeenCalledWith('/api/auth/login', {
       method: 'POST',
@@ -105,12 +105,12 @@ describe('useAdminAuth', () => {
       json: async () => ({ error: 'Invalid password' }),
     })
 
-    let loginResult: boolean = true
+    let loginResult: { success: boolean; role?: string } = { success: true }
     await act(async () => {
       loginResult = await result.current.login('wrong-password')
     })
 
-    expect(loginResult).toBe(false)
+    expect(loginResult.success).toBe(false)
     expect(result.current.isAuthenticated).toBe(false)
   })
 
@@ -183,12 +183,12 @@ describe('useAdminAuth', () => {
       // Mock login call to throw error
       mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
-      let loginResult: boolean = true
+      let loginResult: { success: boolean; role?: string } = { success: true }
       await act(async () => {
         loginResult = await result.current.login('password')
       })
 
-      expect(loginResult).toBe(false)
+      expect(loginResult.success).toBe(false)
       expect(result.current.isAuthenticated).toBe(false)
       expect(console.error).toHaveBeenCalledWith(
         'Login failed:',

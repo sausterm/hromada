@@ -26,7 +26,34 @@ jest.mock('@/lib/rate-limit', () => ({
   },
 }))
 
+// Mock prisma for user lookups
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}))
+
+// Mock bcrypt for password verification
+jest.mock('bcryptjs', () => ({
+  compare: jest.fn(),
+  hash: jest.fn(),
+}))
+
+// Mock auth functions for status tests
+const mockGetUserById = jest.fn()
+jest.mock('@/lib/auth', () => {
+  const actual = jest.requireActual('@/lib/auth')
+  return {
+    ...actual,
+    getUserById: (...args: unknown[]) => mockGetUserById(...args),
+  }
+})
+
 import { rateLimit } from '@/lib/rate-limit'
+import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 describe('POST /api/auth/login', () => {
   const originalEnv = process.env
@@ -40,71 +67,181 @@ describe('POST /api/auth/login', () => {
     process.env = originalEnv
   })
 
-  it('returns 400 when password is not provided', async () => {
-    const request = new NextRequest('http://localhost/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({}),
-    })
+  describe('Legacy password-only login', () => {
+    it('returns 500 when HROMADA_ADMIN_SECRET is not configured', async () => {
+      delete process.env.HROMADA_ADMIN_SECRET
 
-    const response = await loginPOST(request)
-    const data = await response.json()
-
-    expect(response.status).toBe(400)
-    expect(data.error).toBe('Password is required')
-  })
-
-  it('returns 401 when password is incorrect', async () => {
-    const request = new NextRequest('http://localhost/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: 'wrong-password' }),
-    })
-
-    const response = await loginPOST(request)
-    const data = await response.json()
-
-    expect(response.status).toBe(401)
-    expect(data.error).toBe('Invalid password')
-  })
-
-  it('returns success and sets cookie when password is correct', async () => {
-    const request = new NextRequest('http://localhost/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: 'test-secret-123' }),
-    })
-
-    const response = await loginPOST(request)
-    const data = await response.json()
-
-    expect(response.status).toBe(200)
-    expect(data.success).toBe(true)
-    expect(mockCookies.set).toHaveBeenCalledWith(
-      'hromada_admin_session',
-      expect.any(String),
-      expect.objectContaining({
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: 'any-password' }),
       })
-    )
-  })
 
-  it('returns 500 when HROMADA_ADMIN_SECRET is not configured', async () => {
-    delete process.env.HROMADA_ADMIN_SECRET
+      const response = await loginPOST(request)
+      const data = await response.json()
 
-    const request = new NextRequest('http://localhost/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: 'any-password' }),
+      expect(response.status).toBe(500)
+      expect(data.error).toBe('Server configuration error')
     })
 
-    const response = await loginPOST(request)
-    const data = await response.json()
+    it('returns 401 when legacy password is incorrect', async () => {
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: 'wrong-password' }),
+      })
 
-    expect(response.status).toBe(500)
-    expect(data.error).toBe('Server configuration error')
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(401)
+      expect(data.error).toBe('Invalid password')
+    })
+
+    it('returns success for correct legacy password', async () => {
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: 'test-secret-123' }),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.success).toBe(true)
+      expect(data.role).toBe('ADMIN')
+      expect(mockCookies.set).toHaveBeenCalledWith(
+        'hromada_session',
+        expect.any(String),
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: 'lax',
+          path: '/',
+        })
+      )
+    })
+  })
+
+  describe('Email/password login', () => {
+    it('returns 400 when email and password are not provided', async () => {
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(data.error).toBe('Email and password are required')
+    })
+
+    it('returns 401 when user is not found', async () => {
+      ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'notfound@example.com', password: 'password123' }),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(401)
+      expect(data.error).toBe('Invalid email or password')
+    })
+
+    it('returns 401 when password is incorrect', async () => {
+      ;(prisma.user.findUnique as jest.Mock).mockResolvedValue({
+        id: 'user-1',
+        email: 'test@example.com',
+        passwordHash: 'hashed-password',
+        name: 'Test User',
+        role: 'PARTNER',
+      })
+      ;(bcrypt.compare as jest.Mock).mockResolvedValue(false)
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test@example.com', password: 'wrong-password' }),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(401)
+      expect(data.error).toBe('Invalid email or password')
+    })
+
+    it('returns success and user info when credentials are correct', async () => {
+      const mockUser = {
+        id: 'user-1',
+        email: 'test@example.com',
+        passwordHash: 'hashed-password',
+        name: 'Test User',
+        organization: 'Test Org',
+        role: 'PARTNER',
+      }
+      ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
+      ;(bcrypt.compare as jest.Mock).mockResolvedValue(true)
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test@example.com', password: 'correct-password' }),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.success).toBe(true)
+      expect(data.role).toBe('PARTNER')
+      expect(data.user).toEqual({
+        id: 'user-1',
+        email: 'test@example.com',
+        name: 'Test User',
+        organization: 'Test Org',
+        role: 'PARTNER',
+      })
+      expect(mockCookies.set).toHaveBeenCalledWith(
+        'hromada_session',
+        expect.any(String),
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: 'lax',
+          path: '/',
+        })
+      )
+    })
+
+    it('allows admin secret as password for existing users', async () => {
+      const mockUser = {
+        id: 'user-1',
+        email: 'admin@example.com',
+        passwordHash: 'hashed-password',
+        name: 'Admin User',
+        role: 'ADMIN',
+      }
+      ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'admin@example.com', password: 'test-secret-123' }),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.success).toBe(true)
+      expect(data.role).toBe('ADMIN')
+    })
   })
 
   it('applies rate limiting', async () => {
@@ -127,7 +264,6 @@ describe('POST /api/auth/login', () => {
   })
 
   it('returns 500 when an unexpected error occurs', async () => {
-    // Create a request with invalid JSON to trigger the catch block
     const request = new NextRequest('http://localhost/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -153,7 +289,7 @@ describe('POST /api/auth/logout', () => {
 
     expect(response.status).toBe(200)
     expect(data.success).toBe(true)
-    expect(mockCookies.delete).toHaveBeenCalledWith('hromada_admin_session')
+    expect(mockCookies.delete).toHaveBeenCalledWith('hromada_session')
   })
 
   it('returns 500 when cookie deletion fails', async () => {
@@ -201,8 +337,7 @@ describe('GET /api/auth/status', () => {
     expect(data.authenticated).toBe(false)
   })
 
-  it('returns authenticated: true when cookie contains valid token', async () => {
-    // Create a valid session token (base64 encoded secret:timestamp)
+  it('returns authenticated: true with legacy admin session', async () => {
     const validToken = Buffer.from('test-secret-123:1234567890').toString('base64')
     mockCookies.get.mockReturnValue({ value: validToken })
 
@@ -211,6 +346,35 @@ describe('GET /api/auth/status', () => {
 
     expect(response.status).toBe(200)
     expect(data.authenticated).toBe(true)
+    expect(data.role).toBe('ADMIN')
+  })
+
+  it('returns authenticated: true with user session', async () => {
+    const sessionData = {
+      userId: 'user-1',
+      email: 'test@example.com',
+      role: 'PARTNER',
+    }
+    const validToken = Buffer.from(JSON.stringify(sessionData)).toString('base64')
+    mockCookies.get.mockReturnValue({ value: validToken })
+
+    // Mock getUserById to return the user with PARTNER role
+    mockGetUserById.mockResolvedValue({
+      id: 'user-1',
+      email: 'test@example.com',
+      name: 'Test User',
+      organization: 'Test Org',
+      role: 'PARTNER',
+    })
+
+    const response = await statusGET()
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.authenticated).toBe(true)
+    // Role comes from getUserById, not the session
+    expect(data.user.role).toBe('PARTNER')
+    expect(data.user.email).toBe('test@example.com')
   })
 
   it('returns authenticated: false when cookie contains invalid secret', async () => {

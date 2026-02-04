@@ -83,7 +83,7 @@ interface User {
   }
 }
 
-function Dashboard({ onLogout, userEmail }: { onLogout: () => void; userEmail?: string }) {
+function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: string }) {
   const t = useTranslations()
   const [projects, setProjects] = useState<Project[]>([])
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmissionWithProject[]>([])
@@ -651,9 +651,9 @@ function Dashboard({ onLogout, userEmail }: { onLogout: () => void; userEmail?: 
             <Badge variant="secondary">{t('nav.admin')}</Badge>
           </div>
           <div className="flex items-center gap-4">
-            {userEmail && (
+            {userName && (
               <span className="text-sm text-gray-500">
-                {t('admin.loggedInAs')}: <span className="font-medium text-gray-700">{userEmail}</span>
+                {t('admin.loggedInAs')}: <span className="font-medium text-gray-700">{userName}</span>
               </span>
             )}
             <Button variant="ghost" onClick={onLogout}>
@@ -1731,5 +1731,5 @@ export default function AdminDashboardPage() {
     )
   }
 
-  return <Dashboard onLogout={logout} userEmail={user?.email} />
+  return <Dashboard onLogout={logout} userName={user?.name} />
 }

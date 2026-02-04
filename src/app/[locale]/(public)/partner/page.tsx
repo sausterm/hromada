@@ -96,9 +96,9 @@ export default function PartnerDashboardPage() {
             <Badge variant="info">{t('partner.title')}</Badge>
           </div>
           <div className="flex items-center gap-4">
-            {user?.email && (
+            {user?.name && (
               <span className="text-sm text-gray-500">
-                {t('admin.loggedInAs')}: <span className="font-medium text-gray-700">{user.email}</span>
+                {t('admin.loggedInAs')}: <span className="font-medium text-gray-700">{user.name}</span>
               </span>
             )}
             <Button variant="ghost" onClick={logout}>

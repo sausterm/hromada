@@ -103,7 +103,7 @@ export function PartnerCarousel() {
       window.removeEventListener('resize', calculateWidth)
       container.removeEventListener('wheel', handleWheel)
     }
-  }, [isPaused])
+  }, [isPaused, isVisible])
 
   // Don't render on production site
   if (!isVisible) return null

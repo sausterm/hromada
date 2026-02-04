@@ -103,8 +103,7 @@ export default async function LocaleLayout({
             <div className="flex-1 flex flex-col">
               {children}
             </div>
-            {/* TODO: Re-enable once partner logo permissions confirmed */}
-            {/* <PartnerCarousel /> */}
+            <PartnerCarousel />
             <Footer />
           </ToastProvider>
         </NextIntlClientProvider>

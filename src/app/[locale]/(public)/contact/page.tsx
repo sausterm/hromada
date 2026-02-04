@@ -38,10 +38,10 @@ export default function ContactPage() {
             <p className="text-[var(--navy-600)]">
               {t('generalInquiriesText')}{' '}
               <a
-                href="mailto:admin@hromadaproject.org"
+                href="mailto:thomas@hromadaproject.org"
                 className="text-[var(--ukraine-blue)] hover:underline font-medium"
               >
-                admin@hromadaproject.org
+                thomas@hromadaproject.org
               </a>
             </p>
           </div>

@@ -201,9 +201,6 @@ export default function HomePage() {
           return a.estimatedCostUsd - b.estimatedCostUsd
         })
         break
-      case 'mostUrgent':
-        sorted.sort((a, b) => URGENCY_PRIORITY[b.urgency] - URGENCY_PRIORITY[a.urgency])
-        break
       case 'alphabetical':
         sorted.sort((a, b) => {
           const localizedA = getLocalizedProject(a, locale)

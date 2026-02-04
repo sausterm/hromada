@@ -38,7 +38,7 @@ export default function AboutPage() {
             <p className="text-base leading-relaxed mb-4">{t('about.howItWorksText')}</p>
             <ul className="space-y-3 text-base leading-relaxed">
               <li>
-                <strong>{t('about.forMunicipalities')}</strong> {t('about.forMunicipalitiesText')}
+                <strong>{t('about.forPartners')}</strong> {t('about.forPartnersText')}
               </li>
               <li>
                 <strong>{t('about.forDonors')}</strong> {t('about.forDonorsText')}

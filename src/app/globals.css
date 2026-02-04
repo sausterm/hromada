@@ -534,7 +534,3 @@ body {
   color: var(--navy-500) !important;
 }
 
-/* Partner logos - convert to navy blue (preserves transparency) */
-.partner-logo-navy {
-  filter: brightness(0) saturate(100%) invert(22%) sepia(15%) saturate(746%) hue-rotate(169deg) brightness(96%) contrast(89%);
-}

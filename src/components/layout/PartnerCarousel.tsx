@@ -43,7 +43,7 @@ export function PartnerCarousel() {
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className="h-12 w-auto object-contain partner-logo-navy"
+                className="h-12 w-auto object-contain"
                 loading="lazy"
               />
             </a>

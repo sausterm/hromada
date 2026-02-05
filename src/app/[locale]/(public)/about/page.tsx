@@ -102,27 +102,7 @@ export default function AboutPage() {
 
           <hr className="border-[var(--cream-300)] mb-12" />
 
-          {/* 2. Civilian Infrastructure Only */}
-          <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 flex items-center gap-2">
-              <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 18v-7" />
-                <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
-                <path d="M14 18v-7" />
-                <path d="M18 18v-7" />
-                <path d="M3 22h18" />
-                <path d="M6 18v-7" />
-              </svg>
-              {t('transparency.civilianOnlyTitle')}
-            </h2>
-            <p className="text-base leading-relaxed">
-              {t('transparency.civilianOnlyText')}
-            </p>
-          </section>
-
-          <hr className="border-[var(--cream-300)] mb-12" />
-
-          {/* 3. How It Works */}
+          {/* 2. How It Works */}
           <section className="mb-12 overflow-hidden">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-8">
               {t('transparency.processTitle')}
@@ -217,7 +197,7 @@ export default function AboutPage() {
 
           <hr className="border-[var(--cream-300)] mb-12" />
 
-          {/* 4. Project Categories */}
+          {/* 3. Project Categories */}
           <section className="mb-12">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3">
               {t('about.projectCategories')}
@@ -232,6 +212,26 @@ export default function AboutPage() {
               <li><strong>{t('categories.ENERGY')}</strong> — {t('about.categoryEnergy')}</li>
               <li><strong>{t('categories.OTHER')}</strong> — {t('about.categoryOther')}</li>
             </ul>
+          </section>
+
+          <hr className="border-[var(--cream-300)] mb-12" />
+
+          {/* 4. Civilian Infrastructure Only */}
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 flex items-center gap-2">
+              <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 18v-7" />
+                <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
+                <path d="M14 18v-7" />
+                <path d="M18 18v-7" />
+                <path d="M3 22h18" />
+                <path d="M6 18v-7" />
+              </svg>
+              {t('transparency.civilianOnlyTitle')}
+            </h2>
+            <p className="text-base leading-relaxed">
+              {t('transparency.civilianOnlyText')}
+            </p>
           </section>
 
           <hr className="border-[var(--cream-300)] mb-12" />
@@ -265,7 +265,7 @@ export default function AboutPage() {
 
           <hr className="border-[var(--cream-300)] mb-12" />
 
-          {/* 6. FAQ Section */}
+          {/* 6. FAQ */}
           <section className="mb-12">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('transparency.faqTitle')}
@@ -294,7 +294,7 @@ export default function AboutPage() {
         </div>
 
         {/* CTA Buttons */}
-        <div className="mt-12 flex gap-4">
+        <div className="mt-12 flex justify-center gap-4">
           <Link href="/">
             <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
               {t('about.browseProjects')}

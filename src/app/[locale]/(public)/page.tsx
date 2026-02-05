@@ -120,7 +120,7 @@ export default function HomePage() {
     timeoutRef.current = setTimeout(() => {
       setter(false)
       timeoutRef.current = null
-    }, 100) // 100ms delay allows mouse to reach dropdown panel
+    }, 200) // 200ms delay allows mouse to reach dropdown panel
   }
 
   // Pagination for card list

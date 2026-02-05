@@ -164,14 +164,26 @@ export default function AboutPage() {
                 {/* Connecting arrows - positioned absolutely */}
                 <svg className="absolute top-5 left-0 right-0 h-4 pointer-events-none" style={{ width: '100%' }} preserveAspectRatio="none">
                   <defs>
-                    <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="var(--navy-300)" />
-                      <stop offset="50%" stopColor="var(--ukraine-500)" />
-                      <stop offset="100%" stopColor="var(--navy-300)" />
+                    {/* Glare gradient that will animate across */}
+                    <linearGradient id="glareGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="var(--cream-400)" />
+                      <stop offset="40%" stopColor="var(--cream-400)" />
+                      <stop offset="50%" stopColor="var(--navy-300)" />
+                      <stop offset="60%" stopColor="var(--cream-400)" />
+                      <stop offset="100%" stopColor="var(--cream-400)" />
+                      <animate
+                        attributeName="x1"
+                        values="-100%;100%"
+                        dur="3s"
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="x2"
+                        values="0%;200%"
+                        dur="3s"
+                        repeatCount="indefinite"
+                      />
                     </linearGradient>
-                    <marker id="arrowHead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-                      <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="var(--navy-400)" />
-                    </marker>
                   </defs>
                   {/* Arrow lines connecting each step */}
                   {[0, 1, 2, 3].map((i) => (
@@ -181,10 +193,9 @@ export default function AboutPage() {
                         y1="50%"
                         x2={`${10 + (i + 1) * 20 - 5}%`}
                         y2="50%"
-                        stroke="var(--cream-400)"
+                        stroke="url(#glareGradient)"
                         strokeWidth="2"
-                        strokeDasharray="6,4"
-                        className="animate-dash"
+                        strokeLinecap="round"
                       />
                       <polygon
                         points={`${10 + (i + 1) * 20 - 3},50 ${10 + (i + 1) * 20 - 6},46 ${10 + (i + 1) * 20 - 6},54`}
@@ -235,17 +246,6 @@ export default function AboutPage() {
                 ))}
               </div>
             </div>
-
-            <style jsx>{`
-              @keyframes dash {
-                to {
-                  stroke-dashoffset: -20;
-                }
-              }
-              .animate-dash {
-                animation: dash 1.5s linear infinite;
-              }
-            `}</style>
           </section>
 
           {/* 4. Project Categories */}

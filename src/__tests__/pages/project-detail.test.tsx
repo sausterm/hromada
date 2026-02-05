@@ -242,27 +242,8 @@ describe('ProjectDetailPage', () => {
       })
     })
 
-    it('renders urgency badge for non-LOW urgency', async () => {
-      render(<ProjectDetailPage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('High Urgency')).toBeInTheDocument()
-      })
-    })
-
-    it('does not render urgency badge for LOW urgency', async () => {
-      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ project: createMockProject({ urgency: 'LOW' }) }),
-      })
-
-      render(<ProjectDetailPage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('Test Hospital Building')).toBeInTheDocument()
-      })
-      expect(screen.queryByText(/Low Urgency/)).not.toBeInTheDocument()
-    })
+    // Note: Urgency badges are not displayed on the project detail page,
+    // only on the project cards and map popups
 
     it('renders back to map link', async () => {
       render(<ProjectDetailPage />)
@@ -483,7 +464,7 @@ describe('ProjectDetailPage', () => {
       expect(screen.queryByText('Project Specifications')).not.toBeInTheDocument()
     })
 
-    it('shows "Not specified" for missing project type', async () => {
+    it('omits project type field when not specified', async () => {
       ;(global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => ({ project: createMockProject({
@@ -495,8 +476,10 @@ describe('ProjectDetailPage', () => {
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        expect(screen.getByText('Not specified')).toBeInTheDocument()
+        expect(screen.getByText(/\$50K/)).toBeInTheDocument()
       })
+      // Project type field should not be shown when undefined
+      expect(screen.queryByText('Project Type')).not.toBeInTheDocument()
     })
   })
 

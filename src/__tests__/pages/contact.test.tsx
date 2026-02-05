@@ -18,6 +18,13 @@ jest.mock('@/components/layout/Header', () => ({
   Header: () => <header data-testid="mock-header">Header</header>,
 }))
 
+// Mock i18n navigation
+jest.mock('@/i18n/navigation', () => ({
+  Link: ({ href, children }: { href: string; children: React.ReactNode }) => (
+    <a href={href} data-testid={`link-${href}`}>{children}</a>
+  ),
+}))
+
 describe('ContactPage', () => {
   describe('Rendering', () => {
     it('renders the page title', () => {

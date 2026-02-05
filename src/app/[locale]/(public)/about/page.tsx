@@ -92,15 +92,15 @@ export default function AboutPage() {
 
           {/* 1. Statement of Purpose */}
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 text-center">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 text-center">
               {t('about.statementOfPurpose')}
             </h2>
-            <p className="text-base leading-relaxed">
+            <blockquote className="text-lg leading-relaxed text-[var(--navy-600)] italic text-center border-l-4 border-r-4 border-[var(--ukraine-500)] px-6 py-2 mx-auto max-w-2xl">
               {t('about.statementOfPurposeText')}
-            </p>
+            </blockquote>
           </section>
 
-          <hr className="border-[var(--cream-300)] mb-12" />
+          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
           {/* 2. How It Works */}
           <section className="mb-12 overflow-hidden">
@@ -195,7 +195,7 @@ export default function AboutPage() {
             </div>
           </section>
 
-          <hr className="border-[var(--cream-300)] mb-12" />
+          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
           {/* 3. Project Categories */}
           <section className="mb-12">
@@ -205,19 +205,54 @@ export default function AboutPage() {
             <p className="text-base leading-relaxed mb-4 font-medium">
               {t('about.categoryIntro')}
             </p>
-            <ul className="space-y-2 text-base leading-relaxed">
-              <li><strong>{t('categories.HOSPITAL')}</strong> — {t('about.categoryHospital')}</li>
-              <li><strong>{t('categories.SCHOOL')}</strong> — {t('about.categorySchool')}</li>
-              <li><strong>{t('categories.WATER')}</strong> — {t('about.categoryWater')}</li>
-              <li><strong>{t('categories.ENERGY')}</strong> — {t('about.categoryEnergy')}</li>
-              <li><strong>{t('categories.OTHER')}</strong> — {t('about.categoryOther')}</li>
+            <ul className="space-y-3 text-base leading-relaxed">
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </span>
+                <span><strong>{t('categories.HOSPITAL')}</strong> — {t('about.categoryHospital')}</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </span>
+                <span><strong>{t('categories.SCHOOL')}</strong> — {t('about.categorySchool')}</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                  </svg>
+                </span>
+                <span><strong>{t('categories.WATER')}</strong> — {t('about.categoryWater')}</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </span>
+                <span><strong>{t('categories.ENERGY')}</strong> — {t('about.categoryEnergy')}</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </span>
+                <span><strong>{t('categories.OTHER')}</strong> — {t('about.categoryOther')}</span>
+              </li>
             </ul>
           </section>
 
-          <hr className="border-[var(--cream-300)] mb-12" />
+          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
           {/* 4. Civilian Infrastructure Only */}
-          <section className="mb-12">
+          <section className="mb-12 -mx-4 px-4 py-6 bg-green-50/50 rounded-lg border border-green-100">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 flex items-center justify-center gap-2">
               <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 18v-7" />
@@ -229,41 +264,41 @@ export default function AboutPage() {
               </svg>
               {t('transparency.civilianOnlyTitle')}
             </h2>
-            <p className="text-base leading-relaxed">
+            <p className="text-base leading-relaxed text-center">
               {t('transparency.civilianOnlyText')}
             </p>
           </section>
 
-          <hr className="border-[var(--cream-300)] mb-12" />
+          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
           {/* 5. Our Partners */}
           <section className="mb-12">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 text-center">
               {t('transparency.partnersTitle')}
             </h2>
-            <p className="text-base leading-relaxed mb-6">
+            <p className="text-base leading-relaxed mb-6 text-center">
               {t('transparency.partnersText')}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-8">
+            <div className="flex flex-wrap items-center justify-center gap-6 bg-[var(--navy-700)] rounded-lg px-6 py-5">
               {partners.map((partner) => (
                 <a
                   key={partner.name}
                   href={partner.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="opacity-70 hover:opacity-100 transition-opacity"
+                  className="opacity-80 hover:opacity-100 transition-opacity"
                 >
                   <img
                     src={partner.logo}
                     alt={partner.name}
-                    className="h-10 w-auto object-contain"
+                    className="h-8 w-auto object-contain"
                   />
                 </a>
               ))}
             </div>
           </section>
 
-          <hr className="border-[var(--cream-300)] mb-12" />
+          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
           {/* 6. FAQ */}
           <section className="mb-12">

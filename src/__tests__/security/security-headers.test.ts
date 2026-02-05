@@ -10,45 +10,55 @@
  * - Permissions-Policy
  */
 
-// Mock next/server before any imports
-class MockHeaders {
-  private headers: Map<string, string> = new Map()
-
-  get(key: string) {
-    return this.headers.get(key) || null
-  }
-
-  set(key: string, value: string) {
-    this.headers.set(key, value)
-  }
-}
-
-class MockNextResponse {
-  headers: MockHeaders
-  status: number
-
-  constructor() {
-    this.headers = new MockHeaders()
-    this.status = 200
-  }
-
-  static json(body: any, init?: { status?: number }) {
-    const response = new MockNextResponse()
-    response.status = init?.status || 200
-    return response
-  }
-}
-
-jest.mock('next/server', () => ({
-  NextRequest: jest.fn().mockImplementation((url: string, init?: any) => ({
-    url,
-    method: init?.method || 'GET',
-    headers: {
-      get: (key: string) => init?.headers?.[key] || null,
-    },
-  })),
-  NextResponse: MockNextResponse,
+// Mock prisma before any imports
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    auditLog: { create: jest.fn() },
+    user: { findUnique: jest.fn(), update: jest.fn() },
+  },
 }))
+
+// Mock next/server before any imports
+jest.mock('next/server', () => {
+  class MockHeaders {
+    private headers: Map<string, string> = new Map()
+
+    get(key: string) {
+      return this.headers.get(key) || null
+    }
+
+    set(key: string, value: string) {
+      this.headers.set(key, value)
+    }
+  }
+
+  class MockNextResponse {
+    headers: MockHeaders
+    status: number
+
+    constructor() {
+      this.headers = new MockHeaders()
+      this.status = 200
+    }
+
+    static json(body: any, init?: { status?: number }) {
+      const response = new MockNextResponse()
+      response.status = init?.status || 200
+      return response
+    }
+  }
+
+  return {
+    NextRequest: jest.fn().mockImplementation((url: string, init?: any) => ({
+      url,
+      method: init?.method || 'GET',
+      headers: {
+        get: (key: string) => init?.headers?.[key] || null,
+      },
+    })),
+    NextResponse: MockNextResponse,
+  }
+})
 
 import { getSecurityHeaders, applySecurityHeaders } from '@/lib/security'
 import { NextResponse } from 'next/server'
@@ -144,7 +154,7 @@ describe('Security Headers Tests', () => {
       expect(securedResponse.headers.get('X-Content-Type-Options')).toBe('nosniff')
       expect(securedResponse.headers.get('X-XSS-Protection')).toBe('1; mode=block')
       expect(securedResponse.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
-      expect(securedResponse.headers.get('Permissions-Policy')).toBe('camera=(), microphone=(), geolocation()')
+      expect(securedResponse.headers.get('Permissions-Policy')).toBe('camera=(), microphone=(), geolocation=()')
     })
   })
 

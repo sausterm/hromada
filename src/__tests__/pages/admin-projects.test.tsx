@@ -51,6 +51,15 @@ jest.mock('@/hooks/useAdminAuth', () => ({
   }),
 }))
 
+// Mock LoadingSpinner component
+jest.mock('@/components/ui/LoadingSpinner', () => ({
+  LoadingSpinner: ({ size }: { size?: string }) => (
+    <div data-testid="loading-spinner" className="animate-spin" data-size={size}>
+      Loading...
+    </div>
+  ),
+}))
+
 // Mock ProjectForm component
 const mockFormSubmit = jest.fn()
 const mockFormCancel = jest.fn()

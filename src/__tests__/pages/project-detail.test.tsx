@@ -68,6 +68,15 @@ jest.mock('@/components/layout/Header', () => ({
   Header: () => <header data-testid="mock-header">Header</header>,
 }))
 
+// Mock LoadingSpinner component
+jest.mock('@/components/ui/LoadingSpinner', () => ({
+  LoadingSpinner: ({ size }: { size?: string }) => (
+    <div data-testid="loading-spinner" className="animate-spin" data-size={size}>
+      Loading...
+    </div>
+  ),
+}))
+
 // Mock ContactForm component
 jest.mock('@/components/projects/ContactForm', () => ({
   ContactForm: ({ projectId, projectName }: { projectId: string; projectName: string }) => (

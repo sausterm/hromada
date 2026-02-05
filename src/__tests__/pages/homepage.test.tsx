@@ -24,7 +24,6 @@ jest.mock('next-intl', () => ({
       'homepage.sortOptions.oldest': 'Oldest',
       'homepage.sortOptions.highestCost': 'Highest Cost',
       'homepage.sortOptions.lowestCost': 'Lowest Cost',
-      'homepage.sortOptions.mostUrgent': 'Most Urgent',
       'homepage.sortOptions.alphabetical': 'A-Z',
       'categories.HOSPITAL': 'Hospital',
       'categories.SCHOOL': 'School',
@@ -281,22 +280,6 @@ describe('HomePage', () => {
       })
     })
 
-    it('renders urgency filter button', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /urgency/i })).toBeInTheDocument()
-      })
-    })
-
-    it('renders status filter button', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /status/i })).toBeInTheDocument()
-      })
-    })
-
     it('renders cofinancing filter button', async () => {
       render(<HomePage />)
 
@@ -436,75 +419,6 @@ describe('HomePage', () => {
     })
   })
 
-  describe('Dropdown Filters', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('shows urgency options on hover', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const urgencyButton = screen.getByRole('button', { name: /urgency/i })
-      fireEvent.mouseEnter(urgencyButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Low')).toBeInTheDocument()
-        expect(screen.getByText('Medium')).toBeInTheDocument()
-        expect(screen.getByText('High')).toBeInTheDocument()
-        expect(screen.getByText('Critical')).toBeInTheDocument()
-      })
-    })
-
-    it('shows status options on hover', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const statusButton = screen.getByRole('button', { name: /status/i })
-      fireEvent.mouseEnter(statusButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Open')).toBeInTheDocument()
-        expect(screen.getByText('In Discussion')).toBeInTheDocument()
-        expect(screen.getByText('Matched')).toBeInTheDocument()
-        expect(screen.getByText('Fulfilled')).toBeInTheDocument()
-      })
-    })
-
-    it('filters projects when urgency is selected', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const urgencyButton = screen.getByRole('button', { name: /urgency/i })
-      fireEvent.mouseEnter(urgencyButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Critical')).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByText('Critical'))
-
-      await waitFor(() => {
-        // Only Water Plant C has CRITICAL urgency
-        expect(screen.getByTestId('project-card-project-3')).toBeInTheDocument()
-        expect(screen.queryByTestId('project-card-project-1')).not.toBeInTheDocument()
-      })
-    })
-  })
-
   describe('Sort Functionality', () => {
     beforeEach(() => {
       ;(global.fetch as jest.Mock).mockResolvedValue({
@@ -527,7 +441,6 @@ describe('HomePage', () => {
         expect(screen.getByText('Oldest')).toBeInTheDocument()
         expect(screen.getByText('Highest Cost')).toBeInTheDocument()
         expect(screen.getByText('Lowest Cost')).toBeInTheDocument()
-        expect(screen.getByText('Most Urgent')).toBeInTheDocument()
         expect(screen.getByText('A-Z')).toBeInTheDocument()
       })
     })

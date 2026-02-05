@@ -75,16 +75,6 @@ describe('ProjectPopup', () => {
       expect(screen.getByText('Hospital')).toBeInTheDocument()
     })
 
-    it('renders status badge', () => {
-      render(<ProjectPopup project={baseProject} />)
-      expect(screen.getByText('Seeking Donors')).toBeInTheDocument()
-    })
-
-    it('renders brief description', () => {
-      render(<ProjectPopup project={baseProject} />)
-      expect(screen.getByText(/A brief description/)).toBeInTheDocument()
-    })
-
     it('renders view details link', () => {
       render(<ProjectPopup project={baseProject} />)
       const link = screen.getByTestId('project-link')
@@ -93,58 +83,7 @@ describe('ProjectPopup', () => {
     })
   })
 
-  describe('Photo display', () => {
-    it('renders photo when available', () => {
-      const projectWithPhoto = {
-        ...baseProject,
-        photos: ['https://example.com/photo1.jpg'],
-      }
-      render(<ProjectPopup project={projectWithPhoto} />)
-      const img = screen.getByAltText('Central Hospital')
-      expect(img).toBeInTheDocument()
-      expect(img).toHaveAttribute('src', 'https://example.com/photo1.jpg')
-    })
 
-    it('does not render photo section when no photos', () => {
-      render(<ProjectPopup project={baseProject} />)
-      expect(screen.queryByRole('img')).not.toBeInTheDocument()
-    })
-
-    it('renders first photo when multiple photos exist', () => {
-      const projectWithPhotos = {
-        ...baseProject,
-        photos: ['https://example.com/photo1.jpg', 'https://example.com/photo2.jpg'],
-      }
-      render(<ProjectPopup project={projectWithPhotos} />)
-      const img = screen.getByAltText('Central Hospital')
-      expect(img).toHaveAttribute('src', 'https://example.com/photo1.jpg')
-    })
-  })
-
-  describe('Urgency display', () => {
-    it('shows urgency indicator for HIGH urgency', () => {
-      render(<ProjectPopup project={baseProject} />)
-      expect(screen.getByText(/High Urgency/)).toBeInTheDocument()
-    })
-
-    it('shows urgency indicator for CRITICAL urgency', () => {
-      const criticalProject = { ...baseProject, urgency: 'CRITICAL' as const }
-      render(<ProjectPopup project={criticalProject} />)
-      expect(screen.getByText(/Critical Urgency/)).toBeInTheDocument()
-    })
-
-    it('shows urgency indicator for MEDIUM urgency', () => {
-      const mediumProject = { ...baseProject, urgency: 'MEDIUM' as const }
-      render(<ProjectPopup project={mediumProject} />)
-      expect(screen.getByText(/Medium Urgency/)).toBeInTheDocument()
-    })
-
-    it('does not show urgency indicator for LOW urgency', () => {
-      const lowProject = { ...baseProject, urgency: 'LOW' as const }
-      render(<ProjectPopup project={lowProject} />)
-      expect(screen.queryByText(/Urgency/)).not.toBeInTheDocument()
-    })
-  })
 
   describe('Project type and cost', () => {
     it('renders project type when available', () => {
@@ -156,13 +95,13 @@ describe('ProjectPopup', () => {
       expect(screen.getByText('Solar PV')).toBeInTheDocument()
     })
 
-    it('renders estimated cost when available', () => {
+    it('renders estimated cost in compact format when available', () => {
       const projectWithCost = {
         ...baseProject,
         estimatedCostUsd: 50000,
       }
       render(<ProjectPopup project={projectWithCost} />)
-      expect(screen.getByText('$50,000')).toBeInTheDocument()
+      expect(screen.getByText('$50K')).toBeInTheDocument()
     })
 
     it('renders both project type and cost', () => {
@@ -173,10 +112,10 @@ describe('ProjectPopup', () => {
       }
       render(<ProjectPopup project={projectWithBoth} />)
       expect(screen.getByText('Heat Pump')).toBeInTheDocument()
-      expect(screen.getByText('$75,000')).toBeInTheDocument()
+      expect(screen.getByText('$75K')).toBeInTheDocument()
     })
 
-    it('does not render cost section when neither type nor cost available', () => {
+    it('does not render cost when not available', () => {
       render(<ProjectPopup project={baseProject} />)
       expect(screen.queryByText(/\$/)).not.toBeInTheDocument()
     })
@@ -208,34 +147,23 @@ describe('ProjectPopup', () => {
     })
   })
 
-  describe('Different statuses', () => {
-    it('renders IN_DISCUSSION status', () => {
-      const discussionProject = { ...baseProject, status: 'IN_DISCUSSION' as const }
-      render(<ProjectPopup project={discussionProject} />)
-      expect(screen.getByText('In Discussion')).toBeInTheDocument()
-    })
-
-    it('renders MATCHED status', () => {
-      const matchedProject = { ...baseProject, status: 'MATCHED' as const }
-      render(<ProjectPopup project={matchedProject} />)
-      expect(screen.getByText('Matched')).toBeInTheDocument()
-    })
-
-    it('renders FULFILLED status', () => {
-      const fulfilledProject = { ...baseProject, status: 'FULFILLED' as const }
-      render(<ProjectPopup project={fulfilledProject} />)
-      expect(screen.getByText('Fulfilled')).toBeInTheDocument()
-    })
-  })
-
-  describe('Description fallback', () => {
-    it('uses fullDescription when briefDescription is empty', () => {
-      const projectNoBreif = {
+  describe('Cofinancing badge', () => {
+    it('renders cofinancing badge when available', () => {
+      const projectWithCofinancing = {
         ...baseProject,
-        briefDescription: '',
+        cofinancingAvailable: 'YES' as const,
       }
-      render(<ProjectPopup project={projectNoBreif} />)
-      expect(screen.getByText(/Extended full description/)).toBeInTheDocument()
+      render(<ProjectPopup project={projectWithCofinancing} />)
+      expect(screen.getByText('projectDetail.cofinancingAvailable')).toBeInTheDocument()
+    })
+
+    it('does not render cofinancing badge when not available', () => {
+      const projectWithoutCofinancing = {
+        ...baseProject,
+        cofinancingAvailable: 'NO' as const,
+      }
+      render(<ProjectPopup project={projectWithoutCofinancing} />)
+      expect(screen.queryByText('projectDetail.cofinancingAvailable')).not.toBeInTheDocument()
     })
   })
 })

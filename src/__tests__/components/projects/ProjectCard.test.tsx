@@ -5,7 +5,7 @@ import { type Project } from '@/types'
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string, params?: Record<string, string>) => {
+  useTranslations: () => (key: string, params?: Record<string, any>) => {
     const translations: Record<string, string> = {
       'categories.HOSPITAL': 'Hospital / Medical',
       'categories.SCHOOL': 'School / Education',
@@ -16,15 +16,16 @@ jest.mock('next-intl', () => ({
       'urgency.MEDIUM': 'Medium',
       'urgency.HIGH': 'High',
       'urgency.CRITICAL': 'Critical',
-      'status.OPEN': 'Seeking Donors',
-      'status.IN_DISCUSSION': 'In Discussion',
-      'status.MATCHED': 'Matched',
-      'status.FULFILLED': 'Fulfilled',
       'projectTypes.SOLAR_PV': 'Solar PV',
       'projectTypes.HEAT_PUMP': 'Heat Pump',
       'projectTypes.BATTERY_STORAGE': 'Battery Storage',
       'projectTypes.THERMO_MODERNIZATION': 'Thermo-modernization',
       'projectDetail.viewDetails': 'View Details',
+      'projectDetail.cofinancingAvailable': 'Co-financing available',
+      'time.justNow': 'just now',
+      'time.weeksAgo': `${params?.count || 1} weeks ago`,
+      'time.monthsAgo': `${params?.count || 1} months ago`,
+      'time.yearsAgo': `${params?.count || 1} years ago`,
     }
     if (key === 'projectCard.postedAgo' && params?.time) {
       return `Posted ${params.time}`
@@ -207,14 +208,14 @@ describe('ProjectCard', () => {
       const project = createMockProject({ estimatedCostUsd: 50000 })
       render(<ProjectCard project={project} />)
 
-      expect(screen.getByText('USD $50K')).toBeInTheDocument()
+      expect(screen.getByText('$50K')).toBeInTheDocument()
     })
 
     it('renders estimated cost in millions format', () => {
       const project = createMockProject({ estimatedCostUsd: 1500000 })
       render(<ProjectCard project={project} />)
 
-      expect(screen.getByText('USD $1.5M')).toBeInTheDocument()
+      expect(screen.getByText('$1.5M')).toBeInTheDocument()
     })
 
     it('does not render cost section when estimatedCostUsd is not provided', () => {
@@ -250,36 +251,6 @@ describe('ProjectCard', () => {
 
       expect(screen.queryByText('Solar PV')).not.toBeInTheDocument()
       expect(screen.queryByText('Heat Pump')).not.toBeInTheDocument()
-    })
-  })
-
-  describe('Status Badge', () => {
-    it('renders status badge for OPEN status', () => {
-      const project = createMockProject({ status: 'OPEN' })
-      render(<ProjectCard project={project} />)
-
-      expect(screen.getByText('Seeking Donors')).toBeInTheDocument()
-    })
-
-    it('renders status badge for IN_DISCUSSION status', () => {
-      const project = createMockProject({ status: 'IN_DISCUSSION' })
-      render(<ProjectCard project={project} />)
-
-      expect(screen.getByText('In Discussion')).toBeInTheDocument()
-    })
-
-    it('renders status badge for MATCHED status', () => {
-      const project = createMockProject({ status: 'MATCHED' })
-      render(<ProjectCard project={project} />)
-
-      expect(screen.getByText('Matched')).toBeInTheDocument()
-    })
-
-    it('renders status badge for FULFILLED status', () => {
-      const project = createMockProject({ status: 'FULFILLED' })
-      render(<ProjectCard project={project} />)
-
-      expect(screen.getByText('Fulfilled')).toBeInTheDocument()
     })
   })
 

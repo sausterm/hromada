@@ -77,7 +77,7 @@ describe('ProjectForm', () => {
       // Project types include icons: "☀️ Solar PV", "🔥 Heat Pump", etc.
       expect(screen.getByRole('option', { name: /Solar PV/ })).toBeInTheDocument()
       expect(screen.getByRole('option', { name: /Heat Pump/ })).toBeInTheDocument()
-      expect(screen.getByRole('option', { name: /General/ })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: /Battery Storage/ })).toBeInTheDocument()
     })
 
     it('renders ImageUpload component', () => {

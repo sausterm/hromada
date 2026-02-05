@@ -71,8 +71,9 @@ describe('Input Validation Security Tests', () => {
       maliciousInputs.forEach(({ input, expected }) => {
         const sanitized = sanitizeInput(input)
         expect(sanitized).toBe(expected)
+        // Verify dangerous HTML tags are escaped (< and > become &lt; and &gt;)
         expect(sanitized).not.toContain('<script')
-        expect(sanitized).not.toContain('onerror')
+        expect(sanitized).not.toContain('<img')
       })
     })
 

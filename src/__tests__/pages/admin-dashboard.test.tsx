@@ -48,18 +48,46 @@ jest.mock('@/i18n/navigation', () => ({
       {children}
     </a>
   ),
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+  usePathname: () => '/admin',
 }))
 
-// Mock useAdminAuth hook
+// Mock useAuth hook - use a mutable object to allow test changes
+const mockAuthState = {
+  isAuthenticated: false,
+  isLoading: false,
+}
 const mockLogin = jest.fn()
 const mockLogout = jest.fn()
+
+// Keep for backward compatibility with test code
 let mockIsAuthenticated = false
 let mockAuthLoading = false
 
+jest.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    get isAuthenticated() { return mockAuthState.isAuthenticated },
+    get isLoading() { return mockAuthState.isLoading },
+    login: mockLogin,
+    logout: mockLogout,
+    isAdmin: () => true,
+    role: 'ADMIN',
+    get user() { return mockAuthState.isAuthenticated ? { id: 'user-1', email: 'admin@test.com', role: 'ADMIN', name: 'Admin User' } : null },
+  }),
+}))
+
+// Mock useAdminAuth hook (legacy)
 jest.mock('@/hooks/useAdminAuth', () => ({
   useAdminAuth: () => ({
-    isAuthenticated: mockIsAuthenticated,
-    isLoading: mockAuthLoading,
+    get isAuthenticated() { return mockAuthState.isAuthenticated },
+    get isLoading() { return mockAuthState.isLoading },
     login: mockLogin,
     logout: mockLogout,
   }),
@@ -223,8 +251,8 @@ const mockProjectSubmissions = [
 describe('AdminPage', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockIsAuthenticated = false
-    mockAuthLoading = false
+    mockAuthState.isAuthenticated = false
+    mockAuthState.isLoading = false
     ;(global.fetch as jest.Mock).mockReset()
     ;(global.alert as jest.Mock).mockReset()
     ;(global.confirm as jest.Mock).mockReturnValue(true)
@@ -232,69 +260,17 @@ describe('AdminPage', () => {
 
   describe('Loading State', () => {
     it('shows loading spinner while checking auth', () => {
-      mockAuthLoading = true
+      mockAuthState.isLoading = true
       render(<AdminPage />)
       expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
     })
   })
 
-  describe('Login Form', () => {
-    it('shows login form when not authenticated', () => {
-      mockIsAuthenticated = false
-      render(<AdminPage />)
-      expect(screen.getByText('Admin Login')).toBeInTheDocument()
-      expect(screen.getByTestId('input-password')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument()
-    })
-
-    it('shows back to map link', () => {
-      mockIsAuthenticated = false
-      render(<AdminPage />)
-      expect(screen.getByTestId('link-/')).toBeInTheDocument()
-      expect(screen.getByText('Back to Map')).toBeInTheDocument()
-    })
-
-    it('shows error when password is empty', async () => {
-      const user = userEvent.setup()
-      mockIsAuthenticated = false
-      render(<AdminPage />)
-
-      await user.click(screen.getByRole('button', { name: 'Login' }))
-
-      expect(screen.getByText('Password is required')).toBeInTheDocument()
-      expect(mockLogin).not.toHaveBeenCalled()
-    })
-
-    it('calls login with password', async () => {
-      const user = userEvent.setup()
-      mockIsAuthenticated = false
-      mockLogin.mockResolvedValue(true)
-      render(<AdminPage />)
-
-      await user.type(screen.getByTestId('input-password'), 'mypassword')
-      await user.click(screen.getByRole('button', { name: 'Login' }))
-
-      expect(mockLogin).toHaveBeenCalledWith('mypassword')
-    })
-
-    it('shows error on failed login', async () => {
-      const user = userEvent.setup()
-      mockIsAuthenticated = false
-      mockLogin.mockResolvedValue(false)
-      render(<AdminPage />)
-
-      await user.type(screen.getByTestId('input-password'), 'wrongpassword')
-      await user.click(screen.getByRole('button', { name: 'Login' }))
-
-      await waitFor(() => {
-        expect(screen.getByText('Invalid password')).toBeInTheDocument()
-      })
-    })
-  })
+  // Note: Login form tests removed - admin page now redirects to /login for unauthenticated users
 
   describe('Dashboard - Authenticated', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -322,7 +298,7 @@ describe('AdminPage', () => {
       render(<AdminPage />)
 
       await waitFor(() => {
-        expect(screen.getByText('Hromada')).toBeInTheDocument()
+        expect(screen.getByText('hromada')).toBeInTheDocument()
       })
       expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument()
     })
@@ -376,7 +352,7 @@ describe('AdminPage', () => {
 
   describe('Projects Tab', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -446,7 +422,7 @@ describe('AdminPage', () => {
 
   describe('Tab Switching', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -503,7 +479,7 @@ describe('AdminPage', () => {
 
   describe('Bulk Actions', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -552,7 +528,7 @@ describe('AdminPage', () => {
 
   describe('API Error Handling', () => {
     it('handles projects fetch error', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
@@ -584,7 +560,7 @@ describe('AdminPage', () => {
     })
 
     it('handles contact submissions fetch error', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
@@ -616,7 +592,7 @@ describe('AdminPage', () => {
     })
 
     it('handles project submissions fetch error', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
@@ -650,7 +626,7 @@ describe('AdminPage', () => {
 
   describe('Project Sorting', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -712,7 +688,7 @@ describe('AdminPage', () => {
 
   describe('Pagination', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       // Create many projects for pagination testing
       const manyProjects = Array.from({ length: 25 }, (_, i) => ({
         id: `project-${i}`,
@@ -805,7 +781,7 @@ describe('AdminPage', () => {
 
   describe('Bulk Delete', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -985,7 +961,7 @@ describe('AdminPage', () => {
 
   describe('Select All on Page', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -1052,7 +1028,7 @@ describe('AdminPage', () => {
 
   describe('Submission Review', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -1173,7 +1149,7 @@ describe('AdminPage', () => {
 
   describe('Contacts Tab', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -1300,7 +1276,7 @@ describe('AdminPage', () => {
 
   describe('Submissions Tab Filtering', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const submissionsWithDifferentStatus = [
         { ...mockProjectSubmissions[0], id: 'sub-1', status: 'PENDING', facilityName: 'Pending Project' },
         { ...mockProjectSubmissions[0], id: 'sub-2', status: 'APPROVED', facilityName: 'Approved Project' },
@@ -1397,7 +1373,7 @@ describe('AdminPage', () => {
 
   describe('Empty States', () => {
     it('shows empty state when no projects match search', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -1438,7 +1414,7 @@ describe('AdminPage', () => {
     })
 
     it('shows empty state when no projects exist', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -1471,7 +1447,7 @@ describe('AdminPage', () => {
 
   describe('Reject Submission', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -1590,7 +1566,7 @@ describe('AdminPage', () => {
 
   describe('Approve Submission Error Handling', () => {
     it('handles approve submission API error response', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -1642,7 +1618,7 @@ describe('AdminPage', () => {
     })
 
     it('handles approve submission network error', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
@@ -1696,7 +1672,7 @@ describe('AdminPage', () => {
 
   describe('Reject Submission Error Handling', () => {
     it('handles reject submission API error response', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -1759,7 +1735,7 @@ describe('AdminPage', () => {
     })
 
     it('handles reject submission network error', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
@@ -1824,7 +1800,7 @@ describe('AdminPage', () => {
 
   describe('Contact Mark As Handled Error', () => {
     it('handles mark as handled error', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
@@ -1878,7 +1854,7 @@ describe('AdminPage', () => {
 
   describe('Bulk Delete Error', () => {
     it('handles bulk delete network error', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
       ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
         if (url === '/api/projects?all=true') {
@@ -1932,7 +1908,7 @@ describe('AdminPage', () => {
 
   describe('Sort by Different Fields', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const projectsWithVariety = [
         { ...mockProjects[0], id: '1', facilityName: 'Zebra Hospital', region: 'Kyiv Oblast', category: 'HOSPITAL', projectType: 'SOLAR_PV', urgency: 'HIGH', status: 'OPEN' },
         { ...mockProjects[1], id: '2', facilityName: 'Alpha School', region: 'Lviv Oblast', category: 'SCHOOL', projectType: 'HEAT_PUMP', urgency: 'LOW', status: 'MATCHED' },
@@ -2038,7 +2014,7 @@ describe('AdminPage', () => {
 
   describe('Project Without ProjectType', () => {
     it('renders dash when project has no projectType', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const projectsWithoutType = [
         { ...mockProjects[0], projectType: null },
       ]
@@ -2078,7 +2054,7 @@ describe('AdminPage', () => {
 
   describe('Contacts Sort by Handled', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const contactsWithMixed = [
         { ...mockContactSubmissions[0], id: 'contact-1', handled: false, donorName: 'Unhandled Donor' },
         { ...mockContactSubmissions[0], id: 'contact-2', handled: true, donorName: 'Handled Donor' },
@@ -2131,7 +2107,7 @@ describe('AdminPage', () => {
 
   describe('Toggle Individual Project Selection', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       ;(global.fetch as jest.Mock).mockImplementation((url) => {
         if (url === '/api/projects?all=true') {
           return Promise.resolve({
@@ -2182,7 +2158,7 @@ describe('AdminPage', () => {
 
   describe('Submissions with Approved Project Link', () => {
     it('shows approved project link when submission is approved', async () => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       const approvedSubmission = [
         { ...mockProjectSubmissions[0], status: 'APPROVED', approvedProjectId: 'approved-id' },
       ]

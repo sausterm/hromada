@@ -36,8 +36,20 @@ jest.mock('react-leaflet', () => ({
       getSouth: () => 44,
       getEast: () => 40,
       getWest: () => 22,
+      contains: () => true,
     }),
+    getZoom: () => 6,
+    getCenter: () => ({ lat: 49, lng: 31 }),
+    setView: jest.fn(),
     flyTo: jest.fn(),
+    closePopup: jest.fn(),
+    openPopup: jest.fn(),
+    addControl: jest.fn(),
+    removeControl: jest.fn(),
+    getContainer: jest.fn(() => document.createElement('div')),
+    on: jest.fn(),
+    off: jest.fn(),
+    once: jest.fn(),
   }),
   useMapEvents: (handlers: any) => {
     storedMapEventsHandlers = handlers
@@ -66,6 +78,29 @@ jest.mock('leaflet', () => ({
     _type: 'divIcon',
   })),
   point: jest.fn((x, y) => ({ x, y })),
+  Control: {
+    extend: jest.fn(() => {
+      // Return a mock control constructor
+      return function MockControl() {
+        this.addTo = jest.fn().mockReturnThis()
+        this.remove = jest.fn()
+      }
+    }),
+  },
+  DomUtil: {
+    create: jest.fn((tagName, className, container) => {
+      const el = document.createElement(tagName)
+      if (className) el.className = className
+      if (container) container.appendChild(el)
+      return el
+    }),
+  },
+  DomEvent: {
+    disableClickPropagation: jest.fn(),
+    disableScrollPropagation: jest.fn(),
+    on: jest.fn(),
+    off: jest.fn(),
+  },
 }))
 
 // Mock CSS imports

@@ -27,21 +27,54 @@ jest.mock('@/i18n/navigation', () => ({
       {children}
     </a>
   ),
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+  usePathname: () => '/admin',
 }))
 
-// Mock useAdminAuth hook
+// Mock useAuth hook
+const mockAuthState = {
+  isAuthenticated: false,
+  isLoading: false,
+}
 const mockLogin = jest.fn()
 const mockLogout = jest.fn()
-let mockIsAuthenticated = false
-let mockIsLoading = false
 
+jest.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    get isAuthenticated() { return mockAuthState.isAuthenticated },
+    get isLoading() { return mockAuthState.isLoading },
+    login: mockLogin,
+    logout: mockLogout,
+    isAdmin: () => true,
+    role: 'ADMIN',
+    get user() { return mockAuthState.isAuthenticated ? { id: 'user-1', email: 'admin@test.com', role: 'ADMIN', name: 'Admin User' } : null },
+  }),
+}))
+
+// Mock useAdminAuth hook (legacy)
 jest.mock('@/hooks/useAdminAuth', () => ({
   useAdminAuth: () => ({
-    isAuthenticated: mockIsAuthenticated,
-    isLoading: mockIsLoading,
+    get isAuthenticated() { return mockAuthState.isAuthenticated },
+    get isLoading() { return mockAuthState.isLoading },
     login: mockLogin,
     logout: mockLogout,
   }),
+}))
+
+// Mock LoadingSpinner component
+jest.mock('@/components/ui/LoadingSpinner', () => ({
+  LoadingSpinner: ({ size }: { size?: string }) => (
+    <div data-testid="loading-spinner" className="animate-spin" data-size={size}>
+      Loading...
+    </div>
+  ),
 }))
 
 // Mock fetch
@@ -51,102 +84,26 @@ describe('AdminPage', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(global.fetch as jest.Mock).mockReset()
-    mockIsAuthenticated = false
-    mockIsLoading = false
+    mockAuthState.isAuthenticated = false
+    mockAuthState.isLoading = false
     mockLogin.mockReset()
     mockLogout.mockReset()
   })
 
   describe('Loading State', () => {
     it('shows loading spinner while checking auth', () => {
-      mockIsLoading = true
+      mockAuthState.isLoading = true
       render(<AdminPage />)
       // Should show loading state (spinner)
       expect(document.querySelector('.animate-spin')).toBeInTheDocument()
     })
   })
 
-  describe('Login Form', () => {
-    it('renders login form when not authenticated', () => {
-      mockIsAuthenticated = false
-      render(<AdminPage />)
-      expect(screen.getByText('Admin Login')).toBeInTheDocument()
-    })
-
-    it('renders password input', () => {
-      render(<AdminPage />)
-      expect(screen.getByPlaceholderText('Enter admin password')).toBeInTheDocument()
-    })
-
-    it('renders login button', () => {
-      const { container } = render(<AdminPage />)
-      const form = container.querySelector('form')
-      const loginButton = form?.querySelector('button[type="submit"]')
-      expect(loginButton).toBeInTheDocument()
-    })
-
-    it('shows subtitle text', () => {
-      render(<AdminPage />)
-      expect(screen.getByText('Enter your password to continue')).toBeInTheDocument()
-    })
-
-    it('shows error when submitting empty password', async () => {
-      const user = userEvent.setup()
-
-      const { container } = render(<AdminPage />)
-
-      // Find and click the submit button in the form
-      const form = container.querySelector('form')
-      const loginButton = form?.querySelector('button[type="submit"]') as HTMLButtonElement
-      await user.click(loginButton)
-
-      await waitFor(() => {
-        expect(screen.getByText('Password is required')).toBeInTheDocument()
-      })
-    })
-
-    it('calls login when submitting password', async () => {
-      const user = userEvent.setup()
-      mockLogin.mockResolvedValueOnce(true)
-
-      const { container } = render(<AdminPage />)
-
-      const passwordInput = screen.getByPlaceholderText('Enter admin password')
-      await user.type(passwordInput, 'testpassword')
-
-      // Find and click the submit button in the form
-      const form = container.querySelector('form')
-      const loginButton = form?.querySelector('button[type="submit"]') as HTMLButtonElement
-      await user.click(loginButton)
-
-      await waitFor(() => {
-        expect(mockLogin).toHaveBeenCalledWith('testpassword')
-      })
-    })
-
-    it('shows error on failed login', async () => {
-      const user = userEvent.setup()
-      mockLogin.mockResolvedValueOnce(false)
-
-      const { container } = render(<AdminPage />)
-
-      const passwordInput = screen.getByPlaceholderText('Enter admin password')
-      await user.type(passwordInput, 'wrongpassword')
-
-      // Find the submit button in the form
-      const form = container.querySelector('form')
-      const loginButton = form?.querySelector('button[type="submit"]') as HTMLButtonElement
-      await user.click(loginButton)
-
-      await waitFor(() => {
-        expect(screen.getByText('Invalid password')).toBeInTheDocument()
-      })
-    })
-  })
+  // Note: Login form tests removed - admin page now redirects to /login for unauthenticated users
 
   describe('Authenticated Dashboard', () => {
     beforeEach(() => {
-      mockIsAuthenticated = true
+      mockAuthState.isAuthenticated = true
       // Mock all API endpoints
       ;(global.fetch as jest.Mock).mockImplementation((url: string) => {
         if (url.includes('/api/projects')) {
@@ -168,10 +125,10 @@ describe('AdminPage', () => {
       })
     })
 
-    it('renders Hromada logo when authenticated', async () => {
+    it('renders hromada logo when authenticated', async () => {
       render(<AdminPage />)
       await waitFor(() => {
-        expect(screen.getByText('Hromada')).toBeInTheDocument()
+        expect(screen.getByText('hromada')).toBeInTheDocument()
       })
     })
 
@@ -216,7 +173,7 @@ describe('AdminPage', () => {
 
       // Wait for dashboard to render
       await waitFor(() => {
-        expect(screen.getByText('Hromada')).toBeInTheDocument()
+        expect(screen.getByText('hromada')).toBeInTheDocument()
       })
 
       // Find logout button by looking for ghost variant button with logout translation

@@ -91,7 +91,7 @@ export default function AboutPage() {
           </p>
 
           {/* Trust Center button */}
-          <div className="mb-16">
+          <div className="mb-16 flex justify-center">
             <a
               href="https://app.sprinto.com/trust-center/view/ef845d19-d94b-4d73-84d9-18fa1945b999"
               target="_blank"

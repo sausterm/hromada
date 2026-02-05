@@ -105,7 +105,17 @@ export default function AboutPage() {
             </a>
           </div>
 
-          {/* 1. Civilian Infrastructure Only - Address the biggest concern first */}
+          {/* 1. Statement of Purpose */}
+          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
+              {t('about.statementOfPurpose')}
+            </h2>
+            <p className="text-base leading-relaxed">
+              {t('about.statementOfPurposeText')}
+            </p>
+          </section>
+
+          {/* 2. Civilian Infrastructure Only */}
           <section className="bg-green-50 rounded-xl p-6 border-2 border-green-200">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 flex items-center gap-2">
               <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -123,44 +133,7 @@ export default function AboutPage() {
             </p>
           </section>
 
-          {/* 2. Partners - Social proof validates legitimacy */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              {t('transparency.partnersTitle')}
-            </h2>
-            <p className="text-base leading-relaxed mb-6">
-              {t('transparency.partnersText')}
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {partners.map((partner) => (
-                <a
-                  key={partner.name}
-                  href={partner.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all group"
-                >
-                  <img
-                    src={partner.logo}
-                    alt={partner.name}
-                    className="h-10 w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              ))}
-            </div>
-          </section>
-
-          {/* 3. Statement of Purpose */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              {t('about.statementOfPurpose')}
-            </h2>
-            <p className="text-base leading-relaxed">
-              {t('about.statementOfPurposeText')}
-            </p>
-          </section>
-
-          {/* 4. How It Works - Process Flow */}
+          {/* 3. How It Works */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-6">
               {t('transparency.processTitle')}
@@ -192,7 +165,7 @@ export default function AboutPage() {
             </div>
           </section>
 
-          {/* 5. Project Categories */}
+          {/* 4. Project Categories */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('about.projectCategories')}
@@ -207,6 +180,33 @@ export default function AboutPage() {
               <li><strong>{t('categories.ENERGY')}</strong> - {t('about.categoryEnergy')}</li>
               <li><strong>{t('categories.OTHER')}</strong> - {t('about.categoryOther')}</li>
             </ul>
+          </section>
+
+          {/* 5. Our Partners */}
+          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
+              {t('transparency.partnersTitle')}
+            </h2>
+            <p className="text-base leading-relaxed mb-6">
+              {t('transparency.partnersText')}
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {partners.map((partner) => (
+                <a
+                  key={partner.name}
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all group"
+                >
+                  <img
+                    src={partner.logo}
+                    alt={partner.name}
+                    className="h-10 w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                  />
+                </a>
+              ))}
+            </div>
           </section>
 
           {/* 6. FAQ Section */}

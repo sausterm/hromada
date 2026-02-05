@@ -134,35 +134,126 @@ export default function AboutPage() {
           </section>
 
           {/* 3. How It Works */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-6">
+          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)] overflow-hidden">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-8">
               {t('transparency.processTitle')}
             </h2>
-            <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-2">
-              {processSteps.map((step, index) => (
-                <div key={step.key} className="flex md:flex-col items-center md:flex-1">
-                  <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-full bg-[var(--navy-700)] flex items-center justify-center mb-2">
-                      <svg className="w-6 h-6 text-[var(--cream-100)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+            {/* Desktop Flow */}
+            <div className="hidden md:block">
+              <div className="flex items-start justify-between relative">
+                {processSteps.map((step, index) => (
+                  <div key={step.key} className="flex flex-col items-center flex-1 relative z-10">
+                    {/* Step number badge */}
+                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[var(--ukraine-500)] text-white text-xs font-bold flex items-center justify-center z-20">
+                      {step.key}
+                    </div>
+                    {/* Icon circle */}
+                    <div className="w-14 h-14 rounded-full bg-[var(--navy-700)] flex items-center justify-center shadow-lg ring-4 ring-[var(--cream-200)]">
+                      <svg className="w-7 h-7 text-[var(--cream-100)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={step.icon} />
                       </svg>
                     </div>
-                    <span className="text-sm font-semibold text-[var(--navy-700)]">
+                    {/* Title */}
+                    <span className="text-sm font-semibold text-[var(--navy-700)] mt-3 text-center">
                       {t(`transparency.processStep${step.key}Title`)}
                     </span>
-                    <span className="text-xs text-[var(--navy-500)] text-center mt-1 max-w-[120px]">
+                    {/* Description */}
+                    <span className="text-xs text-[var(--navy-500)] text-center mt-1 max-w-[100px] leading-relaxed">
                       {t(`transparency.processStep${step.key}Text`)}
                     </span>
                   </div>
-                  {index < processSteps.length - 1 && (
-                    <div className="hidden md:block flex-1 h-0.5 bg-[var(--cream-300)] mt-6 mx-2" />
-                  )}
-                  {index < processSteps.length - 1 && (
-                    <div className="md:hidden w-0.5 h-8 bg-[var(--cream-300)] ml-6" />
-                  )}
-                </div>
-              ))}
+                ))}
+
+                {/* Connecting arrows - positioned absolutely */}
+                <svg className="absolute top-7 left-0 right-0 h-8 pointer-events-none" style={{ width: '100%' }} preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="var(--navy-300)" />
+                      <stop offset="50%" stopColor="var(--ukraine-500)" />
+                      <stop offset="100%" stopColor="var(--navy-300)" />
+                    </linearGradient>
+                    <marker id="arrowHead" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                      <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="var(--navy-400)" />
+                    </marker>
+                  </defs>
+                  {/* Arrow lines connecting each step */}
+                  {[0, 1, 2, 3].map((i) => (
+                    <g key={i}>
+                      <line
+                        x1={`${10 + i * 20 + 5}%`}
+                        y1="50%"
+                        x2={`${10 + (i + 1) * 20 - 5}%`}
+                        y2="50%"
+                        stroke="var(--cream-400)"
+                        strokeWidth="2"
+                        strokeDasharray="6,4"
+                        className="animate-dash"
+                      />
+                      <polygon
+                        points={`${10 + (i + 1) * 20 - 3},50 ${10 + (i + 1) * 20 - 6},46 ${10 + (i + 1) * 20 - 6},54`}
+                        fill="var(--navy-400)"
+                        transform={`translate(${-2}, 0)`}
+                        style={{ transform: `translateX(-2%)` }}
+                      />
+                    </g>
+                  ))}
+                </svg>
+              </div>
             </div>
+
+            {/* Mobile Flow - Vertical timeline */}
+            <div className="md:hidden">
+              <div className="relative">
+                {/* Vertical line */}
+                <div className="absolute left-7 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[var(--navy-300)] via-[var(--ukraine-500)] to-[var(--navy-300)]" />
+
+                {processSteps.map((step, index) => (
+                  <div key={step.key} className="flex items-start gap-4 relative mb-6 last:mb-0">
+                    {/* Icon circle */}
+                    <div className="relative z-10 flex-shrink-0">
+                      <div className="w-14 h-14 rounded-full bg-[var(--navy-700)] flex items-center justify-center shadow-lg ring-4 ring-[var(--cream-100)]">
+                        <svg className="w-7 h-7 text-[var(--cream-100)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={step.icon} />
+                        </svg>
+                      </div>
+                      {/* Step number */}
+                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[var(--ukraine-500)] text-white text-xs font-bold flex items-center justify-center">
+                        {step.key}
+                      </div>
+                    </div>
+                    {/* Content */}
+                    <div className="pt-2 flex-1">
+                      <span className="text-sm font-semibold text-[var(--navy-700)] block">
+                        {t(`transparency.processStep${step.key}Title`)}
+                      </span>
+                      <span className="text-xs text-[var(--navy-500)] mt-1 block leading-relaxed">
+                        {t(`transparency.processStep${step.key}Text`)}
+                      </span>
+                    </div>
+                    {/* Arrow to next step */}
+                    {index < processSteps.length - 1 && (
+                      <div className="absolute left-[26px] bottom-[-12px] z-20">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                          <path d="M6 0 L12 6 L8 6 L8 12 L4 12 L4 6 L0 6 Z" fill="var(--ukraine-500)" transform="rotate(180 6 6)" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <style jsx>{`
+              @keyframes dash {
+                to {
+                  stroke-dashoffset: -20;
+                }
+              }
+              .animate-dash {
+                animation: dash 1.5s linear infinite;
+              }
+            `}</style>
           </section>
 
           {/* 4. Project Categories */}

@@ -16,7 +16,6 @@ jest.mock('next-intl', () => ({
       'nav.menu': 'Menu',
       'nav.language': 'Language',
       'nav.headerSubtitle': 'Built to support Ukrainian renewable infrastructure recovery',
-      'nav.transparency': 'Transparency',
       'nav.contact': 'Contact',
       'nav.login': 'Login',
       'nav.dashboard': 'Dashboard',
@@ -108,7 +107,6 @@ describe('Header', () => {
       await waitFor(() => {
         expect(screen.getByTestId('link-/')).toBeInTheDocument()
         expect(screen.getByTestId('link-/about')).toBeInTheDocument()
-        expect(screen.getByTestId('link-/transparency')).toBeInTheDocument()
         expect(screen.getByTestId('link-/contact')).toBeInTheDocument()
       })
     })
@@ -122,13 +120,15 @@ describe('Header', () => {
       // Open menu
       fireEvent.mouseEnter(menuContainer)
       await waitFor(() => {
-        expect(screen.getByTestId('link-/contact')).toBeInTheDocument()
+        const dropdown = screen.getByTestId('link-/contact').closest('div[class*="absolute"]')
+        expect(dropdown).toHaveClass('opacity-100')
       })
 
       // Close menu
       fireEvent.mouseLeave(menuContainer)
       await waitFor(() => {
-        expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
+        const dropdown = screen.getByTestId('link-/contact').closest('div[class*="absolute"]')
+        expect(dropdown).toHaveClass('opacity-0')
       })
     })
 
@@ -141,7 +141,6 @@ describe('Header', () => {
       await waitFor(() => {
         expect(screen.getByText('Home')).toBeInTheDocument()
         expect(screen.getByText('About Us')).toBeInTheDocument()
-        expect(screen.getByText('Transparency')).toBeInTheDocument()
         expect(screen.getByText('Contact')).toBeInTheDocument()
       })
     })
@@ -306,14 +305,16 @@ describe('Header', () => {
       // Open menu
       fireEvent.mouseEnter(menuContainer)
       await waitFor(() => {
-        expect(screen.getByTestId('link-/contact')).toBeInTheDocument()
+        const dropdown = screen.getByTestId('link-/contact').closest('div[class*="absolute"]')
+        expect(dropdown).toHaveClass('opacity-100')
       })
 
       // Simulate click outside
       fireEvent.mouseDown(document.body)
 
       await waitFor(() => {
-        expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
+        const dropdown = screen.getByTestId('link-/contact').closest('div[class*="absolute"]')
+        expect(dropdown).toHaveClass('opacity-0')
       })
     })
 
@@ -349,13 +350,15 @@ describe('Header', () => {
       fireEvent.mouseEnter(menuButton.parentElement!)
 
       await waitFor(() => {
-        expect(screen.getByTestId('link-/')).toBeInTheDocument()
+        const dropdown = screen.getByTestId('link-/').closest('div[class*="absolute"]')
+        expect(dropdown).toHaveClass('opacity-100')
       })
 
       await user.click(screen.getByTestId('link-/'))
 
       await waitFor(() => {
-        expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
+        const dropdown = screen.getByTestId('link-/contact').closest('div[class*="absolute"]')
+        expect(dropdown).toHaveClass('opacity-0')
       })
     })
 
@@ -367,13 +370,15 @@ describe('Header', () => {
       fireEvent.mouseEnter(menuButton.parentElement!)
 
       await waitFor(() => {
-        expect(screen.getByTestId('link-/about')).toBeInTheDocument()
+        const dropdown = screen.getByTestId('link-/about').closest('div[class*="absolute"]')
+        expect(dropdown).toHaveClass('opacity-100')
       })
 
       await user.click(screen.getByTestId('link-/about'))
 
       await waitFor(() => {
-        expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
+        const dropdown = screen.getByTestId('link-/contact').closest('div[class*="absolute"]')
+        expect(dropdown).toHaveClass('opacity-0')
       })
     })
   })

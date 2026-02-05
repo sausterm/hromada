@@ -77,8 +77,11 @@ describe('ProjectPopup', () => {
 
     it('renders view details link', () => {
       render(<ProjectPopup project={baseProject} />)
-      const link = screen.getByTestId('project-link')
-      expect(link).toHaveAttribute('href', '/projects/proj-123')
+      const links = screen.getAllByTestId('project-link')
+      expect(links.length).toBe(2) // Title link and View Details button
+      links.forEach(link => {
+        expect(link).toHaveAttribute('href', '/projects/proj-123')
+      })
       expect(screen.getByText('View Details')).toBeInTheDocument()
     })
   })

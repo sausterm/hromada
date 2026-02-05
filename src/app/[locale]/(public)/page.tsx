@@ -408,9 +408,13 @@ export default function HomePage() {
               </button>
 
               {/* Dropdown panel */}
-              {isPriceDropdownOpen && priceButtonRef.current && (
+              {priceButtonRef.current && (
                 <div
-                  className="fixed z-50 pt-2 animate-dropdown-in"
+                  className={`fixed z-50 pt-2 transition-all duration-200 ease-out ${
+                    isPriceDropdownOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
                     left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -538,9 +542,13 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              {isProjectTypeOpen && projectTypeButtonRef.current && (
+              {projectTypeButtonRef.current && (
                 <div
-                  className="fixed z-50 pt-2 animate-dropdown-in"
+                  className={`fixed z-50 pt-2 transition-all duration-200 ease-out ${
+                    isProjectTypeOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
@@ -590,9 +598,13 @@ export default function HomePage() {
               </button>
 
               {/* Dropdown panel */}
-              {isPowerDropdownOpen && powerButtonRef.current && (
+              {powerButtonRef.current && (
                 <div
-                  className="fixed z-50 pt-2 animate-dropdown-in"
+                  className={`fixed z-50 pt-2 transition-all duration-200 ease-out ${
+                    isPowerDropdownOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -691,9 +703,13 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              {isCofinancingOpen && cofinancingButtonRef.current && (
+              {cofinancingButtonRef.current && (
                 <div
-                  className="fixed z-50 pt-2 animate-dropdown-in"
+                  className={`fixed z-50 pt-2 transition-all duration-200 ease-out ${
+                    isCofinancingOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,
@@ -794,21 +810,25 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                {isSortOpen && (
-                  <div className="absolute right-0 top-full pt-2 z-50 animate-dropdown-in">
-                    <div className="w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
-                      {(['newest', 'oldest', 'highestCost', 'lowestCost', 'alphabetical'] as SortOption[]).map((option) => (
-                        <button
-                          key={option}
-                          onClick={() => setSortBy(option)}
-                          className={`w-full text-left px-4 py-2 text-sm transition-colors ${sortBy === option ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
-                        >
-                          {t(`homepage.sortOptions.${option}`)}
-                        </button>
-                      ))}
-                    </div>
+                <div
+                  className={`absolute right-0 top-full pt-2 z-50 transition-all duration-200 ease-out ${
+                    isSortOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
+                >
+                  <div className="w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
+                    {(['newest', 'oldest', 'highestCost', 'lowestCost', 'alphabetical'] as SortOption[]).map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => setSortBy(option)}
+                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${sortBy === option ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                      >
+                        {t(`homepage.sortOptions.${option}`)}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Project count & funding - bold and visible */}

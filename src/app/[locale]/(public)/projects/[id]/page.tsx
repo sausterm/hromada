@@ -23,30 +23,30 @@ import {
 } from '@/types'
 import { ShareButton } from '@/components/ui/ShareButton'
 
-// Partner organizations configuration with logos and links
+// Partner organizations configuration with logos and links (white-background versions for specs)
 const PARTNER_CONFIG: Record<string, { logo: string; url: string; name: string }> = {
   'ecoaction': {
-    logo: '/partners/EcoactionLogo.png',
+    logo: '/partners/EcoactionLogo-white.png',
     url: 'https://en.ecoaction.org.ua/',
     name: 'NGO Ecoaction',
   },
   'ecoclub': {
-    logo: '/partners/EcoclubLogo.png',
+    logo: '/partners/EcoclubLogo-white.png',
     url: 'https://ecoclubrivne.org/en/',
     name: 'NGO Ecoclub',
   },
   'energy act': {
-    logo: '/partners/energyactukrainelogo.png',
+    logo: '/partners/energyactukrainelogo-white.png',
     url: 'https://www.energyactua.com/',
     name: 'Energy Act For Ukraine',
   },
   'repower': {
-    logo: '/partners/RePowerUkraineLogo.png',
+    logo: '/partners/RePowerUkraineLogo-white.png',
     url: 'https://repowerua.org/',
     name: 'RePower Ukraine',
   },
   'greenpeace': {
-    logo: '/partners/greenpeacelogo.png',
+    logo: '/partners/greenpeacelogo-white.png',
     url: 'https://www.greenpeace.org/ukraine/en/',
     name: 'Greenpeace Ukraine',
   },

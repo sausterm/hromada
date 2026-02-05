@@ -5,15 +5,6 @@ import { Link } from '@/i18n/navigation'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/Button'
 
-const partners = [
-  { name: 'Ecoaction', logo: '/partners/EcoactionLogo-white.png', url: 'https://en.ecoaction.org.ua/' },
-  { name: 'Ecoclub', logo: '/partners/EcoclubLogo-white.png', url: 'https://ecoclubrivne.org/en/' },
-  { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo-white.png', url: 'https://repowerua.org/' },
-  { name: 'Greenpeace', logo: '/partners/greenpeacelogo-white.png', url: 'https://www.greenpeace.org/ukraine/en/' },
-  { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo-white.png', url: 'https://www.energyactua.com/' },
-  { name: 'POCACITO', logo: '/partners/pocacitologo-white.png', url: 'https://www.pocacito.org/' },
-]
-
 export default function AboutPage() {
   const t = useTranslations()
 
@@ -53,33 +44,6 @@ export default function AboutPage() {
                 <strong>{t('about.forDonors')}</strong> {t('about.forDonorsText')}
               </li>
             </ul>
-          </section>
-
-          {/* Partner Logos Section */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              {t('about.ourPartners')}
-            </h2>
-            <p className="text-base leading-relaxed mb-6">
-              {t('about.ourPartnersText')}
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-              {partners.map((partner) => (
-                <a
-                  key={partner.name}
-                  href={partner.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all group"
-                >
-                  <img
-                    src={partner.logo}
-                    alt={partner.name}
-                    className="h-12 w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              ))}
-            </div>
           </section>
 
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">

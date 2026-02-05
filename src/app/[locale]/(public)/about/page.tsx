@@ -164,13 +164,13 @@ export default function AboutPage() {
                 {/* Connecting arrows - positioned absolutely */}
                 <svg className="absolute top-5 left-0 right-0 h-4 pointer-events-none" style={{ width: '100%' }} preserveAspectRatio="none">
                   <defs>
-                    {/* Glare gradient that will animate across */}
-                    <linearGradient id="glareGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="var(--cream-400)" />
-                      <stop offset="40%" stopColor="var(--cream-400)" />
-                      <stop offset="50%" stopColor="var(--navy-300)" />
-                      <stop offset="60%" stopColor="var(--cream-400)" />
-                      <stop offset="100%" stopColor="var(--cream-400)" />
+                    {/* Glare gradient - navy base with lighter sweep */}
+                    <linearGradient id="glareGradient" x1="-100%" y1="0%" x2="0%" y2="0%">
+                      <stop offset="0%" stopColor="var(--navy-300)" />
+                      <stop offset="40%" stopColor="var(--navy-300)" />
+                      <stop offset="50%" stopColor="var(--ukraine-400)" />
+                      <stop offset="60%" stopColor="var(--navy-300)" />
+                      <stop offset="100%" stopColor="var(--navy-300)" />
                       <animate
                         attributeName="x1"
                         values="-100%;100%"

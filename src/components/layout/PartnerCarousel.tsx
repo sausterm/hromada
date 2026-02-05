@@ -23,8 +23,7 @@ export function PartnerCarousel() {
   // Only show on demo site and localhost
   useEffect(() => {
     const hostname = window.location.hostname
-    const showCarousel = hostname === 'demo.hromadaproject.org' ||
-                         hostname === 'localhost' ||
+    const showCarousel = hostname === 'localhost' ||
                          hostname === '127.0.0.1'
     setIsVisible(showCarousel)
   }, [])

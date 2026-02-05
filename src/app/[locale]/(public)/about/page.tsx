@@ -80,18 +80,18 @@ export default function AboutPage() {
       <Header />
 
       <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-6">
+        <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-4">
           {t('about.title')}
         </h1>
 
-        <div className="text-[var(--navy-600)] space-y-8">
+        <div className="text-[var(--navy-600)]">
           {/* Mission intro */}
-          <p className="text-xl leading-relaxed text-[var(--navy-500)]">
+          <p className="text-xl leading-relaxed text-[var(--navy-500)] mb-6">
             {t('about.mission')}
           </p>
 
           {/* Trust Center button */}
-          <div className="flex justify-center">
+          <div className="mb-16">
             <a
               href="https://app.sprinto.com/trust-center/view/ef845d19-d94b-4d73-84d9-18fa1945b999"
               target="_blank"
@@ -106,8 +106,8 @@ export default function AboutPage() {
           </div>
 
           {/* 1. Statement of Purpose */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3">
               {t('about.statementOfPurpose')}
             </h2>
             <p className="text-base leading-relaxed">
@@ -115,9 +115,11 @@ export default function AboutPage() {
             </p>
           </section>
 
+          <hr className="border-[var(--cream-300)] mb-12" />
+
           {/* 2. Civilian Infrastructure Only */}
-          <section className="bg-green-50 rounded-xl p-6 border-2 border-green-200">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 flex items-center gap-2">
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 flex items-center gap-2">
               <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 18v-7" />
                 <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
@@ -133,8 +135,10 @@ export default function AboutPage() {
             </p>
           </section>
 
+          <hr className="border-[var(--cream-300)] mb-12" />
+
           {/* 3. How It Works */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)] overflow-hidden">
+          <section className="mb-12 overflow-hidden">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-8">
               {t('transparency.processTitle')}
             </h2>
@@ -226,52 +230,58 @@ export default function AboutPage() {
             </div>
           </section>
 
+          <hr className="border-[var(--cream-300)] mb-12" />
+
           {/* 4. Project Categories */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3">
               {t('about.projectCategories')}
             </h2>
             <p className="text-base leading-relaxed mb-4 font-medium">
               {t('about.categoryIntro')}
             </p>
-            <ul className="space-y-3 text-base leading-relaxed">
-              <li><strong>{t('categories.HOSPITAL')}</strong> - {t('about.categoryHospital')}</li>
-              <li><strong>{t('categories.SCHOOL')}</strong> - {t('about.categorySchool')}</li>
-              <li><strong>{t('categories.WATER')}</strong> - {t('about.categoryWater')}</li>
-              <li><strong>{t('categories.ENERGY')}</strong> - {t('about.categoryEnergy')}</li>
-              <li><strong>{t('categories.OTHER')}</strong> - {t('about.categoryOther')}</li>
+            <ul className="space-y-2 text-base leading-relaxed">
+              <li><strong>{t('categories.HOSPITAL')}</strong> — {t('about.categoryHospital')}</li>
+              <li><strong>{t('categories.SCHOOL')}</strong> — {t('about.categorySchool')}</li>
+              <li><strong>{t('categories.WATER')}</strong> — {t('about.categoryWater')}</li>
+              <li><strong>{t('categories.ENERGY')}</strong> — {t('about.categoryEnergy')}</li>
+              <li><strong>{t('categories.OTHER')}</strong> — {t('about.categoryOther')}</li>
             </ul>
           </section>
 
+          <hr className="border-[var(--cream-300)] mb-12" />
+
           {/* 5. Our Partners */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
+          <section className="mb-12">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3">
               {t('transparency.partnersTitle')}
             </h2>
             <p className="text-base leading-relaxed mb-6">
               {t('transparency.partnersText')}
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-8">
               {partners.map((partner) => (
                 <a
                   key={partner.name}
                   href={partner.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all group"
+                  className="opacity-70 hover:opacity-100 transition-opacity"
                 >
                   <img
                     src={partner.logo}
                     alt={partner.name}
-                    className="h-10 w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                    className="h-10 w-auto object-contain"
                   />
                 </a>
               ))}
             </div>
           </section>
 
+          <hr className="border-[var(--cream-300)] mb-12" />
+
           {/* 6. FAQ Section */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
+          <section className="mb-8">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('transparency.faqTitle')}
             </h2>

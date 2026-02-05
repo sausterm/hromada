@@ -144,10 +144,6 @@ export default function AboutPage() {
               <div className="flex items-start justify-between relative">
                 {processSteps.map((step, index) => (
                   <div key={step.key} className="flex flex-col items-center flex-1 relative z-10">
-                    {/* Step number badge */}
-                    <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[var(--ukraine-500)] text-white text-xs font-bold flex items-center justify-center z-20">
-                      {step.key}
-                    </div>
                     {/* Icon circle */}
                     <div className="w-14 h-14 rounded-full bg-[var(--navy-700)] flex items-center justify-center shadow-lg ring-4 ring-[var(--cream-200)]">
                       <svg className="w-7 h-7 text-[var(--cream-100)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -166,7 +162,7 @@ export default function AboutPage() {
                 ))}
 
                 {/* Connecting arrows - positioned absolutely */}
-                <svg className="absolute top-7 left-0 right-0 h-8 pointer-events-none" style={{ width: '100%' }} preserveAspectRatio="none">
+                <svg className="absolute top-5 left-0 right-0 h-4 pointer-events-none" style={{ width: '100%' }} preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                       <stop offset="0%" stopColor="var(--navy-300)" />
@@ -216,10 +212,6 @@ export default function AboutPage() {
                         <svg className="w-7 h-7 text-[var(--cream-100)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={step.icon} />
                         </svg>
-                      </div>
-                      {/* Step number */}
-                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[var(--ukraine-500)] text-white text-xs font-bold flex items-center justify-center">
-                        {step.key}
                       </div>
                     </div>
                     {/* Content */}

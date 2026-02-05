@@ -16,10 +16,12 @@ export function PartnerCarousel() {
   const t = useTranslations()
   const trackRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isPaused, setIsPaused] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
   const positionRef = useRef(0)
+  const singleSetWidthRef = useRef(0)
+  // Use refs instead of state to avoid closure issues in animation loop
+  const isPausedRef = useRef(false)
+  const isDraggingRef = useRef(false)
   const dragStartRef = useRef(0)
   const dragStartPosRef = useRef(0)
   const hasDraggedRef = useRef(false)
@@ -29,17 +31,19 @@ export function PartnerCarousel() {
     const hostname = window.location.hostname
     const showCarousel = hostname === 'localhost' ||
                          hostname === '127.0.0.1' ||
-                         (hostname === 'hromadaproject.org' || hostname === 'www.hromadaproject.org')
+                         hostname === 'hromadaproject.org' ||
+                         hostname === 'www.hromadaproject.org'
     // Explicitly hide on demo subdomain
     const isDemo = hostname.startsWith('demo.')
     setIsVisible(showCarousel && !isDemo)
   }, [])
-  const singleSetWidthRef = useRef(0)
 
   // Triplicate for seamless loop (extra buffer prevents edge glitches)
   const duplicatedPartners = [...partners, ...partners, ...partners]
 
   useEffect(() => {
+    if (!isVisible) return
+
     const track = trackRef.current
     const container = containerRef.current
     if (!track || !container) return
@@ -60,31 +64,32 @@ export function PartnerCarousel() {
     calculateWidth()
     window.addEventListener('resize', calculateWidth)
 
-    // Handle manual scroll when paused
-    const handleWheel = (e: WheelEvent) => {
-      if (isPaused && singleSetWidthRef.current > 0) {
-        e.preventDefault()
-        // Use deltaX for horizontal scroll, or deltaY if no horizontal movement
-        const delta = e.deltaX !== 0 ? e.deltaX : e.deltaY
-        positionRef.current -= delta
-
-        // Wrap position seamlessly
+    // Wrap position helper
+    const wrapPosition = () => {
+      if (singleSetWidthRef.current > 0) {
         if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
           positionRef.current = positionRef.current % singleSetWidthRef.current
         }
         if (positionRef.current > 0) {
           positionRef.current = positionRef.current - singleSetWidthRef.current
         }
+      }
+    }
 
+    // Handle manual scroll when paused
+    const handleWheel = (e: WheelEvent) => {
+      if (isPausedRef.current && singleSetWidthRef.current > 0) {
+        e.preventDefault()
+        const delta = e.deltaX !== 0 ? e.deltaX : e.deltaY
+        positionRef.current -= delta
+        wrapPosition()
         track.style.transform = `translateX(${positionRef.current}px)`
       }
     }
 
-    container.addEventListener('wheel', handleWheel, { passive: false })
-
     // Handle drag start (mouse)
     const handleMouseDown = (e: MouseEvent) => {
-      setIsDragging(true)
+      isDraggingRef.current = true
       dragStartRef.current = e.clientX
       dragStartPosRef.current = positionRef.current
       hasDraggedRef.current = false
@@ -92,35 +97,25 @@ export function PartnerCarousel() {
 
     // Handle drag move (mouse)
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return
+      if (!isDraggingRef.current) return
       e.preventDefault()
       const delta = e.clientX - dragStartRef.current
       if (Math.abs(delta) > 5) {
         hasDraggedRef.current = true
       }
       positionRef.current = dragStartPosRef.current + delta
-
-      // Wrap position seamlessly
-      if (singleSetWidthRef.current > 0) {
-        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
-          positionRef.current = positionRef.current % singleSetWidthRef.current
-        }
-        if (positionRef.current > 0) {
-          positionRef.current = positionRef.current - singleSetWidthRef.current
-        }
-      }
-
+      wrapPosition()
       track.style.transform = `translateX(${positionRef.current}px)`
     }
 
     // Handle drag end (mouse)
     const handleMouseUp = () => {
-      setIsDragging(false)
+      isDraggingRef.current = false
     }
 
     // Handle drag start (touch)
     const handleTouchStart = (e: TouchEvent) => {
-      setIsDragging(true)
+      isDraggingRef.current = true
       dragStartRef.current = e.touches[0].clientX
       dragStartPosRef.current = positionRef.current
       hasDraggedRef.current = false
@@ -128,31 +123,22 @@ export function PartnerCarousel() {
 
     // Handle drag move (touch)
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isDragging) return
+      if (!isDraggingRef.current) return
       const delta = e.touches[0].clientX - dragStartRef.current
       if (Math.abs(delta) > 5) {
         hasDraggedRef.current = true
       }
       positionRef.current = dragStartPosRef.current + delta
-
-      // Wrap position seamlessly
-      if (singleSetWidthRef.current > 0) {
-        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
-          positionRef.current = positionRef.current % singleSetWidthRef.current
-        }
-        if (positionRef.current > 0) {
-          positionRef.current = positionRef.current - singleSetWidthRef.current
-        }
-      }
-
+      wrapPosition()
       track.style.transform = `translateX(${positionRef.current}px)`
     }
 
     // Handle drag end (touch)
     const handleTouchEnd = () => {
-      setIsDragging(false)
+      isDraggingRef.current = false
     }
 
+    container.addEventListener('wheel', handleWheel, { passive: false })
     container.addEventListener('mousedown', handleMouseDown)
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)
@@ -164,18 +150,11 @@ export function PartnerCarousel() {
     const speed = 0.5 // pixels per frame
 
     const animate = () => {
-      if (!isPaused && !isDragging && singleSetWidthRef.current > 0) {
+      // Use refs so we always read the latest values
+      if (!isPausedRef.current && !isDraggingRef.current && singleSetWidthRef.current > 0) {
         positionRef.current -= speed
-
-        // Reset position seamlessly using modulo for smoother wrapping
-        // This avoids the "jump" that can happen with a hard reset to 0
-        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
-          positionRef.current = positionRef.current % singleSetWidthRef.current
-        }
-
-        if (track) {
-          track.style.transform = `translateX(${positionRef.current}px)`
-        }
+        wrapPosition()
+        track.style.transform = `translateX(${positionRef.current}px)`
       }
       animationId = requestAnimationFrame(animate)
     }
@@ -193,9 +172,8 @@ export function PartnerCarousel() {
       container.removeEventListener('touchmove', handleTouchMove)
       container.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [isPaused, isDragging, isVisible])
+  }, [isVisible])
 
-  // Don't render on production site
   if (!isVisible) return null
 
   return (
@@ -210,8 +188,8 @@ export function PartnerCarousel() {
       <div
         ref={containerRef}
         className="relative cursor-grab active:cursor-grabbing"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
+        onMouseEnter={() => { isPausedRef.current = true }}
+        onMouseLeave={() => { isPausedRef.current = false }}
       >
         {/* Gradient masks for smooth edges */}
         <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />

@@ -354,7 +354,7 @@ body {
 }
 
 .animate-glare-flow {
-  animation: glareFlow 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: glareFlow 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   will-change: transform;
   backface-visibility: hidden;
 }

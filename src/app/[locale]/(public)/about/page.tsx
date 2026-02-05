@@ -178,7 +178,7 @@ export default function AboutPage() {
                         style={{
                           left: '-30px',
                           background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 50%, transparent 100%)',
-                          animationDelay: `${i * 0.5}s`,
+                          animationDelay: `${i * 0.7}s`,
                         }}
                       />
                     </div>

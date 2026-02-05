@@ -161,51 +161,34 @@ export default function AboutPage() {
                   </div>
                 ))}
 
-                {/* Connecting arrows - positioned absolutely */}
-                <svg className="absolute top-5 left-0 right-0 h-4 pointer-events-none" style={{ width: '100%' }} preserveAspectRatio="none">
-                  <defs>
-                    {/* Glare gradient - navy base with lighter sweep */}
-                    <linearGradient id="glareGradient" x1="-100%" y1="0%" x2="0%" y2="0%">
-                      <stop offset="0%" stopColor="var(--navy-300)" />
-                      <stop offset="40%" stopColor="var(--navy-300)" />
-                      <stop offset="50%" stopColor="var(--ukraine-400)" />
-                      <stop offset="60%" stopColor="var(--navy-300)" />
-                      <stop offset="100%" stopColor="var(--navy-300)" />
-                      <animate
-                        attributeName="x1"
-                        values="-100%;100%"
-                        dur="3s"
-                        repeatCount="indefinite"
-                      />
-                      <animate
-                        attributeName="x2"
-                        values="0%;200%"
-                        dur="3s"
-                        repeatCount="indefinite"
-                      />
-                    </linearGradient>
-                  </defs>
-                  {/* Arrow lines connecting each step */}
+                {/* Connecting lines between circles */}
+                <div className="absolute top-7 left-0 right-0 h-[2px] pointer-events-none" style={{ zIndex: 0 }}>
                   {[0, 1, 2, 3].map((i) => (
-                    <g key={i}>
-                      <line
-                        x1={`${10 + i * 20 + 5}%`}
-                        y1="50%"
-                        x2={`${10 + (i + 1) * 20 - 5}%`}
-                        y2="50%"
-                        stroke="url(#glareGradient)"
-                        strokeWidth="2"
-                        strokeLinecap="round"
+                    <div
+                      key={i}
+                      className="absolute h-[2px] bg-[var(--navy-300)] overflow-hidden"
+                      style={{
+                        left: `${10 + i * 20 + 5}%`,
+                        width: `${20 - 10}%`,
+                      }}
+                    >
+                      {/* Glare sweep animation */}
+                      <div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--ukraine-gold)] to-transparent"
+                        style={{
+                          animation: 'glareSweep 3s ease-in-out infinite',
+                          animationDelay: `${i * 0.3}s`,
+                        }}
                       />
-                      <polygon
-                        points={`${10 + (i + 1) * 20 - 3},50 ${10 + (i + 1) * 20 - 6},46 ${10 + (i + 1) * 20 - 6},54`}
-                        fill="var(--navy-400)"
-                        transform={`translate(${-2}, 0)`}
-                        style={{ transform: `translateX(-2%)` }}
-                      />
-                    </g>
+                    </div>
                   ))}
-                </svg>
+                </div>
+                <style jsx>{`
+                  @keyframes glareSweep {
+                    0%, 100% { transform: translateX(-100%); }
+                    50% { transform: translateX(100%); }
+                  }
+                `}</style>
               </div>
             </div>
 

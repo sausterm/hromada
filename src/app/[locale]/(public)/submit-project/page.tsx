@@ -292,12 +292,20 @@ export default function SubmitProjectPage() {
   const showCofinancingDetails = formData.cofinancingAvailable === 'YES'
 
   if (submitSuccess) {
+    const steps = [
+      { key: '1', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
+      { key: '2', icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z' },
+      { key: '3', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+      { key: '4', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
+    ]
+
     return (
       <div className="min-h-screen bg-[var(--cream-50)]">
         <Header />
 
-        <main className="max-w-2xl mx-auto px-4 py-16 text-center">
-          <div className="bg-[var(--cream-100)] rounded-xl p-8 border border-[var(--cream-300)]">
+        <main className="max-w-2xl mx-auto px-4 py-16">
+          {/* Success Message */}
+          <div className="bg-[var(--cream-100)] rounded-xl p-8 border border-[var(--cream-300)] text-center mb-8">
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#7B9E6B20] flex items-center justify-center">
               <svg className="w-8 h-8 text-[#5A7D4A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -306,19 +314,55 @@ export default function SubmitProjectPage() {
             <h1 className="text-2xl font-bold text-[var(--navy-700)] mb-4">
               {t('submitProject.success.title')}
             </h1>
-            <p className="text-[var(--navy-600)] mb-6">
+            <p className="text-[var(--navy-600)]">
               {t('submitProject.success.message', { email: formData.contactEmail || 'your email' })}
             </p>
-            <div className="flex gap-4 justify-center">
-              <Link href="/">
-                <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
-                  {t('submitProject.buttons.backToHome')}
-                </Button>
-              </Link>
-              <Button variant="outline" onClick={() => setSubmitSuccess(false)}>
-                {t('submitProject.buttons.submitAnother')}
-              </Button>
+          </div>
+
+          {/* What Happens Next */}
+          <div className="bg-[var(--cream-100)] rounded-xl p-8 border border-[var(--cream-300)] mb-8">
+            <h2 className="text-xl font-semibold text-[var(--navy-700)] mb-6">
+              {t('submitProject.success.whatHappensNext')}
+            </h2>
+            <div className="space-y-6">
+              {steps.map((step, index) => (
+                <div key={step.key} className="flex gap-4">
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[var(--navy-700)] flex items-center justify-center">
+                      <svg className="w-5 h-5 text-[var(--cream-100)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={step.icon} />
+                      </svg>
+                    </div>
+                    {index < steps.length - 1 && (
+                      <div className="w-0.5 h-6 bg-[var(--cream-300)] ml-5 mt-2" />
+                    )}
+                  </div>
+                  <div className="pt-1">
+                    <h3 className="font-semibold text-[var(--navy-700)]">
+                      {t(`submitProject.success.step${step.key}Title`)}
+                    </h3>
+                    <p className="text-sm text-[var(--navy-600)]">
+                      {t(`submitProject.success.step${step.key}Text`)}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
+            <p className="text-sm text-[var(--navy-500)] mt-6 pt-4 border-t border-[var(--cream-300)]">
+              {t('submitProject.success.timeline')}
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-4 justify-center">
+            <Link href="/">
+              <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
+                {t('submitProject.buttons.backToHome')}
+              </Button>
+            </Link>
+            <Button variant="outline" onClick={() => setSubmitSuccess(false)}>
+              {t('submitProject.buttons.submitAnother')}
+            </Button>
           </div>
         </main>
       </div>

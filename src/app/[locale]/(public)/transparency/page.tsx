@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Header } from '@/components/layout/Header'
@@ -16,6 +16,14 @@ const partners = [
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [contentHeight, setContentHeight] = useState(0)
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight)
+    }
+  }, [answer])
 
   return (
     <div className="border-b border-[var(--cream-300)] last:border-0">
@@ -23,9 +31,9 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-4 flex items-center justify-between text-left hover:text-[var(--navy-800)] transition-colors"
       >
-        <span className="font-medium text-[var(--navy-700)]">{question}</span>
+        <span className="font-medium text-[var(--navy-700)] pr-4">{question}</span>
         <svg
-          className={`w-5 h-5 text-[var(--navy-400)] transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 flex-shrink-0 text-[var(--navy-400)] transition-transform duration-300 ease-out ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -33,11 +41,17 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      {isOpen && (
-        <div className="pb-4 text-[var(--navy-600)] leading-relaxed">
+      <div
+        className="overflow-hidden transition-all duration-300 ease-out"
+        style={{
+          maxHeight: isOpen ? `${contentHeight}px` : '0px',
+          opacity: isOpen ? 1 : 0,
+        }}
+      >
+        <div ref={contentRef} className="pb-4 text-[var(--navy-600)] leading-relaxed">
           {answer}
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -76,20 +90,65 @@ export default function TransparencyPage() {
           </p>
 
           <div className="flex justify-center">
-          <a
-            href="https://app.sprinto.com/trust-center/view/ef845d19-d94b-4d73-84d9-18fa1945b999"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--navy-700)] text-[var(--cream-100)] font-medium rounded-lg hover:bg-[var(--navy-800)] transition-colors"
-          >
-            {t('transparency.visitTrustCenter')}
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </a>
+            <a
+              href="https://app.sprinto.com/trust-center/view/ef845d19-d94b-4d73-84d9-18fa1945b999"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--navy-700)] text-[var(--cream-100)] font-medium rounded-lg hover:bg-[var(--navy-800)] transition-colors"
+            >
+              {t('transparency.visitTrustCenter')}
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
           </div>
 
-          {/* Process Flow */}
+          {/* 1. Civilian Infrastructure Only - Address the biggest concern first */}
+          <section className="bg-green-50 rounded-xl p-6 border-2 border-green-200">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 flex items-center gap-2">
+              <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 18v-7" />
+                <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
+                <path d="M14 18v-7" />
+                <path d="M18 18v-7" />
+                <path d="M3 22h18" />
+                <path d="M6 18v-7" />
+              </svg>
+              {t('transparency.civilianOnlyTitle')}
+            </h2>
+            <p className="text-base leading-relaxed">
+              {t('transparency.civilianOnlyText')}
+            </p>
+          </section>
+
+          {/* 2. Partners - Social proof validates legitimacy */}
+          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
+            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
+              {t('transparency.partnersTitle')}
+            </h2>
+            <p className="text-base leading-relaxed mb-6">
+              {t('transparency.partnersText')}
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {partners.map((partner) => (
+                <a
+                  key={partner.name}
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all group"
+                >
+                  <img
+                    src={partner.logo}
+                    alt={partner.name}
+                    className="h-10 w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                  />
+                </a>
+              ))}
+            </div>
+          </section>
+
+          {/* 3. Process Flow - Now that they trust you, explain how it works */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-6">
               {t('transparency.processTitle')}
@@ -121,56 +180,12 @@ export default function TransparencyPage() {
             </div>
           </section>
 
-          <section className="bg-green-50 rounded-xl p-6 border-2 border-green-200">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 flex items-center gap-2">
-              <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 18v-7" />
-                <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
-                <path d="M14 18v-7" />
-                <path d="M18 18v-7" />
-                <path d="M3 22h18" />
-                <path d="M6 18v-7" />
-              </svg>
-              {t('transparency.civilianOnlyTitle')}
-            </h2>
-            <p className="text-base leading-relaxed">
-              {t('transparency.civilianOnlyText')}
-            </p>
-          </section>
-
-          {/* Partners with logos */}
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              {t('transparency.partnersTitle')}
-            </h2>
-            <p className="text-base leading-relaxed mb-6">
-              {t('transparency.partnersText')}
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {partners.map((partner) => (
-                <a
-                  key={partner.name}
-                  href={partner.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all group"
-                >
-                  <img
-                    src={partner.logo}
-                    alt={partner.name}
-                    className="h-10 w-auto object-contain opacity-80 group-hover:opacity-100 transition-opacity"
-                  />
-                </a>
-              ))}
-            </div>
-          </section>
-
-          {/* FAQ Section */}
+          {/* 4. FAQ Section - Catch-all for remaining questions */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
               {t('transparency.faqTitle')}
             </h2>
-            <div className="divide-y divide-[var(--cream-300)]">
+            <div>
               {faqs.map((faq, index) => (
                 <FAQItem key={index} question={faq.question} answer={faq.answer} />
               ))}

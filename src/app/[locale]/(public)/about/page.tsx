@@ -172,21 +172,22 @@ export default function AboutPage() {
                         width: `${20 - 10}%`,
                       }}
                     >
-                      {/* Glare sweep animation */}
+                      {/* Glare sweep animation - flows left to right sequentially */}
                       <div
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--ukraine-gold)] to-transparent"
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-80"
                         style={{
-                          animation: 'glareSweep 3s ease-in-out infinite',
-                          animationDelay: `${i * 0.3}s`,
+                          animation: 'glareFlow 4s linear infinite',
+                          animationDelay: `${i * 0.5}s`,
                         }}
                       />
                     </div>
                   ))}
                 </div>
                 <style jsx>{`
-                  @keyframes glareSweep {
-                    0%, 100% { transform: translateX(-100%); }
-                    50% { transform: translateX(100%); }
+                  @keyframes glareFlow {
+                    0% { transform: translateX(-100%); }
+                    25% { transform: translateX(100%); }
+                    100% { transform: translateX(100%); }
                   }
                 `}</style>
               </div>

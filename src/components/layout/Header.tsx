@@ -148,9 +148,14 @@ export function Header({ children }: HeaderProps) {
               </button>
 
               {/* Navigation Dropdown */}
-              {isNavMenuOpen && (
-                <div className="absolute left-0 top-full pt-2 z-50">
-                  <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+              <div
+                className={`absolute left-0 top-full pt-2 z-50 transition-all duration-200 ease-out ${
+                  isNavMenuOpen
+                    ? 'opacity-100 translate-y-0 pointer-events-auto'
+                    : 'opacity-0 -translate-y-2 pointer-events-none'
+                }`}
+              >
+                <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
                   <Link
                     href="/"
                     onClick={() => setIsNavMenuOpen(false)}
@@ -207,9 +212,8 @@ export function Header({ children }: HeaderProps) {
                       {t('nav.login')}
                     </Link>
                   )}
-                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
 

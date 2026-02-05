@@ -516,7 +516,7 @@ export default function HomePage() {
               </button>
               {isProjectTypeOpen && projectTypeButtonRef.current && (
                 <div
-                  className="fixed z-50 pt-2"
+                  className="fixed z-50 pt-2 animate-dropdown-in"
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
@@ -524,7 +524,7 @@ export default function HomePage() {
                   onMouseEnter={() => setIsProjectTypeOpen(true)}
                   onMouseLeave={() => setIsProjectTypeOpen(false)}
                 >
-                  <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                  <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
                     {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
                       <button
                         key={type}
@@ -568,7 +568,7 @@ export default function HomePage() {
               {/* Dropdown panel */}
               {isPowerDropdownOpen && powerButtonRef.current && (
                 <div
-                  className="fixed z-50 pt-2"
+                  className="fixed z-50 pt-2 animate-dropdown-in"
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -578,7 +578,7 @@ export default function HomePage() {
                 >
                   <div
                     id={powerDropdownId}
-                    className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28"
+                    className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28 transform-gpu"
                   >
                   <div className="flex flex-col gap-2 items-center">
                     {/* Max value */}
@@ -669,7 +669,7 @@ export default function HomePage() {
               </button>
               {isCofinancingOpen && cofinancingButtonRef.current && (
                 <div
-                  className="fixed z-50 pt-2"
+                  className="fixed z-50 pt-2 animate-dropdown-in"
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,
@@ -677,7 +677,7 @@ export default function HomePage() {
                   onMouseEnter={() => setIsCofinancingOpen(true)}
                   onMouseLeave={() => setIsCofinancingOpen(false)}
                 >
-                  <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                  <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
                     {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((cofinancing) => (
                       <button
                         key={cofinancing}
@@ -771,8 +771,8 @@ export default function HomePage() {
                   </svg>
                 </button>
                 {isSortOpen && (
-                  <div className="absolute right-0 top-full pt-2 z-50">
-                    <div className="w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
+                  <div className="absolute right-0 top-full pt-2 z-50 animate-dropdown-in">
+                    <div className="w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
                       {(['newest', 'oldest', 'highestCost', 'lowestCost', 'alphabetical'] as SortOption[]).map((option) => (
                         <button
                           key={option}

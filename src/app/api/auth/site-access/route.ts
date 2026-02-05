@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 const SITE_PASSWORD = 'hromada!2026'
 const COOKIE_NAME = 'hromada_site_access'
@@ -25,17 +24,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Set cookie server-side
-    const cookieStore = await cookies()
-    cookieStore.set(COOKIE_NAME, password, {
-      httpOnly: false, // Needs to be readable by middleware
+    // Create response and set cookie directly on it
+    // This is more reliable than using cookies() from next/headers
+    const response = NextResponse.json({ success: true })
+    response.cookies.set(COOKIE_NAME, password, {
+      httpOnly: true, // Middleware can read httpOnly cookies
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: COOKIE_MAX_AGE,
       path: '/',
     })
 
-    return NextResponse.json({ success: true })
+    return response
   } catch (error) {
     console.error('Site access error:', error)
     return NextResponse.json(

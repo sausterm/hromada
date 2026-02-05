@@ -386,7 +386,7 @@ export default function HomePage() {
               {/* Dropdown panel */}
               {isPriceDropdownOpen && priceButtonRef.current && (
                 <div
-                  className="fixed z-50 pt-2"
+                  className="fixed z-50 pt-2 animate-dropdown-in"
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
                     left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -396,7 +396,7 @@ export default function HomePage() {
                 >
                   <div
                     id={priceDropdownId}
-                    className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28"
+                    className="bg-white rounded-lg shadow-lg border border-[var(--cream-300)] p-3 w-28 transform-gpu"
                   >
                   <div className="flex flex-col gap-2 items-center">
                     {/* Max value */}

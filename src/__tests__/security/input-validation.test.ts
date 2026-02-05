@@ -9,7 +9,19 @@
  * - Parameter tampering
  */
 
-import { NextRequest } from 'next/server'
+// Mock next/server before any imports
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn().mockImplementation((url: string, init?: any) => ({
+    url,
+    method: init?.method || 'GET',
+    headers: {
+      get: (key: string) => init?.headers?.[key] || null,
+    },
+  })),
+  NextResponse: {
+    json: jest.fn((body, init) => ({ body, status: init?.status || 200 })),
+  },
+}))
 
 // Mock dependencies
 jest.mock('@/lib/prisma', () => ({
@@ -98,8 +110,6 @@ describe('Input Validation Security Tests', () => {
     it('should use parameterized queries via Prisma', async () => {
       const { prisma } = await import('@/lib/prisma')
 
-      // Prisma automatically parameterizes queries
-      // These malicious inputs should not cause SQL injection
       const maliciousIds = [
         "'; DROP TABLE users; --",
         "1 OR 1=1",
@@ -108,10 +118,8 @@ describe('Input Validation Security Tests', () => {
       ]
 
       maliciousIds.forEach((id) => {
-        // Prisma will treat this as a literal string value
         prisma.project.findUnique({ where: { id } })
 
-        // The mock should be called with the exact string, not executed as SQL
         expect(prisma.project.findUnique).toHaveBeenCalledWith(
           expect.objectContaining({
             where: { id },
@@ -145,7 +153,6 @@ describe('Input Validation Security Tests', () => {
       ]
 
       maliciousFilenames.forEach((filename) => {
-        // The upload handler should generate its own safe filename
         const safeFilename = `submissions/${Date.now()}-${Math.random().toString(36).substring(2, 10)}.jpg`
 
         expect(safeFilename).not.toContain('..')
@@ -176,9 +183,9 @@ describe('Input Validation Security Tests', () => {
       const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
       const oversizedFiles = [
-        6 * 1024 * 1024,  // 6MB
-        10 * 1024 * 1024, // 10MB
-        100 * 1024 * 1024, // 100MB
+        6 * 1024 * 1024,
+        10 * 1024 * 1024,
+        100 * 1024 * 1024,
       ]
 
       oversizedFiles.forEach((size) => {
@@ -194,14 +201,7 @@ describe('Input Validation Security Tests', () => {
         { type: 'image/webp', ext: 'webp' },
       ]
 
-      const invalidCombinations = [
-        { type: 'image/jpeg', ext: 'php' },
-        { type: 'image/png', ext: 'exe' },
-        { type: 'text/html', ext: 'jpg' },
-      ]
-
-      // Valid combinations should be allowed
-      validCombinations.forEach(({ type, ext }) => {
+      validCombinations.forEach(({ type }) => {
         const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
         expect(ALLOWED_TYPES.includes(type)).toBe(true)
       })
@@ -289,20 +289,11 @@ describe('Input Validation Security Tests', () => {
 
   describe('Parameter Tampering Prevention', () => {
     it('should not allow status manipulation in public submissions', () => {
-      // Public submissions should always start as PENDING
-      const tamperedData = {
-        status: 'APPROVED', // Attacker trying to auto-approve
-        municipalityName: 'Test',
-        // ... other fields
-      }
-
-      // The API should ignore this and set status to PENDING
       const expectedStatus = 'PENDING'
       expect(expectedStatus).toBe('PENDING')
     })
 
     it('should not allow role specification in public registration', () => {
-      // Registration (admin-only) should validate role properly
       const validRoles = ['ADMIN', 'PARTNER', 'NONPROFIT_MANAGER']
       const invalidRole = 'SUPERADMIN'
 

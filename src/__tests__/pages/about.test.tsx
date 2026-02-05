@@ -11,18 +11,18 @@ jest.mock('next-intl', () => ({
       'about.statementOfPurposeText': 'We bridge the gap between American donors and Ukrainian municipalities.',
       'about.howItWorks': 'How It Works',
       'about.howItWorksText': 'Our platform facilitates connections.',
-      'about.forMunicipalities': 'For Municipalities:',
-      'about.forMunicipalitiesText': 'Submit your renewable energy projects.',
+      'about.forPartners': 'For NGO Partners:',
+      'about.forPartnersText': 'Submit verified projects from municipalities.',
       'about.forDonors': 'For Donors:',
       'about.forDonorsText': 'Browse projects and express interest.',
-      'about.directConnection': 'Direct Connection:',
-      'about.directConnectionText': 'We facilitate introductions.',
       'about.projectCategories': 'Project Categories',
+      'about.categoryIntro': 'We fund solar PVs, battery storage, heat pumps, and thermo-modernization for:',
       'about.categoryHospital': 'Medical facilities',
       'about.categorySchool': 'Educational institutions',
       'about.categoryWater': 'Water utilities',
       'about.categoryEnergy': 'Energy infrastructure',
       'about.categoryOther': 'Other public infrastructure',
+      'about.civilianOnly': 'All projects are strictly civilian infrastructure.',
       'about.browseProjects': 'Browse Projects',
       'categories.HOSPITAL': 'Hospital',
       'categories.SCHOOL': 'School',
@@ -84,21 +84,16 @@ describe('AboutPage', () => {
       expect(screen.getByText('How It Works')).toBeInTheDocument()
     })
 
-    it('renders for municipalities info', () => {
+    it('renders for partners info', () => {
       render(<AboutPage />)
-      expect(screen.getByText('For Municipalities:')).toBeInTheDocument()
-      expect(screen.getByText(/Submit your renewable energy projects/)).toBeInTheDocument()
+      expect(screen.getByText('For NGO Partners:')).toBeInTheDocument()
+      expect(screen.getByText(/Submit verified projects/)).toBeInTheDocument()
     })
 
     it('renders for donors info', () => {
       render(<AboutPage />)
       expect(screen.getByText('For Donors:')).toBeInTheDocument()
       expect(screen.getByText(/Browse projects/)).toBeInTheDocument()
-    })
-
-    it('renders direct connection info', () => {
-      render(<AboutPage />)
-      expect(screen.getByText('Direct Connection:')).toBeInTheDocument()
     })
 
     it('renders Project Categories section', () => {

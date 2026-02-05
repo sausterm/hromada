@@ -7,10 +7,7 @@ jest.mock('next-intl', () => ({
     const translations: Record<string, string> = {
       title: 'Contact Us',
       description: 'Get in touch with our team.',
-      forMunicipalities: 'For Municipalities',
-      forMunicipalitiesText: 'Submit your project through our platform.',
-      forDonors: 'For Donors',
-      forDonorsText: 'Express interest directly through project pages.',
+      generalInquiriesText: 'For questions or partnership opportunities, reach out at',
     }
     return translations[key] || key
   },
@@ -37,19 +34,12 @@ describe('ContactPage', () => {
       render(<ContactPage />)
       expect(screen.getByText('Get in touch with our team.')).toBeInTheDocument()
     })
-  })
 
-  describe('Information Sections', () => {
-    it('renders for municipalities section', () => {
+    it('renders the email link', () => {
       render(<ContactPage />)
-      expect(screen.getByText('For Municipalities')).toBeInTheDocument()
-      expect(screen.getByText(/Submit your project/)).toBeInTheDocument()
-    })
-
-    it('renders for donors section', () => {
-      render(<ContactPage />)
-      expect(screen.getByText('For Donors')).toBeInTheDocument()
-      expect(screen.getByText(/Express interest/)).toBeInTheDocument()
+      const emailLink = screen.getByRole('link', { name: /thomas@hromadaproject.org/ })
+      expect(emailLink).toBeInTheDocument()
+      expect(emailLink).toHaveAttribute('href', 'mailto:thomas@hromadaproject.org')
     })
   })
 

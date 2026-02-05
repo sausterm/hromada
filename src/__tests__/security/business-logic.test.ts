@@ -8,7 +8,19 @@
  * - Data consistency
  */
 
-import { NextRequest } from 'next/server'
+// Mock next/server before any imports
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn().mockImplementation((url: string, init?: any) => ({
+    url,
+    method: init?.method || 'GET',
+    headers: {
+      get: (key: string) => init?.headers?.[key] || null,
+    },
+  })),
+  NextResponse: {
+    json: jest.fn((body, init) => ({ body, status: init?.status || 200 })),
+  },
+}))
 
 // Mock dependencies
 jest.mock('@/lib/prisma', () => ({
@@ -47,18 +59,13 @@ describe('Business Logic Security Tests', () => {
     it('should only allow valid status transitions', () => {
       const validTransitions: Record<string, string[]> = {
         PENDING: ['APPROVED', 'REJECTED'],
-        APPROVED: [], // Terminal state
-        REJECTED: [], // Terminal state
+        APPROVED: [],
+        REJECTED: [],
       }
 
-      // PENDING can go to APPROVED or REJECTED
       expect(validTransitions.PENDING).toContain('APPROVED')
       expect(validTransitions.PENDING).toContain('REJECTED')
-
-      // APPROVED cannot transition (terminal)
       expect(validTransitions.APPROVED).toHaveLength(0)
-
-      // REJECTED cannot transition (terminal)
       expect(validTransitions.REJECTED).toHaveLength(0)
     })
 
@@ -70,7 +77,6 @@ describe('Business Logic Security Tests', () => {
 
       ;(prisma.projectSubmission.findUnique as jest.Mock).mockResolvedValue(rejectedSubmission)
 
-      // Business logic should prevent this
       const canApprove = rejectedSubmission.status === 'PENDING'
       expect(canApprove).toBe(false)
     })
@@ -84,7 +90,6 @@ describe('Business Logic Security Tests', () => {
 
       ;(prisma.projectSubmission.findUnique as jest.Mock).mockResolvedValue(approvedSubmission)
 
-      // Business logic should prevent this
       const canReject = approvedSubmission.status === 'PENDING'
       expect(canReject).toBe(false)
     })
@@ -118,7 +123,6 @@ describe('Business Logic Security Tests', () => {
 
       const incompleteSubmission = {
         municipalityName: 'Test Municipality',
-        // Missing other required fields
       }
 
       const missingFields = requiredFields.filter(
@@ -133,7 +137,6 @@ describe('Business Logic Security Tests', () => {
     it('should verify project exists before creating contact submission', async () => {
       ;(prisma.project.findUnique as jest.Mock).mockResolvedValue(null)
 
-      // Should return 404 when project doesn't exist
       const projectExists = null
       expect(projectExists).toBeNull()
     })
@@ -155,8 +158,7 @@ describe('Business Logic Security Tests', () => {
         message: 'I want to help',
       })
 
-      // Contact submission should reference correct project
-      const submission = await prisma.contactSubmission.create({
+      await prisma.contactSubmission.create({
         data: {
           projectId: project.id,
           donorName: 'Test Donor',
@@ -177,14 +179,12 @@ describe('Business Logic Security Tests', () => {
 
   describe('Data Consistency', () => {
     it('should use transactions for multi-step operations', async () => {
-      // Approval creates a project and updates submission
-      // This should be atomic
       ;(prisma.$transaction as jest.Mock).mockResolvedValue([
         { id: 'project-123' },
         { id: 'submission-123', status: 'APPROVED' },
       ])
 
-      const result = await prisma.$transaction([
+      await prisma.$transaction([
         prisma.project.update({ where: { id: 'project-123' }, data: {} }),
         prisma.projectSubmission.update({ where: { id: 'submission-123' }, data: { status: 'APPROVED' } }),
       ])
@@ -193,23 +193,18 @@ describe('Business Logic Security Tests', () => {
     })
 
     it('should prevent orphaned submissions', () => {
-      // If project creation fails, submission should not be marked as approved
       const mockTransaction = jest.fn().mockRejectedValue(new Error('Transaction failed'))
-
-      // Transaction ensures atomicity
       expect(mockTransaction).toBeDefined()
     })
   })
 
   describe('Rate Limiting Business Logic', () => {
     it('should prevent spam submissions from same IP', async () => {
-      const { rateLimit, RATE_LIMITS } = await import('@/lib/rate-limit')
+      const { RATE_LIMITS } = await import('@/lib/rate-limit')
 
-      // Project submission limit: 10 per hour
       expect(RATE_LIMITS.projectSubmission.limit).toBe(10)
       expect(RATE_LIMITS.projectSubmission.windowSeconds).toBe(3600)
 
-      // Contact form limit: 5 per minute
       expect(RATE_LIMITS.contact.limit).toBe(5)
       expect(RATE_LIMITS.contact.windowSeconds).toBe(60)
     })
@@ -219,7 +214,6 @@ describe('Business Logic Security Tests', () => {
     it('should log all security-relevant actions', async () => {
       const { AuditAction } = await import('@/lib/security')
 
-      // Verify all expected audit actions are defined
       expect(AuditAction.LOGIN_SUCCESS).toBe('LOGIN_SUCCESS')
       expect(AuditAction.LOGIN_FAILED).toBe('LOGIN_FAILED')
       expect(AuditAction.LOGOUT).toBe('LOGOUT')
@@ -233,27 +227,26 @@ describe('Business Logic Security Tests', () => {
 
     it('should capture IP address in audit logs', async () => {
       const { getClientIp } = await import('@/lib/security')
+      const { NextRequest } = require('next/server')
 
       const requestWithForwardedFor = new NextRequest('http://localhost/api/auth/login', {
         headers: { 'x-forwarded-for': '203.0.113.1, 198.51.100.1' },
       })
 
       const ip = getClientIp(requestWithForwardedFor)
-      expect(ip).toBe('203.0.113.1') // Should use first IP in chain
+      expect(ip).toBe('203.0.113.1')
     })
 
-    it('should truncate long user agent strings', async () => {
-      const { getUserAgent } = await import('@/lib/security')
+    it('should return unknown for missing IP', async () => {
+      const { getClientIp } = await import('@/lib/security')
+      const { NextRequest } = require('next/server')
 
-      const longUserAgent = 'A'.repeat(1000)
-      const request = new NextRequest('http://localhost/api/auth/login', {
-        headers: { 'user-agent': longUserAgent },
+      const requestWithoutIp = new NextRequest('http://localhost/api/auth/login', {
+        headers: {},
       })
 
-      const userAgent = getUserAgent(request)
-      // The logAuditEvent function truncates to 500 chars
-      expect(userAgent.length).toBe(1000) // getUserAgent returns full string
-      // Truncation happens in logAuditEvent: userAgent?.substring(0, 500)
+      const ip = getClientIp(requestWithoutIp)
+      expect(ip).toBe('unknown')
     })
   })
 

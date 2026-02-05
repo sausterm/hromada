@@ -16,6 +16,10 @@ jest.mock('next-intl', () => ({
       'nav.menu': 'Menu',
       'nav.language': 'Language',
       'nav.headerSubtitle': 'Built to support Ukrainian renewable infrastructure recovery',
+      'nav.transparency': 'Transparency',
+      'nav.contact': 'Contact',
+      'nav.login': 'Login',
+      'nav.dashboard': 'Dashboard',
     }
     return translations[key] || key
   },
@@ -40,6 +44,19 @@ jest.mock('@/i18n/navigation', () => ({
 // Mock @/i18n
 jest.mock('@/i18n', () => ({
   locales: ['en', 'uk'] as const,
+}))
+
+// Mock useAuth hook
+const mockIsAuthenticated = false
+const mockIsAdmin = jest.fn(() => false)
+const mockIsPartner = jest.fn(() => false)
+
+jest.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    isAuthenticated: mockIsAuthenticated,
+    isAdmin: mockIsAdmin,
+    isPartner: mockIsPartner,
+  }),
 }))
 
 describe('Header', () => {
@@ -86,15 +103,13 @@ describe('Header', () => {
       render(<Header />)
 
       const menuButton = screen.getByRole('button', { name: 'Menu' })
-      // Hover over the menu area (the parent div has the hover handler)
       fireEvent.mouseEnter(menuButton.parentElement!)
 
-      // Navigation links should appear
       await waitFor(() => {
         expect(screen.getByTestId('link-/')).toBeInTheDocument()
         expect(screen.getByTestId('link-/about')).toBeInTheDocument()
-        expect(screen.getByTestId('link-/submit-project')).toBeInTheDocument()
-        expect(screen.getByTestId('link-/admin')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/transparency')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/contact')).toBeInTheDocument()
       })
     })
 
@@ -107,13 +122,13 @@ describe('Header', () => {
       // Open menu
       fireEvent.mouseEnter(menuContainer)
       await waitFor(() => {
-        expect(screen.getByTestId('link-/admin')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/contact')).toBeInTheDocument()
       })
 
       // Close menu
       fireEvent.mouseLeave(menuContainer)
       await waitFor(() => {
-        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
       })
     })
 
@@ -126,8 +141,20 @@ describe('Header', () => {
       await waitFor(() => {
         expect(screen.getByText('Home')).toBeInTheDocument()
         expect(screen.getByText('About Us')).toBeInTheDocument()
-        expect(screen.getByText('Submit a Project')).toBeInTheDocument()
-        expect(screen.getByText('Admin')).toBeInTheDocument()
+        expect(screen.getByText('Transparency')).toBeInTheDocument()
+        expect(screen.getByText('Contact')).toBeInTheDocument()
+      })
+    })
+
+    it('shows login link when not authenticated', async () => {
+      render(<Header />)
+
+      const menuButton = screen.getByRole('button', { name: 'Menu' })
+      fireEvent.mouseEnter(menuButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('link-/login')).toBeInTheDocument()
+        expect(screen.getByText('Login')).toBeInTheDocument()
       })
     })
   })
@@ -143,13 +170,10 @@ describe('Header', () => {
       render(<Header />)
 
       const langButton = screen.getByRole('button', { name: /language/i })
-      // Hover over the language menu area
       fireEvent.mouseEnter(langButton.parentElement!)
 
-      // Should show another flag button for switching
       await waitFor(() => {
         const buttons = screen.getAllByRole('button')
-        // Should have more than just the language button (another flag appears)
         expect(buttons.length).toBeGreaterThan(3)
       })
     })
@@ -160,13 +184,8 @@ describe('Header', () => {
       const langButton = screen.getByRole('button', { name: /language/i })
       const langContainer = langButton.parentElement!
 
-      // Open dropdown
       fireEvent.mouseEnter(langContainer)
-
-      // Close dropdown
       fireEvent.mouseLeave(langContainer)
-
-      // Should close
     })
   })
 
@@ -190,7 +209,6 @@ describe('Header', () => {
       const hromadaButton = screen.getByRole('button', { name: 'hromada' })
       await user.click(hromadaButton)
 
-      // On homepage, it just switches locale
       expect(mockReplace).toHaveBeenCalledWith('/', { locale: 'en' })
     })
 
@@ -206,9 +224,6 @@ describe('Header', () => {
   })
 
   describe('Brand Logo Navigation from other pages', () => {
-    // Note: Testing the non-homepage navigation path (router.push) requires different
-    // pathname mocking which is complex with React hooks. The functionality is tested
-    // in integration/e2e tests. Line 96 remains uncovered in unit tests.
     it('renders logo buttons for both locales', () => {
       render(<Header />)
 
@@ -291,14 +306,14 @@ describe('Header', () => {
       // Open menu
       fireEvent.mouseEnter(menuContainer)
       await waitFor(() => {
-        expect(screen.getByTestId('link-/admin')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/contact')).toBeInTheDocument()
       })
 
       // Simulate click outside
       fireEvent.mouseDown(document.body)
 
       await waitFor(() => {
-        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
       })
     })
 
@@ -318,10 +333,9 @@ describe('Header', () => {
       // Simulate click outside
       fireEvent.mouseDown(document.body)
 
-      // Wait for dropdown to close (button count should decrease)
       await waitFor(() => {
         const buttons = screen.getAllByRole('button')
-        expect(buttons.length).toBeLessThanOrEqual(4)
+        expect(buttons.length).toBeLessThanOrEqual(5)
       })
     })
   })
@@ -338,12 +352,10 @@ describe('Header', () => {
         expect(screen.getByTestId('link-/')).toBeInTheDocument()
       })
 
-      // Click on Home link
       await user.click(screen.getByTestId('link-/'))
 
-      // Menu should close (since onClick sets isNavMenuOpen to false)
       await waitFor(() => {
-        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
       })
     })
 
@@ -361,43 +373,7 @@ describe('Header', () => {
       await user.click(screen.getByTestId('link-/about'))
 
       await waitFor(() => {
-        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
-      })
-    })
-
-    it('closes menu when clicking Submit Project link', async () => {
-      const user = userEvent.setup()
-      render(<Header />)
-
-      const menuButton = screen.getByRole('button', { name: 'Menu' })
-      fireEvent.mouseEnter(menuButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('link-/submit-project')).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByTestId('link-/submit-project'))
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('link-/admin')).not.toBeInTheDocument()
-      })
-    })
-
-    it('closes menu when clicking Admin link', async () => {
-      const user = userEvent.setup()
-      render(<Header />)
-
-      const menuButton = screen.getByRole('button', { name: 'Menu' })
-      fireEvent.mouseEnter(menuButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('link-/admin')).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByTestId('link-/admin'))
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('link-/')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
       })
     })
   })
@@ -412,11 +388,9 @@ describe('Header', () => {
 
       await waitFor(() => {
         const buttons = screen.getAllByRole('button')
-        // More than initial buttons means dropdown is open
         expect(buttons.length).toBeGreaterThan(3)
       })
 
-      // Find the language switch button in the dropdown (it has a title attribute)
       const switchButtons = screen.getAllByRole('button')
       const dropdownButton = switchButtons.find(btn => btn.getAttribute('title'))
       if (dropdownButton) {

@@ -174,9 +174,10 @@ export default function AboutPage() {
                     >
                       {/* Glare sweep animation - flows left to right sequentially */}
                       <div
-                        className="absolute h-full w-[200%] -left-[50%] animate-glare-flow"
+                        className="absolute h-full w-[30px] animate-glare-flow"
                         style={{
-                          background: 'linear-gradient(90deg, transparent 0%, transparent 35%, rgba(255,255,255,0.9) 50%, transparent 65%, transparent 100%)',
+                          left: '-30px',
+                          background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 50%, transparent 100%)',
                           animationDelay: `${i * 0.5}s`,
                         }}
                       />

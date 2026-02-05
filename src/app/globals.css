@@ -348,9 +348,9 @@ body {
 
 /* Glare flow animation for How It Works */
 @keyframes glareFlow {
-  0% { transform: translateX(0%) translateZ(0); }
-  30% { transform: translateX(100%) translateZ(0); }
-  100% { transform: translateX(100%) translateZ(0); }
+  0% { transform: translateX(0) translateZ(0); }
+  30% { transform: translateX(600%) translateZ(0); }
+  100% { transform: translateX(600%) translateZ(0); }
 }
 
 .animate-glare-flow {

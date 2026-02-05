@@ -18,7 +18,11 @@ export function PartnerCarousel() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   const positionRef = useRef(0)
+  const dragStartRef = useRef(0)
+  const dragStartPosRef = useRef(0)
+  const hasDraggedRef = useRef(false)
 
   // Show on production site and localhost, but NOT on demo site
   useEffect(() => {
@@ -78,11 +82,89 @@ export function PartnerCarousel() {
 
     container.addEventListener('wheel', handleWheel, { passive: false })
 
+    // Handle drag start (mouse)
+    const handleMouseDown = (e: MouseEvent) => {
+      setIsDragging(true)
+      dragStartRef.current = e.clientX
+      dragStartPosRef.current = positionRef.current
+      hasDraggedRef.current = false
+    }
+
+    // Handle drag move (mouse)
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return
+      e.preventDefault()
+      const delta = e.clientX - dragStartRef.current
+      if (Math.abs(delta) > 5) {
+        hasDraggedRef.current = true
+      }
+      positionRef.current = dragStartPosRef.current + delta
+
+      // Wrap position seamlessly
+      if (singleSetWidthRef.current > 0) {
+        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
+          positionRef.current = positionRef.current % singleSetWidthRef.current
+        }
+        if (positionRef.current > 0) {
+          positionRef.current = positionRef.current - singleSetWidthRef.current
+        }
+      }
+
+      track.style.transform = `translateX(${positionRef.current}px)`
+    }
+
+    // Handle drag end (mouse)
+    const handleMouseUp = () => {
+      setIsDragging(false)
+    }
+
+    // Handle drag start (touch)
+    const handleTouchStart = (e: TouchEvent) => {
+      setIsDragging(true)
+      dragStartRef.current = e.touches[0].clientX
+      dragStartPosRef.current = positionRef.current
+      hasDraggedRef.current = false
+    }
+
+    // Handle drag move (touch)
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return
+      const delta = e.touches[0].clientX - dragStartRef.current
+      if (Math.abs(delta) > 5) {
+        hasDraggedRef.current = true
+      }
+      positionRef.current = dragStartPosRef.current + delta
+
+      // Wrap position seamlessly
+      if (singleSetWidthRef.current > 0) {
+        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
+          positionRef.current = positionRef.current % singleSetWidthRef.current
+        }
+        if (positionRef.current > 0) {
+          positionRef.current = positionRef.current - singleSetWidthRef.current
+        }
+      }
+
+      track.style.transform = `translateX(${positionRef.current}px)`
+    }
+
+    // Handle drag end (touch)
+    const handleTouchEnd = () => {
+      setIsDragging(false)
+    }
+
+    container.addEventListener('mousedown', handleMouseDown)
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+    container.addEventListener('touchstart', handleTouchStart, { passive: true })
+    container.addEventListener('touchmove', handleTouchMove, { passive: true })
+    container.addEventListener('touchend', handleTouchEnd)
+
     let animationId: number
     const speed = 0.5 // pixels per frame
 
     const animate = () => {
-      if (!isPaused && singleSetWidthRef.current > 0) {
+      if (!isPaused && !isDragging && singleSetWidthRef.current > 0) {
         positionRef.current -= speed
 
         // Reset position seamlessly using modulo for smoother wrapping
@@ -104,8 +186,14 @@ export function PartnerCarousel() {
       cancelAnimationFrame(animationId)
       window.removeEventListener('resize', calculateWidth)
       container.removeEventListener('wheel', handleWheel)
+      container.removeEventListener('mousedown', handleMouseDown)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+      container.removeEventListener('touchstart', handleTouchStart)
+      container.removeEventListener('touchmove', handleTouchMove)
+      container.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [isPaused, isVisible])
+  }, [isPaused, isDragging, isVisible])
 
   // Don't render on production site
   if (!isVisible) return null
@@ -140,14 +228,21 @@ export function PartnerCarousel() {
               href={partner.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 mx-8 flex items-center justify-center hover:opacity-70 transition-opacity"
+              className="flex-shrink-0 mx-8 flex items-center justify-center hover:opacity-70 transition-opacity select-none"
               style={{ minWidth: '180px' }}
+              onClick={(e) => {
+                if (hasDraggedRef.current) {
+                  e.preventDefault()
+                }
+              }}
+              draggable={false}
             >
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className="h-12 w-auto object-contain"
+                className="h-12 w-auto object-contain pointer-events-none"
                 loading="lazy"
+                draggable={false}
               />
             </a>
           ))}

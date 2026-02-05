@@ -13,7 +13,6 @@ import { ContactForm } from '@/components/projects/ContactForm'
 import {
   type Project,
   CATEGORY_CONFIG,
-  URGENCY_CONFIG,
   STATUS_CONFIG,
   PROJECT_TYPE_CONFIG,
   COFINANCING_CONFIG,
@@ -128,7 +127,6 @@ export default function ProjectDetailPage() {
   }
 
   const categoryConfig = CATEGORY_CONFIG[project.category]
-  const urgencyConfig = URGENCY_CONFIG[project.urgency]
   const statusConfig = STATUS_CONFIG[project.status]
   const localized = getLocalizedProject(project, locale)
 
@@ -207,13 +205,6 @@ export default function ProjectDetailPage() {
                 >
                   {t(`status.${project.status}`)}
                 </Badge>
-                {project.urgency !== 'LOW' && (
-                  <Badge
-                    variant={project.urgency === 'CRITICAL' ? 'danger' : 'warning'}
-                  >
-                    {t('projectDetail.urgencyLabel', { level: t(`urgency.${project.urgency}`) })}
-                  </Badge>
-                )}
               </div>
 
               {/* Title with Share Button */}
@@ -239,149 +230,145 @@ export default function ProjectDetailPage() {
                 </span>
               </div>
 
-              {/* Description */}
-              <div className="prose prose-gray max-w-none">
-                <h2 className="text-xl font-semibold text-gray-900 mb-3">
+            {/* About This Project - Combined description and specs */}
+            <Card>
+              <CardContent className="p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
                   {t('projectDetail.aboutProject')}
                 </h2>
-                <div className="text-gray-700 whitespace-pre-line">
-                  {localized.fullDescription}
-                </div>
-              </div>
-            </div>
-
-            {/* Project Specifications - only show if any technical/financial fields exist */}
-            {(project.projectType || project.estimatedCostUsd || project.technicalPowerKw ||
-              project.numberOfPanels || project.cofinancingAvailable || project.partnerOrganization) && (
-              <Card>
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    {t('projectDetail.projectSpecifications')}
-                  </h2>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {/* Project Type */}
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.projectType')}</p>
-                      {project.projectType ? (
-                        <span
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium"
-                          style={{
-                            backgroundColor: `${PROJECT_TYPE_CONFIG[project.projectType].color}20`,
-                            color: PROJECT_TYPE_CONFIG[project.projectType].color,
-                          }}
-                        >
-                          <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="w-4 h-4"
-                            dangerouslySetInnerHTML={{ __html: PROJECT_TYPE_CONFIG[project.projectType].icon }}
-                          />
-                          <span>{t(`projectTypes.${project.projectType}`)}</span>
-                        </span>
-                      ) : (
-                        <p className="text-gray-400 text-sm">{t('common.notSpecified')}</p>
+                <div className="flex flex-col lg:flex-row gap-6">
+                  {/* Sidebar - Specifications (left side) */}
+                  {(project.projectType || project.estimatedCostUsd || project.technicalPowerKw ||
+                    project.numberOfPanels || project.cofinancingAvailable || project.partnerOrganization) && (
+                    <div className="lg:w-64 flex-shrink-0 lg:border-r lg:border-gray-200 lg:pr-6 space-y-4 order-first">
+                      {/* Estimated Cost - Featured */}
+                      {project.estimatedCostUsd && (
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.estimatedCost')}</p>
+                          <p className="font-bold text-2xl text-[var(--navy-700)]">
+                            {formatCurrency(project.estimatedCostUsd, { compact: true })}
+                          </p>
+                        </div>
                       )}
-                    </div>
 
-                    {/* Project Subtype */}
-                    {project.projectSubtype && (
-                      <div>
-                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.subtype')}</p>
-                        <p className="font-medium text-gray-900">{project.projectSubtype}</p>
-                      </div>
-                    )}
-
-                    {/* Estimated Cost */}
-                    <div>
-                      <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.estimatedCost')}</p>
-                      {project.estimatedCostUsd ? (
-                        <p className="font-bold text-xl text-[var(--navy-700)]">
-                          {formatCurrency(project.estimatedCostUsd, { compact: true })}
-                        </p>
-                      ) : (
-                        <p className="text-gray-400 text-sm">{t('common.notSpecified')}</p>
+                      {/* Project Type */}
+                      {project.projectType && (
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.projectType')}</p>
+                          <span
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium"
+                            style={{
+                              backgroundColor: `${PROJECT_TYPE_CONFIG[project.projectType].color}20`,
+                              color: PROJECT_TYPE_CONFIG[project.projectType].color,
+                            }}
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="w-4 h-4"
+                              dangerouslySetInnerHTML={{ __html: PROJECT_TYPE_CONFIG[project.projectType].icon }}
+                            />
+                            <span>{t(`projectTypes.${project.projectType}`)}</span>
+                          </span>
+                        </div>
                       )}
-                    </div>
 
-                    {/* Technical Power */}
-                    {project.technicalPowerKw && (
-                      <div>
-                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.technicalPower')}</p>
-                        <p className="font-medium text-gray-900">{formatPower(project.technicalPowerKw)}</p>
-                      </div>
-                    )}
+                      {/* Project Subtype */}
+                      {project.projectSubtype && (
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.subtype')}</p>
+                          <p className="font-medium text-gray-900">{project.projectSubtype}</p>
+                        </div>
+                      )}
 
-                    {/* Number of Panels */}
-                    {project.numberOfPanels && (
-                      <div>
-                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.numberOfPanels')}</p>
-                        <p className="font-medium text-gray-900">{project.numberOfPanels.toLocaleString()}</p>
-                      </div>
-                    )}
+                      {/* Technical Power */}
+                      {project.technicalPowerKw && (
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.technicalPower')}</p>
+                          <p className="font-medium text-gray-900">{formatPower(project.technicalPowerKw)}</p>
+                        </div>
+                      )}
 
-                    {/* Co-financing Available */}
-                    {project.cofinancingAvailable && (
-                      <div className="sm:col-span-2">
-                        <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.cofinancing')}</p>
-                        <span
-                          className="inline-flex items-center px-2.5 py-1 rounded text-sm font-medium"
-                          style={{
-                            backgroundColor: `${COFINANCING_CONFIG[project.cofinancingAvailable].color}20`,
-                            color: COFINANCING_CONFIG[project.cofinancingAvailable].color,
-                          }}
-                        >
-                          {t(`cofinancing.${project.cofinancingAvailable}`)}
-                        </span>
-                        {project.cofinancingDetails && (
-                          <p className="text-gray-700 mt-1">{project.cofinancingDetails}</p>
-                        )}
-                      </div>
-                    )}
+                      {/* Number of Panels */}
+                      {project.numberOfPanels && (
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.numberOfPanels')}</p>
+                          <p className="font-medium text-gray-900">{project.numberOfPanels.toLocaleString()}</p>
+                        </div>
+                      )}
 
-                    {/* Partner Organization */}
-                    {project.partnerOrganization && (() => {
-                      const partnerConfig = findPartnerConfig(project.partnerOrganization)
-                      return (
-                        <div className="sm:col-span-2">
-                          <p className="text-sm text-gray-500 mb-2">{t('projectDetail.specifications.partnerOrganization')}</p>
-                          {partnerConfig ? (
-                            <a
-                              href={partnerConfig.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-3 group"
-                            >
-                              <img
-                                src={partnerConfig.logo}
-                                alt={partnerConfig.name}
-                                className="h-10 w-auto object-contain"
-                              />
-                              <span className="font-medium text-gray-900 group-hover:text-[var(--navy-600)] transition-colors">
-                                {project.partnerOrganization}
-                              </span>
-                              <svg className="w-4 h-4 text-gray-400 group-hover:text-[var(--navy-600)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>
-                            </a>
-                          ) : (
-                            <p className="font-medium text-gray-900">{project.partnerOrganization}</p>
+                      {/* Co-financing Available */}
+                      {project.cofinancingAvailable && (
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.cofinancing')}</p>
+                          <span
+                            className="inline-flex items-center px-2.5 py-1 rounded text-sm font-medium"
+                            style={{
+                              backgroundColor: `${COFINANCING_CONFIG[project.cofinancingAvailable].color}20`,
+                              color: COFINANCING_CONFIG[project.cofinancingAvailable].color,
+                            }}
+                          >
+                            {t(`cofinancing.${project.cofinancingAvailable}`)}
+                          </span>
+                          {project.cofinancingDetails && (
+                            <p className="text-gray-600 text-sm mt-1">{project.cofinancingDetails}</p>
                           )}
                         </div>
-                      )
-                    })()}
+                      )}
+
+                      {/* Partner Organization */}
+                      {project.partnerOrganization && (() => {
+                        const partnerConfig = findPartnerConfig(project.partnerOrganization)
+                        return (
+                          <div>
+                            <p className="text-sm text-gray-500 mb-2">{t('projectDetail.specifications.partnerOrganization')}</p>
+                            {partnerConfig ? (
+                              <a
+                                href={partnerConfig.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 group"
+                              >
+                                <img
+                                  src={partnerConfig.logo}
+                                  alt={partnerConfig.name}
+                                  className="h-8 w-auto object-contain"
+                                />
+                                <span className="font-medium text-gray-900 text-sm group-hover:text-[var(--navy-600)] transition-colors">
+                                  {project.partnerOrganization}
+                                </span>
+                                <svg className="w-3.5 h-3.5 flex-shrink-0 text-gray-400 group-hover:text-[var(--navy-600)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                              </a>
+                            ) : (
+                              <p className="font-medium text-gray-900 text-sm">{project.partnerOrganization}</p>
+                            )}
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  )}
+
+                  {/* Main content - Description */}
+                  <div className="flex-1 prose prose-gray max-w-none">
+                    <div className="text-gray-700 whitespace-pre-line leading-relaxed">
+                      {localized.fullDescription}
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              </CardContent>
+            </Card>
+            </div>
 
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Sidebar - Sticky contact form */}
+          <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
             {/* Contact Form */}
             <ContactForm
               projectId={project.id}

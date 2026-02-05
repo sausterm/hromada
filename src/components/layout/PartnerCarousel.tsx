@@ -20,12 +20,15 @@ export function PartnerCarousel() {
   const [isVisible, setIsVisible] = useState(false)
   const positionRef = useRef(0)
 
-  // Only show on demo site and localhost
+  // Show on production site and localhost, but NOT on demo site
   useEffect(() => {
     const hostname = window.location.hostname
     const showCarousel = hostname === 'localhost' ||
-                         hostname === '127.0.0.1'
-    setIsVisible(showCarousel)
+                         hostname === '127.0.0.1' ||
+                         (hostname === 'hromadaproject.org' || hostname === 'www.hromadaproject.org')
+    // Explicitly hide on demo subdomain
+    const isDemo = hostname.startsWith('demo.')
+    setIsVisible(showCarousel && !isDemo)
   }, [])
   const singleSetWidthRef = useRef(0)
 

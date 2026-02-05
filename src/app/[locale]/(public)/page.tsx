@@ -99,6 +99,30 @@ export default function HomePage() {
   const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
   const cofinancingButtonRef = useRef<HTMLButtonElement>(null)
 
+  // Timeout refs for dropdown close delay (prevents flicker when moving between button and panel)
+  const priceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const powerTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const projectTypeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const cofinancingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const sortTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Helper to handle dropdown open with cancel of pending close
+  const openDropdown = (setter: (v: boolean) => void, timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+      timeoutRef.current = null
+    }
+    setter(true)
+  }
+
+  // Helper to handle dropdown close with delay
+  const closeDropdown = (setter: (v: boolean) => void, timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
+    timeoutRef.current = setTimeout(() => {
+      setter(false)
+      timeoutRef.current = null
+    }, 100) // 100ms delay allows mouse to reach dropdown panel
+  }
+
   // Pagination for card list
   const ITEMS_PER_PAGE = 12
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
@@ -360,8 +384,8 @@ export default function HomePage() {
             {/* Price Range Dropdown */}
             <div
               className="relative shrink-0"
-              onMouseEnter={() => setIsPriceDropdownOpen(true)}
-              onMouseLeave={() => setIsPriceDropdownOpen(false)}
+              onMouseEnter={() => openDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
+              onMouseLeave={() => closeDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
             >
               <button
                 ref={priceButtonRef}
@@ -391,8 +415,8 @@ export default function HomePage() {
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
                     left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
                   }}
-                  onMouseEnter={() => setIsPriceDropdownOpen(true)}
-                  onMouseLeave={() => setIsPriceDropdownOpen(false)}
+                  onMouseEnter={() => openDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
+                  onMouseLeave={() => closeDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
                 >
                   <div
                     id={priceDropdownId}
@@ -498,8 +522,8 @@ export default function HomePage() {
             {/* Project Type dropdown */}
             <div
               className="relative shrink-0"
-              onMouseEnter={() => setIsProjectTypeOpen(true)}
-              onMouseLeave={() => setIsProjectTypeOpen(false)}
+              onMouseEnter={() => openDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
+              onMouseLeave={() => closeDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
             >
               <button
                 ref={projectTypeButtonRef}
@@ -521,8 +545,8 @@ export default function HomePage() {
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
                   }}
-                  onMouseEnter={() => setIsProjectTypeOpen(true)}
-                  onMouseLeave={() => setIsProjectTypeOpen(false)}
+                  onMouseEnter={() => openDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
+                  onMouseLeave={() => closeDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
                 >
                   <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
                     {(Object.keys(PROJECT_TYPE_CONFIG) as ProjectType[]).map((type) => (
@@ -542,8 +566,8 @@ export default function HomePage() {
             {/* Power Range Dropdown */}
             <div
               className="relative shrink-0"
-              onMouseEnter={() => setIsPowerDropdownOpen(true)}
-              onMouseLeave={() => setIsPowerDropdownOpen(false)}
+              onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
+              onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
             >
               <button
                 ref={powerButtonRef}
@@ -573,8 +597,8 @@ export default function HomePage() {
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
                   }}
-                  onMouseEnter={() => setIsPowerDropdownOpen(true)}
-                  onMouseLeave={() => setIsPowerDropdownOpen(false)}
+                  onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
+                  onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 >
                   <div
                     id={powerDropdownId}
@@ -651,8 +675,8 @@ export default function HomePage() {
             {/* Cofinancing dropdown */}
             <div
               className="relative shrink-0"
-              onMouseEnter={() => setIsCofinancingOpen(true)}
-              onMouseLeave={() => setIsCofinancingOpen(false)}
+              onMouseEnter={() => openDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
+              onMouseLeave={() => closeDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
             >
               <button
                 ref={cofinancingButtonRef}
@@ -674,8 +698,8 @@ export default function HomePage() {
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,
                   }}
-                  onMouseEnter={() => setIsCofinancingOpen(true)}
-                  onMouseLeave={() => setIsCofinancingOpen(false)}
+                  onMouseEnter={() => openDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
+                  onMouseLeave={() => closeDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
                 >
                   <div className="w-56 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
                     {(Object.keys(COFINANCING_CONFIG) as CofinancingStatus[]).map((cofinancing) => (
@@ -759,8 +783,8 @@ export default function HomePage() {
               {/* Sort dropdown */}
               <div
                 className="relative shrink-0"
-                onMouseEnter={() => setIsSortOpen(true)}
-                onMouseLeave={() => setIsSortOpen(false)}
+                onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
+                onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
               >
                 <button
                   className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] transition-all whitespace-nowrap"

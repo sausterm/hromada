@@ -379,7 +379,8 @@
     "forPartnersAction": "Partner Inquiry",
     "forMedia": "Media & Press",
     "forMediaIcon": "newspaper",
-    "forMediaText": "For press inquiries, interviews, or media coverage requests, please reach out to our communications team."
+    "forMediaText": "For press inquiries, interviews, or media coverage requests, feel free to reach out.",
+    "forMediaAction": "Get in Touch"
   },
   "transparency": {
     "title": "Transparency",

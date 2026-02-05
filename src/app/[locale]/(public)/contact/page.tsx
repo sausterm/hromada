@@ -107,7 +107,7 @@ export default function ContactPage() {
             </p>
             <a href="mailto:thomas@hromadaproject.org?subject=Media%20Inquiry">
               <Button variant="outline" className="w-full">
-                Contact Press Team
+                {t('forMediaAction')}
               </Button>
             </a>
           </div>

@@ -346,6 +346,19 @@ body {
   animation: dropdown-in 0.2s ease-out forwards;
 }
 
+/* Glare flow animation for How It Works */
+@keyframes glareFlow {
+  0% { transform: translateX(0%) translateZ(0); }
+  30% { transform: translateX(100%) translateZ(0); }
+  100% { transform: translateX(100%) translateZ(0); }
+}
+
+.animate-glare-flow {
+  animation: glareFlow 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
 /* Toast animations */
 @keyframes slide-in {
   from {

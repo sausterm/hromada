@@ -174,25 +174,15 @@ export default function AboutPage() {
                     >
                       {/* Glare sweep animation - flows left to right sequentially */}
                       <div
-                        className="absolute h-full w-[200%] -left-[50%]"
+                        className="absolute h-full w-[200%] -left-[50%] animate-glare-flow"
                         style={{
                           background: 'linear-gradient(90deg, transparent 0%, transparent 35%, rgba(255,255,255,0.9) 50%, transparent 65%, transparent 100%)',
-                          animation: 'glareFlow 4s cubic-bezier(0.4, 0, 0.2, 1) infinite',
                           animationDelay: `${i * 0.5}s`,
-                          willChange: 'transform',
-                          backfaceVisibility: 'hidden',
                         }}
                       />
                     </div>
                   ))}
                 </div>
-                <style jsx>{`
-                  @keyframes glareFlow {
-                    0% { transform: translateX(0%) translateZ(0); }
-                    30% { transform: translateX(100%) translateZ(0); }
-                    100% { transform: translateX(100%) translateZ(0); }
-                  }
-                `}</style>
               </div>
             </div>
 

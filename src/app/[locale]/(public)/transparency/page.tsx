@@ -138,24 +138,6 @@ export default function TransparencyPage() {
             </p>
           </section>
 
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              {t('transparency.verificationTitle')}
-            </h2>
-            <p className="text-base leading-relaxed">
-              {t('transparency.verificationText')}
-            </p>
-          </section>
-
-          <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">
-              {t('transparency.directConnectionTitle')}
-            </h2>
-            <p className="text-base leading-relaxed">
-              {t('transparency.directConnectionText')}
-            </p>
-          </section>
-
           {/* Partners with logos */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4">

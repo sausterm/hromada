@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useMemo, useRef, useEffect, useId } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslations, useLocale } from 'next-intl'
 import { MapWrapper, type MapBounds } from '@/components/map/MapWrapper'
 import { ProjectCard } from '@/components/projects/ProjectCard'
@@ -850,68 +851,88 @@ export default function HomePage() {
 
           {/* Project Cards Grid */}
           <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
-            {paginatedProjects.length > 0 ? (
-              <>
-                {paginatedProjects.map((project) => (
-                  <div
-                    key={project.id}
-                    ref={(el) => {
-                      cardRefs.current[project.id] = el
-                    }}
-                    className="h-full"
-                  >
-                    <ProjectCard
-                      project={project}
-                      isHighlighted={highlightedProjectId === project.id}
-                      onMouseEnter={() => handleCardHover(project.id)}
-                      onMouseLeave={() => handleCardHover(null)}
-                      onClick={() => handleCardClick(project)}
-                    />
-                  </div>
-                ))}
-                {/* Show More Button */}
-                {hasMoreProjects && (
-                  <div className="col-span-full flex justify-center py-4">
-                    <Button
-                      variant="outline"
-                      onClick={showMoreProjects}
-                      className="px-8"
+            <AnimatePresence mode="popLayout">
+              {paginatedProjects.length > 0 ? (
+                <>
+                  {paginatedProjects.map((project) => (
+                    <motion.div
+                      key={project.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{
+                        layout: { type: "spring", stiffness: 300, damping: 30 },
+                        opacity: { duration: 0.2 },
+                        scale: { duration: 0.2 }
+                      }}
+                      ref={(el) => {
+                        cardRefs.current[project.id] = el
+                      }}
+                      className="h-full"
                     >
-                      Show More ({projectsInView.length - displayCount} remaining)
-                    </Button>
+                      <ProjectCard
+                        project={project}
+                        isHighlighted={highlightedProjectId === project.id}
+                        onMouseEnter={() => handleCardHover(project.id)}
+                        onMouseLeave={() => handleCardHover(null)}
+                        onClick={() => handleCardClick(project)}
+                      />
+                    </motion.div>
+                  ))}
+                  {/* Show More Button */}
+                  {hasMoreProjects && (
+                    <motion.div
+                      layout
+                      className="col-span-full flex justify-center py-4"
+                    >
+                      <Button
+                        variant="outline"
+                        onClick={showMoreProjects}
+                        className="px-8"
+                      >
+                        Show More ({projectsInView.length - displayCount} remaining)
+                      </Button>
+                    </motion.div>
+                  )}
+                </>
+              ) : (
+                <motion.div
+                  key="empty-state"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="col-span-full py-12 text-center"
+                >
+                  <div className="text-[var(--navy-300)] mb-4">
+                    <svg
+                      className="h-16 w-16 mx-auto"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                      />
+                    </svg>
                   </div>
-                )}
-              </>
-            ) : (
-              <div className="col-span-full py-12 text-center">
-                <div className="text-[var(--navy-300)] mb-4">
-                  <svg
-                    className="h-16 w-16 mx-auto"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-[var(--navy-700)] mb-2">
-                  {t('homepage.noProjectsFound')}
-                </h3>
-                <p className="text-[var(--navy-500)] mb-4">
-                  {t('homepage.noProjectsHint')}
-                </p>
-                {activeFilterCount > 0 && (
-                  <Button variant="outline" size="sm" onClick={clearFilters}>
-                    {t('homepage.clearAllFilters')}
-                  </Button>
-                )}
-              </div>
-            )}
+                  <h3 className="text-lg font-semibold text-[var(--navy-700)] mb-2">
+                    {t('homepage.noProjectsFound')}
+                  </h3>
+                  <p className="text-[var(--navy-500)] mb-4">
+                    {t('homepage.noProjectsHint')}
+                  </p>
+                  {activeFilterCount > 0 && (
+                    <Button variant="outline" size="sm" onClick={clearFilters}>
+                      {t('homepage.clearAllFilters')}
+                    </Button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Footer */}

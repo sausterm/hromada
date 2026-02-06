@@ -434,7 +434,9 @@ describe('HomePage', () => {
         expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
       })
 
-      const sortButton = screen.getByText('Newest')
+      // Find the sort button (first "Newest" text in a button)
+      const sortButtons = screen.getAllByText('Newest')
+      const sortButton = sortButtons[0]
       fireEvent.mouseEnter(sortButton.parentElement!)
 
       await waitFor(() => {

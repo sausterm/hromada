@@ -92,7 +92,7 @@ export default function AboutPage() {
 
           {/* 1. Statement of Purpose */}
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 text-center">
+            <h2 className="text-3xl font-bold text-[var(--navy-700)] mb-4 text-center">
               {t('about.statementOfPurpose')}
             </h2>
             <blockquote className="text-lg leading-relaxed text-[var(--navy-600)] italic text-center border-l-4 border-r-4 border-[var(--ukraine-500)] px-6 py-2 mx-auto max-w-2xl">
@@ -104,7 +104,7 @@ export default function AboutPage() {
 
           {/* 2. How It Works */}
           <section className="mb-12 overflow-hidden">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-8 text-center">
+            <h2 className="text-3xl font-bold text-[var(--navy-700)] mb-8 text-center">
               {t('transparency.processTitle')}
             </h2>
 
@@ -199,7 +199,7 @@ export default function AboutPage() {
 
           {/* 3. Project Categories */}
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 text-center">
+            <h2 className="text-3xl font-bold text-[var(--navy-700)] mb-3 text-center">
               {t('about.projectCategories')}
             </h2>
             <p className="text-base leading-relaxed mb-4 font-medium text-center">
@@ -268,7 +268,7 @@ export default function AboutPage() {
 
           {/* 4. Our Partners */}
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 text-center">
+            <h2 className="text-3xl font-bold text-[var(--navy-700)] mb-3 text-center">
               {t('transparency.partnersTitle')}
             </h2>
             <p className="text-base leading-relaxed mb-6 text-center">
@@ -297,7 +297,7 @@ export default function AboutPage() {
 
           {/* 5. FAQ */}
           <section className="mb-12">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 text-center">
+            <h2 className="text-3xl font-bold text-[var(--navy-700)] mb-4 text-center">
               {t('transparency.faqTitle')}
             </h2>
             <div>

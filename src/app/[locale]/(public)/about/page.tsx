@@ -247,14 +247,10 @@ export default function AboutPage() {
                 <span><strong>{t('categories.OTHER')}</strong> — {t('about.categoryOther')}</span>
               </li>
             </ul>
-          </section>
 
-          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
-
-          {/* 4. Civilian Infrastructure Only */}
-          <section className="mb-12 -mx-4 px-4 py-6 bg-green-50/50 rounded-lg border border-green-100">
-            <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 flex items-center justify-center gap-2">
-              <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {/* Civilian Infrastructure note */}
+            <div className="mt-6 pt-6 border-t border-[var(--cream-300)] flex items-start gap-3">
+              <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 18v-7" />
                 <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
                 <path d="M14 18v-7" />
@@ -262,16 +258,15 @@ export default function AboutPage() {
                 <path d="M3 22h18" />
                 <path d="M6 18v-7" />
               </svg>
-              {t('transparency.civilianOnlyTitle')}
-            </h2>
-            <p className="text-base leading-relaxed text-center">
-              {t('transparency.civilianOnlyText')}
-            </p>
+              <p className="text-sm leading-relaxed text-[var(--navy-600)]">
+                <strong className="text-[var(--navy-700)]">{t('transparency.civilianOnlyTitle')}:</strong> {t('transparency.civilianOnlyText')}
+              </p>
+            </div>
           </section>
 
           <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
-          {/* 5. Our Partners */}
+          {/* 4. Our Partners */}
           <section className="mb-12">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-3 text-center">
               {t('transparency.partnersTitle')}
@@ -300,7 +295,7 @@ export default function AboutPage() {
 
           <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
-          {/* 6. FAQ */}
+          {/* 5. FAQ */}
           <section className="mb-12">
             <h2 className="text-2xl font-semibold text-[var(--navy-700)] mb-4 text-center">
               {t('transparency.faqTitle')}

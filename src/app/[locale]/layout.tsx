@@ -103,7 +103,7 @@ export default async function LocaleLayout({
             <div className="flex-1 flex flex-col">
               {children}
             </div>
-            {/* TEMPORARILY HIDDEN: <PartnerCarousel /> */}
+            <PartnerCarousel />
             <Footer />
           </ToastProvider>
         </NextIntlClientProvider>

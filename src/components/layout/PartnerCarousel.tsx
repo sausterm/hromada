@@ -26,14 +26,15 @@ export function PartnerCarousel() {
   const dragStartPosRef = useRef(0)
   const hasDraggedRef = useRef(false)
 
-  // Show on production site, demo site, and localhost
+  // Show on production site, demo site, v2 site, and localhost
   useEffect(() => {
     const hostname = window.location.hostname
     const showCarousel = hostname === 'localhost' ||
                          hostname === '127.0.0.1' ||
                          hostname === 'hromadaproject.org' ||
                          hostname === 'www.hromadaproject.org' ||
-                         hostname === 'demo.hromadaproject.org'
+                         hostname === 'demo.hromadaproject.org' ||
+                         hostname === 'v2.hromadaproject.org'
     setIsVisible(showCarousel)
   }, [])
 

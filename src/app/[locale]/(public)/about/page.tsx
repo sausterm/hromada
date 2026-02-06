@@ -207,41 +207,41 @@ export default function AboutPage() {
             </p>
             <ul className="space-y-3 text-base leading-relaxed">
               <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(199, 91, 57, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#C75B39' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>
                   </svg>
                 </span>
                 <span><strong>{t('categories.HOSPITAL')}</strong> — {t('about.categoryHospital')}</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(123, 158, 107, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#7B9E6B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
                   </svg>
                 </span>
                 <span><strong>{t('categories.SCHOOL')}</strong> — {t('about.categorySchool')}</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(91, 143, 168, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#5B8FA8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
                   </svg>
                 </span>
                 <span><strong>{t('categories.WATER')}</strong> — {t('about.categoryWater')}</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(212, 149, 74, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#D4954A' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
                   </svg>
                 </span>
                 <span><strong>{t('categories.ENERGY')}</strong> — {t('about.categoryEnergy')}</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(139, 115, 85, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#8B7355' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>
                   </svg>
                 </span>
                 <span><strong>{t('categories.OTHER')}</strong> — {t('about.categoryOther')}</span>
@@ -279,19 +279,19 @@ export default function AboutPage() {
             <p className="text-base leading-relaxed mb-6 text-center">
               {t('transparency.partnersText')}
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 bg-[var(--navy-700)] rounded-lg px-6 py-5">
+            <div className="flex flex-wrap items-center justify-center gap-8">
               {partners.map((partner) => (
                 <a
                   key={partner.name}
                   href={partner.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="opacity-80 hover:opacity-100 transition-opacity"
+                  className="opacity-70 hover:opacity-100 transition-opacity"
                 >
                   <img
                     src={partner.logo}
                     alt={partner.name}
-                    className="h-8 w-auto object-contain"
+                    className="h-10 w-auto object-contain"
                   />
                 </a>
               ))}

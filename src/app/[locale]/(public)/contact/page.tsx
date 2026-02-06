@@ -39,7 +39,7 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="mt-4 flex justify-center">
-              <Link href="/submit-project" className="inline-flex items-center gap-1.5 text-[var(--navy-700)] font-medium hover:text-[var(--navy-900)] transition-colors">
+              <Link href="/submit-project" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--navy-300)] text-[var(--navy-700)] font-medium hover:bg-[var(--navy-700)] hover:text-white hover:border-[var(--navy-700)] transition-all">
                 {t('forMunicipalitiesAction')}
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -66,7 +66,7 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="mt-4 flex justify-center">
-              <Link href="/" className="inline-flex items-center gap-1.5 text-[var(--navy-700)] font-medium hover:text-[var(--navy-900)] transition-colors">
+              <Link href="/" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--navy-300)] text-[var(--navy-700)] font-medium hover:bg-[var(--navy-700)] hover:text-white hover:border-[var(--navy-700)] transition-all">
                 {t('forDonorsAction')}
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -93,7 +93,7 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="mt-4 flex justify-center">
-              <a href="mailto:thomas@hromadaproject.org?subject=Partnership%20Inquiry" className="inline-flex items-center gap-1.5 text-[var(--navy-700)] font-medium hover:text-[var(--navy-900)] transition-colors">
+              <a href="mailto:thomas@hromadaproject.org?subject=Partnership%20Inquiry" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--navy-300)] text-[var(--navy-700)] font-medium hover:bg-[var(--navy-700)] hover:text-white hover:border-[var(--navy-700)] transition-all">
                 {t('forPartnersAction')}
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -120,7 +120,7 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="mt-4 flex justify-center">
-              <a href="mailto:thomas@hromadaproject.org?subject=Media%20Inquiry" className="inline-flex items-center gap-1.5 text-[var(--navy-700)] font-medium hover:text-[var(--navy-900)] transition-colors">
+              <a href="mailto:thomas@hromadaproject.org?subject=Media%20Inquiry" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--navy-300)] text-[var(--navy-700)] font-medium hover:bg-[var(--navy-700)] hover:text-white hover:border-[var(--navy-700)] transition-all">
                 {t('forMediaAction')}
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -149,7 +149,7 @@ export default function ContactPage() {
             <div className="mt-4 flex justify-center">
               <a
                 href="mailto:thomas@hromadaproject.org"
-                className="inline-flex items-center gap-2 text-[var(--navy-700)] font-medium hover:text-[var(--navy-900)] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[var(--navy-300)] text-[var(--navy-700)] font-medium hover:bg-[var(--navy-700)] hover:text-white hover:border-[var(--navy-700)] transition-all"
               >
                 thomas@hromadaproject.org
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

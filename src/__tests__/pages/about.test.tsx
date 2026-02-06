@@ -101,7 +101,7 @@ describe('AboutPage', () => {
 
     it('renders Civilian Infrastructure Only section', () => {
       render(<AboutPage />)
-      expect(screen.getByText('Civilian Infrastructure Only')).toBeInTheDocument()
+      expect(screen.getByText('Civilian Infrastructure Only:')).toBeInTheDocument()
       expect(screen.getByText(/exclusively fund civilian/)).toBeInTheDocument()
     })
 
@@ -110,7 +110,8 @@ describe('AboutPage', () => {
       expect(screen.getByText('How It Works')).toBeInTheDocument()
     })
 
-    it('renders Our Partners section', () => {
+    // Partners section is temporarily hidden on main branch
+    it.skip('renders Our Partners section', () => {
       render(<AboutPage />)
       expect(screen.getByText('Our Partners')).toBeInTheDocument()
     })

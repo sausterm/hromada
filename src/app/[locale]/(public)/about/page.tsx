@@ -326,12 +326,12 @@ export default function AboutPage() {
         {/* CTA Buttons */}
         <div className="mt-12 flex justify-center gap-4">
           <Link href="/">
-            <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
+            <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)] min-w-[160px]">
               {t('about.browseProjects')}
             </Button>
           </Link>
           <Link href="/submit-project">
-            <Button variant="outline">
+            <Button variant="outline" className="min-w-[160px]">
               {t('nav.submitProject')}
             </Button>
           </Link>

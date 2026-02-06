@@ -73,20 +73,19 @@ export default function middleware(request: NextRequestWithGeo) {
     return applySecurityHeaders(response);
   }
 
-  // TEMPORARILY DISABLED FOR TERMSLY SCAN - RE-ENABLE AFTER
   // Check for site access cookie
-  // const siteAccessCookie = request.cookies.get(AUTH_COOKIE_NAME);
-  // if (!siteAccessCookie || siteAccessCookie.value !== SITE_PASSWORD) {
-  //   // Determine locale from URL or default to 'en'
-  //   const pathSegments = pathname.split('/').filter(Boolean);
-  //   const locale = locales.includes(pathSegments[0] as any) ? pathSegments[0] : 'en';
-  //
-  //   // Redirect to password page
-  //   const url = new URL(`/${locale}/site-access`, request.url);
-  //   url.searchParams.set('redirect', pathname);
-  //   const response = NextResponse.redirect(url);
-  //   return applySecurityHeaders(response);
-  // }
+  const siteAccessCookie = request.cookies.get(AUTH_COOKIE_NAME);
+  if (!siteAccessCookie || siteAccessCookie.value !== SITE_PASSWORD) {
+    // Determine locale from URL or default to 'en'
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const locale = locales.includes(pathSegments[0] as any) ? pathSegments[0] : 'en';
+
+    // Redirect to password page
+    const url = new URL(`/${locale}/site-access`, request.url);
+    url.searchParams.set('redirect', pathname);
+    const response = NextResponse.redirect(url);
+    return applySecurityHeaders(response);
+  }
 
   // Check if accessing the blocked page already (prevent redirect loop)
   if (pathname.includes('/blocked')) {

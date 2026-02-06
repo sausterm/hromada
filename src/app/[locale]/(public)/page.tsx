@@ -407,10 +407,11 @@ export default function HomePage() {
                 </svg>
               </button>
 
+
               {/* Dropdown panel */}
               {priceButtonRef.current && (
                 <div
-                  className={`fixed z-50 pt-2 transition-all duration-200 ease-out ${
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
                     isPriceDropdownOpen
                       ? 'opacity-100 translate-y-0 pointer-events-auto'
                       : 'opacity-0 -translate-y-2 pointer-events-none'
@@ -418,6 +419,7 @@ export default function HomePage() {
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
                     left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
+                    paddingTop: '8px',
                   }}
                   onMouseEnter={() => openDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
                   onMouseLeave={() => closeDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
@@ -542,9 +544,10 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
+
               {projectTypeButtonRef.current && (
                 <div
-                  className={`fixed z-50 pt-2 transition-all duration-200 ease-out ${
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
                     isProjectTypeOpen
                       ? 'opacity-100 translate-y-0 pointer-events-auto'
                       : 'opacity-0 -translate-y-2 pointer-events-none'
@@ -552,6 +555,7 @@ export default function HomePage() {
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
+                    paddingTop: '8px',
                   }}
                   onMouseEnter={() => openDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
                   onMouseLeave={() => closeDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
@@ -597,10 +601,11 @@ export default function HomePage() {
                 </svg>
               </button>
 
+
               {/* Dropdown panel */}
               {powerButtonRef.current && (
                 <div
-                  className={`fixed z-50 pt-2 transition-all duration-200 ease-out ${
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
                     isPowerDropdownOpen
                       ? 'opacity-100 translate-y-0 pointer-events-auto'
                       : 'opacity-0 -translate-y-2 pointer-events-none'
@@ -608,6 +613,7 @@ export default function HomePage() {
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
+                    paddingTop: '8px',
                   }}
                   onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                   onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
@@ -703,9 +709,10 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
+
               {cofinancingButtonRef.current && (
                 <div
-                  className={`fixed z-50 pt-2 transition-all duration-200 ease-out ${
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
                     isCofinancingOpen
                       ? 'opacity-100 translate-y-0 pointer-events-auto'
                       : 'opacity-0 -translate-y-2 pointer-events-none'
@@ -713,6 +720,7 @@ export default function HomePage() {
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,
+                    paddingTop: '8px',
                   }}
                   onMouseEnter={() => openDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
                   onMouseLeave={() => closeDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}

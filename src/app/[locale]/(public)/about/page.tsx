@@ -266,7 +266,7 @@ export default function AboutPage() {
 
           <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
-          {/* 4. Our Partners */}
+          {/* 4. Our Partners - TEMPORARILY HIDDEN
           <section className="mb-12">
             <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-3 text-center">
               {t('transparency.partnersTitle')}
@@ -294,6 +294,7 @@ export default function AboutPage() {
           </section>
 
           <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
+          */}
 
           {/* 5. FAQ */}
           <section className="mb-12">

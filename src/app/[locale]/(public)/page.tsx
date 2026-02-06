@@ -382,15 +382,13 @@ export default function HomePage() {
         <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
           <div className="flex items-center gap-2 flex-nowrap">
             {/* Price Range Dropdown */}
-            <div
-              className="relative shrink-0"
-              onMouseEnter={() => openDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
-              onMouseLeave={() => closeDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
-            >
+            <div className="relative shrink-0">
               <button
                 ref={priceButtonRef}
                 aria-expanded={isPriceDropdownOpen}
                 aria-controls={priceDropdownId}
+                onMouseEnter={() => openDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
+                onMouseLeave={() => closeDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[130px] ${
                   priceRange[0] > 0 || priceRange[1] < 500000
                     ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
@@ -526,13 +524,11 @@ export default function HomePage() {
             })}
 
             {/* Project Type dropdown */}
-            <div
-              className="relative shrink-0"
-              onMouseEnter={() => openDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
-              onMouseLeave={() => closeDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
-            >
+            <div className="relative shrink-0">
               <button
                 ref={projectTypeButtonRef}
+                onMouseEnter={() => openDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
+                onMouseLeave={() => closeDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
                   selectedProjectType
                     ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
@@ -576,15 +572,13 @@ export default function HomePage() {
             </div>
 
             {/* Power Range Dropdown */}
-            <div
-              className="relative shrink-0"
-              onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
-              onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
-            >
+            <div className="relative shrink-0">
               <button
                 ref={powerButtonRef}
                 aria-expanded={isPowerDropdownOpen}
                 aria-controls={powerDropdownId}
+                onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
+                onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[140px] ${
                   powerRange[0] > 0 || powerRange[1] < 500
                     ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
@@ -691,13 +685,11 @@ export default function HomePage() {
             </div>
 
             {/* Cofinancing dropdown */}
-            <div
-              className="relative shrink-0"
-              onMouseEnter={() => openDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
-              onMouseLeave={() => closeDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
-            >
+            <div className="relative shrink-0">
               <button
                 ref={cofinancingButtonRef}
+                onMouseEnter={() => openDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
+                onMouseLeave={() => closeDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
                   selectedCofinancing
                     ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
@@ -805,12 +797,10 @@ export default function HomePage() {
               </div>
 
               {/* Sort dropdown */}
-              <div
-                className="relative shrink-0"
-                onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
-                onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
-              >
+              <div className="relative shrink-0">
                 <button
+                  onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
+                  onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
                   className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] transition-all whitespace-nowrap"
                 >
                   <span>{t(`homepage.sortOptions.${sortBy}`)}</span>

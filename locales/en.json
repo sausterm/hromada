@@ -622,5 +622,195 @@
       "errors": "Failed to import {count} rows",
       "dragDrop": "Drag and drop CSV file here, or click to select"
     }
+  },
+  "support": {
+    "title": "Support This Project",
+    "estimatedCost": "Estimated Cost",
+    "cofinancing": "Co-financing Available",
+    "fundingNeeded": "Funding Needed",
+    "chooseMethod": "Choose how you'd like to contribute to this project:",
+    "taxDeductible": "All donations are tax-deductible through CSBE, a 501(c)(3) organization.",
+    "methods": {
+      "wire": {
+        "title": "Wire Transfer",
+        "description": "Direct bank-to-bank transfer"
+      },
+      "daf": {
+        "title": "Donor Advised Fund",
+        "description": "Grant from your DAF"
+      },
+      "check": {
+        "title": "Mail a Check",
+        "description": "Traditional check payment"
+      }
+    },
+    "wireInstructions": {
+      "title": "Wire Transfer Instructions",
+      "bank": "Bank",
+      "accountName": "Account Name",
+      "routingNumber": "Routing Number",
+      "accountNumber": "Account Number",
+      "swift": "SWIFT (Int'l)",
+      "reference": "Reference",
+      "instructions": "Initiate a wire transfer from your bank using these details. Include the reference to help us match your donation."
+    },
+    "dafInstructions": {
+      "title": "DAF Grant Instructions",
+      "organization": "Organization",
+      "ein": "EIN",
+      "grantMemo": "Grant Memo",
+      "instructions": "Log into your DAF provider (Fidelity Charitable, Schwab Charitable, Vanguard, etc.) and recommend a grant to CSBE."
+    },
+    "checkInstructions": {
+      "title": "Check Instructions",
+      "payTo": "Pay to",
+      "memo": "Memo",
+      "mailTo": "Mail to"
+    },
+    "confirm": {
+      "button": "I've Sent My Contribution",
+      "title": "Confirm Your Contribution",
+      "description": "Let us know you've sent funds so we can track and confirm receipt.",
+      "name": "Your Name",
+      "email": "Email",
+      "organization": "Organization",
+      "amount": "Amount (USD)",
+      "referenceNumber": "Reference/Confirmation Number",
+      "referencePlaceholder": "Optional - helps us match your payment",
+      "message": "Message",
+      "messagePlaceholder": "Any additional information...",
+      "submit": "Submit Confirmation"
+    },
+    "success": {
+      "title": "Thank You!",
+      "message": "We've received your notification. Our team will confirm receipt of your funds and follow up with you shortly."
+    },
+    "copy": "Copy",
+    "copied": "Copied!",
+    "back": "Back"
+  },
+  "donor": {
+    "title": "Donor Dashboard",
+    "welcome": "Welcome back, {name}",
+    "browseProjects": "Browse Projects",
+    "stats": {
+      "totalContributed": "Total Contributed",
+      "projectsSupported": "Projects Supported",
+      "pending": "Pending",
+      "delivered": "Delivered"
+    },
+    "donations": {
+      "title": "Your Donations",
+      "noDonations": "No donations yet",
+      "noDonationsMessage": "Browse our projects and make your first contribution to support Ukrainian communities.",
+      "updates": "updates",
+      "selectToViewUpdates": "Select a donation to view updates"
+    },
+    "status": {
+      "PENDING_CONFIRMATION": {
+        "label": "Awaiting Confirmation",
+        "description": "We are confirming receipt of your payment"
+      },
+      "RECEIVED": {
+        "label": "Received",
+        "description": "Your donation has been received and will be transferred soon"
+      },
+      "ALLOCATED": {
+        "label": "Allocated",
+        "description": "Your donation has been allocated for transfer"
+      },
+      "FORWARDED": {
+        "label": "Sent to Ukraine",
+        "description": "Funds have been sent to the municipality"
+      },
+      "COMPLETED": {
+        "label": "Completed",
+        "description": "Municipality has confirmed receipt"
+      },
+      "FAILED": {
+        "label": "Issue",
+        "description": "There was an issue with your donation"
+      },
+      "REFUNDED": {
+        "label": "Refunded",
+        "description": "Your donation has been refunded"
+      }
+    },
+    "updates": {
+      "title": "Donation Updates",
+      "noUpdates": "No updates yet",
+      "noUpdatesMessage": "We'll notify you when there's news about your donation."
+    },
+    "taxInfo": {
+      "title": "Tax-Deductible Donations",
+      "message": "All donations are made through CSBE, a registered 501(c)(3) nonprofit organization. You will receive a tax receipt for your records."
+    },
+    "viewProject": "View Project Details"
+  },
+  "nonprofit": {
+    "title": "Nonprofit Manager Dashboard",
+    "welcome": "Welcome, {name}",
+    "tabs": {
+      "overview": "Overview",
+      "donations": "Donations",
+      "wireTransfers": "Wire Transfers"
+    },
+    "stats": {
+      "pendingConfirmation": "Pending Confirmation",
+      "pendingConfirmationDesc": "Donors who said they sent funds",
+      "readyToForward": "Ready to Forward",
+      "inTransit": "In Transit to Ukraine",
+      "inTransitDesc": "Awaiting confirmation",
+      "completed": "Completed Transfers",
+      "completedDesc": "Successfully delivered"
+    },
+    "donations": {
+      "title": "All Donations",
+      "markReceived": "Mark Received",
+      "donor": "Donor",
+      "project": "Project",
+      "amount": "Amount",
+      "method": "Method",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "wireTransfers": {
+      "title": "Wire Transfers to Ukraine",
+      "newTransfer": "+ New Wire Transfer",
+      "reference": "Reference",
+      "recipient": "Recipient",
+      "sent": "Sent",
+      "viewDetails": "View Details",
+      "feeComparison": "Transfer Fee Comparison",
+      "feeComparisonDesc": "Compare Wise vs. traditional wire transfer fees before sending:",
+      "wise": {
+        "title": "Wise Transfer",
+        "fee": "~0.5-0.7% fee + mid-market exchange rate",
+        "note": "Best for amounts under ~$50,000"
+      },
+      "bankWire": {
+        "title": "Bank Wire (BoA)",
+        "fee": "~$45 flat fee + intermediary fees + exchange rate markup",
+        "note": "Better for very large amounts"
+      }
+    },
+    "status": {
+      "pendingConfirmation": "Awaiting Confirmation",
+      "received": "Received",
+      "allocated": "Allocated",
+      "forwarded": "Forwarded",
+      "pending": "Pending",
+      "initiated": "Initiated",
+      "sent": "Sent",
+      "inTransit": "In Transit",
+      "confirmed": "Confirmed",
+      "failed": "Failed"
+    },
+    "pendingActions": "Pending Actions",
+    "noPendingActions": "No pending confirmations. All caught up!",
+    "readyToForwardTitle": "Ready to Forward to Ukraine",
+    "createWireTransfer": "Create Wire Transfer",
+    "recentTransfers": "Recent Wire Transfers"
   }
 }

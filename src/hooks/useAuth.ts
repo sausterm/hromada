@@ -140,6 +140,25 @@ export function useAuth() {
     return state.role === 'PARTNER' || state.role === 'NONPROFIT_MANAGER'
   }, [state.role])
 
+  // Helper to check if user is donor
+  const isDonor = useCallback((): boolean => {
+    return state.role === 'DONOR'
+  }, [state.role])
+
+  // Helper to check if user is nonprofit manager
+  const isNonprofitManager = useCallback((): boolean => {
+    return state.role === 'NONPROFIT_MANAGER'
+  }, [state.role])
+
+  // Get the appropriate dashboard path for the user's role
+  const getDashboardPath = useCallback((): string => {
+    if (state.isLegacyAdmin || state.role === 'ADMIN') return '/admin'
+    if (state.role === 'NONPROFIT_MANAGER') return '/nonprofit'
+    if (state.role === 'PARTNER') return '/partner'
+    if (state.role === 'DONOR') return '/donor'
+    return '/'
+  }, [state.role, state.isLegacyAdmin])
+
   return {
     ...state,
     login,
@@ -147,6 +166,9 @@ export function useAuth() {
     hasRole,
     isAdmin,
     isPartner,
+    isDonor,
+    isNonprofitManager,
+    getDashboardPath,
   }
 }
 

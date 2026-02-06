@@ -168,6 +168,7 @@ enum UserRole {
   ADMIN
   PARTNER
   NONPROFIT_MANAGER
+  DONOR
 }
 
 model User {
@@ -191,6 +192,7 @@ model User {
 
   projectSubmissions ProjectSubmission[]
   auditLogs          AuditLog[]
+  donations          Donation[]
 
   @@index([email])
   @@index([role])
@@ -211,4 +213,141 @@ model AuditLog {
   @@index([userId])
   @@index([action])
   @@index([createdAt])
+}
+
+/// Donation records - tracks contributions from donors
+model Donation {
+  id                 String         @id @default(cuid())
+
+  // Project this donation is for (optional - can be general fund)
+  projectId          String?
+  projectName        String         // Stored for reference even if project is deleted
+
+  // Donor information
+  donorUserId        String?        // Link to User if donor has an account
+  donorName          String
+  donorEmail         String
+  donorOrganization  String?
+
+  // Payment details
+  amount             Decimal?       @db.Decimal(12, 2)
+  paymentMethod      PaymentMethod
+  referenceNumber    String?        // Wire reference, DAF grant ID, check number
+
+  // Status tracking
+  status             DonationStatus @default(PENDING_CONFIRMATION)
+
+  // Timestamps
+  submittedAt        DateTime       @default(now())  // When donor said they sent it
+  receivedAt         DateTime?                        // When we confirmed receipt
+  allocatedAt        DateTime?                        // When allocated to wire transfer
+
+  // Wire transfer link
+  wireTransferId     String?
+
+  // Notes
+  donorMessage       String?        @db.VarChar(1000)
+  internalNotes      String?        @db.VarChar(1000)
+
+  // Timestamps
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  // Relations
+  donorUser          User?          @relation(fields: [donorUserId], references: [id])
+  wireTransfer       WireTransfer?  @relation(fields: [wireTransferId], references: [id])
+  updates            DonationUpdate[]
+
+  @@index([projectId])
+  @@index([donorUserId])
+  @@index([donorEmail])
+  @@index([status])
+  @@index([createdAt])
+  @@index([wireTransferId])
+}
+
+enum PaymentMethod {
+  WIRE
+  DAF
+  CHECK
+  ACH
+  OTHER
+}
+
+enum DonationStatus {
+  PENDING_CONFIRMATION  // Donor said they sent, awaiting bank confirmation
+  RECEIVED              // Confirmed received in CSBE account
+  ALLOCATED             // Assigned to a wire transfer batch
+  FORWARDED             // Wire transfer sent to Ukraine
+  COMPLETED             // Confirmed received by municipality
+  FAILED                // Payment failed or bounced
+  REFUNDED              // Refund issued
+}
+
+/// Updates/notes on a donation for donor visibility
+model DonationUpdate {
+  id          String   @id @default(cuid())
+  donationId  String
+  title       String   @db.VarChar(200)
+  message     String   @db.VarChar(2000)
+  isPublic    Boolean  @default(true)  // If true, visible to donor
+  createdAt   DateTime @default(now())
+  createdById String?
+
+  donation    Donation @relation(fields: [donationId], references: [id], onDelete: Cascade)
+
+  @@index([donationId])
+  @@index([createdAt])
+}
+
+/// Wire transfer records - tracks outbound transfers to Ukraine
+model WireTransfer {
+  id                  String             @id @default(cuid())
+  referenceNumber     String             @unique
+
+  // Recipient (Ukrainian municipality)
+  recipientName       String
+  recipientBankName   String?
+  recipientBankSwift  String?
+  recipientAccountIban String?
+
+  // Amount
+  amountUsd           Decimal            @db.Decimal(12, 2)
+
+  // Status
+  status              WireTransferStatus @default(PENDING)
+
+  // Project reference (optional)
+  projectId           String?
+  projectName         String?
+
+  // Tracking
+  initiatedById       String?
+
+  // Documentation
+  proofDocumentUrl    String?
+  internalNotes       String?            @db.VarChar(2000)
+
+  // Timestamps
+  initiatedAt         DateTime?
+  sentAt              DateTime?
+  confirmedAt         DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  // Relations
+  donations           Donation[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum WireTransferStatus {
+  PENDING      // Created, awaiting initiation
+  INITIATED    // Wire request submitted to bank
+  SENT         // Confirmed sent by Bank of America
+  IN_TRANSIT   // In transit to Ukraine
+  CONFIRMED    // Confirmed received by recipient
+  FAILED       // Transfer failed
+  CANCELLED    // Cancelled before sending
 }

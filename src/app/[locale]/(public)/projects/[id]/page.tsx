@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent } from '@/components/ui/Card'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { ContactForm } from '@/components/projects/ContactForm'
+import { SupportProjectCard } from '@/components/projects/SupportProjectCard'
 import {
   type Project,
   CATEGORY_CONFIG,
@@ -367,12 +367,15 @@ export default function ProjectDetailPage() {
 
           </div>
 
-          {/* Sidebar - Sticky contact form */}
+          {/* Sidebar - Sticky support card */}
           <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
-            {/* Contact Form */}
-            <ContactForm
+            {/* Support This Project */}
+            <SupportProjectCard
               projectId={project.id}
               projectName={localized.facilityName}
+              estimatedCostUsd={project.estimatedCostUsd}
+              cofinancingAvailable={project.cofinancingAvailable}
+              cofinancingDetails={project.cofinancingDetails}
             />
           </div>
         </div>

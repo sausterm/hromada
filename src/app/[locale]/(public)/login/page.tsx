@@ -12,7 +12,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 export default function LoginPage() {
   const t = useTranslations()
   const router = useRouter()
-  const { isAuthenticated, isLoading, role, login } = useAuth()
+  const { isAuthenticated, isLoading, role, login, getDashboardPath } = useAuth()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -22,13 +22,9 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      if (role === 'ADMIN') {
-        router.push('/admin')
-      } else if (role === 'PARTNER' || role === 'NONPROFIT_MANAGER') {
-        router.push('/partner')
-      }
+      router.push(getDashboardPath())
     }
-  }, [isAuthenticated, isLoading, role, router])
+  }, [isAuthenticated, isLoading, router, getDashboardPath])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,13 +41,13 @@ export default function LoginPage() {
 
     if (result.success) {
       // Redirect based on role
-      if (result.role === 'ADMIN') {
-        router.push('/admin')
-      } else if (result.role === 'PARTNER' || result.role === 'NONPROFIT_MANAGER') {
-        router.push('/partner')
-      } else {
-        router.push('/')
+      const dashboardPaths: Record<string, string> = {
+        ADMIN: '/admin',
+        NONPROFIT_MANAGER: '/nonprofit',
+        PARTNER: '/partner',
+        DONOR: '/donor',
       }
+      router.push(dashboardPaths[result.role || ''] || '/')
     } else {
       setError(t('login.invalidCredentials'))
     }

@@ -26,16 +26,15 @@ export function PartnerCarousel() {
   const dragStartPosRef = useRef(0)
   const hasDraggedRef = useRef(false)
 
-  // Show on production site and localhost, but NOT on demo site
+  // Show on production site, demo site, and localhost
   useEffect(() => {
     const hostname = window.location.hostname
     const showCarousel = hostname === 'localhost' ||
                          hostname === '127.0.0.1' ||
                          hostname === 'hromadaproject.org' ||
-                         hostname === 'www.hromadaproject.org'
-    // Explicitly hide on demo subdomain
-    const isDemo = hostname.startsWith('demo.')
-    setIsVisible(showCarousel && !isDemo)
+                         hostname === 'www.hromadaproject.org' ||
+                         hostname === 'demo.hromadaproject.org'
+    setIsVisible(showCarousel)
   }, [])
 
   // Triplicate for seamless loop (extra buffer prevents edge glitches)

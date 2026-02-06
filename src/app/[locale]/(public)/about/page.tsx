@@ -202,10 +202,10 @@ export default function AboutPage() {
             <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-3 text-center">
               {t('about.projectCategories')}
             </h2>
-            <p className="text-base leading-relaxed mb-4 font-medium text-center">
+            <p className="text-base leading-relaxed mb-4">
               {t('about.categoryIntro')}
             </p>
-            <ul className="space-y-3 text-base leading-relaxed max-w-md mx-auto">
+            <ul className="space-y-3 text-base leading-relaxed">
               <li className="flex items-start gap-3">
                 <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(199, 91, 57, 0.15)' }}>
                   <svg className="w-3.5 h-3.5" style={{ color: '#C75B39' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -249,16 +249,16 @@ export default function AboutPage() {
             </ul>
 
             {/* Civilian Infrastructure note */}
-            <div className="mt-6 pt-6 border-t border-[var(--cream-300)] max-w-md mx-auto text-center">
+            <div className="mt-6 pt-6 border-t border-[var(--cream-300)] flex items-start gap-2">
+              <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 18v-7" />
+                <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
+                <path d="M14 18v-7" />
+                <path d="M18 18v-7" />
+                <path d="M3 22h18" />
+                <path d="M6 18v-7" />
+              </svg>
               <p className="text-sm leading-relaxed text-[var(--navy-600)]">
-                <svg className="w-4 h-4 text-green-600 inline-block mr-1.5 -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10 18v-7" />
-                  <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
-                  <path d="M14 18v-7" />
-                  <path d="M18 18v-7" />
-                  <path d="M3 22h18" />
-                  <path d="M6 18v-7" />
-                </svg>
                 <strong className="text-[var(--navy-700)]">{t('transparency.civilianOnlyTitle')}:</strong> {t('transparency.civilianOnlyText')}
               </p>
             </div>

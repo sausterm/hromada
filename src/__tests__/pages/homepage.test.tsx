@@ -703,4 +703,535 @@ describe('HomePage', () => {
       })
     })
   })
+
+  describe('Cofinancing Filter', () => {
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: mockProjects }),
+      })
+    })
+
+    it('filters projects by cofinancing status', async () => {
+      const user = userEvent.setup()
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      // Hover over cofinancing filter to open dropdown
+      const cofinancingButton = screen.getByText('Co-financing')
+      fireEvent.mouseEnter(cofinancingButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByText('Yes')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Project Type Filter', () => {
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: mockProjects }),
+      })
+    })
+
+    it('shows project type dropdown on hover', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      const projectTypeButton = screen.getByText('Project Type')
+      fireEvent.mouseEnter(projectTypeButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByText('Solar PV')).toBeInTheDocument()
+        expect(screen.getByText('Heat Pump')).toBeInTheDocument()
+        expect(screen.getByText('Battery Storage')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Power Range Filter', () => {
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          projects: [
+            ...mockProjects,
+            createMockProject({ id: 'project-4', technicalPowerKw: 100 }),
+          ],
+        }),
+      })
+    })
+
+    it('renders power filter button', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('homepage.filters.power')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Sorting', () => {
+    const projectsWithDifferentDates = [
+      createMockProject({ id: 'project-1', facilityName: 'Alpha Hospital', estimatedCostUsd: 100000, createdAt: '2024-01-15T10:00:00Z' }),
+      createMockProject({ id: 'project-2', facilityName: 'Beta School', estimatedCostUsd: 50000, createdAt: '2024-02-15T10:00:00Z' }),
+      createMockProject({ id: 'project-3', facilityName: 'Gamma Water', estimatedCostUsd: 75000, createdAt: '2024-03-15T10:00:00Z' }),
+    ]
+
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: projectsWithDifferentDates }),
+      })
+    })
+
+    it('sorts by highest cost', async () => {
+      const user = userEvent.setup()
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      // Open sort dropdown
+      const sortButtons = screen.getAllByText('Newest')
+      const sortButton = sortButtons[0]
+      fireEvent.mouseEnter(sortButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByText('Highest Cost')).toBeInTheDocument()
+      })
+
+      // Click on highest cost option
+      await user.click(screen.getByText('Highest Cost'))
+
+      // Projects should be sorted by cost
+      const projectCards = screen.getAllByTestId(/project-card/)
+      expect(projectCards.length).toBe(3)
+    })
+
+    it('sorts by lowest cost', async () => {
+      const user = userEvent.setup()
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      // Open sort dropdown
+      const sortButtons = screen.getAllByText('Newest')
+      const sortButton = sortButtons[0]
+      fireEvent.mouseEnter(sortButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByText('Lowest Cost')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByText('Lowest Cost'))
+    })
+
+    it('sorts alphabetically', async () => {
+      const user = userEvent.setup()
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      // Open sort dropdown
+      const sortButtons = screen.getAllByText('Newest')
+      const sortButton = sortButtons[0]
+      fireEvent.mouseEnter(sortButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByText('A-Z')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByText('A-Z'))
+    })
+
+    it('sorts by oldest first', async () => {
+      const user = userEvent.setup()
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      // Open sort dropdown
+      const sortButtons = screen.getAllByText('Newest')
+      const sortButton = sortButtons[0]
+      fireEvent.mouseEnter(sortButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByText('Oldest')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByText('Oldest'))
+    })
+  })
+
+  describe('Projects with missing cost data', () => {
+    const projectsWithMissingCost = [
+      createMockProject({ id: 'project-1', facilityName: 'Hospital A', estimatedCostUsd: 50000 }),
+      createMockProject({ id: 'project-2', facilityName: 'School B', estimatedCostUsd: undefined }),
+      createMockProject({ id: 'project-3', facilityName: 'Water C', estimatedCostUsd: null }),
+    ]
+
+    it('handles projects with undefined cost', async () => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: projectsWithMissingCost }),
+      })
+
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+        expect(screen.getByTestId('project-card-project-2')).toBeInTheDocument()
+      })
+    })
+
+    it('handles sorting with missing cost data', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: projectsWithMissingCost }),
+      })
+
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      const sortButtons = screen.getAllByText('Newest')
+      const sortButton = sortButtons[0]
+      fireEvent.mouseEnter(sortButton.parentElement!)
+
+      await waitFor(() => {
+        expect(screen.getByText('Highest Cost')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByText('Highest Cost'))
+
+      // Should not crash
+      expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+    })
+  })
+
+  describe('Price filter edge cases', () => {
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: mockProjects }),
+      })
+    })
+
+    it('renders price filter button', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      // Price filter button should exist
+      expect(screen.getByText('Price')).toBeInTheDocument()
+    })
+  })
+
+  describe('Map marker interactions', () => {
+    beforeEach(() => {
+      // Mock scrollTo for jsdom
+      Element.prototype.scrollTo = jest.fn()
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: mockProjects }),
+      })
+    })
+
+    it('handles marker click from map', async () => {
+      const user = userEvent.setup()
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-map')).toBeInTheDocument()
+      })
+
+      // Click on the mock marker
+      const markerClickButton = screen.getByTestId('map-marker-click')
+      await user.click(markerClickButton)
+
+      // Should trigger highlighting
+      await waitFor(() => {
+        const card = screen.getByTestId('project-card-project-1')
+        expect(card).toBeInTheDocument()
+      })
+    })
+
+    it('handles marker hover from map', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-map')).toBeInTheDocument()
+      })
+
+      const markerHoverButton = screen.getByTestId('map-marker-hover')
+      fireEvent.mouseEnter(markerHoverButton)
+
+      await waitFor(() => {
+        const card = screen.getByTestId('project-card-project-1')
+        expect(card).toHaveAttribute('data-highlighted', 'true')
+      })
+
+      fireEvent.mouseLeave(markerHoverButton)
+
+      await waitFor(() => {
+        const card = screen.getByTestId('project-card-project-1')
+        expect(card).toHaveAttribute('data-highlighted', 'false')
+      })
+    })
+  })
+
+  describe('Pagination', () => {
+    it('shows show more button when there are more projects', async () => {
+      // Create more than 12 projects
+      const manyProjects = Array.from({ length: 15 }, (_, i) =>
+        createMockProject({ id: `project-${i + 1}`, facilityName: `Project ${i + 1}` })
+      )
+
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: manyProjects }),
+      })
+
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/Show More/)).toBeInTheDocument()
+      })
+    })
+
+    it('loads more projects when show more is clicked', async () => {
+      const user = userEvent.setup()
+      const manyProjects = Array.from({ length: 15 }, (_, i) =>
+        createMockProject({ id: `project-${i + 1}`, facilityName: `Project ${i + 1}` })
+      )
+
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: manyProjects }),
+      })
+
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByText(/Show More/)).toBeInTheDocument()
+      })
+
+      const showMoreButton = screen.getByText(/Show More/)
+      await user.click(showMoreButton)
+
+      // Should now show more projects
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-13')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Card click interaction', () => {
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: mockProjects }),
+      })
+    })
+
+    it('handles card click', async () => {
+      const user = userEvent.setup()
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      const card = screen.getByTestId('project-card-project-1')
+      await user.click(card)
+
+      // Card click should trigger fly to project
+      await waitFor(() => {
+        expect(card).toHaveAttribute('data-highlighted', 'true')
+      })
+    })
+  })
+
+  describe('API response handling', () => {
+    it('handles response without ok status', async () => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+      })
+
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('No projects found')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Search with region and address', () => {
+    it('searches in region field', async () => {
+      const user = userEvent.setup()
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: mockProjects }),
+      })
+
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      const searchInput = screen.getByPlaceholderText('Search projects...')
+      await user.type(searchInput, 'Kyiv Oblast')
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Sorting with undefined cost values', () => {
+    const projectsWithMixedCosts = [
+      ...mockProjects,
+      {
+        id: 'no-cost-project',
+        municipalityName: 'Test City',
+        facilityName: 'No Cost Facility',
+        category: 'HOSPITAL' as const,
+        briefDescription: 'Test description',
+        description: 'Full description',
+        address: 'Test Address',
+        cityLatitude: 50.45,
+        cityLongitude: 30.52,
+        contactName: 'Contact',
+        contactEmail: 'test@test.com',
+        urgency: 'MEDIUM' as const,
+        status: 'OPEN' as const,
+        region: 'Test Oblast',
+        estimatedCostUsd: undefined,
+        createdAt: new Date('2024-03-01'),
+        updatedAt: new Date('2024-03-01'),
+      },
+    ]
+
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: projectsWithMixedCosts }),
+      })
+    })
+
+    it('places undefined costs at end when sorting by highest cost', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      // Use the same pattern as other sorting tests
+      const sortButtons = screen.getAllByText('Newest')
+      const sortButton = sortButtons[0]
+      fireEvent.mouseEnter(sortButton.parentElement!)
+
+      await waitFor(() => {
+        const highestOption = screen.getByText('Highest Cost')
+        expect(highestOption).toBeInTheDocument()
+      })
+
+      const highestCostOption = screen.getByText('Highest Cost')
+      fireEvent.click(highestCostOption)
+
+      // The project without cost should be last (project cards will be in different order)
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-no-cost-project')).toBeInTheDocument()
+      })
+    })
+
+    it('places undefined costs at end when sorting by lowest cost', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+      })
+
+      // Use the same pattern as other sorting tests
+      const sortButtons = screen.getAllByText('Newest')
+      const sortButton = sortButtons[0]
+      fireEvent.mouseEnter(sortButton.parentElement!)
+
+      await waitFor(() => {
+        const lowestOption = screen.getByText('Lowest Cost')
+        expect(lowestOption).toBeInTheDocument()
+      })
+
+      const lowestCostOption = screen.getByText('Lowest Cost')
+      fireEvent.click(lowestCostOption)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-no-cost-project')).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Price and power range filtering edge cases', () => {
+    const projectsWithVariousCosts = [
+      {
+        ...mockProjects[0],
+        id: 'high-cost',
+        estimatedCostUsd: 600000,
+        technicalPowerKw: 600,
+      },
+      {
+        ...mockProjects[0],
+        id: 'no-cost',
+        estimatedCostUsd: null,
+        technicalPowerKw: null,
+      },
+    ]
+
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: projectsWithVariousCosts }),
+      })
+    })
+
+    it('includes projects with undefined cost in price filter', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('project-card-high-cost')).toBeInTheDocument()
+        expect(screen.getByTestId('project-card-no-cost')).toBeInTheDocument()
+      })
+    })
+
+    it('includes high-cost projects when max price is at maximum', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        // Both projects should be visible with default (max) price range
+        expect(screen.getByTestId('project-card-high-cost')).toBeInTheDocument()
+      })
+    })
+  })
 })

@@ -77,11 +77,11 @@ jest.mock('@/components/ui/LoadingSpinner', () => ({
   ),
 }))
 
-// Mock ContactForm component
-jest.mock('@/components/projects/ContactForm', () => ({
-  ContactForm: ({ projectId, projectName }: { projectId: string; projectName: string }) => (
-    <div data-testid="contact-form">
-      Contact Form for {projectName} (ID: {projectId})
+// Mock SupportProjectCard component
+jest.mock('@/components/projects/SupportProjectCard', () => ({
+  SupportProjectCard: ({ projectId, projectName }: { projectId: string; projectName: string }) => (
+    <div data-testid="support-project-card">
+      Support Project Card for {projectName} (ID: {projectId})
     </div>
   ),
 }))
@@ -261,12 +261,12 @@ describe('ProjectDetailPage', () => {
       })
     })
 
-    it('renders contact form', async () => {
+    it('renders support project card', async () => {
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('contact-form')).toBeInTheDocument()
-        expect(screen.getByText(/Contact Form for Test Hospital Building/)).toBeInTheDocument()
+        expect(screen.getByTestId('support-project-card')).toBeInTheDocument()
+        expect(screen.getByText(/Support Project Card for Test Hospital Building/)).toBeInTheDocument()
       })
     })
   })
@@ -367,8 +367,11 @@ describe('ProjectDetailPage', () => {
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        expect(screen.getByText('Estimated Cost')).toBeInTheDocument()
-        expect(screen.getByText(/\$75K/)).toBeInTheDocument()
+        // Use getAllByText since the text appears in specs section
+        const estimatedCostLabels = screen.getAllByText('Estimated Cost')
+        expect(estimatedCostLabels.length).toBeGreaterThan(0)
+        const costValues = screen.getAllByText(/\$75K/)
+        expect(costValues.length).toBeGreaterThan(0)
       })
     })
 
@@ -409,7 +412,9 @@ describe('ProjectDetailPage', () => {
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        expect(screen.getByText('Co-financing Available')).toBeInTheDocument()
+        // Use getAllByText since some text may appear multiple times
+        const cofinancingLabels = screen.getAllByText('Co-financing Available')
+        expect(cofinancingLabels.length).toBeGreaterThan(0)
         expect(screen.getByText('Yes')).toBeInTheDocument()
         expect(screen.getByText('Up to 20% available')).toBeInTheDocument()
       })
@@ -476,7 +481,9 @@ describe('ProjectDetailPage', () => {
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        expect(screen.getByText(/\$50K/)).toBeInTheDocument()
+        // $50K may appear in both specs and support card, so use getAllByText
+        const costValues = screen.getAllByText(/\$50K/)
+        expect(costValues.length).toBeGreaterThan(0)
       })
       // Project type field should not be shown when undefined
       expect(screen.queryByText('Project Type')).not.toBeInTheDocument()

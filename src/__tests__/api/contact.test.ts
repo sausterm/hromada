@@ -299,4 +299,30 @@ describe('POST /api/contact', () => {
     expect(response.status).toBe(500)
     expect(data.error).toBe('Failed to submit contact form')
   })
+
+  it('ignores extra fields not in schema', async () => {
+    ;(mockPrisma.contactSubmission.create as jest.Mock).mockResolvedValue({ id: '1' })
+
+    const request = new NextRequest('http://localhost/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...validContact,
+        extraField: 'should be ignored',
+      }),
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(201)
+    // Only the valid fields should be saved
+    expect(mockPrisma.contactSubmission.create).toHaveBeenCalledWith({
+      data: {
+        projectId: validContact.projectId,
+        donorName: validContact.donorName,
+        donorEmail: validContact.donorEmail,
+        message: validContact.message,
+      },
+    })
+  })
 })

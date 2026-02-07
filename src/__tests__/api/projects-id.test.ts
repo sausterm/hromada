@@ -214,6 +214,124 @@ describe('PUT /api/projects/[id]', () => {
     expect(response.status).toBe(500)
     expect(data.error).toBe('Failed to update project')
   })
+
+  it('updates all text fields', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.project.update as jest.Mock).mockResolvedValue({ id: '1' })
+
+    const request = new NextRequest('http://localhost/api/projects/1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        municipalityName: 'New Municipality',
+        category: 'HOSPITAL',
+        briefDescription: 'Brief',
+        fullDescription: 'Full description',
+        contactName: 'Contact Name',
+        contactEmail: 'contact@example.com',
+        urgency: 'HIGH',
+        status: 'IN_DISCUSSION',
+      }),
+    })
+
+    await PUT(request, createParams('1'))
+
+    expect(mockPrisma.project.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: expect.objectContaining({
+        municipalityName: 'New Municipality',
+        category: 'HOSPITAL',
+        briefDescription: 'Brief',
+        fullDescription: 'Full description',
+        contactName: 'Contact Name',
+        contactEmail: 'contact@example.com',
+        urgency: 'HIGH',
+        status: 'IN_DISCUSSION',
+      }),
+    })
+  })
+
+  it('updates cofinancing fields', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.project.update as jest.Mock).mockResolvedValue({ id: '1' })
+
+    const request = new NextRequest('http://localhost/api/projects/1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cofinancingAvailable: 'YES',
+        cofinancingDetails: 'Details here',
+        partnerOrganization: 'Partner Org',
+        projectSubtype: 'Rooftop',
+      }),
+    })
+
+    await PUT(request, createParams('1'))
+
+    expect(mockPrisma.project.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: expect.objectContaining({
+        cofinancingAvailable: 'YES',
+        cofinancingDetails: 'Details here',
+        partnerOrganization: 'Partner Org',
+        projectSubtype: 'Rooftop',
+      }),
+    })
+  })
+
+  it('clears optional numeric fields with zero value', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.project.update as jest.Mock).mockResolvedValue({ id: '1' })
+
+    const request = new NextRequest('http://localhost/api/projects/1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        technicalPowerKw: 0,
+        numberOfPanels: 0,
+        estimatedCostUsd: 0,
+      }),
+    })
+
+    await PUT(request, createParams('1'))
+
+    expect(mockPrisma.project.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: expect.objectContaining({
+        technicalPowerKw: null,
+        numberOfPanels: null,
+        estimatedCostUsd: null,
+      }),
+    })
+  })
+
+  it('clears cofinancing fields with empty strings', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.project.update as jest.Mock).mockResolvedValue({ id: '1' })
+
+    const request = new NextRequest('http://localhost/api/projects/1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cofinancingAvailable: '',
+        cofinancingDetails: '',
+        partnerOrganization: '',
+        projectSubtype: '',
+      }),
+    })
+
+    await PUT(request, createParams('1'))
+
+    expect(mockPrisma.project.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: expect.objectContaining({
+        cofinancingAvailable: null,
+        cofinancingDetails: null,
+        partnerOrganization: null,
+        projectSubtype: null,
+      }),
+    })
+  })
 })
 
 describe('DELETE /api/projects/[id]', () => {

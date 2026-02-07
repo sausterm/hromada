@@ -299,6 +299,69 @@ describe('POST /api/auth/login', () => {
       expect(data.success).toBe(true)
       expect(data.role).toBe('ADMIN')
     })
+
+    it('returns 403 when admin secret used but user is inactive', async () => {
+      const mockUser = {
+        id: 'user-1',
+        email: 'admin@example.com',
+        passwordHash: 'hashed-password',
+        name: 'Admin User',
+        role: 'ADMIN',
+        isActive: false,
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        sessionVersion: 1,
+      }
+      ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'admin@example.com', password: 'test-secret-123' }),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(403)
+      expect(data.error).toBe('Account is deactivated')
+    })
+
+    it('allows legacy admin login when no user record exists', async () => {
+      ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'unknown@example.com', password: 'test-secret-123' }),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(data.success).toBe(true)
+      expect(data.role).toBe('ADMIN')
+    })
+
+    it('returns 500 on database error looking up user', async () => {
+      ;(prisma.user.findUnique as jest.Mock).mockRejectedValue(new Error('Database connection failed'))
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      const request = new NextRequest('http://localhost/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'test@example.com', password: 'password' }),
+      })
+
+      const response = await loginPOST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(500)
+      expect(data.error).toBe('Database connection error')
+
+      consoleSpy.mockRestore()
+    })
   })
 
   it('applies rate limiting', async () => {

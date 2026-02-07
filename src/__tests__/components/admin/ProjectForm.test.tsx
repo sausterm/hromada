@@ -336,18 +336,41 @@ describe('ProjectForm', () => {
       })
     })
 
-    // Note: Technical field validation tests skipped due to timing issues in test environment
-    // The validation logic works correctly in the browser
-    it.skip('validates technical power as positive number', async () => {
-      // Validation tested manually
+    it('validates technical power field with zero value', async () => {
+      const user = userEvent.setup()
+      render(<ProjectForm {...defaultProps} />)
+
+      await user.type(screen.getByPlaceholderText('e.g., 100'), '0')
+      await user.click(screen.getByRole('button', { name: /Create Project/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Must be a positive number')).toBeInTheDocument()
+      })
     })
 
-    it.skip('validates number of panels as positive integer', async () => {
-      // Validation tested manually
+    it('validates number of panels with zero value', async () => {
+      const user = userEvent.setup()
+      render(<ProjectForm {...defaultProps} />)
+
+      await user.type(screen.getByPlaceholderText('e.g., 200'), '0')
+      await user.click(screen.getByRole('button', { name: /Create Project/i }))
+
+      await waitFor(() => {
+        expect(screen.getByText('Must be a positive whole number')).toBeInTheDocument()
+      })
     })
 
-    it.skip('validates estimated cost as positive number', async () => {
-      // Validation tested manually
+    it('validates estimated cost with zero value', async () => {
+      const user = userEvent.setup()
+      render(<ProjectForm {...defaultProps} />)
+
+      await user.type(screen.getByPlaceholderText('e.g., 50000'), '0')
+      await user.click(screen.getByRole('button', { name: /Create Project/i }))
+
+      await waitFor(() => {
+        const errors = screen.getAllByText('Must be a positive number')
+        expect(errors.length).toBeGreaterThan(0)
+      })
     })
   })
 

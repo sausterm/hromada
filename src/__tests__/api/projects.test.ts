@@ -421,4 +421,125 @@ describe('POST /api/projects', () => {
       }),
     })
   })
+
+  it('accepts custom urgency and status values', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.project.create as jest.Mock).mockResolvedValue({ id: '1' })
+
+    const request = new NextRequest('http://localhost/api/projects', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer test-secret',
+      },
+      body: JSON.stringify({
+        ...validProject,
+        urgency: 'CRITICAL',
+        status: 'IN_DISCUSSION',
+      }),
+    })
+
+    await POST(request)
+
+    expect(mockPrisma.project.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        urgency: 'CRITICAL',
+        status: 'IN_DISCUSSION',
+      }),
+    })
+  })
+
+  it('handles optional numeric fields', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.project.create as jest.Mock).mockResolvedValue({ id: '1' })
+
+    const request = new NextRequest('http://localhost/api/projects', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer test-secret',
+      },
+      body: JSON.stringify({
+        ...validProject,
+        estimatedCostUsd: 50000,
+        technicalPowerKw: 100,
+        numberOfPanels: 200,
+      }),
+    })
+
+    await POST(request)
+
+    expect(mockPrisma.project.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        estimatedCostUsd: 50000,
+        technicalPowerKw: 100,
+        numberOfPanels: 200,
+      }),
+    })
+  })
+
+  it('handles contactPhone when provided', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    ;(mockPrisma.project.create as jest.Mock).mockResolvedValue({ id: '1' })
+
+    const request = new NextRequest('http://localhost/api/projects', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer test-secret',
+      },
+      body: JSON.stringify({
+        ...validProject,
+        contactPhone: '+380123456789',
+      }),
+    })
+
+    await POST(request)
+
+    expect(mockPrisma.project.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        contactPhone: '+380123456789',
+      }),
+    })
+  })
+
+  it('rejects missing municipalityName', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    const { municipalityName, ...projectWithoutMunicipality } = validProject
+
+    const request = new NextRequest('http://localhost/api/projects', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer test-secret',
+      },
+      body: JSON.stringify(projectWithoutMunicipality),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Missing required field: municipalityName')
+  })
+
+  it('rejects missing category', async () => {
+    ;(verifyAdminAuth as jest.Mock).mockResolvedValue(true)
+    const { category, ...projectWithoutCategory } = validProject
+
+    const request = new NextRequest('http://localhost/api/projects', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer test-secret',
+      },
+      body: JSON.stringify(projectWithoutCategory),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.error).toBe('Missing required field: category')
+  })
 })

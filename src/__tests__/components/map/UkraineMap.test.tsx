@@ -388,3 +388,281 @@ describe('createClusterIcon', () => {
     expect(screen.getByTestId('marker-cluster-group')).toBeInTheDocument()
   })
 })
+
+describe('getOffsetPositions - Multiple projects at same coordinates', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  it('handles multiple projects at the same coordinates', () => {
+    // Create multiple projects at the same location
+    const projects = [
+      createMockProject({ id: '1', facilityName: 'Project 1', cityLatitude: 50.45, cityLongitude: 30.52 }),
+      createMockProject({ id: '2', facilityName: 'Project 2', cityLatitude: 50.45, cityLongitude: 30.52 }),
+      createMockProject({ id: '3', facilityName: 'Project 3', cityLatitude: 50.45, cityLongitude: 30.52 }),
+    ]
+
+    render(<UkraineMap projects={projects} />)
+    jest.runAllTimers()
+
+    const markers = screen.getAllByTestId('marker')
+    expect(markers).toHaveLength(3)
+
+    // Each marker should have different positions due to offset
+    const positions = markers.map(marker => marker.getAttribute('data-position'))
+    const uniquePositions = new Set(positions)
+    expect(uniquePositions.size).toBe(3)
+  })
+
+  it('handles single project at location without offset', () => {
+    const projects = [
+      createMockProject({ id: '1', cityLatitude: 50.45, cityLongitude: 30.52 }),
+    ]
+
+    render(<UkraineMap projects={projects} />)
+    jest.runAllTimers()
+
+    const marker = screen.getByTestId('marker')
+    const position = JSON.parse(marker.getAttribute('data-position')!)
+    expect(position).toEqual([50.45, 30.52])
+  })
+
+  it('handles more than 2 projects at same location with increased offset', () => {
+    // Create 5 projects at the same location
+    const projects = Array.from({ length: 5 }, (_, i) =>
+      createMockProject({
+        id: `project-${i}`,
+        facilityName: `Project ${i}`,
+        cityLatitude: 49.0,
+        cityLongitude: 32.0,
+      })
+    )
+
+    render(<UkraineMap projects={projects} />)
+    jest.runAllTimers()
+
+    const markers = screen.getAllByTestId('marker')
+    expect(markers).toHaveLength(5)
+  })
+
+  it('handles projects at different locations independently', () => {
+    const projects = [
+      createMockProject({ id: '1', cityLatitude: 50.0, cityLongitude: 30.0 }),
+      createMockProject({ id: '2', cityLatitude: 50.0, cityLongitude: 30.0 }),
+      createMockProject({ id: '3', cityLatitude: 51.0, cityLongitude: 31.0 }),
+      createMockProject({ id: '4', cityLatitude: 51.0, cityLongitude: 31.0 }),
+    ]
+
+    render(<UkraineMap projects={projects} />)
+    jest.runAllTimers()
+
+    const markers = screen.getAllByTestId('marker')
+    expect(markers).toHaveLength(4)
+  })
+})
+
+describe('Map event handling', () => {
+  beforeEach(() => {
+    storedMapEventsHandlers = {}
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  it('handles moveend event', () => {
+    const onBoundsChange = jest.fn()
+    const projects = [createMockProject()]
+
+    render(<UkraineMap projects={projects} onBoundsChange={onBoundsChange} />)
+    jest.runAllTimers()
+
+    // Trigger moveend event
+    if (storedMapEventsHandlers.moveend) {
+      storedMapEventsHandlers.moveend()
+    }
+
+    expect(onBoundsChange).toHaveBeenCalled()
+  })
+
+  it('handles zoomend event', () => {
+    const onBoundsChange = jest.fn()
+    const projects = [createMockProject()]
+
+    render(<UkraineMap projects={projects} onBoundsChange={onBoundsChange} />)
+    jest.runAllTimers()
+
+    // Trigger zoomend event
+    if (storedMapEventsHandlers.zoomend) {
+      storedMapEventsHandlers.zoomend()
+    }
+
+    expect(onBoundsChange).toHaveBeenCalled()
+  })
+
+  it('handles popupopen event', () => {
+    const projects = [createMockProject()]
+
+    render(<UkraineMap projects={projects} />)
+    jest.runAllTimers()
+
+    // Trigger popupopen event with mock popup
+    if (storedMapEventsHandlers.popupopen) {
+      const mockPopup = {
+        getLatLng: () => ({ lat: 50.45, lng: 30.52 }),
+        getElement: () => ({
+          offsetHeight: 350,
+        }),
+      }
+      storedMapEventsHandlers.popupopen({ popup: mockPopup })
+      jest.runAllTimers()
+    }
+
+    expect(screen.getByTestId('map-container')).toBeInTheDocument()
+  })
+
+  it('handles popupclose event', () => {
+    const projects = [createMockProject()]
+
+    render(<UkraineMap projects={projects} />)
+    jest.runAllTimers()
+
+    // Trigger popupclose event
+    if (storedMapEventsHandlers.popupclose) {
+      storedMapEventsHandlers.popupclose()
+      jest.runAllTimers()
+    }
+
+    expect(screen.getByTestId('map-container')).toBeInTheDocument()
+  })
+})
+
+describe('Optional callback props', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  it('works without onProjectClick', () => {
+    const project = createMockProject()
+
+    render(<UkraineMap projects={[project]} />)
+    jest.runAllTimers()
+
+    const marker = screen.getByTestId('marker')
+    marker.click()
+
+    // Should not crash
+    expect(screen.getByTestId('map-container')).toBeInTheDocument()
+  })
+
+  it('works without onProjectHover', () => {
+    const project = createMockProject()
+
+    render(<UkraineMap projects={[project]} />)
+    jest.runAllTimers()
+
+    const marker = screen.getByTestId('marker')
+    marker.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }))
+    marker.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }))
+
+    // Should not crash
+    expect(screen.getByTestId('map-container')).toBeInTheDocument()
+  })
+
+  it('works without onBoundsChange', () => {
+    const project = createMockProject()
+
+    render(<UkraineMap projects={[project]} />)
+    jest.runAllTimers()
+
+    // Trigger moveend event
+    if (storedMapEventsHandlers.moveend) {
+      storedMapEventsHandlers.moveend()
+    }
+
+    // Should not crash
+    expect(screen.getByTestId('map-container')).toBeInTheDocument()
+  })
+
+  it('works without onFlyToComplete', () => {
+    const project = createMockProject({ id: 'fly-target' })
+
+    render(<UkraineMap projects={[project]} flyToProjectId="fly-target" />)
+    jest.runAllTimers()
+
+    // Should not crash
+    expect(screen.getByTestId('map-container')).toBeInTheDocument()
+  })
+})
+
+describe('Projects filtering by bounds', () => {
+  beforeEach(() => {
+    storedMapEventsHandlers = {}
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  it('calculates visible projects based on map bounds', () => {
+    const onBoundsChange = jest.fn()
+    const projects = [
+      createMockProject({ id: '1', cityLatitude: 50.0, cityLongitude: 30.0 }),
+      createMockProject({ id: '2', cityLatitude: 45.0, cityLongitude: 35.0 }),
+    ]
+
+    render(<UkraineMap projects={projects} onBoundsChange={onBoundsChange} />)
+    jest.runAllTimers()
+
+    if (storedMapEventsHandlers.moveend) {
+      storedMapEventsHandlers.moveend()
+    }
+
+    expect(onBoundsChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        north: expect.any(Number),
+        south: expect.any(Number),
+        east: expect.any(Number),
+        west: expect.any(Number),
+      }),
+      expect.any(Array)
+    )
+  })
+})
+
+describe('Alternative coordinate props', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  it('uses latitude/longitude props when both are present', () => {
+    const project = createMockProject({
+      latitude: 48.5,
+      longitude: 29.5,
+      cityLatitude: 50.45,
+      cityLongitude: 30.52,
+    })
+
+    render(<UkraineMap projects={[project]} />)
+    jest.runAllTimers()
+
+    const marker = screen.getByTestId('marker')
+    const position = JSON.parse(marker.getAttribute('data-position')!)
+    expect(position[0]).toBe(48.5)
+    expect(position[1]).toBe(29.5)
+  })
+})

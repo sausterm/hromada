@@ -294,3 +294,255 @@ describe('unauthorizedResponse', () => {
     expect(response.headers.get('Content-Type')).toBe('application/json')
   })
 })
+
+describe('createSignedToken', () => {
+  const originalEnv = process.env
+
+  beforeEach(() => {
+    process.env = { ...originalEnv, SESSION_SECRET: 'test-session-secret' }
+  })
+
+  afterAll(() => {
+    process.env = originalEnv
+  })
+
+  it('creates a signed JWT token with userId', async () => {
+    const token = await createSignedToken({
+      userId: 'user-123',
+      email: 'test@example.com',
+      role: 'PARTNER' as const,
+    })
+
+    expect(token).toBeDefined()
+    expect(typeof token).toBe('string')
+    // JWT format: header.payload.signature
+    expect(token.split('.')).toHaveLength(3)
+  })
+
+  it('creates a signed JWT token with admin role', async () => {
+    const token = await createSignedToken({
+      userId: 'admin-123',
+      email: 'admin@example.com',
+      role: 'ADMIN' as const,
+    })
+
+    expect(token).toBeDefined()
+    expect(typeof token).toBe('string')
+  })
+
+  it('creates token without optional fields', async () => {
+    const token = await createSignedToken({})
+
+    expect(token).toBeDefined()
+    expect(typeof token).toBe('string')
+  })
+})
+
+// Mock prisma for validateSessionWithDatabase tests
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}))
+
+import { prisma } from '@/lib/prisma'
+
+describe('validateSessionWithDatabase', () => {
+  const { validateSessionWithDatabase } = require('@/lib/auth')
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('returns invalid when session has no userId', async () => {
+    const result = await validateSessionWithDatabase({})
+
+    expect(result.valid).toBe(false)
+    expect(result.reason).toBe('No user ID in session')
+  })
+
+  it('returns invalid when user not found', async () => {
+    ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(null)
+
+    const result = await validateSessionWithDatabase({ userId: 'user-123' })
+
+    expect(result.valid).toBe(false)
+    expect(result.reason).toBe('User not found')
+  })
+
+  it('returns invalid when user is not active', async () => {
+    ;(prisma.user.findUnique as jest.Mock).mockResolvedValue({
+      id: 'user-123',
+      isActive: false,
+    })
+
+    const result = await validateSessionWithDatabase({ userId: 'user-123' })
+
+    expect(result.valid).toBe(false)
+    expect(result.reason).toBe('Account deactivated')
+  })
+
+  it('returns invalid when account is locked', async () => {
+    ;(prisma.user.findUnique as jest.Mock).mockResolvedValue({
+      id: 'user-123',
+      isActive: true,
+      lockedUntil: new Date(Date.now() + 60000), // Locked for 1 minute
+    })
+
+    const result = await validateSessionWithDatabase({ userId: 'user-123' })
+
+    expect(result.valid).toBe(false)
+    expect(result.reason).toBe('Account locked')
+  })
+
+  it('returns invalid when session version mismatches', async () => {
+    ;(prisma.user.findUnique as jest.Mock).mockResolvedValue({
+      id: 'user-123',
+      isActive: true,
+      lockedUntil: null,
+      sessionVersion: 2,
+    })
+
+    const result = await validateSessionWithDatabase({
+      userId: 'user-123',
+      sessionVersion: 1,
+    })
+
+    expect(result.valid).toBe(false)
+    expect(result.reason).toBe('Session revoked')
+  })
+
+  it('returns valid for valid session', async () => {
+    const mockUser = {
+      id: 'user-123',
+      isActive: true,
+      lockedUntil: null,
+      sessionVersion: 1,
+    }
+    ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
+
+    const result = await validateSessionWithDatabase({
+      userId: 'user-123',
+      sessionVersion: 1,
+    })
+
+    expect(result.valid).toBe(true)
+    expect(result.user).toEqual(mockUser)
+  })
+
+  it('returns valid when session version is undefined', async () => {
+    const mockUser = {
+      id: 'user-123',
+      isActive: true,
+      lockedUntil: null,
+      sessionVersion: 5,
+    }
+    ;(prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser)
+
+    const result = await validateSessionWithDatabase({
+      userId: 'user-123',
+      // No sessionVersion in session data
+    })
+
+    expect(result.valid).toBe(true)
+  })
+
+  it('allows login when lockedUntil is in the past', async () => {
+    ;(prisma.user.findUnique as jest.Mock).mockResolvedValue({
+      id: 'user-123',
+      isActive: true,
+      lockedUntil: new Date(Date.now() - 60000), // Expired 1 minute ago
+      sessionVersion: 1,
+    })
+
+    const result = await validateSessionWithDatabase({
+      userId: 'user-123',
+      sessionVersion: 1,
+    })
+
+    expect(result.valid).toBe(true)
+  })
+})
+
+describe('verifyAuth', () => {
+  const originalEnv = process.env
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    process.env = { ...originalEnv, HROMADA_ADMIN_SECRET: 'test-secret-123' }
+    mockCookies.get.mockReturnValue(undefined)
+    mockJwtVerify.mockRejectedValue(new Error('Invalid JWT'))
+  })
+
+  afterAll(() => {
+    process.env = originalEnv
+  })
+
+  it('returns admin session for valid Bearer token', async () => {
+    const { verifyAuth } = require('@/lib/auth')
+
+    const request = new NextRequest('http://localhost/api/test', {
+      headers: { Authorization: 'Bearer test-secret-123' },
+    })
+
+    const result = await verifyAuth(request)
+
+    expect(result).toEqual({
+      isLegacyAdmin: true,
+      role: 'ADMIN',
+    })
+  })
+
+  it('falls back to session when no admin secret configured', async () => {
+    delete process.env.HROMADA_ADMIN_SECRET
+    jest.resetModules()
+    const { verifyAuth: freshVerifyAuth } = require('@/lib/auth')
+
+    const request = new NextRequest('http://localhost/api/test')
+
+    // Will return null because no cookie is set
+    const result = await freshVerifyAuth(request)
+
+    expect(result).toBeNull()
+  })
+
+  it('returns session from cookie when no Bearer header', async () => {
+    mockCookies.get.mockReturnValue({ value: 'valid-jwt' })
+    mockJwtVerify.mockResolvedValue({
+      payload: {
+        userId: 'user-1',
+        email: 'user@example.com',
+        role: 'PARTNER',
+      },
+    })
+
+    const { verifyAuth } = require('@/lib/auth')
+    const request = new NextRequest('http://localhost/api/test')
+
+    const result = await verifyAuth(request)
+
+    expect(result).toBeDefined()
+    expect(result.userId).toBe('user-1')
+  })
+})
+
+describe('verifyPartnerAuth', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockCookies.get.mockReturnValue(undefined)
+    mockJwtVerify.mockRejectedValue(new Error('Invalid JWT'))
+  })
+
+  it('returns null when no session', async () => {
+    mockCookies.get.mockReturnValue(undefined)
+
+    const { verifyPartnerAuth } = require('@/lib/auth')
+    const request = new NextRequest('http://localhost/api/test')
+
+    const result = await verifyPartnerAuth(request)
+
+    expect(result).toBeNull()
+  })
+})

@@ -361,5 +361,70 @@ describe('Utility functions', () => {
       expect(localized.municipalityName).toBe('Kyiv')
       expect(localized.facilityName).toBe('Central Hospital')
     })
+
+    it('uses partial Ukrainian translations with English fallback', () => {
+      const projectWithPartialUk: Project = {
+        ...mockProject,
+        municipalityNameUk: 'Київ',
+        facilityNameUk: undefined, // Missing - should fallback
+        briefDescriptionUk: 'Опис',
+        fullDescriptionUk: undefined, // Missing - should fallback
+      }
+
+      const localized = getLocalizedProject(projectWithPartialUk, 'uk')
+
+      expect(localized.municipalityName).toBe('Київ')
+      expect(localized.facilityName).toBe('Central Hospital') // Fallback
+      expect(localized.briefDescription).toBe('Опис')
+      expect(localized.fullDescription).toBe('Full detailed description of the project') // Fallback
+    })
+
+    it('handles null values in Ukrainian translations', () => {
+      const projectWithNullUk: Project = {
+        ...mockProject,
+        municipalityNameUk: null as any,
+        facilityNameUk: null as any,
+        briefDescriptionUk: null as any,
+        fullDescriptionUk: null as any,
+      }
+
+      const localized = getLocalizedProject(projectWithNullUk, 'uk')
+
+      // Should fallback to English when null
+      expect(localized.municipalityName).toBe('Kyiv')
+      expect(localized.facilityName).toBe('Central Hospital')
+    })
+
+    it('handles empty string in Ukrainian translations', () => {
+      const projectWithEmptyUk: Project = {
+        ...mockProject,
+        municipalityNameUk: '',
+        facilityNameUk: '',
+        briefDescriptionUk: '',
+        fullDescriptionUk: '',
+      }
+
+      const localized = getLocalizedProject(projectWithEmptyUk, 'uk')
+
+      // Empty strings should fallback to English
+      expect(localized.municipalityName).toBe('Kyiv')
+      expect(localized.facilityName).toBe('Central Hospital')
+    })
+  })
+
+  describe('formatCurrency edge cases', () => {
+    it('handles very large numbers in compact mode', () => {
+      // 999999999 / 1000000 = 999.999999, formatted with 1 decimal = 1000.0M
+      expect(formatCurrency(999999999, { compact: true })).toBe('$1000.0M')
+    })
+
+    it('handles decimal values correctly', () => {
+      expect(formatCurrency(1234.56)).toBe('$1,235')
+      expect(formatCurrency(1234.56, { compact: true })).toBe('$1.2K')
+    })
+
+    it('handles negative numbers', () => {
+      expect(formatCurrency(-5000)).toBe('-$5,000')
+    })
   })
 })

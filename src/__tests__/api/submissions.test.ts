@@ -295,6 +295,95 @@ describe('POST /api/projects/submissions', () => {
     expect(response.status).toBe(500)
     expect(data.error).toBe('Failed to submit project')
   })
+
+  it('handles optional fields in email template', async () => {
+    const submissionWithOptionalFields = {
+      ...validSubmission,
+      region: 'Kyiv Oblast',
+      contactPhone: '+380123456789',
+      photos: ['photo1.jpg', 'photo2.jpg'],
+    }
+    const createdSubmission = { id: '1', ...submissionWithOptionalFields }
+    ;(mockPrisma.projectSubmission.create as jest.Mock).mockResolvedValue(createdSubmission)
+
+    const request = new NextRequest('http://localhost/api/projects/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submissionWithOptionalFields),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.success).toBe(true)
+  })
+
+  it('handles missing email configuration gracefully', async () => {
+    delete process.env.RESEND_API_KEY
+    delete process.env.ADMIN_EMAIL
+
+    const createdSubmission = { id: '1', ...validSubmission }
+    ;(mockPrisma.projectSubmission.create as jest.Mock).mockResolvedValue(createdSubmission)
+
+    const request = new NextRequest('http://localhost/api/projects/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(validSubmission),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.success).toBe(true)
+  })
+
+  it('handles submission without photos', async () => {
+    const submissionNoPhotos = {
+      ...validSubmission,
+      photos: undefined,
+    }
+    const createdSubmission = { id: '1', ...submissionNoPhotos }
+    ;(mockPrisma.projectSubmission.create as jest.Mock).mockResolvedValue(createdSubmission)
+
+    const request = new NextRequest('http://localhost/api/projects/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submissionNoPhotos),
+    })
+
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.success).toBe(true)
+  })
+
+  it('limits photos to 5', async () => {
+    const submissionManyPhotos = {
+      ...validSubmission,
+      photos: ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg'],
+    }
+    const createdSubmission = { id: '1', ...submissionManyPhotos }
+    ;(mockPrisma.projectSubmission.create as jest.Mock).mockResolvedValue(createdSubmission)
+
+    const request = new NextRequest('http://localhost/api/projects/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submissionManyPhotos),
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    // Check that only 5 photos were passed to create
+    expect(mockPrisma.projectSubmission.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        photos: ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg'],
+      }),
+    })
+  })
 })
 
 describe('GET /api/projects/submissions/[id]', () => {

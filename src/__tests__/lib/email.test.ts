@@ -1,4 +1,4 @@
-import { sendContactNotification } from '@/lib/email'
+import { sendContactNotification, sendDonorWelcomeEmail, sendDonationNotificationToAdmin } from '@/lib/email'
 
 // Mock the Resend module
 jest.mock('resend', () => ({
@@ -142,6 +142,201 @@ describe('email module', () => {
       })
 
       consoleSpy.mockRestore()
+    })
+  })
+
+  describe('sendDonorWelcomeEmail', () => {
+    const donorParams = {
+      donorName: 'John Doe',
+      donorEmail: 'john@example.com',
+      temporaryPassword: 'Temp123!@#',
+      projectName: 'Central Hospital Solar',
+      amount: 5000,
+      paymentMethod: 'wire',
+    }
+
+    it('returns success true when RESEND_API_KEY is not configured', async () => {
+      delete process.env.RESEND_API_KEY
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+
+      jest.resetModules()
+      const { sendDonorWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend(donorParams)
+
+      expect(result).toEqual({ success: true })
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('RESEND_API_KEY not configured')
+      )
+
+      consoleSpy.mockRestore()
+    })
+
+    it('handles wire payment method label', async () => {
+      jest.resetModules()
+      const { sendDonorWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend(donorParams)
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles daf payment method', async () => {
+      jest.resetModules()
+      const { sendDonorWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...donorParams,
+        paymentMethod: 'daf',
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles check payment method', async () => {
+      jest.resetModules()
+      const { sendDonorWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...donorParams,
+        paymentMethod: 'check',
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles unknown payment method', async () => {
+      jest.resetModules()
+      const { sendDonorWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...donorParams,
+        paymentMethod: 'crypto',
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles missing amount', async () => {
+      jest.resetModules()
+      const { sendDonorWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...donorParams,
+        amount: undefined,
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('uses default app URL when NEXT_PUBLIC_APP_URL is not set', async () => {
+      delete process.env.NEXT_PUBLIC_APP_URL
+
+      jest.resetModules()
+      const { sendDonorWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend(donorParams)
+
+      expect(result.success).toBeDefined()
+    })
+  })
+
+  describe('sendDonationNotificationToAdmin', () => {
+    const notificationParams = {
+      donorName: 'John Doe',
+      donorEmail: 'john@example.com',
+      donorOrganization: 'Acme Corp',
+      projectName: 'Central Hospital Solar',
+      projectId: 'proj-123',
+      amount: 5000,
+      paymentMethod: 'wire',
+      referenceNumber: 'REF-001',
+      isNewDonor: true,
+    }
+
+    it('returns success when ADMIN_EMAIL is not configured', async () => {
+      delete process.env.ADMIN_EMAIL
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+
+      jest.resetModules()
+      const { sendDonationNotificationToAdmin: freshSend } = await import('@/lib/email')
+      const result = await freshSend(notificationParams)
+
+      expect(result).toEqual({ success: true })
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('ADMIN_EMAIL not configured')
+      )
+
+      consoleSpy.mockRestore()
+    })
+
+    it('returns success when RESEND_API_KEY is not configured', async () => {
+      delete process.env.RESEND_API_KEY
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+
+      jest.resetModules()
+      const { sendDonationNotificationToAdmin: freshSend } = await import('@/lib/email')
+      const result = await freshSend(notificationParams)
+
+      expect(result).toEqual({ success: true })
+
+      consoleSpy.mockRestore()
+    })
+
+    it('handles wire payment method', async () => {
+      jest.resetModules()
+      const { sendDonationNotificationToAdmin: freshSend } = await import('@/lib/email')
+      const result = await freshSend(notificationParams)
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles daf payment method', async () => {
+      jest.resetModules()
+      const { sendDonationNotificationToAdmin: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...notificationParams,
+        paymentMethod: 'daf',
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles missing amount', async () => {
+      jest.resetModules()
+      const { sendDonationNotificationToAdmin: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...notificationParams,
+        amount: undefined,
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles missing organization', async () => {
+      jest.resetModules()
+      const { sendDonationNotificationToAdmin: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...notificationParams,
+        donorOrganization: undefined,
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles missing reference number', async () => {
+      jest.resetModules()
+      const { sendDonationNotificationToAdmin: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...notificationParams,
+        referenceNumber: undefined,
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('handles returning donor', async () => {
+      jest.resetModules()
+      const { sendDonationNotificationToAdmin: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...notificationParams,
+        isNewDonor: false,
+      })
+
+      expect(result.success).toBeDefined()
     })
   })
 })

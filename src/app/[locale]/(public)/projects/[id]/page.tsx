@@ -214,18 +214,32 @@ export default function ProjectDetailPage() {
                 </h2>
                 <div className="flex flex-col lg:flex-row gap-6">
                   {/* Sidebar - Specifications (left side) */}
-                  {(project.projectType || project.estimatedCostUsd || project.technicalPowerKw ||
+                  {(project.category || project.projectType || project.technicalPowerKw ||
                     project.numberOfPanels || project.cofinancingAvailable || project.partnerOrganization) && (
                     <div className="lg:w-64 flex-shrink-0 lg:border-r lg:border-[var(--cream-300)] lg:pr-6 space-y-4 order-first">
-                      {/* Estimated Cost - Featured */}
-                      {project.estimatedCostUsd && (
-                        <div>
-                          <p className="text-sm text-[var(--navy-500)] mb-1">{t('projectDetail.specifications.estimatedCost')}</p>
-                          <p className="font-bold text-2xl text-[var(--navy-700)]">
-                            {formatCurrency(project.estimatedCostUsd, { compact: true })}
-                          </p>
-                        </div>
-                      )}
+                      {/* Category */}
+                      <div>
+                        <p className="text-sm text-[var(--navy-500)] mb-1">{t('projectDetail.specifications.category')}</p>
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium"
+                          style={{
+                            backgroundColor: `${categoryConfig.color}20`,
+                            color: categoryConfig.color,
+                          }}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="w-4 h-4"
+                            dangerouslySetInnerHTML={{ __html: categoryConfig.icon }}
+                          />
+                          {t(`categories.${project.category}`)}
+                        </span>
+                      </div>
 
                       {/* Project Type */}
                       {project.projectType && (

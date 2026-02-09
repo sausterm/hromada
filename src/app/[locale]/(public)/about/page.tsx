@@ -222,52 +222,6 @@ export default function AboutPage() {
 
           <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
-          {/* 3. Who We Are - Team */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-8 text-center">
-              {t('about.whoWeAre')}
-            </h2>
-            <div className="space-y-8">
-              {/* Thomas */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                <div className="w-20 h-20 flex-shrink-0 rounded-full bg-[var(--navy-700)] flex items-center justify-center">
-                  <span className="text-2xl font-bold text-[var(--cream-100)]">TP</span>
-                </div>
-                <div className="text-center sm:text-left">
-                  <h3 className="font-semibold text-[var(--navy-700)] text-lg">Thomas Protzman</h3>
-                  <p className="text-[var(--navy-500)] text-sm">{t('about.directorTitle')}</p>
-                </div>
-              </div>
-
-              {/* Kostiantyn */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                <div className="w-20 h-20 flex-shrink-0 rounded-full bg-[var(--ukraine-blue)] flex items-center justify-center">
-                  <span className="text-2xl font-bold text-white">KK</span>
-                </div>
-                <div className="text-center sm:text-left">
-                  <h3 className="font-semibold text-[var(--navy-700)] text-lg">Kostiantyn Krynytskyi</h3>
-                  <p className="text-[var(--navy-500)] text-sm mb-2">{t('about.directorUkraineTitle')}</p>
-                  <p className="text-[var(--navy-600)] text-sm leading-relaxed">
-                    {t('about.kostiaBio')}
-                  </p>
-                </div>
-              </div>
-
-              {/* Sloan */}
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                <div className="w-20 h-20 flex-shrink-0 rounded-full bg-[var(--navy-600)] flex items-center justify-center">
-                  <span className="text-2xl font-bold text-[var(--cream-100)]">SA</span>
-                </div>
-                <div className="text-center sm:text-left">
-                  <h3 className="font-semibold text-[var(--navy-700)] text-lg">Sloan Austermann</h3>
-                  <p className="text-[var(--navy-500)] text-sm">{t('about.directorTechOpsTitle')}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
-
           {/* 4. FAQ */}
           <section className="mb-12">
             <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">

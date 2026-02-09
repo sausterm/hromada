@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Header } from '@/components/layout/Header'
 import { Button } from '@/components/ui/Button'
+import { type Category, CATEGORY_CONFIG } from '@/types'
 
 const partners = [
   { name: 'Ecoaction', logo: '/partners/EcoactionLogo-white.png', url: 'https://en.ecoaction.org.ua/' },
@@ -175,8 +176,44 @@ export default function AboutPage() {
               </div>
             </div>
 
+            {/* Project Categories */}
+            <div className="mt-10">
+              <h3 className="text-xl font-semibold text-[var(--navy-700)] mb-2 text-center">
+                {t('about.projectCategories')}
+              </h3>
+              <p className="text-base leading-relaxed mb-4">
+                {t('about.categoryIntro')}
+              </p>
+              <ul className="space-y-3 text-base leading-relaxed">
+                {(Object.keys(CATEGORY_CONFIG) as Category[]).map((category) => {
+                  const config = CATEGORY_CONFIG[category]
+                  const descKey = `about.category${category.charAt(0) + category.slice(1).toLowerCase()}`
+                  return (
+                    <li key={category} className="flex items-start gap-3">
+                      <span
+                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                        style={{ backgroundColor: `${config.color}15` }}
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke={config.color}
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          dangerouslySetInnerHTML={{ __html: config.icon }}
+                        />
+                      </span>
+                      <span className="pt-2"><strong>{t(`categories.${category}`)}</strong> — {t(descKey)}</span>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+
             {/* Civilian Infrastructure note */}
-            <div className="mt-8 flex items-start gap-2 justify-center">
+            <div className="mt-6 pt-6 border-t border-[var(--cream-300)] flex items-start gap-2">
               <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 18v-7" />
                 <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />

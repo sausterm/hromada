@@ -117,8 +117,8 @@ export default function ProjectDetailPage() {
   if (!project) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('projectDetail.notFound')}</h1>
-        <p className="text-gray-600 mb-6">{t('projectDetail.notFoundMessage')}</p>
+        <h1 className="text-2xl font-bold text-[var(--navy-700)] mb-4">{t('projectDetail.notFound')}</h1>
+        <p className="text-[var(--navy-500)] mb-6">{t('projectDetail.notFoundMessage')}</p>
         <Link href="/">
           <Button>{t('projectDetail.backToMap')}</Button>
         </Link>
@@ -131,7 +131,7 @@ export default function ProjectDetailPage() {
   const localized = getLocalizedProject(project, locale)
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-[var(--cream-50)]">
       {/* Header */}
       <Header />
 
@@ -150,7 +150,7 @@ export default function ProjectDetailPage() {
             {/* Photo Gallery */}
             {project.photos && project.photos.length > 0 && (
               <div className="space-y-3">
-                <div className="aspect-video bg-gray-200 rounded-xl overflow-hidden">
+                <div className="aspect-video bg-[var(--cream-200)] rounded-xl overflow-hidden">
                   <img
                     src={project.photos[selectedPhoto]}
                     alt={localized.facilityName}
@@ -209,7 +209,7 @@ export default function ProjectDetailPage() {
 
               {/* Title with Share Button */}
               <div className="flex items-start justify-between gap-4 mb-2">
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-3xl font-bold text-[var(--navy-700)]">
                   {localized.facilityName}
                 </h1>
                 <ShareButton
@@ -222,10 +222,10 @@ export default function ProjectDetailPage() {
 
               {/* Municipality and Posted Time */}
               <div className="flex items-center gap-3 mb-6">
-                <p className="text-lg text-gray-600">
+                <p className="text-lg text-[var(--navy-500)]">
                   {localized.municipalityName}
                 </p>
-                <span className="text-sm text-gray-400" suppressHydrationWarning>
+                <span className="text-sm text-[var(--navy-400)]" suppressHydrationWarning>
                   {t('projectDetail.postedTime', { time: formatRelativeTime(project.createdAt, t) })}
                 </span>
               </div>
@@ -233,18 +233,18 @@ export default function ProjectDetailPage() {
             {/* About This Project - Combined description and specs */}
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-[var(--navy-700)] mb-4">
                   {t('projectDetail.aboutProject')}
                 </h2>
                 <div className="flex flex-col lg:flex-row gap-6">
                   {/* Sidebar - Specifications (left side) */}
                   {(project.projectType || project.estimatedCostUsd || project.technicalPowerKw ||
                     project.numberOfPanels || project.cofinancingAvailable || project.partnerOrganization) && (
-                    <div className="lg:w-64 flex-shrink-0 lg:border-r lg:border-gray-200 lg:pr-6 space-y-4 order-first">
+                    <div className="lg:w-64 flex-shrink-0 lg:border-r lg:border-[var(--cream-300)] lg:pr-6 space-y-4 order-first">
                       {/* Estimated Cost - Featured */}
                       {project.estimatedCostUsd && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.estimatedCost')}</p>
+                          <p className="text-sm text-[var(--navy-500)] mb-1">{t('projectDetail.specifications.estimatedCost')}</p>
                           <p className="font-bold text-2xl text-[var(--navy-700)]">
                             {formatCurrency(project.estimatedCostUsd, { compact: true })}
                           </p>
@@ -254,7 +254,7 @@ export default function ProjectDetailPage() {
                       {/* Project Type */}
                       {project.projectType && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.projectType')}</p>
+                          <p className="text-sm text-[var(--navy-500)] mb-1">{t('projectDetail.specifications.projectType')}</p>
                           <span
                             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium"
                             style={{
@@ -280,31 +280,31 @@ export default function ProjectDetailPage() {
                       {/* Project Subtype */}
                       {project.projectSubtype && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.subtype')}</p>
-                          <p className="font-medium text-gray-900">{project.projectSubtype}</p>
+                          <p className="text-sm text-[var(--navy-500)] mb-1">{t('projectDetail.specifications.subtype')}</p>
+                          <p className="font-medium text-[var(--navy-700)]">{project.projectSubtype}</p>
                         </div>
                       )}
 
                       {/* Technical Power */}
                       {project.technicalPowerKw && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.technicalPower')}</p>
-                          <p className="font-medium text-gray-900">{formatPower(project.technicalPowerKw)}</p>
+                          <p className="text-sm text-[var(--navy-500)] mb-1">{t('projectDetail.specifications.technicalPower')}</p>
+                          <p className="font-medium text-[var(--navy-700)]">{formatPower(project.technicalPowerKw)}</p>
                         </div>
                       )}
 
                       {/* Number of Panels */}
                       {project.numberOfPanels && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.numberOfPanels')}</p>
-                          <p className="font-medium text-gray-900">{project.numberOfPanels.toLocaleString()}</p>
+                          <p className="text-sm text-[var(--navy-500)] mb-1">{t('projectDetail.specifications.numberOfPanels')}</p>
+                          <p className="font-medium text-[var(--navy-700)]">{project.numberOfPanels.toLocaleString()}</p>
                         </div>
                       )}
 
                       {/* Co-financing Available */}
                       {project.cofinancingAvailable && (
                         <div>
-                          <p className="text-sm text-gray-500 mb-1">{t('projectDetail.specifications.cofinancing')}</p>
+                          <p className="text-sm text-[var(--navy-500)] mb-1">{t('projectDetail.specifications.cofinancing')}</p>
                           <span
                             className="inline-flex items-center px-2.5 py-1 rounded text-sm font-medium"
                             style={{
@@ -315,7 +315,7 @@ export default function ProjectDetailPage() {
                             {t(`cofinancing.${project.cofinancingAvailable}`)}
                           </span>
                           {project.cofinancingDetails && (
-                            <p className="text-gray-600 text-sm mt-1">{project.cofinancingDetails}</p>
+                            <p className="text-[var(--navy-500)] text-sm mt-1">{project.cofinancingDetails}</p>
                           )}
                         </div>
                       )}
@@ -325,7 +325,7 @@ export default function ProjectDetailPage() {
                         const partnerConfig = findPartnerConfig(project.partnerOrganization)
                         return (
                           <div>
-                            <p className="text-sm text-gray-500 mb-2">{t('projectDetail.specifications.partnerOrganization')}</p>
+                            <p className="text-sm text-[var(--navy-500)] mb-2">{t('projectDetail.specifications.partnerOrganization')}</p>
                             {partnerConfig ? (
                               <a
                                 href={partnerConfig.url}
@@ -338,15 +338,15 @@ export default function ProjectDetailPage() {
                                   alt={partnerConfig.name}
                                   className="h-8 w-auto object-contain"
                                 />
-                                <span className="font-medium text-gray-900 text-sm group-hover:text-[var(--navy-600)] transition-colors">
+                                <span className="font-medium text-[var(--navy-700)] text-sm group-hover:text-[var(--navy-600)] transition-colors">
                                   {project.partnerOrganization}
                                 </span>
-                                <svg className="w-3.5 h-3.5 flex-shrink-0 text-gray-400 group-hover:text-[var(--navy-600)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-3.5 h-3.5 flex-shrink-0 text-[var(--navy-400)] group-hover:text-[var(--navy-600)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
                               </a>
                             ) : (
-                              <p className="font-medium text-gray-900 text-sm">{project.partnerOrganization}</p>
+                              <p className="font-medium text-[var(--navy-700)] text-sm">{project.partnerOrganization}</p>
                             )}
                           </div>
                         )
@@ -356,7 +356,7 @@ export default function ProjectDetailPage() {
 
                   {/* Main content - Description */}
                   <div className="flex-1 prose prose-gray max-w-none">
-                    <div className="text-gray-700 whitespace-pre-line leading-relaxed">
+                    <div className="text-[var(--navy-600)] whitespace-pre-line leading-relaxed">
                       {localized.fullDescription}
                     </div>
                   </div>

@@ -76,7 +76,7 @@ export default function AboutPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[var(--cream-50)] flex flex-col">
+    <div className="min-h-screen bg-[var(--cream-100)] flex flex-col">
       <Header />
 
       <main className="flex-1 max-w-3xl mx-auto px-4 py-12">

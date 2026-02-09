@@ -94,6 +94,41 @@
   "homepage": {
     "title": "Support Ukrainian Communities",
     "subtitle": "Connect with municipalities that need infrastructure support",
+    "hero": {
+      "headline": "Power Ukrainian hospitals, schools & homes",
+      "subheadline": "100% of your donation goes directly to municipalities rebuilding renewable energy infrastructure.",
+      "statProjects": "Projects",
+      "statFunding": "Funding Needed",
+      "statPower": "Total kW",
+      "ctaBrowse": "Browse Projects",
+      "ctaHowItWorks": "How It Works"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1Title": "Browse Projects",
+      "step1Desc": "Explore verified renewable energy projects from Ukrainian municipalities on our interactive map.",
+      "step2Title": "Choose to Support",
+      "step2Desc": "Select a project that resonates with you - a school, hospital, or community center in need.",
+      "step3Title": "Fund Directly",
+      "step3Desc": "Your donation goes 100% to the municipality. Track progress as infrastructure gets rebuilt."
+    },
+    "featured": {
+      "title": "Featured Projects",
+      "viewAll": "View All Projects"
+    },
+    "trust": {
+      "title": "Transparent. Direct. Impactful.",
+      "subtitle": "Every dollar you donate goes directly to Ukrainian municipalities. No middlemen, no overhead taken from donations.",
+      "stat1": "Goes to Projects",
+      "stat2": "Active Projects",
+      "stat3": "Potential Power",
+      "cta": "Learn About Our Model"
+    },
+    "cta": {
+      "title": "Ready to Make a Difference?",
+      "subtitle": "Browse our verified projects and help Ukrainian communities rebuild their energy independence.",
+      "button": "Browse All Projects"
+    },
     "searchPlaceholder": "Search projects or places...",
     "projectCount": "{count, plural, =0 {No projects} =1 {1 project} other {# projects}}",
     "totalProjects": "{count} total projects",

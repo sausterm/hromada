@@ -80,29 +80,18 @@ export default function AboutPage() {
       <Header />
 
       <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-4 text-center">
-          {t('about.title')}
-        </h1>
+        {/* Hero Section - Consolidated intro */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-6">
+            {t('about.title')}
+          </h1>
+          <p className="text-xl leading-relaxed text-[var(--navy-600)] max-w-2xl mx-auto">
+            {t('about.heroText')}
+          </p>
+        </div>
 
         <div className="text-[var(--navy-600)]">
-          {/* Mission intro */}
-          <p className="text-xl leading-relaxed text-[var(--navy-500)] mb-6 text-center">
-            {t('about.mission')}
-          </p>
-
-          {/* 1. Statement of Purpose */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
-              {t('about.statementOfPurpose')}
-            </h2>
-            <blockquote className="text-lg leading-relaxed text-[var(--navy-600)] italic text-center border-l-4 border-r-4 border-[var(--ukraine-500)] px-6 py-2 mx-auto max-w-2xl">
-              {t('about.statementOfPurposeText')}
-            </blockquote>
-          </section>
-
-          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
-
-          {/* 2. How It Works */}
+          {/* 1. How It Works - Lead with what we do */}
           <section className="mb-12 overflow-hidden">
             <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-8 text-center">
               {t('transparency.processTitle')}
@@ -111,26 +100,23 @@ export default function AboutPage() {
             {/* Desktop Flow */}
             <div className="hidden md:block">
               <div className="flex items-start justify-between relative">
-                {processSteps.map((step, index) => (
+                {processSteps.map((step) => (
                   <div key={step.key} className="flex flex-col items-center flex-1 relative z-10">
-                    {/* Icon circle */}
                     <div className="w-14 h-14 rounded-full bg-[var(--navy-700)] flex items-center justify-center shadow-lg ring-4 ring-[var(--cream-200)]">
                       <svg className="w-7 h-7 text-[var(--cream-100)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={step.icon} />
                       </svg>
                     </div>
-                    {/* Title */}
                     <span className="text-sm font-semibold text-[var(--navy-700)] mt-3 text-center">
                       {t(`transparency.processStep${step.key}Title`)}
                     </span>
-                    {/* Description */}
                     <span className="text-xs text-[var(--navy-500)] text-center mt-1 max-w-[100px] leading-relaxed">
                       {t(`transparency.processStep${step.key}Text`)}
                     </span>
                   </div>
                 ))}
 
-                {/* Connecting lines between circles */}
+                {/* Connecting lines */}
                 <div className="absolute top-7 left-0 right-0 h-[2px] pointer-events-none" style={{ zIndex: 0 }}>
                   {[0, 1, 2, 3].map((i) => (
                     <div
@@ -141,7 +127,6 @@ export default function AboutPage() {
                         width: `${20 - 10}%`,
                       }}
                     >
-                      {/* Glare sweep animation - flows left to right sequentially */}
                       <div
                         className="absolute h-full w-[30px] animate-glare-flow"
                         style={{
@@ -156,15 +141,13 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* Mobile Flow - Vertical timeline */}
+            {/* Mobile Flow */}
             <div className="md:hidden">
               <div className="relative">
-                {/* Vertical line */}
                 <div className="absolute left-7 top-0 bottom-0 w-0.5 bg-gradient-to-b from-[var(--navy-300)] via-[var(--ukraine-500)] to-[var(--navy-300)]" />
 
                 {processSteps.map((step, index) => (
                   <div key={step.key} className="flex items-start gap-4 relative mb-6 last:mb-0">
-                    {/* Icon circle */}
                     <div className="relative z-10 flex-shrink-0">
                       <div className="w-14 h-14 rounded-full bg-[var(--navy-700)] flex items-center justify-center shadow-lg ring-4 ring-[var(--cream-100)]">
                         <svg className="w-7 h-7 text-[var(--cream-100)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -172,7 +155,6 @@ export default function AboutPage() {
                         </svg>
                       </div>
                     </div>
-                    {/* Content */}
                     <div className="pt-2 flex-1">
                       <span className="text-sm font-semibold text-[var(--navy-700)] block">
                         {t(`transparency.processStep${step.key}Title`)}
@@ -181,7 +163,6 @@ export default function AboutPage() {
                         {t(`transparency.processStep${step.key}Text`)}
                       </span>
                     </div>
-                    {/* Arrow to next step */}
                     {index < processSteps.length - 1 && (
                       <div className="absolute left-[26px] bottom-[-12px] z-20">
                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -193,64 +174,10 @@ export default function AboutPage() {
                 ))}
               </div>
             </div>
-          </section>
-
-          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
-
-          {/* 3. Project Categories */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-3 text-center">
-              {t('about.projectCategories')}
-            </h2>
-            <p className="text-base leading-relaxed mb-4">
-              {t('about.categoryIntro')}
-            </p>
-            <ul className="space-y-3 text-base leading-relaxed">
-              <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(199, 91, 57, 0.15)' }}>
-                  <svg className="w-3.5 h-3.5" style={{ color: '#C75B39' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>
-                  </svg>
-                </span>
-                <span><strong>{t('categories.HOSPITAL')}</strong> — {t('about.categoryHospital')}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(123, 158, 107, 0.15)' }}>
-                  <svg className="w-3.5 h-3.5" style={{ color: '#7B9E6B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
-                  </svg>
-                </span>
-                <span><strong>{t('categories.SCHOOL')}</strong> — {t('about.categorySchool')}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(91, 143, 168, 0.15)' }}>
-                  <svg className="w-3.5 h-3.5" style={{ color: '#5B8FA8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
-                  </svg>
-                </span>
-                <span><strong>{t('categories.WATER')}</strong> — {t('about.categoryWater')}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(212, 149, 74, 0.15)' }}>
-                  <svg className="w-3.5 h-3.5" style={{ color: '#D4954A' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
-                  </svg>
-                </span>
-                <span><strong>{t('categories.ENERGY')}</strong> — {t('about.categoryEnergy')}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(139, 115, 85, 0.15)' }}>
-                  <svg className="w-3.5 h-3.5" style={{ color: '#8B7355' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>
-                  </svg>
-                </span>
-                <span><strong>{t('categories.OTHER')}</strong> — {t('about.categoryOther')}</span>
-              </li>
-            </ul>
 
             {/* Civilian Infrastructure note */}
-            <div className="mt-6 pt-6 border-t border-[var(--cream-300)] flex items-start gap-2">
-              <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="mt-8 flex items-start gap-2 justify-center">
+              <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M10 18v-7" />
                 <path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" />
                 <path d="M14 18v-7" />
@@ -258,7 +185,7 @@ export default function AboutPage() {
                 <path d="M3 22h18" />
                 <path d="M6 18v-7" />
               </svg>
-              <p className="text-sm leading-relaxed text-[var(--navy-600)]">
+              <p className="text-sm text-[var(--navy-600)]">
                 <strong className="text-[var(--navy-700)]">{t('transparency.civilianOnlyTitle')}:</strong> {t('transparency.civilianOnlyText')}
               </p>
             </div>
@@ -266,12 +193,12 @@ export default function AboutPage() {
 
           <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
-          {/* 4. Our Partners - TEMPORARILY HIDDEN
+          {/* 2. Our Partners - Build credibility */}
           <section className="mb-12">
             <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-3 text-center">
               {t('transparency.partnersTitle')}
             </h2>
-            <p className="text-base leading-relaxed mb-6 text-center">
+            <p className="text-base leading-relaxed mb-8 text-center text-[var(--navy-500)]">
               {t('transparency.partnersText')}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-8">
@@ -294,9 +221,54 @@ export default function AboutPage() {
           </section>
 
           <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
-          */}
 
-          {/* 5. FAQ */}
+          {/* 3. Who We Are - Team */}
+          <section className="mb-12">
+            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-8 text-center">
+              {t('about.whoWeAre')}
+            </h2>
+            <div className="space-y-8">
+              {/* Thomas */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <div className="w-20 h-20 flex-shrink-0 rounded-full bg-[var(--navy-700)] flex items-center justify-center">
+                  <span className="text-2xl font-bold text-[var(--cream-100)]">TP</span>
+                </div>
+                <div className="text-center sm:text-left">
+                  <h3 className="font-semibold text-[var(--navy-700)] text-lg">Thomas Protzman</h3>
+                  <p className="text-[var(--navy-500)] text-sm">{t('about.directorTitle')}</p>
+                </div>
+              </div>
+
+              {/* Kostiantyn */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <div className="w-20 h-20 flex-shrink-0 rounded-full bg-[var(--ukraine-blue)] flex items-center justify-center">
+                  <span className="text-2xl font-bold text-white">KK</span>
+                </div>
+                <div className="text-center sm:text-left">
+                  <h3 className="font-semibold text-[var(--navy-700)] text-lg">Kostiantyn Krynytskyi</h3>
+                  <p className="text-[var(--navy-500)] text-sm mb-2">{t('about.directorUkraineTitle')}</p>
+                  <p className="text-[var(--navy-600)] text-sm leading-relaxed">
+                    {t('about.kostiaBio')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Sloan */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <div className="w-20 h-20 flex-shrink-0 rounded-full bg-[var(--navy-600)] flex items-center justify-center">
+                  <span className="text-2xl font-bold text-[var(--cream-100)]">SA</span>
+                </div>
+                <div className="text-center sm:text-left">
+                  <h3 className="font-semibold text-[var(--navy-700)] text-lg">Sloan Austermann</h3>
+                  <p className="text-[var(--navy-500)] text-sm">{t('about.directorTechOpsTitle')}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
+
+          {/* 4. FAQ */}
           <section className="mb-12">
             <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
               {t('transparency.faqTitle')}
@@ -331,9 +303,9 @@ export default function AboutPage() {
               {t('about.browseProjects')}
             </Button>
           </Link>
-          <Link href="/submit-project">
-            <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
-              {t('nav.submitProject')}
+          <Link href="/contact">
+            <Button variant="outline" className="border-[var(--navy-700)] text-[var(--navy-700)] hover:bg-[var(--navy-50)]">
+              {t('nav.contact')}
             </Button>
           </Link>
         </div>

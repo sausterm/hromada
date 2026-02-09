@@ -798,10 +798,12 @@ export default function HomePage() {
               </div>
 
               {/* Sort dropdown */}
-              <div className="relative shrink-0">
+              <div
+                className="relative shrink-0"
+                onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
+                onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
+              >
                 <button
-                  onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
-                  onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
                   className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] transition-all whitespace-nowrap"
                 >
                   <span>{t(`homepage.sortOptions.${sortBy}`)}</span>

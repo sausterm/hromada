@@ -183,30 +183,6 @@ export default function ProjectDetailPage() {
 
             {/* Project Info */}
             <div>
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                <Badge dot dotColor={categoryConfig.color}>
-                  <span className="inline-flex items-center gap-1.5">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-4 h-4"
-                      dangerouslySetInnerHTML={{ __html: categoryConfig.icon }}
-                    />
-                    {t(`categories.${project.category}`)}
-                  </span>
-                </Badge>
-                <Badge
-                  variant={project.status === 'OPEN' ? 'success' : 'default'}
-                >
-                  {t(`status.${project.status}`)}
-                </Badge>
-              </div>
-
               {/* Title with Share Button */}
               <div className="flex items-start justify-between gap-4 mb-2">
                 <h1 className="text-3xl font-bold text-[var(--navy-700)]">

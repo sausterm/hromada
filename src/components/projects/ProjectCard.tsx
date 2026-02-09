@@ -130,15 +130,19 @@ export function ProjectCard({
 
       {/* Content Section */}
       <div className="flex flex-col flex-1 p-3 bg-[var(--cream-100)]">
-        {/* Title - fixed 2-line height, clickable to view project */}
-        <h3 className="font-semibold text-base leading-tight mb-0.5 line-clamp-2 min-h-[2.5rem]">
-          <Link
-            href={`/projects/${project.id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="text-[var(--navy-700)] hover:text-[var(--ukraine-blue)] hover:underline transition-colors"
-          >
-            {localized.facilityName}
-          </Link>
+        {/* Title - fixed 2-line height */}
+        <h3 className="font-semibold text-base leading-tight mb-0.5 line-clamp-2 min-h-[2.5rem] text-[var(--navy-700)]">
+          {onClick ? (
+            <Link
+              href={`/projects/${project.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="hover:text-[var(--navy-500)] transition-colors underline decoration-[var(--cream-400)] underline-offset-2 hover:decoration-[var(--navy-400)]"
+            >
+              {localized.facilityName}
+            </Link>
+          ) : (
+            localized.facilityName
+          )}
         </h3>
 
         {/* Municipality & Oblast */}

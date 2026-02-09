@@ -93,21 +93,19 @@ export default async function LocaleLayout({
   console.log(`[i18n] Locale detected: ${locale}`);
 
   return (
-    <html lang={locale}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}
-        suppressHydrationWarning
-      >
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          <ToastProvider>
-            <div className="flex-1 flex flex-col">
-              {children}
-            </div>
-            <PartnerCarousel />
-            <Footer />
-          </ToastProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <div
+      lang={locale}
+      className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}
+    >
+      <NextIntlClientProvider messages={messages} locale={locale}>
+        <ToastProvider>
+          <div className="flex-1 flex flex-col">
+            {children}
+          </div>
+          <PartnerCarousel />
+          <Footer />
+        </ToastProvider>
+      </NextIntlClientProvider>
+    </div>
   );
 }

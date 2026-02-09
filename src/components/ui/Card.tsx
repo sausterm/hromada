@@ -11,11 +11,11 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', padding = 'md', children, ...props }, ref) => {
     const variants = {
-      default: 'bg-white border border-gray-200',
-      elevated: 'bg-white shadow-lg',
-      outlined: 'bg-transparent border-2 border-gray-300',
+      default: 'bg-[var(--cream-100)] border border-[var(--cream-300)]',
+      elevated: 'bg-[var(--cream-100)] shadow-lg',
+      outlined: 'bg-transparent border-2 border-[var(--cream-300)]',
       interactive:
-        'bg-white border border-gray-200 hover:border-[var(--ukraine-400)] hover:shadow-md transition-all cursor-pointer',
+        'bg-[var(--cream-100)] border border-[var(--cream-300)] hover:border-[var(--ukraine-400)] hover:shadow-md transition-all cursor-pointer',
     }
 
     const paddings = {
@@ -49,7 +49,7 @@ export const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEleme
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('border-b border-gray-100 pb-4 mb-4', className)}
+      className={cn('border-b border-[var(--cream-200)] pb-4 mb-4', className)}
       {...props}
     />
   )
@@ -60,7 +60,7 @@ export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadi
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('text-lg font-semibold text-gray-900', className)}
+      className={cn('text-lg font-semibold text-[var(--navy-700)]', className)}
       {...props}
     />
   )
@@ -71,7 +71,7 @@ export const CardDescription = forwardRef<HTMLParagraphElement, HTMLAttributes<H
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn('text-sm text-gray-600 mt-1', className)}
+      className={cn('text-sm text-[var(--navy-500)] mt-1', className)}
       {...props}
     />
   )
@@ -89,7 +89,7 @@ export const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEleme
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('border-t border-gray-100 pt-4 mt-4', className)}
+      className={cn('border-t border-[var(--cream-200)] pt-4 mt-4', className)}
       {...props}
     />
   )

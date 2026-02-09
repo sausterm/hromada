@@ -54,6 +54,7 @@
     "aboutUs": "About",
     "home": "Home",
     "projects": "Projects",
+    "howItWorks": "How It Works",
     "language": "Language",
     "switchLanguage": "Switch to Ukrainian",
     "menu": "Menu",
@@ -105,12 +106,18 @@
     },
     "howItWorks": {
       "title": "How It Works",
-      "step1Title": "Browse Projects",
-      "step1Desc": "Explore verified renewable energy projects from Ukrainian municipalities on our interactive map.",
-      "step2Title": "Choose to Support",
-      "step2Desc": "Select a project that resonates with you - a school, hospital, or community center in need.",
-      "step3Title": "Fund Directly",
-      "step3Desc": "Your donation goes 100% to the municipality. Track progress as infrastructure gets rebuilt."
+      "step1Title": "Choose",
+      "step1Desc": "Pick a verified project",
+      "step2Title": "Fund",
+      "step2Desc": "Wire, DAF, or check",
+      "step3Title": "Transfer",
+      "step3Desc": "100% wired to Ukraine",
+      "step4Title": "Build",
+      "step4Desc": "Local teams install",
+      "step5Title": "Impact",
+      "step5Desc": "Communities powered",
+      "promiseTitle": "100% of donations fund projects",
+      "promiseDesc": "We take no fees — funded separately by grants"
     },
     "featured": {
       "title": "Featured Projects",

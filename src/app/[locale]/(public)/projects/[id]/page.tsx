@@ -131,7 +131,7 @@ export default function ProjectDetailPage() {
   const localized = getLocalizedProject(project, locale)
 
   return (
-    <main className="min-h-screen bg-[var(--cream-50)]">
+    <main className="min-h-screen bg-[var(--cream-100)]">
       {/* Header */}
       <Header />
 

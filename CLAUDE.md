@@ -6,18 +6,18 @@ Hromada is a Next.js platform connecting American donors with Ukrainian municipa
 
 ## Planning Vault
 
-This repo includes an Obsidian vault at `planning/` for project coordination.
+This repo includes an Obsidian vault at `Vault/` for project coordination.
 
 ### Before starting work
 
-1. Read `planning/current-sprint.md` to see what's in progress and what's prioritized
+1. Read `Vault/current-sprint.md` to see what's in progress and what's prioritized
 2. Check if your task is already tracked — if so, mark it `- [/]` (in progress)
 3. If your task isn't tracked, add it to the appropriate section
 
 ### After completing work
 
-1. Mark completed tasks `- [x]` in `planning/current-sprint.md`
-2. If work revealed new tasks, add them to `planning/backlog.md`
+1. Mark completed tasks `- [x]` in `Vault/current-sprint.md`
+2. If work revealed new tasks, add them to `Vault/backlog.md`
 
 ### Task format
 
@@ -31,7 +31,7 @@ This repo includes an Obsidian vault at `planning/` for project coordination.
 
 ### Architectural decisions
 
-When making a significant technical choice, create an ADR in `planning/decisions/` using the template at `planning/templates/decision.md`. Number sequentially (002, 003, ...).
+When making a significant technical choice, create an ADR in `Vault/decisions/` using the template at `Vault/templates/decision.md`. Number sequentially (002, 003, ...).
 
 ## Code Conventions
 

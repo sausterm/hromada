@@ -4,7 +4,7 @@ This directory is an [Obsidian](https://obsidian.md/) vault for project planning
 
 ## For Humans
 
-1. Open Obsidian → "Open folder as vault" → select this `planning/` directory
+1. Open Obsidian → "Open folder as vault" → select this `Vault/` directory
 2. Install recommended community plugins (listed in `.obsidian/community-plugins.json`):
    - **Kanban** — board view for `current-sprint.md`
    - **Dataview** — query tasks across files

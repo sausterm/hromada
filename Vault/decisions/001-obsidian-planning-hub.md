@@ -14,7 +14,7 @@ Sloan and Tom collaborate on Hromada via GitHub. Both use Claude Code extensivel
 
 ## Decision
 
-Use an Obsidian vault (`planning/` directory at repo root) committed to the git repository.
+Use an Obsidian vault (`Vault/` directory at repo root) committed to the git repository.
 
 ### Why Obsidian + Git
 
@@ -39,4 +39,4 @@ Use an Obsidian vault (`planning/` directory at repo root) committed to the git 
 - Markdown files are always accessible even without Obsidian
 - Merge conflicts are possible but easy to resolve in markdown
 - `.obsidian/` config is partially tracked (shared settings only, not personal workspace)
-- Claude Code instances check `planning/current-sprint.md` before starting work (per `CLAUDE.md`)
+- Claude Code instances check `Vault/current-sprint.md` before starting work (per `CLAUDE.md`)

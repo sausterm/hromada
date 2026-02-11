@@ -295,7 +295,7 @@ export default function HomePage() {
       <section className="relative h-[500px] md:h-[550px] overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(/photos/1748466072957.jpeg)' }}
+          style={{ backgroundImage: 'url(https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466072957.jpeg)' }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-900)]/80 via-[var(--navy-900)]/60 to-transparent" />
         </div>
@@ -413,7 +413,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             <div>
               <DocumentaryPhoto
-                src="/photos/1748586682092.jpeg"
+                src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748586682092.jpeg"
                 alt="Battery storage installation with Victron inverters"
                 caption="48kWh battery bank with Victron inverters — keeps the hospital running during blackouts"
                 location="Kharkiv, Ukraine"
@@ -466,13 +466,13 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-6 mt-12">
             <DocumentaryPhoto
-              src="/photos/1748613965913.jpeg"
+              src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613965913.jpeg"
               alt="Solar inverter display showing live power data"
               caption="Real-time monitoring shows 12.21kW flowing from solar"
               location="Kharkiv, Ukraine"
             />
             <DocumentaryPhoto
-              src="/photos/1748466071929.jpeg"
+              src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466071929.jpeg"
               alt="Ground-mounted solar array"
               caption="Ground-mounted array at water treatment facility"
               location="Poltava Oblast"
@@ -496,17 +496,17 @@ export default function HomePage() {
         <div className="relative">
           <div className="flex gap-4 animate-scroll">
             {[
-              { src: '/photos/1748613968183.jpeg', location: 'Lviv' },
-              { src: '/photos/1748344588928.jpeg', location: 'Vinnytsia Oblast' },
-              { src: '/photos/1748466070782.jpeg', location: 'Dnipro' },
-              { src: '/photos/1748586681372.jpeg', location: 'Chernihiv' },
-              { src: '/photos/1748549701944.jpeg', location: 'Kyiv' },
-              { src: '/photos/1748466072957.jpeg', location: 'Sumy Oblast' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613968183.jpeg', location: 'Lviv' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748344588928.jpeg', location: 'Vinnytsia Oblast' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466070782.jpeg', location: 'Dnipro' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748586681372.jpeg', location: 'Chernihiv' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748549701944.jpeg', location: 'Kyiv' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466072957.jpeg', location: 'Sumy Oblast' },
               // Duplicate for seamless loop
-              { src: '/photos/1748613968183.jpeg', location: 'Lviv' },
-              { src: '/photos/1748344588928.jpeg', location: 'Vinnytsia Oblast' },
-              { src: '/photos/1748466070782.jpeg', location: 'Dnipro' },
-              { src: '/photos/1748586681372.jpeg', location: 'Chernihiv' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613968183.jpeg', location: 'Lviv' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748344588928.jpeg', location: 'Vinnytsia Oblast' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466070782.jpeg', location: 'Dnipro' },
+              { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748586681372.jpeg', location: 'Chernihiv' },
             ].map((photo, i) => (
               <div key={i} className="relative flex-shrink-0 w-72 h-48 rounded-lg overflow-hidden group">
                 <Image

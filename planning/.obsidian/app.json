@@ -1,0 +1,8 @@
+{
+  "baseFontSize": 16,
+  "alwaysUpdateLinks": true,
+  "newFileLocation": "folder",
+  "newFileFolderPath": "specs",
+  "templateFolderPath": "templates",
+  "attachmentFolderPath": "attachments"
+}

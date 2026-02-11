@@ -54,3 +54,11 @@ config/secrets.*
 logs/
 *.log
 Admin_accessKeys.csv
+
+# Obsidian — user-specific files (vault config is in planning/.obsidian/)
+planning/.obsidian/workspace.json
+planning/.obsidian/workspace-mobile.json
+planning/.obsidian/plugins/
+planning/.obsidian/hotkeys.json
+planning/.obsidian/appearance.json
+planning/.obsidian/core-plugins-migration.json

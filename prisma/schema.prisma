@@ -351,3 +351,19 @@ enum WireTransferStatus {
   FAILED       // Transfer failed
   CANCELLED    // Cancelled before sending
 }
+
+/// Partnership inquiries from US communities interested in the Municipal Partnership Program.
+model PartnershipInquiry {
+  id              String   @id @default(cuid())
+  communityName   String
+  contactName     String
+  contactEmail    String
+  communityType   String
+  approximateSize String?
+  message         String?  @db.VarChar(2000)
+  handled         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([handled])
+}

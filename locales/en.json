@@ -55,6 +55,7 @@
     "home": "Home",
     "projects": "Projects",
     "howItWorks": "How It Works",
+    "mpp": "Municipal Partnership",
     "language": "Language",
     "switchLanguage": "Switch to Ukrainian",
     "menu": "Menu",
@@ -367,7 +368,8 @@
     "privacy": "Privacy Policy",
     "contact": "Contact",
     "builtFor": "Built to support renewable infrastructure recovery",
-    "geoRestrictions": "Service restricted in certain regions for security"
+    "geoRestrictions": "Service restricted in certain regions for security",
+    "mpp": "Municipal Partnership"
   },
   "legal": {
     "termsTitle": "Terms of Service",
@@ -855,5 +857,88 @@
     "readyToForwardTitle": "Ready to Forward to Ukraine",
     "createWireTransfer": "Create Wire Transfer",
     "recentTransfers": "Recent Wire Transfers"
+  },
+  "partnership": {
+    "hero": {
+      "title": "Municipal Partnership Program",
+      "subtitle": "Ukraine's energy grid has been devastated by Russian attacks. Thousands of municipalities need solar panels, heat pumps, and battery storage — but have no way to reach international donors.",
+      "pitch": "The Municipal Partnership Program connects one American community with one Ukrainian community around one project. Real impact you can see and measure.",
+      "cta": "Express Interest"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1Title": "Sign Up",
+      "step1Desc": "Your community expresses interest through our form",
+      "step2Title": "Get Matched",
+      "step2Desc": "We pair you with a Ukrainian municipality based on size, project type, and budget",
+      "step3Title": "Meet Your Partner",
+      "step3Desc": "Mayors and community leaders from both sides are introduced",
+      "step4Title": "Rally & Fund",
+      "step4Desc": "Your community has 3–6 months to raise $7,500–$15,000 through local fundraising",
+      "step5Title": "See the Impact",
+      "step5Desc": "Both communities receive photos, video, and monitoring data from the completed project"
+    },
+    "whyItWorks": {
+      "title": "Why It Works",
+      "achievableTitle": "Achievable",
+      "achievableDesc": "$7,500–$15,000 is one Rotary grant, a couple fundraiser dinners, or a small line item in a city budget.",
+      "collectiveTitle": "Collective",
+      "collectiveDesc": "You're not asking one donor for $15K — you're giving a whole community a shared mission.",
+      "concreteTitle": "Concrete",
+      "concreteDesc": "Not \"donate to Ukraine\" but \"fund a 36kW solar installation for Prylymanskyi Lyceum in Odesa.\"",
+      "bridgesTitle": "Builds Bridges",
+      "bridgesDesc": "Both communities gain a real human connection. Mayors are introduced. Updates are shared. It's sister cities with a deliverable."
+    },
+    "whoParticipates": {
+      "title": "Who Can Participate?",
+      "subtitle": "Any organized group of people who want to make a tangible difference.",
+      "rotary": "Rotary Clubs & Service Orgs",
+      "cityCouncil": "City Councils & Municipalities",
+      "faith": "Faith Communities",
+      "school": "Schools & Universities",
+      "diaspora": "Diaspora Organizations",
+      "corporate": "Corporate CSR Programs",
+      "other": "Any Organized Community Group"
+    },
+    "whatGetsFunded": {
+      "title": "What Gets Funded",
+      "subtitle": "Renewable energy and essential infrastructure for civilian facilities."
+    },
+    "form": {
+      "title": "Get Started",
+      "subtitle": "Tell us about your community. We'll follow up within 48 hours to discuss next steps.",
+      "communityName": "Community / Organization Name",
+      "communityNamePlaceholder": "e.g., Rotary Club of Springfield",
+      "contactName": "Your Name",
+      "contactNamePlaceholder": "e.g., Jane Smith",
+      "contactEmail": "Email Address",
+      "contactEmailPlaceholder": "you@example.com",
+      "communityType": "Type of Community",
+      "selectType": "Select your community type",
+      "communityTypes": {
+        "rotary": "Rotary Club or Service Organization",
+        "city_council": "City Council or Municipality",
+        "faith": "Faith Community",
+        "school": "School or University",
+        "diaspora": "Diaspora Organization",
+        "corporate": "Corporate CSR / Business",
+        "other": "Other"
+      },
+      "approximateSize": "Approximate Size (optional)",
+      "approximateSizePlaceholder": "e.g., ~200 members",
+      "message": "Anything else you'd like us to know? (optional)",
+      "messagePlaceholder": "Tell us about your community, your goals, or any questions you have...",
+      "submit": "Submit Interest",
+      "submitting": "Submitting...",
+      "successTitle": "Thank You!",
+      "successMessage": "We've received your inquiry and will be in touch within 48 hours to discuss next steps.",
+      "validation": {
+        "communityNameRequired": "Community name is required",
+        "contactNameRequired": "Your name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "communityTypeRequired": "Please select a community type"
+      }
+    }
   }
 }

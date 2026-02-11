@@ -378,9 +378,10 @@ export default function ProjectsPage() {
 
   return (
     <div className="h-screen flex flex-col bg-[var(--cream-50)]">
-      {/* Header with Filter Bar */}
-      <Header>
-        <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
+      <Header />
+
+      {/* Filter Bar */}
+      <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
           <div className="flex items-center gap-2 flex-nowrap">
             {/* Price Range Dropdown */}
             <div className="relative shrink-0">
@@ -749,8 +750,7 @@ export default function ProjectsPage() {
               </button>
             )}
           </div>
-        </div>
-      </Header>
+      </div>
 
       {/* Main Content - Split Screen */}
       <main className="flex-1 flex overflow-hidden">

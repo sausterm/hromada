@@ -1,8 +1,8 @@
 # Session Context - Payment Processing Implementation
 
-**Date**: 2026-02-06
+**Date**: 2026-02-10
 **Branch**: `v2-payment-processing`
-**Status**: Core UI and database complete, ready for Plaid integration
+**Status**: Core UI and database complete, homepage consolidated, fiscal sponsor updated, images migrated to Supabase
 
 ---
 
@@ -41,7 +41,7 @@ The manual "I've Sent My Contribution" step will be removed once Plaid is integr
 ```
 Donor sends funds
        ↓
-Bank of America (CSBE 501(c)(3) account)
+Bank of America (POCACITO Network 501(c)(3) account)
        ↓
 Plaid detects payment (future)
        ↓
@@ -153,8 +153,8 @@ model WireTransfer {
 | Method | Best For | How It Works |
 |--------|----------|--------------|
 | Wire Transfer | $10k+ | Donor wires to BoA, we provide routing/account |
-| DAF Grant | Wealthy individuals | Donor recommends grant from their DAF to CSBE |
-| Check | Foundations | Donor mails check to CSBE address |
+| DAF Grant | Wealthy individuals | Donor recommends grant from their DAF to POCACITO Network |
+| Check | Foundations | Donor mails check to POCACITO Network address |
 
 Credit cards/Stripe intentionally not included - 3% fee is too high for large donations.
 
@@ -187,11 +187,11 @@ RESEND_API_KEY=re_...        # For sending emails
 ADMIN_EMAIL=admin@...        # Receives donation notifications
 
 # Needed for production
-# Real CSBE bank details (currently placeholders in SupportProjectCard.tsx):
+# Real POCACITO Network bank details (currently placeholders in SupportProjectCard.tsx):
 # - Bank of America routing number
 # - Account number
 # - SWIFT code
-# - CSBE EIN
+# - POCACITO Network EIN
 # - Mailing address
 
 # Future
@@ -205,7 +205,7 @@ WISE_API_KEY=...             # For outbound transfer tracking
 ## Next Steps
 
 ### Immediate
-1. Replace placeholder bank details in `SupportProjectCard.tsx` with real CSBE info
+1. Replace placeholder bank details in `SupportProjectCard.tsx` with real POCACITO Network info
 2. Test full flow: project page → support → confirm → check email → login to donor dashboard
 
 ### Short Term
@@ -222,7 +222,9 @@ WISE_API_KEY=...             # For outbound transfer tracking
 
 ## Business Context
 
-- **Fiscal Sponsor**: CSBE is a 501(c)(3), donations are tax-deductible
+- **Fiscal Sponsor**: POCACITO Network, 501(c)(3), EIN 99-0392258
+- **Candid Profile**: Platinum Seal of Transparency — https://app.candid.org/profile/16026326/pocacito-network/
+- **Website**: https://pocacito.org
 - **Receiving Bank**: Bank of America
 - **Outbound Transfers**: Wise (cheaper for most amounts) or Bank Wire (better for very large)
 - **Target Donors**: Wealthy individuals, corporations, foundations
@@ -232,7 +234,49 @@ WISE_API_KEY=...             # For outbound transfer tracking
 
 ## Team
 
-- Thomas Protzmann
-- Kostia (Ukraine contact for municipal bank details)
-- Sloan (potential team member)
-- Scott Sklar (potential partner)
+- Thomas Protzmann (Director)
+- Kostiantyn Krynytskyi (Director - Ukraine, handles municipal bank details)
+- Sloan Austermann (Director - Technology & Operations)
+
+---
+
+## Session 2026-02-10: Homepage Consolidation & Infrastructure Updates
+
+### Homepage Changes (v2-payment-processing)
+1. **Consolidated How It Works** into homepage — deleted standalone `/how-it-works` page
+2. **Added case study section** (Kharkiv hospital with timeline and live stats card)
+3. **Added photo strip** (scrolling completed projects, cream-100 background)
+4. **Added FAQ section** (5 expandable questions with `<details>` elements)
+5. **Updated final CTA** to cream background with two buttons (Browse Projects + Learn More)
+6. **Removed Trust/Impact navy stripe** from homepage
+7. **Removed How It Works** from hamburger menu navigation
+8. **How It Works buttons**: Aligned with fixed width, earth tone colors matching map category colors (teal, sage, amber, terracotta, taupe)
+
+### Fiscal Sponsor Update
+- Changed from CSBE to **POCACITO Network** across entire codebase
+- EIN: **99-0392258**
+- Updated all references in: SupportProjectCard, email templates, donor dashboard, homepage FAQ, locale files, tests
+- Contact email updated to `donations@pocacito.org`
+
+### Footer Reorder
+1. hromada is a project of POCACITO Network · Candid Platinum Seal of Transparency
+2. About Us · Terms · Privacy · Contact
+3. © 2026 Thomas D. Protzman. All rights reserved.
+- Removed "Built for Ukraine" / geo restrictions line
+
+### Image Migration to Supabase Storage
+- Created `project-images` bucket in Supabase Storage (public)
+- Uploaded 11 site photos to `site-photos/` folder
+- Updated all image references from `/photos/` to Supabase CDN URLs
+- Added `remotePatterns` to `next.config.ts` for `next/image` support
+- Base URL: `https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/`
+- Sloan (and any dev) can now see all images without local files
+
+### About Page
+- Added project categories section with map-matching icons and colors (from CATEGORY_CONFIG)
+- Switched partner logos to cream background versions
+
+### Other
+- `planning/` folder renamed to `Vault/` (Obsidian-based planning hub added by Sloan)
+- Site password: `hromada!2026`
+- Admin login: use `HROMADA_ADMIN_SECRET` from `.env.local` as password

@@ -11,9 +11,16 @@ export function Footer() {
     <footer className="bg-[var(--cream-100)] border-t border-[var(--cream-300)] py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center">
-          {/* Copyright Notice */}
+          {/* Fiscal sponsor */}
           <p className="text-sm text-[var(--navy-500)] mb-3">
-            © {currentYear} Thomas D. Protzman. All rights reserved.
+            hromada is a project of{' '}
+            <a href="https://pocacito.org" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
+              POCACITO Network
+            </a>
+            {' · '}
+            <a href="https://app.candid.org/profile/16026326/pocacito-network/" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
+              Candid Platinum Seal of Transparency
+            </a>
           </p>
 
           {/* Links */}
@@ -42,25 +49,18 @@ export function Footer() {
             >
               {t('contact')}
             </Link>
+            <Link
+              href="/partner-with-us"
+              className="text-[var(--navy-500)] hover:text-[var(--ukraine-blue)] transition-colors"
+            >
+              {t('mpp')}
+            </Link>
           </div>
 
-          {/* Fiscal sponsor */}
-          <p className="text-sm text-[var(--navy-500)] mt-4">
-            hromada is a project of{' '}
-            <a href="https://pocacito.org" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
-              POCACITO Network
-            </a>
-            {' · '}
-            <a href="https://app.candid.org/profile/16026326/pocacito-network/" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
-              Candid Platinum Seal of Transparency
-            </a>
-          </p>
-
-          {/* Built with love message and geo notice */}
-          <p className="text-xs text-[var(--navy-400)] mt-3">
-            {t('builtFor')} · {t('geoRestrictions')}
-          </p>
-        </div>
+          {/* Copyright Notice */}
+          <p className="text-sm text-[var(--navy-500)] mt-3">
+            © {currentYear} Thomas D. Protzman. All rights reserved.
+          </p>        </div>
       </div>
     </footer>
   )

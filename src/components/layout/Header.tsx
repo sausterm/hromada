@@ -186,6 +186,17 @@ export function Header({ children }: HeaderProps) {
                     </svg>
                     {t('nav.contact')}
                   </Link>
+                  <Link
+                    href="/partner-with-us"
+                    onClick={() => setIsNavMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--navy-600)] hover:bg-[var(--cream-100)] transition-colors"
+                  >
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="9" cy="12" r="5" />
+                      <circle cx="15" cy="12" r="5" />
+                    </svg>
+                    {t('nav.mpp')}
+                  </Link>
 
                   <div className="my-2 border-t border-[var(--cream-300)]" />
 

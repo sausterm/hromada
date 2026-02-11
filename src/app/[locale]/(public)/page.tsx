@@ -14,13 +14,12 @@ import {
 } from '@/types'
 
 // Step data with colors for How It Works section
-const STEPS: { number: number; titleKey: string; descKey: string; color: string; bgColor: string; icon: ReactNode }[] = [
+const STEPS: { number: number; titleKey: string; descKey: string; hexColor: string; icon: ReactNode }[] = [
   {
     number: 1,
     titleKey: 'homepage.howItWorks.step1Title',
     descKey: 'homepage.howItWorks.step1Desc',
-    color: 'from-blue-500 to-blue-600',
-    bgColor: 'bg-blue-500',
+    hexColor: '#5B8FA8', // Muted teal
     icon: (
       <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
         <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
@@ -31,8 +30,7 @@ const STEPS: { number: number; titleKey: string; descKey: string; color: string;
     number: 2,
     titleKey: 'homepage.howItWorks.step2Title',
     descKey: 'homepage.howItWorks.step2Desc',
-    color: 'from-emerald-500 to-emerald-600',
-    bgColor: 'bg-emerald-500',
+    hexColor: '#7B9E6B', // Sage green
     icon: (
       <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
@@ -43,8 +41,7 @@ const STEPS: { number: number; titleKey: string; descKey: string; color: string;
     number: 3,
     titleKey: 'homepage.howItWorks.step3Title',
     descKey: 'homepage.howItWorks.step3Desc',
-    color: 'from-amber-500 to-amber-600',
-    bgColor: 'bg-amber-500',
+    hexColor: '#D4954A', // Warm amber
     icon: (
       <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -55,8 +52,7 @@ const STEPS: { number: number; titleKey: string; descKey: string; color: string;
     number: 4,
     titleKey: 'homepage.howItWorks.step4Title',
     descKey: 'homepage.howItWorks.step4Desc',
-    color: 'from-orange-500 to-orange-600',
-    bgColor: 'bg-orange-500',
+    hexColor: '#C75B39', // Deep terracotta
     icon: (
       <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
         <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
@@ -67,8 +63,7 @@ const STEPS: { number: number; titleKey: string; descKey: string; color: string;
     number: 5,
     titleKey: 'homepage.howItWorks.step5Title',
     descKey: 'homepage.howItWorks.step5Desc',
-    color: 'from-violet-500 to-violet-600',
-    bgColor: 'bg-violet-500',
+    hexColor: '#8B7355', // Warm taupe
     icon: (
       <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
         <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
@@ -82,29 +77,33 @@ function HowItWorksStep({ step, isLast, t }: { step: typeof STEPS[0]; isLast: bo
   const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <div className="flex flex-col md:flex-row items-center">
+    <div className="flex flex-col md:flex-row items-start">
       <div
-        className="flex flex-col items-center text-center group cursor-default max-w-[120px]"
+        className="flex flex-col items-center text-center group cursor-default w-[140px]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative mb-3">
           <div
-            className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.color} text-white flex items-center justify-center shadow-lg transition-all duration-300 ${isHovered ? 'scale-110 shadow-xl rotate-3' : ''}`}
+            className={`w-14 h-14 rounded-2xl text-white flex items-center justify-center shadow-lg transition-all duration-300 ${isHovered ? 'scale-110 shadow-xl rotate-3' : ''}`}
+            style={{ backgroundColor: step.hexColor }}
           >
             {step.icon}
           </div>
-          <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full ${step.bgColor} text-white text-xs font-bold flex items-center justify-center shadow-md ring-2 ring-[var(--cream-100)]`}>
+          <div
+            className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full text-white text-xs font-bold flex items-center justify-center shadow-md ring-2 ring-[var(--cream-100)]"
+            style={{ backgroundColor: step.hexColor }}
+          >
             {step.number}
           </div>
         </div>
 
-        <h3 className="font-bold text-[var(--navy-700)] text-lg">{t(step.titleKey)}</h3>
-        <p className="text-[var(--navy-500)] text-sm mt-1">{t(step.descKey)}</p>
+        <h3 className="font-bold text-[var(--navy-700)] text-sm leading-tight">{t(step.titleKey)}</h3>
+        <p className="text-[var(--navy-500)] text-xs mt-1 leading-snug">{t(step.descKey)}</p>
       </div>
 
       {!isLast && (
-        <div className="hidden md:block px-2 lg:px-4">
+        <div className="hidden md:flex items-center h-14 px-1 lg:px-3">
           <svg className="w-5 h-5 text-[var(--cream-400)]" fill="currentColor" viewBox="0 0 24 24">
             <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
           </svg>
@@ -112,7 +111,7 @@ function HowItWorksStep({ step, isLast, t }: { step: typeof STEPS[0]; isLast: bo
       )}
 
       {!isLast && (
-        <div className="md:hidden py-3">
+        <div className="md:hidden py-3 flex justify-center w-full">
           <div className="w-0.5 h-6 bg-[var(--cream-300)]" />
         </div>
       )}

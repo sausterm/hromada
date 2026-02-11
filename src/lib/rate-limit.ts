@@ -133,6 +133,11 @@ export const RATE_LIMITS = {
     limit: 5,
     windowSeconds: 60,
   },
+  // Partnership inquiry form: 5 submissions per minute per IP
+  partnershipInquiry: {
+    limit: 5,
+    windowSeconds: 60,
+  },
   // General API: 100 requests per minute per IP
   general: {
     limit: 100,

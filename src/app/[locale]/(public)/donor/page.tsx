@@ -403,9 +403,9 @@ function DonorDashboard() {
               <div>
                 <h3 className="font-medium text-gray-900">Tax-Deductible Donations</h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  All donations are made through CSBE, a registered 501(c)(3) nonprofit organization.
+                  All donations are made through POCACITO Network, a registered 501(c)(3) nonprofit organization (EIN 99-0392258).
                   You will receive a tax receipt for your records. If you need a copy of your tax receipt,
-                  please contact us at <a href="mailto:donations@csbe.org" className="text-[var(--navy-600)] hover:underline">donations@csbe.org</a>.
+                  please contact us at <a href="mailto:donations@pocacito.org" className="text-[var(--navy-600)] hover:underline">donations@pocacito.org</a>.
                 </p>
               </div>
             </div>

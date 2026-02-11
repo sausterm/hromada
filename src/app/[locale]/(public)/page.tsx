@@ -568,7 +568,7 @@ export default function HomePage() {
               },
               {
                 q: "Is my donation tax-deductible?",
-                a: "Yes. Donations are made to CSBE, a registered 501(c)(3). You'll receive a tax receipt for your records."
+                a: "Yes. Donations are made to POCACITO Network, a registered 501(c)(3) (EIN 99-0392258). Your donation is tax-deductible as allowed by law."
               }
             ].map((faq, i) => (
               <details key={i} className="group bg-white rounded-lg border border-[var(--cream-200)]">

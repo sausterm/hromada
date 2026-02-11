@@ -167,7 +167,7 @@ describe('SupportProjectCard', () => {
       fireEvent.click(screen.getByText('Donor Advised Fund'))
 
       expect(screen.getByText('Organization')).toBeInTheDocument()
-      expect(screen.getByText('CSBE')).toBeInTheDocument()
+      expect(screen.getByText('POCACITO Network')).toBeInTheDocument()
       expect(screen.getByText('EIN')).toBeInTheDocument()
     })
 

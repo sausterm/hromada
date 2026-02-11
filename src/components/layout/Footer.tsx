@@ -44,8 +44,20 @@ export function Footer() {
             </Link>
           </div>
 
+          {/* Fiscal sponsor */}
+          <p className="text-sm text-[var(--navy-500)] mt-4">
+            hromada is a project of{' '}
+            <a href="https://pocacito.org" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
+              POCACITO Network
+            </a>
+            {' · '}
+            <a href="https://app.candid.org/profile/16026326/pocacito-network/" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
+              Candid Gold Seal of Transparency
+            </a>
+          </p>
+
           {/* Built with love message and geo notice */}
-          <p className="text-xs text-[var(--navy-400)] mt-4">
+          <p className="text-xs text-[var(--navy-400)] mt-3">
             {t('builtFor')} · {t('geoRestrictions')}
           </p>
         </div>

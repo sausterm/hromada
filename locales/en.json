@@ -188,6 +188,7 @@
     "cofinancingAvailable": "Co-financing Available",
     "providedInUkrainian": "Project details provided in Ukrainian by municipality",
     "specifications": {
+      "category": "Category",
       "projectType": "Project Type",
       "subtype": "Subtype",
       "estimatedCost": "Estimated Cost",
@@ -671,7 +672,7 @@
     "cofinancing": "Co-financing Available",
     "fundingNeeded": "Funding Needed",
     "chooseMethod": "Choose how you'd like to contribute to this project:",
-    "taxDeductible": "All donations are tax-deductible through CSBE, a 501(c)(3) organization.",
+    "taxDeductible": "All donations are tax-deductible through POCACITO Network, a 501(c)(3) organization.",
     "methods": {
       "wire": {
         "title": "Wire Transfer",
@@ -701,7 +702,7 @@
       "organization": "Organization",
       "ein": "EIN",
       "grantMemo": "Grant Memo",
-      "instructions": "Log into your DAF provider (Fidelity Charitable, Schwab Charitable, Vanguard, etc.) and recommend a grant to CSBE."
+      "instructions": "Log into your DAF provider (Fidelity Charitable, Schwab Charitable, Vanguard, etc.) and recommend a grant to POCACITO Network."
     },
     "checkInstructions": {
       "title": "Check Instructions",
@@ -785,7 +786,7 @@
     },
     "taxInfo": {
       "title": "Tax-Deductible Donations",
-      "message": "All donations are made through CSBE, a registered 501(c)(3) nonprofit organization. You will receive a tax receipt for your records."
+      "message": "All donations are made through POCACITO Network, a registered 501(c)(3) nonprofit organization. You will receive a tax receipt for your records."
     },
     "viewProject": "View Project Details"
   },

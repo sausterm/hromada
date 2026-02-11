@@ -161,12 +161,12 @@ export async function sendDonorWelcomeEmail({
 
           <div style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 8px;">
             <p style="margin: 0; font-size: 14px; color: #666;">
-              <strong>Tax Information:</strong> Your donation is tax-deductible through CSBE, a registered 501(c)(3) nonprofit organization. A tax receipt will be sent once your payment is confirmed.
+              <strong>Tax Information:</strong> Your donation is tax-deductible through POCACITO Network, a registered 501(c)(3) nonprofit organization (EIN 99-0392258). A tax receipt will be sent once your payment is confirmed.
             </p>
           </div>
 
           <p style="color: #666; font-size: 12px; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
-            Questions? Reply to this email or contact us at donations@csbe.org
+            Questions? Reply to this email or contact us at donations@pocacito.org
           </p>
         </div>
       `,

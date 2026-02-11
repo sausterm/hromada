@@ -19,14 +19,14 @@ interface SupportProjectCardProps {
 type PaymentMethod = 'wire' | 'daf' | 'check' | null
 type ViewState = 'options' | 'details' | 'confirm' | 'success'
 
-// Placeholder values - will be replaced with real CSBE info
+// Placeholder values - will be replaced with real Pocacito info
 const PAYMENT_INFO = {
   bankName: 'Bank of America',
-  accountName: 'CSBE',
+  accountName: 'POCACITO Network',
   routingNumber: 'XXXXXXXXX',
   accountNumber: 'XXXXXXXXXXXX',
   swiftCode: 'BOFAUS3N',
-  ein: 'XX-XXXXXXX',
+  ein: '99-0392258',
   address: '123 Main Street\nCity, State 12345',
 }
 
@@ -277,7 +277,7 @@ export function SupportProjectCard({
           </div>
 
           <p className="text-xs text-gray-500 text-center">
-            All donations are tax-deductible through CSBE, a 501(c)(3) organization.
+            All donations are tax-deductible through POCACITO Network, a 501(c)(3) organization (EIN 99-0392258).
           </p>
         </CardContent>
       </Card>
@@ -400,7 +400,7 @@ export function SupportProjectCard({
                 </div>
               </div>
               <p className="text-sm text-gray-600">
-                Log into your DAF provider (Fidelity Charitable, Schwab Charitable, Vanguard, etc.) and recommend a grant to CSBE.
+                Log into your DAF provider (Fidelity Charitable, Schwab Charitable, Vanguard, etc.) and recommend a grant to POCACITO Network (EIN 99-0392258).
               </p>
             </>
           )}

@@ -36,8 +36,6 @@ const URGENCY_PRIORITY: Record<Urgency, number> = {
 function transformProject(data: any): Project {
   return {
     ...data,
-    // Map fullDescription to description for display
-    description: data.fullDescription || data.description || '',
     // Ensure dates are Date objects
     createdAt: new Date(data.createdAt),
     updatedAt: new Date(data.updatedAt),

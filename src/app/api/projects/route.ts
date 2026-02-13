@@ -40,13 +40,37 @@ export async function GET(request: NextRequest) {
       where.projectType = projectType
     }
 
-    // If ?all=true, return all projects (needed for map markers)
+    // If ?all=true, return all projects with summary fields only (for map + card list)
+    // Full details (fullDescription, contact info, etc.) are fetched per-project via GET /api/projects/[id]
     if (allParam === 'true') {
       const projects = await prisma.project.findMany({
         where,
-        include: {
+        select: {
+          id: true,
+          municipalityName: true,
+          facilityName: true,
+          category: true,
+          briefDescription: true,
+          address: true,
+          cityLatitude: true,
+          cityLongitude: true,
+          urgency: true,
+          status: true,
+          region: true,
+          projectType: true,
+          technicalPowerKw: true,
+          estimatedCostUsd: true,
+          cofinancingAvailable: true,
+          createdAt: true,
+          updatedAt: true,
+          // Ukrainian translations
+          municipalityNameUk: true,
+          facilityNameUk: true,
+          briefDescriptionUk: true,
           photos: {
+            select: { url: true },
             orderBy: { sortOrder: 'asc' },
+            take: 1,
           },
         },
         orderBy: [
@@ -55,9 +79,9 @@ export async function GET(request: NextRequest) {
         ],
       })
       // Transform photos relation to photos string array for frontend compatibility
-      const transformedProjects = projects.map((project: { photos: { url: string }[] } & Record<string, unknown>) => ({
+      const transformedProjects = projects.map((project) => ({
         ...project,
-        photos: project.photos.map((img: { url: string }) => img.url),
+        photos: project.photos.map((img) => img.url),
       }))
       return NextResponse.json({ projects: transformedProjects, total: projects.length })
     }

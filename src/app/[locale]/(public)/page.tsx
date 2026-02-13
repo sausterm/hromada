@@ -124,6 +124,34 @@ export default function HomePage() {
     }, 200) // 200ms delay allows mouse to reach dropdown panel
   }
 
+  // Close all dropdowns
+  const closeAllDropdowns = () => {
+    setIsPriceDropdownOpen(false)
+    setIsPowerDropdownOpen(false)
+    setIsProjectTypeOpen(false)
+    setIsCofinancingOpen(false)
+    setIsSortOpen(false)
+  }
+
+  // Toggle a dropdown on click/tap (closes others first)
+  const toggleDropdown = (current: boolean, setter: (v: boolean) => void) => {
+    closeAllDropdowns()
+    // Use setTimeout so the closeAll runs first
+    setTimeout(() => setter(!current), 0)
+  }
+
+  // Close dropdowns when tapping outside the filter bar
+  const filterBarRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const handleTouchOutside = (e: TouchEvent) => {
+      if (filterBarRef.current && !filterBarRef.current.contains(e.target as Node)) {
+        closeAllDropdowns()
+      }
+    }
+    document.addEventListener('touchstart', handleTouchOutside)
+    return () => document.removeEventListener('touchstart', handleTouchOutside)
+  }, [])
+
   // Pagination for card list
   const ITEMS_PER_PAGE = 12
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
@@ -386,7 +414,7 @@ export default function HomePage() {
     <div className="h-screen flex flex-col bg-[var(--cream-50)]">
       {/* Header with Filter Bar */}
       <Header>
-        <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
+        <div ref={filterBarRef} className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
           <div className="flex items-center gap-2 flex-nowrap">
             {/* Price Range Dropdown */}
             <div className="relative shrink-0">
@@ -394,6 +422,7 @@ export default function HomePage() {
                 ref={priceButtonRef}
                 aria-expanded={isPriceDropdownOpen}
                 aria-controls={priceDropdownId}
+                onClick={() => toggleDropdown(isPriceDropdownOpen, setIsPriceDropdownOpen)}
                 onMouseEnter={() => openDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[130px] ${
@@ -534,6 +563,7 @@ export default function HomePage() {
             <div className="relative shrink-0">
               <button
                 ref={projectTypeButtonRef}
+                onClick={() => toggleDropdown(isProjectTypeOpen, setIsProjectTypeOpen)}
                 onMouseEnter={() => openDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
@@ -584,6 +614,7 @@ export default function HomePage() {
                 ref={powerButtonRef}
                 aria-expanded={isPowerDropdownOpen}
                 aria-controls={powerDropdownId}
+                onClick={() => toggleDropdown(isPowerDropdownOpen, setIsPowerDropdownOpen)}
                 onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[140px] ${
@@ -695,6 +726,7 @@ export default function HomePage() {
             <div className="relative shrink-0">
               <button
                 ref={cofinancingButtonRef}
+                onClick={() => toggleDropdown(isCofinancingOpen, setIsCofinancingOpen)}
                 onMouseEnter={() => openDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
@@ -810,6 +842,7 @@ export default function HomePage() {
                 onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
               >
                 <button
+                  onClick={() => toggleDropdown(isSortOpen, setIsSortOpen)}
                   className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] transition-all whitespace-nowrap"
                 >
                   <span>{t(`homepage.sortOptions.${sortBy}`)}</span>

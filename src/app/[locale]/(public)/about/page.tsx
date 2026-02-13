@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Header } from '@/components/layout/Header'
@@ -15,48 +14,6 @@ const partners = [
   { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo-white.png', url: 'https://www.energyactua.com/' },
 ]
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const [contentHeight, setContentHeight] = useState(0)
-
-  useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight)
-    }
-  }, [answer])
-
-  return (
-    <div className="border-b border-[var(--cream-300)] last:border-0">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-4 flex items-center justify-between text-left hover:text-[var(--navy-800)] transition-colors"
-      >
-        <span className="font-medium text-[var(--navy-700)] pr-4">{question}</span>
-        <svg
-          className={`w-5 h-5 flex-shrink-0 text-[var(--navy-400)] transition-transform duration-300 ease-out ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-      <div
-        className="overflow-hidden transition-all duration-300 ease-out"
-        style={{
-          maxHeight: isOpen ? `${contentHeight}px` : '0px',
-          opacity: isOpen ? 1 : 0,
-        }}
-      >
-        <div ref={contentRef} className="pb-4 text-[var(--navy-600)] leading-relaxed">
-          {answer}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function AboutPage() {
   const t = useTranslations()
 
@@ -66,14 +23,6 @@ export default function AboutPage() {
     { key: '3', icon: 'M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12' },
     { key: '4', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' },
     { key: '5', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-  ]
-
-  const faqs = [
-    { question: t('transparency.faq1Question'), answer: t('transparency.faq1Answer') },
-    { question: t('transparency.faq2Question'), answer: t('transparency.faq2Answer') },
-    { question: t('transparency.faq3Question'), answer: t('transparency.faq3Answer') },
-    { question: t('transparency.faq4Question'), answer: t('transparency.faq4Answer') },
-    { question: t('transparency.faq5Question'), answer: t('transparency.faq5Answer') },
   ]
 
   return (
@@ -92,6 +41,18 @@ export default function AboutPage() {
         </div>
 
         <div className="text-[var(--navy-600)]">
+          {/* Statement of Purpose */}
+          <section className="mb-12">
+            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
+              {t('about.statementOfPurpose')}
+            </h2>
+            <blockquote className="text-lg leading-relaxed text-[var(--navy-600)] italic text-center border-l-4 border-r-4 border-[var(--ukraine-500)] px-6 py-2 mx-auto max-w-2xl">
+              {t('about.statementOfPurposeText')}
+            </blockquote>
+          </section>
+
+          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
+
           {/* 1. How It Works - Lead with what we do */}
           <section className="mb-12 overflow-hidden">
             <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-8 text-center">
@@ -253,20 +214,6 @@ export default function AboutPage() {
                     className="h-10 w-auto object-contain"
                   />
                 </a>
-              ))}
-            </div>
-          </section>
-
-          <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
-
-          {/* 4. FAQ */}
-          <section className="mb-12">
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
-              {t('transparency.faqTitle')}
-            </h2>
-            <div>
-              {faqs.map((faq, index) => (
-                <FAQItem key={index} question={faq.question} answer={faq.answer} />
               ))}
             </div>
           </section>

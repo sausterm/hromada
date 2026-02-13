@@ -146,6 +146,7 @@
     "cofinancingAvailable": "Co-financing Available",
     "providedInUkrainian": "Project details provided in Ukrainian by municipality",
     "specifications": {
+      "category": "Category",
       "projectType": "Project Type",
       "subtype": "Subtype",
       "estimatedCost": "Estimated Cost",

@@ -146,6 +146,7 @@
     "cofinancingAvailable": "Співфінансування доступне",
     "providedInUkrainian": "Деталі проєкту надані громадою українською мовою",
     "specifications": {
+      "category": "Категорія",
       "projectType": "Тип проєкту",
       "subtype": "Підтип",
       "estimatedCost": "Приблизна вартість",

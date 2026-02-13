@@ -297,8 +297,12 @@ function FlyToProject({
     if (projectId) {
       const project = projects.find((p) => p.id === projectId)
       if (project) {
-        const lat = project.latitude || project.cityLatitude
-        const lng = project.longitude || project.cityLongitude
+        const lat = Number(project.latitude || project.cityLatitude)
+        const lng = Number(project.longitude || project.cityLongitude)
+        if (isNaN(lat) || isNaN(lng)) {
+          onComplete?.()
+          return
+        }
         const currentZoom = map.getZoom()
         const marker = markerRefs.current[projectId]
 

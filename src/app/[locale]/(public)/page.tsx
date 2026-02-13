@@ -128,13 +128,18 @@ export default function HomePage() {
   const ITEMS_PER_PAGE = 12
   const [displayCount, setDisplayCount] = useState(ITEMS_PER_PAGE)
 
-  // Track if map is visible (lg breakpoint = 1024px)
-  const [isMapVisible, setIsMapVisible] = useState(false)
+  // Track if desktop map panel is visible (lg breakpoint = 1024px)
+  const [isDesktopMap, setIsDesktopMap] = useState(false)
+  // Track if mobile map overlay is open
+  const [isMobileMapOpen, setIsMobileMapOpen] = useState(false)
+  // Combined: is any map currently filtering the project list
+  const isMapVisible = isDesktopMap
 
   useEffect(() => {
     const checkMapVisibility = () => {
-      setIsMapVisible(window.innerWidth >= 1024)
+      setIsDesktopMap(window.innerWidth >= 1024)
     }
+    checkMapVisibility()
     window.addEventListener('resize', checkMapVisibility)
     return () => window.removeEventListener('resize', checkMapVisibility)
   }, [])
@@ -879,7 +884,7 @@ export default function HomePage() {
                         isHighlighted={highlightedProjectId === project.id}
                         onMouseEnter={() => handleCardHover(project.id)}
                         onMouseLeave={() => handleCardHover(null)}
-                        onClick={() => handleCardClick(project)}
+                        onClick={isDesktopMap ? () => handleCardClick(project) : undefined}
                       />
                     </motion.div>
                   ))}
@@ -950,12 +955,12 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right Panel - Map */}
+        {/* Right Panel - Map (desktop only) */}
         <div className="hidden lg:block lg:w-1/2 xl:w-[55%] sticky top-0 h-full">
           <MapWrapper
             projects={sortedProjects}
             highlightedProjectId={highlightedProjectId}
-            flyToProjectId={flyToProjectId}
+            flyToProjectId={isDesktopMap ? flyToProjectId : null}
             onProjectClick={handleMarkerClick}
             onProjectHover={handleMarkerHover}
             onBoundsChange={handleBoundsChange}
@@ -965,7 +970,7 @@ export default function HomePage() {
       </main>
 
       {/* Mobile Map Overlay */}
-      {isMapVisible && (
+      {isMobileMapOpen && (
         <div className="lg:hidden fixed inset-0 z-40 bg-[var(--cream-50)]">
           <MapWrapper
             projects={sortedProjects}
@@ -984,9 +989,9 @@ export default function HomePage() {
         <Button
           variant="primary"
           className="shadow-lg bg-[var(--navy-700)] hover:bg-[var(--navy-800)] rounded-full px-6"
-          onClick={() => setIsMapVisible(!isMapVisible)}
+          onClick={() => setIsMobileMapOpen(!isMobileMapOpen)}
         >
-          {isMapVisible ? (
+          {isMobileMapOpen ? (
             <>
               <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />

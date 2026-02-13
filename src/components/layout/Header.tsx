@@ -24,9 +24,9 @@ export function Header({ children }: HeaderProps) {
   // Determine dashboard link based on user role
   const dashboardLink = isAdmin() ? '/admin' : '/partner'
 
-  // Close nav dropdown when clicking outside
+  // Close nav dropdown when clicking/tapping outside
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
       if (navMenuRef.current && !navMenuRef.current.contains(event.target as Node)) {
         setIsNavMenuOpen(false)
       }
@@ -34,7 +34,11 @@ export function Header({ children }: HeaderProps) {
 
     if (isNavMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
+      document.addEventListener('touchstart', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+        document.removeEventListener('touchstart', handleClickOutside)
+      }
     }
   }, [isNavMenuOpen])
 
@@ -116,6 +120,7 @@ export function Header({ children }: HeaderProps) {
               onMouseLeave={() => setIsNavMenuOpen(false)}
             >
               <button
+                onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
                 className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-[var(--navy-600)] hover:text-[var(--navy-800)] transition-colors"
                 aria-label={t('nav.menu')}
               >

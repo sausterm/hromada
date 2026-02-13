@@ -56,6 +56,7 @@ export default function HomePage() {
   // State
   const [allProjects, setAllProjects] = useState<Project[]>([])
   const [visibleProjects, setVisibleProjects] = useState<Project[]>([])
+  const [mapBoundsReported, setMapBoundsReported] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
   // Fetch projects from API
@@ -67,7 +68,6 @@ export default function HomePage() {
           const data = await response.json()
           const projects = data.projects.map(transformProject)
           setAllProjects(projects)
-          setVisibleProjects(projects)
         }
       } catch (error) {
         console.error('Failed to fetch projects:', error)
@@ -135,7 +135,6 @@ export default function HomePage() {
     const checkMapVisibility = () => {
       setIsMapVisible(window.innerWidth >= 1024)
     }
-    checkMapVisibility()
     window.addEventListener('resize', checkMapVisibility)
     return () => window.removeEventListener('resize', checkMapVisibility)
   }, [])
@@ -243,15 +242,16 @@ export default function HomePage() {
   }, [filteredProjects, sortBy, locale])
 
   // Projects visible in current map bounds (uses sorted projects)
-  // When map is not visible (mobile/narrow screens), show all projects
+  // Show all projects until the map has reported its initial bounds
+  // This prevents cards from flashing on load
   const projectsInView = useMemo(() => {
-    if (!isMapVisible) {
+    if (!isMapVisible || !mapBoundsReported) {
       return sortedProjects
     }
     return sortedProjects.filter((p) =>
       visibleProjects.some((vp) => vp.id === p.id)
     )
-  }, [sortedProjects, visibleProjects, isMapVisible])
+  }, [sortedProjects, visibleProjects, isMapVisible, mapBoundsReported])
 
   // Paginated projects for the card list
   const paginatedProjects = useMemo(() => {
@@ -273,6 +273,7 @@ export default function HomePage() {
   // Handle map bounds change - only update if visible projects actually changed
   const handleBoundsChange = useCallback(
     (_bounds: MapBounds, visible: Project[]) => {
+      setMapBoundsReported(true)
       setVisibleProjects((prev) => {
         // Compare IDs to avoid unnecessary state updates
         const prevIds = new Set(prev.map((p) => p.id))
@@ -963,24 +964,48 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Mobile Map Toggle */}
+      {/* Mobile Map Overlay */}
+      {isMapVisible && (
+        <div className="lg:hidden fixed inset-0 z-40 bg-[var(--cream-50)]">
+          <MapWrapper
+            projects={sortedProjects}
+            highlightedProjectId={highlightedProjectId}
+            flyToProjectId={flyToProjectId}
+            onProjectClick={handleMarkerClick}
+            onProjectHover={handleMarkerHover}
+            onBoundsChange={handleBoundsChange}
+            onFlyToComplete={handleFlyToComplete}
+          />
+        </div>
+      )}
+
+      {/* Mobile Map/List Toggle */}
       <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <Button
           variant="primary"
           className="shadow-lg bg-[var(--navy-700)] hover:bg-[var(--navy-800)] rounded-full px-6"
-          onClick={() => {
-            alert('Mobile map view coming soon!')
-          }}
+          onClick={() => setIsMapVisible(!isMapVisible)}
         >
-          <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-            />
-          </svg>
-          {t('homepage.viewMap')}
+          {isMapVisible ? (
+            <>
+              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+              {t('homepage.viewList')}
+            </>
+          ) : (
+            <>
+              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                />
+              </svg>
+              {t('homepage.viewMap')}
+            </>
+          )}
         </Button>
       </div>
     </div>

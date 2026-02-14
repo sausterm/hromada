@@ -105,8 +105,9 @@ export default function HomePage() {
   const cofinancingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const sortTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Helper to handle dropdown open with cancel of pending close
+  // Helper to handle dropdown open with cancel of pending close (desktop hover only)
   const openDropdown = (setter: (v: boolean) => void, timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
+    if (!window.matchMedia('(hover: hover)').matches) return
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
@@ -114,8 +115,9 @@ export default function HomePage() {
     setter(true)
   }
 
-  // Helper to handle dropdown close with delay
+  // Helper to handle dropdown close with delay (desktop hover only)
   const closeDropdown = (setter: (v: boolean) => void, timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
+    if (!window.matchMedia('(hover: hover)').matches) return
     timeoutRef.current = setTimeout(() => {
       setter(false)
       timeoutRef.current = null
@@ -861,7 +863,7 @@ export default function HomePage() {
                       {(['newest', 'oldest', 'highestCost', 'lowestCost', 'alphabetical'] as SortOption[]).map((option) => (
                         <button
                           key={option}
-                          onClick={() => setSortBy(option)}
+                          onClick={() => { setSortBy(option); setIsSortOpen(false) }}
                           className={`w-full text-left px-4 py-2 text-sm transition-colors ${sortBy === option ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
                         >
                           {t(`homepage.sortOptions.${option}`)}

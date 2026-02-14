@@ -989,12 +989,27 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right Panel - Map (always visible on desktop, toggled on mobile) */}
-        <div className={`${isMobileMapOpen ? 'block' : 'hidden'} lg:block w-full lg:w-1/2 xl:w-[55%] sticky top-0 h-full`}>
+        {/* Mobile Map (conditionally rendered so Leaflet initializes at correct size) */}
+        {isMobileMapOpen && (
+          <div className="lg:hidden w-full h-full">
+            <MapWrapper
+              projects={sortedProjects}
+              highlightedProjectId={highlightedProjectId}
+              flyToProjectId={flyToProjectId}
+              onProjectClick={handleMarkerClick}
+              onProjectHover={handleMarkerHover}
+              onBoundsChange={handleBoundsChange}
+              onFlyToComplete={handleFlyToComplete}
+            />
+          </div>
+        )}
+
+        {/* Desktop Map (always rendered) */}
+        <div className="hidden lg:block lg:w-1/2 xl:w-[55%] sticky top-0 h-full">
           <MapWrapper
             projects={sortedProjects}
             highlightedProjectId={highlightedProjectId}
-            flyToProjectId={flyToProjectId}
+            flyToProjectId={isDesktopMap ? flyToProjectId : null}
             onProjectClick={handleMarkerClick}
             onProjectHover={handleMarkerHover}
             onBoundsChange={handleBoundsChange}

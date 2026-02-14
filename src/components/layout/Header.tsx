@@ -19,6 +19,8 @@ export function Header({ children }: HeaderProps) {
   const { isAuthenticated, isAdmin, isPartner } = useAuth()
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false)
   const [isLangHovered, setIsLangHovered] = useState(false)
+  const [isLangPrimed, setIsLangPrimed] = useState(false)
+  const langPrimeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const navMenuRef = useRef<HTMLDivElement>(null)
 
   // Determine dashboard link based on user role
@@ -40,6 +42,39 @@ export function Header({ children }: HeaderProps) {
 
   const switchLocale = (newLocale: Locale) => {
     router.replace(pathname, { locale: newLocale })
+  }
+
+  // Clean up prime timer on unmount
+  useEffect(() => {
+    return () => {
+      if (langPrimeTimerRef.current) clearTimeout(langPrimeTimerRef.current)
+    }
+  }, [])
+
+  const handleLangClick = () => {
+    // Check if this is a touch device (no hover capability)
+    const isTouchDevice = window.matchMedia('(hover: none)').matches
+
+    if (!isTouchDevice) {
+      // Desktop: switch immediately (hover already previewed the flag)
+      switchLocale(otherLocale)
+      return
+    }
+
+    // Mobile: first tap primes (shows preview), second tap confirms
+    if (isLangPrimed) {
+      // Second tap — confirm the switch
+      if (langPrimeTimerRef.current) clearTimeout(langPrimeTimerRef.current)
+      setIsLangPrimed(false)
+      setIsLangHovered(false)
+      switchLocale(otherLocale)
+    } else {
+      // First tap — prime (flip to show other flag)
+      setIsLangPrimed(true)
+      langPrimeTimerRef.current = setTimeout(() => {
+        setIsLangPrimed(false)
+      }, 3000)
+    }
   }
 
   // Flag components that fill the circular button
@@ -284,9 +319,13 @@ export function Header({ children }: HeaderProps) {
           {/* Right - Language Switcher */}
           <div className="flex-1 flex items-center justify-end">
             <button
-              onClick={() => switchLocale(otherLocale)}
-              onMouseEnter={() => setIsLangHovered(true)}
-              onMouseLeave={() => setIsLangHovered(false)}
+              onClick={handleLangClick}
+              onMouseEnter={() => {
+                if (window.matchMedia('(hover: hover)').matches) setIsLangHovered(true)
+              }}
+              onMouseLeave={() => {
+                if (window.matchMedia('(hover: hover)').matches) setIsLangHovered(false)
+              }}
               className="w-10 h-10 rounded-full flex items-center justify-center p-1"
               aria-label={t('nav.language')}
               title={otherLocale === 'uk' ? 'Українська' : 'English'}
@@ -296,7 +335,7 @@ export function Header({ children }: HeaderProps) {
                 className="relative w-full h-full transition-transform duration-500 ease-in-out"
                 style={{
                   transformStyle: 'preserve-3d',
-                  transform: isLangHovered ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                  transform: (isLangHovered || isLangPrimed) ? 'rotateY(180deg)' : 'rotateY(0deg)'
                 }}
               >
                 <div

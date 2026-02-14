@@ -100,6 +100,7 @@ export default function ProjectsPage() {
   const powerButtonRef = useRef<HTMLButtonElement>(null)
   const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
   const cofinancingButtonRef = useRef<HTMLButtonElement>(null)
+  const sortDropdownRef = useRef<HTMLDivElement>(null)
 
   // Timeout refs for dropdown close delay (prevents flicker when moving between button and panel)
   const priceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -108,8 +109,9 @@ export default function ProjectsPage() {
   const cofinancingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const sortTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Helper to handle dropdown open with cancel of pending close
+  // Helper to handle dropdown open with cancel of pending close (desktop hover only)
   const openDropdown = (setter: (v: boolean) => void, timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
+    if (!window.matchMedia('(hover: hover)').matches) return
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
@@ -117,13 +119,44 @@ export default function ProjectsPage() {
     setter(true)
   }
 
-  // Helper to handle dropdown close with delay
+  // Helper to handle dropdown close with delay (desktop hover only)
   const closeDropdown = (setter: (v: boolean) => void, timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
+    if (!window.matchMedia('(hover: hover)').matches) return
     timeoutRef.current = setTimeout(() => {
       setter(false)
       timeoutRef.current = null
     }, 200) // 200ms delay allows mouse to reach dropdown panel
   }
+
+  // Close all dropdowns
+  const closeAllDropdowns = () => {
+    setIsPriceDropdownOpen(false)
+    setIsPowerDropdownOpen(false)
+    setIsProjectTypeOpen(false)
+    setIsCofinancingOpen(false)
+    setIsSortOpen(false)
+  }
+
+  // Toggle a dropdown on click/tap (closes others first)
+  const toggleDropdown = (current: boolean, setter: (v: boolean) => void) => {
+    closeAllDropdowns()
+    setTimeout(() => setter(!current), 0)
+  }
+
+  // Close dropdowns when tapping outside the filter bar and sort dropdown
+  const filterBarRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const handleTouchOutside = (e: TouchEvent) => {
+      const target = e.target as Node
+      const inFilterBar = filterBarRef.current?.contains(target)
+      const inSortDropdown = sortDropdownRef.current?.contains(target)
+      if (!inFilterBar && !inSortDropdown) {
+        closeAllDropdowns()
+      }
+    }
+    document.addEventListener('touchstart', handleTouchOutside)
+    return () => document.removeEventListener('touchstart', handleTouchOutside)
+  }, [])
 
   // Pagination for card list
   const ITEMS_PER_PAGE = 12
@@ -382,7 +415,7 @@ export default function ProjectsPage() {
       <Header />
 
       {/* Filter Bar */}
-      <div className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
+      <div ref={filterBarRef} className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
           <div className="flex items-center gap-2 flex-nowrap">
             {/* Price Range Dropdown */}
             <div className="relative shrink-0">
@@ -801,10 +834,14 @@ export default function ProjectsPage() {
               {/* Sort + Stats row */}
               <div className="flex items-center gap-3">
                 {/* Sort dropdown */}
-                <div className="relative shrink-0">
+                <div
+                  ref={sortDropdownRef}
+                  className="relative shrink-0"
+                  onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
+                  onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
+                >
                   <button
-                    onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
-                    onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
+                    onClick={() => toggleDropdown(isSortOpen, setIsSortOpen)}
                     className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] transition-all whitespace-nowrap"
                   >
                     <span>{t(`homepage.sortOptions.${sortBy}`)}</span>
@@ -813,7 +850,7 @@ export default function ProjectsPage() {
                     </svg>
                   </button>
                   <div
-                    className={`absolute right-0 top-full pt-2 z-50 transition-all duration-200 ease-out ${
+                    className={`absolute left-0 top-full pt-2 z-50 transition-all duration-200 ease-out ${
                       isSortOpen
                         ? 'opacity-100 translate-y-0 pointer-events-auto'
                         : 'opacity-0 -translate-y-2 pointer-events-none'
@@ -823,7 +860,7 @@ export default function ProjectsPage() {
                       {(['newest', 'oldest', 'highestCost', 'lowestCost', 'alphabetical'] as SortOption[]).map((option) => (
                         <button
                           key={option}
-                          onClick={() => setSortBy(option)}
+                          onClick={() => { setSortBy(option); setIsSortOpen(false) }}
                           className={`w-full text-left px-4 py-2 text-sm transition-colors ${sortBy === option ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
                         >
                           {t(`homepage.sortOptions.${option}`)}
@@ -989,14 +1026,14 @@ export default function ProjectsPage() {
         >
           {isMobileMapOpen ? (
             <>
-              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg key="list" className="h-5 w-5 mr-2 animate-icon-swap" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
               {t('homepage.viewList')}
             </>
           ) : (
             <>
-              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg key="map" className="h-5 w-5 mr-2 animate-icon-swap" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

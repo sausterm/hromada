@@ -389,6 +389,22 @@ body {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Icon swap animation */
+@keyframes icon-swap {
+  0% {
+    opacity: 0;
+    transform: scale(0.75) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.animate-icon-swap {
+  animation: icon-swap 200ms ease-out;
+}
+
 /* Smooth card hover effect */
 .card-hover {
   transition: transform 0.2s ease, box-shadow 0.2s ease;

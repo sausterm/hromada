@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, type ReactNode } from 'react'
+import { useState, useEffect, useRef, useMemo, type ReactNode } from 'react'
 import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
@@ -71,6 +71,49 @@ const STEPS: { number: number; titleKey: string; descKey: string; hexColor: stri
     ),
   },
 ]
+
+// FAQ accordion item — matches about page style
+function FAQItem({ question, children }: { question: string; children: ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [contentHeight, setContentHeight] = useState(0)
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setContentHeight(contentRef.current.scrollHeight)
+    }
+  }, [children])
+
+  return (
+    <div className="border-b border-[var(--cream-300)] last:border-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full py-4 flex items-center justify-between text-left hover:text-[var(--navy-800)] transition-colors"
+      >
+        <span className="font-medium text-[var(--navy-700)] pr-4">{question}</span>
+        <svg
+          className={`w-5 h-5 flex-shrink-0 text-[var(--navy-400)] transition-transform duration-300 ease-out ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div
+        className="overflow-hidden transition-all duration-300 ease-out"
+        style={{
+          maxHeight: isOpen ? `${contentHeight}px` : '0px',
+          opacity: isOpen ? 1 : 0,
+        }}
+      >
+        <div ref={contentRef} className="pb-4 text-[var(--navy-600)] leading-relaxed">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // Step component for How It Works
 function HowItWorksStep({ step, isLast, t }: { step: typeof STEPS[0]; isLast: boolean; t: ReturnType<typeof useTranslations> }) {
@@ -187,27 +230,28 @@ function DocumentaryPhoto({
 
 // Live stats display
 function LiveStatsCard() {
+  const t = useTranslations()
   return (
     <div className="bg-white rounded-xl border border-[var(--cream-200)] overflow-hidden shadow-sm">
       <div className="bg-[var(--cream-50)] px-4 py-3 border-b border-[var(--cream-200)] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-sm font-medium text-[var(--navy-700)]">Live System Status</span>
+          <span className="text-sm font-medium text-[var(--navy-700)]">{t('homepage.liveStats.title')}</span>
         </div>
-        <span className="text-xs text-[var(--navy-400)]">Kharkiv Hospital #5</span>
+        <span className="text-xs text-[var(--navy-400)]">{t('homepage.liveStats.location')}</span>
       </div>
       <div className="p-4 grid grid-cols-3 gap-4">
         <div className="text-center">
           <div className="text-2xl font-bold text-[var(--ukraine-blue)]">12.21</div>
-          <div className="text-xs text-[var(--navy-400)]">kW Solar</div>
+          <div className="text-xs text-[var(--navy-400)]">{t('homepage.liveStats.solar')}</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-green-600">100%</div>
-          <div className="text-xs text-[var(--navy-400)]">Battery</div>
+          <div className="text-xs text-[var(--navy-400)]">{t('homepage.liveStats.battery')}</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-[var(--navy-700)]">18.28</div>
-          <div className="text-xs text-[var(--navy-400)]">kW Load</div>
+          <div className="text-xs text-[var(--navy-400)]">{t('homepage.liveStats.load')}</div>
         </div>
       </div>
       <div className="px-4 py-2 bg-green-50 border-t border-green-100">
@@ -215,7 +259,7 @@ function LiveStatsCard() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          <span className="font-medium">Operational during grid outage</span>
+          <span className="font-medium">{t('homepage.liveStats.status')}</span>
         </div>
       </div>
     </div>
@@ -388,24 +432,83 @@ export default function HomePage() {
               <div className="text-sm text-[var(--navy-500)]">{t('homepage.howItWorks.promiseDesc')}</div>
             </div>
           </div>
+
+          {/* Project Categories */}
+          <div className="mt-16 max-w-2xl mx-auto text-left">
+            <h3 className="text-xl font-semibold text-[var(--navy-700)] mb-2 text-center">
+              {t('about.projectCategories')}
+            </h3>
+            <p className="text-sm text-[var(--navy-500)] mb-6 text-center">
+              {t('about.categoryIntro')}
+            </p>
+            <ul className="space-y-3 text-base leading-relaxed text-[var(--navy-600)]">
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(199, 91, 57, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#C75B39' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>
+                  </svg>
+                </span>
+                <span><strong>{t('categories.HOSPITAL')}</strong> — {t('about.categoryHospital')}</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(123, 158, 107, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#7B9E6B' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>
+                  </svg>
+                </span>
+                <span><strong>{t('categories.SCHOOL')}</strong> — {t('about.categorySchool')}</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(91, 143, 168, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#5B8FA8' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+                  </svg>
+                </span>
+                <span><strong>{t('categories.WATER')}</strong> — {t('about.categoryWater')}</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(212, 149, 74, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#D4954A' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+                  </svg>
+                </span>
+                <span><strong>{t('categories.ENERGY')}</strong> — {t('about.categoryEnergy')}</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: 'rgba(139, 115, 85, 0.15)' }}>
+                  <svg className="w-3.5 h-3.5" style={{ color: '#8B7355' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>
+                  </svg>
+                </span>
+                <span><strong>{t('categories.OTHER')}</strong> — {t('about.categoryOther')}</span>
+              </li>
+            </ul>
+            <div className="mt-6 pt-6 border-t border-[var(--cream-300)] flex items-start gap-2">
+              <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 18v-7" /><path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" /><path d="M14 18v-7" /><path d="M18 18v-7" /><path d="M3 22h18" /><path d="M6 18v-7" />
+              </svg>
+              <p className="text-sm leading-relaxed text-[var(--navy-600)]">
+                <strong className="text-[var(--navy-700)]">{t('transparency.civilianOnlyTitle')}:</strong> {t('transparency.civilianOnlyText')}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Case Study Section */}
-      <section className="pt-4 pb-16 md:pt-8 md:pb-24 px-4 bg-[var(--cream-100)]">
-        <div className="max-w-4xl mx-auto">
+      <section className="pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
+        <div className="max-w-4xl mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 text-[var(--ukraine-blue)] text-sm font-medium mb-4">
               <div className="w-8 h-px bg-current" />
-              REAL PROJECT
+              {t('homepage.caseStudy.label')}
               <div className="w-8 h-px bg-current" />
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-[var(--navy-700)] mb-4">
-              See It Happen
+              {t('homepage.caseStudy.title')}
             </h2>
             <p className="text-[var(--navy-500)] max-w-xl mx-auto">
-              This isn't a mockup. Here's an actual project funded through hromada,
-              from donation to operational infrastructure.
+              {t('homepage.caseStudy.subtitle')}
             </p>
           </div>
 
@@ -414,7 +517,7 @@ export default function HomePage() {
               <DocumentaryPhoto
                 src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748586682092.jpeg"
                 alt="Battery storage installation with Victron inverters"
-                caption="48kWh battery bank with Victron inverters — keeps the hospital running during blackouts"
+                caption={t('homepage.caseStudy.photoCaption1')}
                 location="Kharkiv, Ukraine"
               />
             </div>
@@ -422,41 +525,41 @@ export default function HomePage() {
             <div>
               <div className="mb-6">
                 <span className="inline-block bg-[#C75B39] text-white text-xs px-2 py-1 rounded-full mb-3">
-                  Hospital
+                  {t('homepage.caseStudy.badge')}
                 </span>
                 <h3 className="text-2xl font-bold text-[var(--navy-700)] mb-2">
-                  Kharkiv Regional Children's Hospital
+                  {t('homepage.caseStudy.projectName')}
                 </h3>
                 <p className="text-[var(--navy-500)]">
-                  30kW solar + 48kWh battery backup for critical care wing
+                  {t('homepage.caseStudy.projectDesc')}
                 </p>
               </div>
 
               <div className="mt-8">
                 <TimelineEvent
-                  date="November 15, 2024"
-                  title="Fully funded"
-                  description="47 donors contributed $127,000"
+                  date={t('homepage.caseStudy.timeline1Date')}
+                  title={t('homepage.caseStudy.timeline1Title')}
+                  description={t('homepage.caseStudy.timeline1Desc')}
                 />
                 <TimelineEvent
-                  date="November 22, 2024"
-                  title="Wire transfer sent"
-                  description="Funds arrive at Kharkiv municipal bank"
+                  date={t('homepage.caseStudy.timeline2Date')}
+                  title={t('homepage.caseStudy.timeline2Title')}
+                  description={t('homepage.caseStudy.timeline2Desc')}
                 />
                 <TimelineEvent
-                  date="December 3, 2024"
-                  title="Equipment delivered"
-                  description="Solar panels, inverters, batteries on site"
+                  date={t('homepage.caseStudy.timeline3Date')}
+                  title={t('homepage.caseStudy.timeline3Title')}
+                  description={t('homepage.caseStudy.timeline3Desc')}
                 />
                 <TimelineEvent
-                  date="December 18, 2024"
-                  title="Installation complete"
-                  description="System tested and commissioned"
+                  date={t('homepage.caseStudy.timeline4Date')}
+                  title={t('homepage.caseStudy.timeline4Title')}
+                  description={t('homepage.caseStudy.timeline4Desc')}
                 />
                 <TimelineEvent
-                  date="Today"
-                  title="Operational"
-                  description="47 grid outages survived and counting"
+                  date={t('homepage.caseStudy.timeline5Date')}
+                  title={t('homepage.caseStudy.timeline5Title')}
+                  description={t('homepage.caseStudy.timeline5Desc')}
                   isComplete={true}
                 />
               </div>
@@ -467,19 +570,19 @@ export default function HomePage() {
             <DocumentaryPhoto
               src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613965913.jpeg"
               alt="Solar inverter display showing live power data"
-              caption="Real-time monitoring shows 12.21kW flowing from solar"
+              caption={t('homepage.caseStudy.photoCaption2')}
               location="Kharkiv, Ukraine"
             />
             <DocumentaryPhoto
               src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466071929.jpeg"
               alt="Ground-mounted solar array"
-              caption="Ground-mounted array at water treatment facility"
+              caption={t('homepage.caseStudy.photoCaption3')}
               location="Poltava Oblast"
             />
             <div className="flex flex-col justify-center">
               <LiveStatsCard />
               <p className="text-xs text-[var(--navy-400)] mt-3 text-center">
-                Data from actual system monitoring
+                {t('homepage.caseStudy.dataNote')}
               </p>
             </div>
           </div>
@@ -488,8 +591,8 @@ export default function HomePage() {
 
       {/* Photo Strip */}
       <section className="py-12 bg-[var(--cream-100)] overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 mb-8">
-          <h3 className="text-[var(--navy-700)] text-xl font-semibold text-center">More Completed Projects</h3>
+        <div className="max-w-4xl mx-auto px-4 lg:px-8 mb-8">
+          <h3 className="text-[var(--navy-700)] text-xl font-semibold text-center">{t('homepage.photoStrip.title')}</h3>
         </div>
 
         <div className="relative">
@@ -541,47 +644,41 @@ export default function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 md:py-24 px-4 bg-[var(--cream-100)]">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold text-[var(--navy-700)] text-center mb-12">
-            Common Questions
+      <section className="py-16 md:py-24 bg-[var(--cream-100)]">
+        <div className="max-w-3xl mx-auto px-4 lg:px-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-[var(--navy-700)] text-center mb-12">
+            {t('homepage.faq.title')}
           </h2>
 
-          <div className="space-y-6">
-            {[
-              {
-                q: "How do I know my donation actually reaches Ukraine?",
-                a: "We provide wire transfer confirmations, on-site photos during installation, and live monitoring data once systems are operational. Every project has a public transparency report."
-              },
-              {
-                q: "Why wire transfers instead of credit cards?",
-                a: "Wire transfers have lower fees and are more reliable for large international transfers. For donations over $1,000, this means more of your money funds the actual project."
-              },
-              {
-                q: "Who are your partners in Ukraine?",
-                a: "We work directly with municipal governments and licensed electrical contractors. All partners are vetted and have completed previous installations."
-              },
-              {
-                q: "What happens if a project doesn't reach its funding goal?",
-                a: "Partial funding still helps — many projects can be phased. If a project is cancelled, donors are contacted to redirect funds to similar projects."
-              },
-              {
-                q: "Is my donation tax-deductible?",
-                a: "Yes. Donations are made to POCACITO Network, a registered 501(c)(3) (EIN 99-0392258). Your donation is tax-deductible as allowed by law."
-              }
-            ].map((faq, i) => (
-              <details key={i} className="group bg-white rounded-lg border border-[var(--cream-200)]">
-                <summary className="flex items-center justify-between px-5 py-4 cursor-pointer list-none">
-                  <span className="font-medium text-[var(--navy-700)]">{faq.q}</span>
-                  <svg className="w-5 h-5 text-[var(--navy-400)] transition-transform group-open:rotate-180 flex-shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-                <div className="px-5 pb-4 text-[var(--navy-500)]">
-                  {faq.a}
-                </div>
-              </details>
-            ))}
+          <div>
+            <FAQItem question={t('homepage.faq.q1')}>
+              {t('homepage.faq.a1')}
+            </FAQItem>
+            <FAQItem question={t('homepage.faq.q2')}>
+              {t('homepage.faq.a2')}
+            </FAQItem>
+            <FAQItem question={t('homepage.faq.q3')}>
+              {t('homepage.faq.a3')}
+              <div className="flex flex-wrap items-center gap-6 mt-4">
+                {[
+                  { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/' },
+                  { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/' },
+                  { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/' },
+                  { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/' },
+                  { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/' },
+                ].map((p) => (
+                  <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" title={p.name} className="opacity-70 hover:opacity-100 transition-opacity">
+                    <img src={p.logo} alt={p.name} className="h-8" />
+                  </a>
+                ))}
+              </div>
+            </FAQItem>
+            <FAQItem question={t('homepage.faq.q4')}>
+              {t('homepage.faq.a4')}
+            </FAQItem>
+            <FAQItem question={t('homepage.faq.q5')}>
+              {t('homepage.faq.a5')}
+            </FAQItem>
           </div>
         </div>
       </section>
@@ -597,12 +694,12 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/projects">
-              <Button variant="primary" size="lg">
+              <Button variant="primary" size="lg" className="min-w-[200px] border-2 border-[var(--navy-600)]">
                 {t('homepage.cta.button')}
               </Button>
             </Link>
             <Link href="/about">
-              <Button variant="outline" size="lg" className="border-[var(--navy-600)] text-[var(--navy-600)] hover:bg-[var(--navy-100)]">
+              <Button variant="outline" size="lg" className="min-w-[200px] border-[var(--navy-600)] text-[var(--navy-600)] hover:bg-[var(--navy-100)]">
                 {t('homepage.hero.ctaHowItWorks')}
               </Button>
             </Link>

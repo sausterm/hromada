@@ -3,6 +3,61 @@ import { Resend } from 'resend'
 // Only create Resend client if API key is configured
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
+interface PasswordResetEmailParams {
+  name: string
+  email: string
+  code: string
+}
+
+export async function sendPasswordResetEmail({
+  name,
+  email,
+  code,
+}: PasswordResetEmailParams): Promise<{ success: boolean; error?: string }> {
+  if (!resend) {
+    console.warn('RESEND_API_KEY not configured, skipping password reset email')
+    console.log(`[DEV] Password reset code for ${email}: ${code}`)
+    return { success: true }
+  }
+
+  try {
+    await resend.emails.send({
+      from: 'Hromada <onboarding@resend.dev>',
+      to: email,
+      subject: 'Your Hromada password reset code',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2C3E50;">Password Reset</h2>
+
+          <p>Hi ${name},</p>
+
+          <p>You requested a password reset for your Hromada account. Use this code to set a new password:</p>
+
+          <div style="background: #F5F1E8; padding: 24px; border-radius: 8px; margin: 24px 0; text-align: center;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #2C3E50;">${code}</span>
+          </div>
+
+          <p style="color: #666;">This code expires in <strong>15 minutes</strong>.</p>
+
+          <p style="color: #666;">If you didn't request this, you can safely ignore this email. Your password will not be changed.</p>
+
+          <p style="color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
+            This email was sent from Hromada. Please do not reply.
+          </p>
+        </div>
+      `,
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send password reset email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
 interface ContactNotificationParams {
   donorName: string
   donorEmail: string

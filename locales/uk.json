@@ -456,7 +456,30 @@
     "loginButton": "Увійти",
     "backToHome": "← На головну",
     "emailPasswordRequired": "Email та пароль обов'язкові",
-    "invalidCredentials": "Невірний email або пароль"
+    "invalidCredentials": "Невірний email або пароль",
+    "forgotPassword": "Забули пароль?"
+  },
+  "forgotPassword": {
+    "title": "Скидання пароля",
+    "subtitle": "Введіть email і ми надішлемо код для скидання",
+    "emailLabel": "Електронна пошта",
+    "emailPlaceholder": "you@example.com",
+    "sendCode": "Надіслати код",
+    "codeSent": "Якщо обліковий запис з цим email існує, ми надіслали 6-значний код.",
+    "codeLabel": "Код скидання",
+    "codePlaceholder": "Введіть 6-значний код",
+    "newPassword": "Новий пароль",
+    "newPasswordPlaceholder": "Мінімум 12 символів",
+    "confirmPassword": "Підтвердіть новий пароль",
+    "confirmPasswordPlaceholder": "Повторіть ваш новий пароль",
+    "resetButton": "Скинути пароль",
+    "success": "Пароль змінено",
+    "successMessage": "Ваш пароль було змінено. Тепер ви можете увійти з новим паролем.",
+    "backToLogin": "← Повернутися до входу",
+    "invalidCode": "Невірний або протермінований код. Будь ласка, запросіть новий.",
+    "passwordMismatch": "Паролі не збігаються",
+    "genericError": "Щось пішло не так. Спробуйте ще раз.",
+    "resendCode": "Не отримали код? Запросіть новий"
   },
   "partner": {
     "title": "Панель партнера",

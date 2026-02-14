@@ -102,9 +102,12 @@ export default function LoginPage() {
               {t('login.loginButton')}
             </Button>
           </form>
-          <div className="mt-4 text-center">
+          <div className="mt-4 flex items-center justify-between">
             <Link href="/" className="text-sm text-[var(--ukraine-600)] hover:underline">
               {t('login.backToHome')}
+            </Link>
+            <Link href="/forgot-password" className="text-sm text-[var(--ukraine-600)] hover:underline">
+              {t('login.forgotPassword')}
             </Link>
           </div>
         </CardContent>

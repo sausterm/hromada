@@ -13,13 +13,13 @@ export function Footer() {
         <div className="text-center">
           {/* Fiscal sponsor */}
           <p className="text-sm text-[var(--navy-500)] mb-3">
-            hromada is a project of{' '}
+            {t('fiscalSponsor')}{' '}
             <a href="https://pocacito.org" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
               POCACITO Network
             </a>
             {' · '}
             <a href="https://app.candid.org/profile/16026326/pocacito-network/" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
-              Candid Platinum Seal of Transparency
+              {t('candidSeal')}
             </a>
           </p>
 
@@ -59,7 +59,7 @@ export function Footer() {
 
           {/* Copyright Notice */}
           <p className="text-sm text-[var(--navy-500)] mt-3">
-            © {currentYear} Thomas D. Protzman. All rights reserved.
+            {t('copyright', { year: currentYear })}
           </p>        </div>
       </div>
     </footer>

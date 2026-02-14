@@ -52,6 +52,9 @@ export const AuditAction = {
   WIRE_INITIATED: 'WIRE_INITIATED',
   WIRE_SENT: 'WIRE_SENT',
   WIRE_CONFIRMED: 'WIRE_CONFIRMED',
+  // Password reset actions
+  PASSWORD_RESET_REQUESTED: 'PASSWORD_RESET_REQUESTED',
+  PASSWORD_RESET_COMPLETED: 'PASSWORD_RESET_COMPLETED',
 } as const
 
 export type AuditActionType = (typeof AuditAction)[keyof typeof AuditAction]

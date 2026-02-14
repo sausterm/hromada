@@ -190,13 +190,27 @@ model User {
   lastLoginIp         String?
   passwordChangedAt   DateTime  @default(now())
 
-  projectSubmissions ProjectSubmission[]
-  auditLogs          AuditLog[]
-  donations          Donation[]
+  projectSubmissions  ProjectSubmission[]
+  auditLogs           AuditLog[]
+  donations           Donation[]
+  passwordResetTokens PasswordResetToken[]
 
   @@index([email])
   @@index([role])
   @@index([isActive])
+}
+
+/// OTP codes for password reset, expires after 15 minutes
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  code      String    // 6-digit numeric OTP
+  expiresAt DateTime  // 15 minutes from creation
+  usedAt    DateTime? // null until redeemed
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 /// Security audit log for tracking important events

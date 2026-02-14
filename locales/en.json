@@ -472,7 +472,30 @@
     "loginButton": "Sign In",
     "backToHome": "← Back to Home",
     "emailPasswordRequired": "Email and password are required",
-    "invalidCredentials": "Invalid email or password"
+    "invalidCredentials": "Invalid email or password",
+    "forgotPassword": "Forgot password?"
+  },
+  "forgotPassword": {
+    "title": "Reset Password",
+    "subtitle": "Enter your email and we'll send you a reset code",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "sendCode": "Send Reset Code",
+    "codeSent": "If an account exists with that email, we've sent a 6-digit code.",
+    "codeLabel": "Reset code",
+    "codePlaceholder": "Enter 6-digit code",
+    "newPassword": "New password",
+    "newPasswordPlaceholder": "At least 12 characters",
+    "confirmPassword": "Confirm new password",
+    "confirmPasswordPlaceholder": "Re-enter your new password",
+    "resetButton": "Reset Password",
+    "success": "Password Reset",
+    "successMessage": "Your password has been changed. You can now sign in with your new password.",
+    "backToLogin": "← Back to Sign In",
+    "invalidCode": "Invalid or expired reset code. Please request a new one.",
+    "passwordMismatch": "Passwords do not match",
+    "genericError": "Something went wrong. Please try again.",
+    "resendCode": "Didn't receive the code? Request a new one"
   },
   "partner": {
     "title": "Partner Dashboard",

@@ -370,7 +370,10 @@
     "contact": "Contact",
     "builtFor": "Built to support renewable infrastructure recovery",
     "geoRestrictions": "Service restricted in certain regions for security",
-    "mpp": "Municipal Partnership"
+    "mpp": "Municipal Partnership",
+    "fiscalSponsor": "hromada is a project of",
+    "candidSeal": "Candid Platinum Seal of Transparency",
+    "copyright": "© {year} Thomas D. Protzman. All rights reserved."
   },
   "legal": {
     "termsTitle": "Terms of Service",

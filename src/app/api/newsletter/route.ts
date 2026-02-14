@@ -3,7 +3,7 @@ import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   // Rate limit: 3 requests per minute per IP
-  const rateLimitResult = rateLimit(request, RATE_LIMITS.contactForm)
+  const rateLimitResult = rateLimit(request, RATE_LIMITS.contact)
   if (rateLimitResult) return rateLimitResult
 
   try {

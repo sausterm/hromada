@@ -417,6 +417,10 @@ export default function HomePage() {
             {/* Stats */}
             <div className="flex flex-wrap gap-6 md:gap-10 mb-8">
               <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-white">{totalStats.communityCount}</div>
+                <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statCommunities')}</div>
+              </div>
+              <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-white">{totalStats.projectCount}</div>
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statProjects')}</div>
               </div>
@@ -424,21 +428,17 @@ export default function HomePage() {
                 <div className="text-3xl md:text-4xl font-bold text-white">{formatCurrency(totalStats.fundingNeeded, { compact: true })}</div>
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statFunding')}</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white">{totalStats.communityCount}</div>
-                <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statCommunities')}</div>
-              </div>
             </div>
 
             {/* CTAs */}
             <div className="flex flex-wrap gap-4">
               <Link href="/projects">
-                <Button variant="primary" size="lg" className="bg-white text-[var(--navy-700)] hover:bg-[var(--cream-100)]">
+                <Button variant="primary" size="lg" className="w-[220px] border-2 border-transparent bg-white text-[var(--navy-700)] hover:bg-[var(--cream-100)]">
                   {t('homepage.hero.ctaBrowse')}
                 </Button>
               </Link>
               <Link href="/about">
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                <Button variant="outline" size="lg" className="w-[220px] border-white text-white hover:bg-white/10">
                   {t('homepage.hero.ctaHowItWorks')}
                 </Button>
               </Link>
@@ -447,15 +447,19 @@ export default function HomePage() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-scroll-hint">
-          <svg className="w-6 h-6 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <button
+          onClick={() => document.getElementById('featured-projects')?.scrollIntoView({ behavior: 'smooth' })}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-scroll-hint cursor-pointer p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200"
+          aria-label="Scroll to featured projects"
+        >
+          <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
-        </div>
+        </button>
       </section>
 
       {/* Featured Projects Section */}
-      <section className="py-16 md:py-24 bg-[var(--cream-100)]">
+      <section id="featured-projects" className="py-16 md:py-24 bg-[var(--cream-100)]">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-[var(--navy-700)]">
@@ -595,9 +599,6 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold text-[var(--navy-700)] mb-4">
               {t('homepage.caseStudy.title')}
             </h2>
-            <p className="text-[var(--navy-500)] max-w-xl mx-auto">
-              {t('homepage.caseStudy.subtitle')}
-            </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">

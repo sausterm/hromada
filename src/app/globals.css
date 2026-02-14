@@ -389,14 +389,14 @@ body {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Hero scroll indicator bounce */
+/* Hero scroll indicator float */
 @keyframes scroll-hint {
   0%, 100% {
     transform: translateY(0);
-    opacity: 0.6;
+    opacity: 0.5;
   }
   50% {
-    transform: translateY(8px);
+    transform: translateY(10px);
     opacity: 1;
   }
 }

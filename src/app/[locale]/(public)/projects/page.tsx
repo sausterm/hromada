@@ -79,6 +79,7 @@ export default function ProjectsPage() {
   }, [])
   const [highlightedProjectId, setHighlightedProjectId] = useState<string | null>(null)
   const [flyToProjectId, setFlyToProjectId] = useState<string | null>(null) // Separate state for zoom-on-click
+  const [isMobileMapOpen, setIsMobileMapOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set())
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
@@ -758,7 +759,7 @@ export default function ProjectsPage() {
         <div ref={listContainerRef} className="w-full lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-50)]">
           {/* Results Header - Single Line */}
           <div className="sticky top-0 z-10 bg-[var(--cream-100)] px-4 py-2.5 border-b border-[var(--cream-300)]">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               {/* Search with clear button - fills available space */}
               <div className="flex-1 min-w-0">
                 <div className="relative">
@@ -797,54 +798,57 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
-              {/* Sort dropdown */}
-              <div className="relative shrink-0">
-                <button
-                  onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
-                  onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
-                  className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] transition-all whitespace-nowrap"
-                >
-                  <span>{t(`homepage.sortOptions.${sortBy}`)}</span>
-                  <svg className={`h-3 w-3 transition-transform ${isSortOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <div
-                  className={`absolute right-0 top-full pt-2 z-50 transition-all duration-200 ease-out ${
-                    isSortOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
-                >
-                  <div className="w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
-                    {(['newest', 'oldest', 'highestCost', 'lowestCost', 'alphabetical'] as SortOption[]).map((option) => (
-                      <button
-                        key={option}
-                        onClick={() => setSortBy(option)}
-                        className={`w-full text-left px-4 py-2 text-sm transition-colors ${sortBy === option ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
-                      >
-                        {t(`homepage.sortOptions.${option}`)}
-                      </button>
-                    ))}
+              {/* Sort + Stats row */}
+              <div className="flex items-center gap-3">
+                {/* Sort dropdown */}
+                <div className="relative shrink-0">
+                  <button
+                    onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
+                    onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
+                    className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white border border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] transition-all whitespace-nowrap"
+                  >
+                    <span>{t(`homepage.sortOptions.${sortBy}`)}</span>
+                    <svg className={`h-3 w-3 transition-transform ${isSortOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div
+                    className={`absolute right-0 top-full pt-2 z-50 transition-all duration-200 ease-out ${
+                      isSortOpen
+                        ? 'opacity-100 translate-y-0 pointer-events-auto'
+                        : 'opacity-0 -translate-y-2 pointer-events-none'
+                    }`}
+                  >
+                    <div className="w-40 rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2 transform-gpu">
+                      {(['newest', 'oldest', 'highestCost', 'lowestCost', 'alphabetical'] as SortOption[]).map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => setSortBy(option)}
+                          className={`w-full text-left px-4 py-2 text-sm transition-colors ${sortBy === option ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
+                        >
+                          {t(`homepage.sortOptions.${option}`)}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Project count & funding - bold and visible */}
-              <div className="shrink-0 whitespace-nowrap">
-                <span className="text-[var(--navy-800)] text-sm font-bold">
-                  {projectsInView.length}
-                </span>
-                <span className="text-[var(--navy-600)] text-sm font-medium">
-                  {' '}{t('common.projects')}{' '}
-                </span>
-                <span className="text-[var(--navy-400)]">|</span>
-                <span className="text-[var(--navy-800)] text-sm font-bold">
-                  {' '}{formatCurrency(totalFundingNeeded, { compact: true })}
-                </span>
-                <span className="text-[var(--navy-600)] text-sm font-medium">
-                  {' '}{t('common.needed')}
-                </span>
+                {/* Project count & funding - bold and visible */}
+                <div className="shrink-0 whitespace-nowrap">
+                  <span className="text-[var(--navy-800)] text-sm font-bold">
+                    {projectsInView.length}
+                  </span>
+                  <span className="text-[var(--navy-600)] text-sm font-medium">
+                    {' '}{t('common.projects')}{' '}
+                  </span>
+                  <span className="text-[var(--navy-400)]">|</span>
+                  <span className="text-[var(--navy-800)] text-sm font-bold">
+                    {' '}{formatCurrency(totalFundingNeeded, { compact: true })}
+                  </span>
+                  <span className="text-[var(--navy-600)] text-sm font-medium">
+                    {' '}{t('common.needed')}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -961,24 +965,48 @@ export default function ProjectsPage() {
         </div>
       </main>
 
-      {/* Mobile Map Toggle */}
+      {/* Mobile Map Overlay */}
+      {isMobileMapOpen && (
+        <div className="lg:hidden fixed inset-0 z-40 bg-[var(--cream-50)]">
+          <MapWrapper
+            projects={sortedProjects}
+            highlightedProjectId={highlightedProjectId}
+            flyToProjectId={flyToProjectId}
+            onProjectClick={handleMarkerClick}
+            onProjectHover={handleMarkerHover}
+            onBoundsChange={handleBoundsChange}
+            onFlyToComplete={handleFlyToComplete}
+          />
+        </div>
+      )}
+
+      {/* Mobile Map/List Toggle */}
       <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
         <Button
           variant="primary"
           className="shadow-lg bg-[var(--navy-700)] hover:bg-[var(--navy-800)] rounded-full px-6"
-          onClick={() => {
-            alert('Mobile map view coming soon!')
-          }}
+          onClick={() => setIsMobileMapOpen(!isMobileMapOpen)}
         >
-          <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-            />
-          </svg>
-          {t('homepage.viewMap')}
+          {isMobileMapOpen ? (
+            <>
+              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+              {t('homepage.viewList')}
+            </>
+          ) : (
+            <>
+              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                />
+              </svg>
+              {t('homepage.viewMap')}
+            </>
+          )}
         </Button>
       </div>
     </div>

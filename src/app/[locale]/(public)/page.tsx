@@ -1005,7 +1005,7 @@ export default function HomePage() {
 
       {/* Mobile Map Overlay */}
       {isMobileMapOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-[var(--cream-50)]">
+        <div className="lg:hidden fixed inset-0 z-[60] bg-[var(--cream-50)]">
           <MapWrapper
             projects={sortedProjects}
             highlightedProjectId={highlightedProjectId}
@@ -1019,7 +1019,7 @@ export default function HomePage() {
       )}
 
       {/* Mobile Map/List Toggle */}
-      <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+      <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[70]">
         <Button
           variant="primary"
           className="shadow-lg bg-[var(--navy-700)] hover:bg-[var(--navy-800)] rounded-full px-6"

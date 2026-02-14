@@ -790,8 +790,8 @@ export default function HomePage() {
 
       {/* Main Content - Split Screen */}
       <main className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Project List */}
-        <div ref={listContainerRef} className="w-full lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-50)]">
+        {/* Left Panel - Project List (hidden when mobile map is open) */}
+        <div ref={listContainerRef} className={`${isMobileMapOpen ? 'hidden' : ''} w-full lg:block lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-50)]`}>
           {/* Results Header - Single Line */}
           <div className="sticky top-0 z-10 bg-[var(--cream-100)] px-4 py-2.5 border-b border-[var(--cream-300)]">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
@@ -989,23 +989,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right Panel - Map (desktop only) */}
-        <div className="hidden lg:block lg:w-1/2 xl:w-[55%] sticky top-0 h-full">
-          <MapWrapper
-            projects={sortedProjects}
-            highlightedProjectId={highlightedProjectId}
-            flyToProjectId={isDesktopMap ? flyToProjectId : null}
-            onProjectClick={handleMarkerClick}
-            onProjectHover={handleMarkerHover}
-            onBoundsChange={handleBoundsChange}
-            onFlyToComplete={handleFlyToComplete}
-          />
-        </div>
-      </main>
-
-      {/* Mobile Map Overlay */}
-      {isMobileMapOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-[var(--cream-50)]">
+        {/* Right Panel - Map (always visible on desktop, toggled on mobile) */}
+        <div className={`${isMobileMapOpen ? 'block' : 'hidden'} lg:block w-full lg:w-1/2 xl:w-[55%] sticky top-0 h-full`}>
           <MapWrapper
             projects={sortedProjects}
             highlightedProjectId={highlightedProjectId}
@@ -1016,7 +1001,7 @@ export default function HomePage() {
             onFlyToComplete={handleFlyToComplete}
           />
         </div>
-      )}
+      </main>
 
       {/* Mobile Map/List Toggle */}
       <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50">

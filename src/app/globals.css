@@ -477,13 +477,6 @@ body {
   box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.5), 0 4px 16px rgba(58, 54, 51, 0.35) !important;
 }
 
-/* Push map controls below sticky header on mobile */
-@media (max-width: 1023px) {
-  .leaflet-top.leaflet-left {
-    top: 120px !important;
-  }
-}
-
 /* Reorder controls so home button appears above zoom */
 .leaflet-top.leaflet-left {
   display: flex;

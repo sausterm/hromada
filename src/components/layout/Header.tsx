@@ -70,6 +70,7 @@ export function Header({ children }: HeaderProps) {
       // Second tap — confirm the switch
       if (langPrimeTimerRef.current) clearTimeout(langPrimeTimerRef.current)
       setIsLangPrimed(false)
+      setIsLangHovered(false)
       switchLocale(otherLocale)
     } else {
       // First tap — prime (flip to show other flag)

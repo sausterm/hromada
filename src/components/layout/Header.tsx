@@ -223,8 +223,8 @@ export function Header({ children }: HeaderProps) {
           </div>
 
           {/* Center - Logo */}
-          <div className="flex flex-col items-center flex-shrink-0">
-            <span className="font-logo text-[var(--navy-700)] text-[2rem] sm:text-[2.5rem] lg:text-[3rem] leading-tight flex items-center">
+          <div className="flex flex-col items-center min-w-0">
+            <span className="font-logo text-[var(--navy-700)] text-[1.4rem] sm:text-[2.5rem] lg:text-[3rem] leading-tight flex items-center">
               <button
                 onClick={() => handleLogoClick('en')}
                 className={`${locale === 'en' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}
@@ -270,7 +270,7 @@ export function Header({ children }: HeaderProps) {
                 громада
               </button>
             </span>
-            <span className="text-[0.7rem] sm:text-xs text-[var(--navy-500)] italic">
+            <span className="text-[0.6rem] sm:text-xs text-[var(--navy-500)] italic text-center truncate max-w-full">
               {t('nav.headerSubtitle')}
             </span>
           </div>

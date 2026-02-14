@@ -1027,14 +1027,14 @@ export default function HomePage() {
         >
           {isMobileMapOpen ? (
             <>
-              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg key="list" className="h-5 w-5 mr-2 animate-icon-swap" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
               {t('homepage.viewList')}
             </>
           ) : (
             <>
-              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg key="map" className="h-5 w-5 mr-2 animate-icon-swap" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

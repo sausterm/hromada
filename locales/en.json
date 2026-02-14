@@ -97,11 +97,11 @@
     "title": "Support Ukrainian Communities",
     "subtitle": "Connect with municipalities that need infrastructure support",
     "hero": {
-      "headline": "Power Ukrainian hospitals, schools & homes",
-      "subheadline": "100% of your donation goes directly to municipalities rebuilding renewable energy infrastructure.",
+      "headline": "When Russia cuts the power, hospitals go dark",
+      "subheadline": "100% of your donation funds solar and battery systems that keep Ukrainian communities running.",
       "statProjects": "Projects",
       "statFunding": "Funding Needed",
-      "statPower": "Total kW",
+      "statCommunities": "Communities",
       "ctaBrowse": "Browse Projects",
       "ctaHowItWorks": "How It Works"
     },
@@ -133,9 +133,14 @@
       "cta": "Learn About Our Model"
     },
     "cta": {
-      "title": "Ready to Make a Difference?",
-      "subtitle": "Browse our verified projects and help Ukrainian communities rebuild their energy independence.",
-      "button": "Browse All Projects"
+      "title": "Choose a project. Fund it. Watch it power on.",
+      "subtitle": "Every project is verified, every dollar is tracked, and every system is monitored after installation.",
+      "button": "Browse All Projects",
+      "emailPlaceholder": "Your email address",
+      "emailButton": "Get Updates",
+      "emailSuccess": "You're on the list. We'll send project updates — no spam.",
+      "emailError": "Something went wrong. Please try again.",
+      "emailDivider": "or stay in the loop"
     },
     "caseStudy": {
       "label": "REAL PROJECT",

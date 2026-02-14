@@ -266,6 +266,68 @@ function LiveStatsCard() {
   )
 }
 
+// Email capture form
+function EmailCaptureForm({ t }: { t: ReturnType<typeof useTranslations> }) {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim()) return
+
+    setStatus('loading')
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+      if (res.ok) {
+        setStatus('success')
+        setEmail('')
+      } else {
+        setStatus('error')
+      }
+    } catch {
+      setStatus('error')
+    }
+  }
+
+  if (status === 'success') {
+    return (
+      <div className="flex items-center justify-center gap-2 text-green-700 bg-green-50 rounded-xl px-4 py-3">
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <span className="text-sm font-medium">{t('homepage.cta.emailSuccess')}</span>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex gap-2">
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder={t('homepage.cta.emailPlaceholder')}
+        className="flex-1 px-4 py-2.5 rounded-lg border border-[var(--cream-300)] bg-white text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+      />
+      <button
+        type="submit"
+        disabled={status === 'loading'}
+        className="px-5 py-2.5 rounded-lg bg-[var(--navy-700)] text-white text-sm font-medium hover:bg-[var(--navy-800)] transition-colors disabled:opacity-50 whitespace-nowrap"
+      >
+        {status === 'loading' ? '...' : t('homepage.cta.emailButton')}
+      </button>
+      {status === 'error' && (
+        <div className="absolute mt-12 text-xs text-red-600">{t('homepage.cta.emailError')}</div>
+      )}
+    </form>
+  )
+}
+
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {
   return {
@@ -307,11 +369,11 @@ export default function HomePage() {
   // Total stats for hero
   const totalStats = useMemo(() => {
     const totalFunding = allProjects.reduce((sum, p) => sum + (p.estimatedCostUsd || 0), 0)
-    const totalPower = allProjects.reduce((sum, p) => sum + (p.technicalPowerKw || 0), 0)
+    const uniqueCommunities = new Set(allProjects.map(p => p.municipalityName).filter(Boolean))
     return {
       projectCount: allProjects.length,
       fundingNeeded: totalFunding,
-      totalPowerKw: totalPower,
+      communityCount: uniqueCommunities.size,
     }
   }, [allProjects])
 
@@ -335,10 +397,10 @@ export default function HomePage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-[500px] md:h-[550px] overflow-hidden">
+      <section className="relative h-[calc(100svh-64px)] overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466072957.jpeg)' }}
+          style={{ backgroundImage: 'url(https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466071929.jpeg)' }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-900)]/80 via-[var(--navy-900)]/60 to-transparent" />
         </div>
@@ -363,8 +425,8 @@ export default function HomePage() {
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statFunding')}</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white">{Math.round(totalStats.totalPowerKw).toLocaleString()}</div>
-                <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statPower')}</div>
+                <div className="text-3xl md:text-4xl font-bold text-white">{totalStats.communityCount}</div>
+                <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statCommunities')}</div>
               </div>
             </div>
 
@@ -382,6 +444,13 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-scroll-hint">
+          <svg className="w-6 h-6 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
       </section>
 
@@ -421,16 +490,35 @@ export default function HomePage() {
             ))}
           </div>
 
-          <div className="mt-12 inline-flex items-center gap-3 bg-white px-8 py-4 rounded-2xl border border-[var(--cream-200)] shadow-lg">
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-              <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+          <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
+            <div className="inline-flex items-center gap-3 bg-white px-8 py-4 rounded-2xl border border-[var(--cream-200)] shadow-lg">
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <div className="text-[var(--navy-700)] font-semibold">{t('homepage.howItWorks.promiseTitle')}</div>
+                <div className="text-sm text-[var(--navy-500)]">{t('homepage.howItWorks.promiseDesc')}</div>
+              </div>
             </div>
-            <div className="text-left">
-              <div className="text-[var(--navy-700)] font-semibold">{t('homepage.howItWorks.promiseTitle')}</div>
-              <div className="text-sm text-[var(--navy-500)]">{t('homepage.howItWorks.promiseDesc')}</div>
-            </div>
+
+            <a
+              href="https://app.candid.org/profile/16026326/pocacito-network/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border border-[var(--cream-200)] shadow-lg hover:shadow-xl transition-shadow"
+            >
+              <div className="w-10 h-10 rounded-full bg-[var(--ukraine-blue)]/10 flex items-center justify-center">
+                <svg className="w-5 h-5 text-[var(--ukraine-blue)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <div className="text-[var(--navy-700)] font-semibold text-sm">501(c)(3) Fiscal Sponsor</div>
+                <div className="text-xs text-[var(--navy-500)]">POCACITO Network · Candid Platinum Seal</div>
+              </div>
+            </a>
           </div>
 
           {/* Project Categories */}
@@ -692,7 +780,7 @@ export default function HomePage() {
           <p className="text-lg text-[var(--navy-500)] mb-8">
             {t('homepage.cta.subtitle')}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
             <Link href="/projects">
               <Button variant="primary" size="lg" className="min-w-[200px] border-2 border-[var(--navy-600)]">
                 {t('homepage.cta.button')}
@@ -703,6 +791,16 @@ export default function HomePage() {
                 {t('homepage.hero.ctaHowItWorks')}
               </Button>
             </Link>
+          </div>
+
+          {/* Email capture */}
+          <div className="max-w-md mx-auto">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 h-px bg-[var(--cream-300)]" />
+              <span className="text-sm text-[var(--navy-400)] font-medium">{t('homepage.cta.emailDivider')}</span>
+              <div className="flex-1 h-px bg-[var(--cream-300)]" />
+            </div>
+            <EmailCaptureForm t={t} />
           </div>
         </div>
       </section>

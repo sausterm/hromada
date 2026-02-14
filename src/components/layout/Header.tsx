@@ -314,8 +314,12 @@ export function Header({ children }: HeaderProps) {
           <div className="flex-1 flex items-center justify-end">
             <button
               onClick={handleLangClick}
-              onMouseEnter={() => setIsLangHovered(true)}
-              onMouseLeave={() => setIsLangHovered(false)}
+              onMouseEnter={() => {
+                if (window.matchMedia('(hover: hover)').matches) setIsLangHovered(true)
+              }}
+              onMouseLeave={() => {
+                if (window.matchMedia('(hover: hover)').matches) setIsLangHovered(false)
+              }}
               className="w-10 h-10 rounded-full flex items-center justify-center p-1"
               aria-label={t('nav.language')}
               title={otherLocale === 'uk' ? 'Українська' : 'English'}

@@ -490,7 +490,7 @@ export default function HomePage() {
             ))}
           </div>
 
-          <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
             <div className="inline-flex items-center gap-3 bg-white px-8 py-4 rounded-2xl border border-[var(--cream-200)] shadow-lg">
               <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

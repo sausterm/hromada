@@ -97,6 +97,7 @@ export default function HomePage() {
   const powerButtonRef = useRef<HTMLButtonElement>(null)
   const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
   const cofinancingButtonRef = useRef<HTMLButtonElement>(null)
+  const sortDropdownRef = useRef<HTMLDivElement>(null)
 
   // Timeout refs for dropdown close delay (prevents flicker when moving between button and panel)
   const priceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -140,11 +141,14 @@ export default function HomePage() {
     setTimeout(() => setter(!current), 0)
   }
 
-  // Close dropdowns when tapping outside the filter bar
+  // Close dropdowns when tapping outside the filter bar and sort dropdown
   const filterBarRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const handleTouchOutside = (e: TouchEvent) => {
-      if (filterBarRef.current && !filterBarRef.current.contains(e.target as Node)) {
+      const target = e.target as Node
+      const inFilterBar = filterBarRef.current?.contains(target)
+      const inSortDropdown = sortDropdownRef.current?.contains(target)
+      if (!inFilterBar && !inSortDropdown) {
         closeAllDropdowns()
       }
     }
@@ -839,6 +843,7 @@ export default function HomePage() {
               <div className="flex items-center gap-3">
                 {/* Sort dropdown */}
                 <div
+                  ref={sortDropdownRef}
                   className="relative shrink-0"
                   onMouseEnter={() => openDropdown(setIsSortOpen, sortTimeoutRef)}
                   onMouseLeave={() => closeDropdown(setIsSortOpen, sortTimeoutRef)}
@@ -853,7 +858,7 @@ export default function HomePage() {
                     </svg>
                   </button>
                   <div
-                    className={`absolute right-0 top-full pt-2 z-50 transition-all duration-200 ease-out ${
+                    className={`absolute left-0 top-full pt-2 z-50 transition-all duration-200 ease-out ${
                       isSortOpen
                         ? 'opacity-100 translate-y-0 pointer-events-auto'
                         : 'opacity-0 -translate-y-2 pointer-events-none'

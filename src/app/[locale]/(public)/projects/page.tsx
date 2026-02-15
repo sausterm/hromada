@@ -411,11 +411,11 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[var(--cream-50)]">
+    <div className="h-screen flex flex-col bg-[var(--cream-100)]">
       <Header />
 
       {/* Filter Bar */}
-      <div ref={filterBarRef} className="px-4 lg:px-6 py-2 bg-[var(--cream-50)] border-t border-[var(--cream-200)] overflow-x-auto">
+      <div ref={filterBarRef} className="px-4 lg:px-6 py-2 bg-[var(--cream-100)] border-t border-b border-[var(--cream-200)] overflow-x-auto">
           <div className="flex items-center gap-2 flex-nowrap">
             {/* Price Range Dropdown */}
             <div className="relative shrink-0">
@@ -425,10 +425,10 @@ export default function ProjectsPage() {
                 aria-controls={priceDropdownId}
                 onMouseEnter={() => openDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
-                className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[130px] ${
+                className={`inline-flex items-center justify-center gap-1.5 py-1.5 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border w-[130px] ${
                   priceRange[0] > 0 || priceRange[1] < 500000
-                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                    ? 'bg-[var(--navy-700)]/10 text-[var(--navy-800)] border-[var(--navy-400)]'
+                    : 'bg-white/80 border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
                 }`}
               >
                 <span>
@@ -538,10 +538,10 @@ export default function ProjectsPage() {
                 <button
                   key={category}
                   onClick={() => toggleCategory(category)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all shrink-0 border-2 ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0 border ${
                     isActive
-                      ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                      : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)] hover:bg-[var(--navy-50)]'
+                      ? 'bg-[var(--navy-700)]/10 text-[var(--navy-800)] border-[var(--navy-400)]'
+                      : 'bg-white/80 border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
                   }`}
                 >
                   <svg
@@ -565,10 +565,10 @@ export default function ProjectsPage() {
                 ref={projectTypeButtonRef}
                 onMouseEnter={() => openDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
                   selectedProjectType
-                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                    ? 'bg-[var(--navy-700)]/10 text-[var(--navy-800)] border-[var(--navy-400)]'
+                    : 'bg-white/80 border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
                 }`}
               >
                 <span>{selectedProjectType ? t(`projectTypes.${selectedProjectType}`) : t('homepage.filters.projectType')}</span>
@@ -615,10 +615,10 @@ export default function ProjectsPage() {
                 aria-controls={powerDropdownId}
                 onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
-                className={`inline-flex items-center justify-center gap-1.5 py-1 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border-2 w-[140px] ${
+                className={`inline-flex items-center justify-center gap-1.5 py-1.5 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border w-[140px] ${
                   powerRange[0] > 0 || powerRange[1] < 500
-                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                    ? 'bg-[var(--navy-700)]/10 text-[var(--navy-800)] border-[var(--navy-400)]'
+                    : 'bg-white/80 border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
                 }`}
               >
                 <span>
@@ -726,10 +726,10 @@ export default function ProjectsPage() {
                 ref={cofinancingButtonRef}
                 onMouseEnter={() => openDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
-                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-all whitespace-nowrap border-2 ${
+                className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
                   selectedCofinancing
-                    ? 'bg-[var(--navy-600)] text-white border-[var(--navy-600)]'
-                    : 'bg-white border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+                    ? 'bg-[var(--navy-700)]/10 text-[var(--navy-800)] border-[var(--navy-400)]'
+                    : 'bg-white/80 border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
                 }`}
               >
                 <span>{selectedCofinancing ? t(`cofinancing.${selectedCofinancing}`) : t('homepage.filters.cofinancing')}</span>
@@ -789,7 +789,7 @@ export default function ProjectsPage() {
       {/* Main Content - Split Screen */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left Panel - Project List (hidden when mobile map is open) */}
-        <div ref={listContainerRef} className={`${isMobileMapOpen ? 'hidden' : ''} w-full lg:block lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-50)]`}>
+        <div ref={listContainerRef} className={`${isMobileMapOpen ? 'hidden' : ''} w-full lg:block lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-100)]`}>
           {/* Results Header - Single Line */}
           <div className="sticky top-0 z-10 bg-[var(--cream-100)] px-4 py-2.5 border-b border-[var(--cream-300)]">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
@@ -814,7 +814,7 @@ export default function ProjectsPage() {
                     placeholder={t('homepage.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-8 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-50)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+                    className="w-full pl-9 pr-8 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-100)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
                   />
                   {/* Clear search button */}
                   {searchQuery && (

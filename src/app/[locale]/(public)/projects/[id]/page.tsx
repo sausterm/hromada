@@ -119,7 +119,7 @@ export default function ProjectDetailPage() {
       <div className="min-h-screen flex flex-col items-center justify-center">
         <h1 className="text-2xl font-bold text-[var(--navy-700)] mb-4">{t('projectDetail.notFound')}</h1>
         <p className="text-[var(--navy-500)] mb-6">{t('projectDetail.notFoundMessage')}</p>
-        <Link href="/">
+        <Link href="/projects">
           <Button>{t('projectDetail.backToMap')}</Button>
         </Link>
       </div>
@@ -137,7 +137,7 @@ export default function ProjectDetailPage() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
-        <Link href="/" className="inline-flex items-center gap-2 text-[var(--navy-600)] hover:text-[var(--navy-800)] mb-6 group">
+        <Link href="/projects" className="inline-flex items-center gap-2 text-[var(--navy-600)] hover:text-[var(--navy-800)] mb-6 group">
           <svg className="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>

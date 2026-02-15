@@ -471,3 +471,42 @@ The headline/subheadline are still being iterated. Key requirements from the use
 - Must be concise (headline ≤7 words)
 - The "Minimal transfer fees. No overhead. Maximum impact" badge is already above it — don't repeat financial messaging
 - Previous attempts were too long or too generic
+
+---
+
+## Session 2026-02-10: Featured Projects, Hero Parallax, Favicon (v2 branch)
+
+### Featured Projects Admin Management (commit `11abad1`)
+- **Prisma schema**: Added `FeaturedProject` model — `projectId` (unique), `slot` (unique, 1-4), cascade delete on project removal. Reverse relation `featuredSlot` on Project model.
+- **Admin API**: `src/app/api/admin/featured/route.ts` — GET (list with project names), PUT (atomic replace via `$transaction([deleteMany, ...creates])`). Auth via `verifyAdminAuth`.
+- **Public API**: `src/app/api/projects/route.ts` — `?all=true` branch now also fetches `featuredProjectIds` (ordered by slot) via `Promise.all`.
+- **Homepage**: `featuredProjectIds` state populated from API. `featuredProjects` memo prioritizes admin-selected projects in slot order, backfills remaining slots with newest projects.
+- **Admin dashboard**: Collapsible "Featured Projects" panel inside projects tab. 4 numbered slot cards in a grid. Click "Assign" to open inline search/picker (filters existing projects, excludes already-featured). "X" to clear a slot. "Save" button persists via PUT.
+
+### Hero Parallax Scroll Effect
+- Added scroll handler that applies `translateY(scrollY * 0.4)` to the hero background image as user scrolls
+- **Key fix**: Separated animation and parallax into two nested divs to avoid CSS `animation-fill-mode: forwards` blocking inline transform updates
+  - Outer div (`heroImageRef`): handles parallax transform via JS, no animation, `top: -20%` / `bottom: -20%` for overflow room
+  - Inner div: handles `hero-photo-animate` fade-in, `bg-cover bg-center`
+- Removed `transform: scale()` from `hero-photo-fade` keyframes in `globals.css` — animation now only handles opacity
+
+### Favicon & Header Logo Transparency
+- **Header SVG** (`src/components/layout/Header.tsx`): Unified both transparent/non-transparent states to use a single SVG mask (`#panel-cutout`) that cuts out grid lines and junction dots. Fill color switches between `white` (transparent header) and `currentColor` (solid header). Grid lines are now transparent in both states.
+- **Favicon PNG** (`src/app/icon.png`): Used PIL to make 5,414 cream grid line pixels fully transparent. 566 anti-aliased edge pixels given partial alpha with navy coloring for smooth edges. Cream circle background preserved.
+
+### Files Changed
+| File | Changes |
+|------|---------|
+| `prisma/schema.prisma` | Added `FeaturedProject` model, `featuredSlot` relation on Project |
+| `src/app/api/admin/featured/route.ts` | **New** — admin GET/PUT for featured project slots |
+| `src/app/api/projects/route.ts` | Added `featuredProjectIds` to `?all=true` response |
+| `src/app/[locale]/(public)/page.tsx` | Featured projects logic, hero parallax (nested divs + scroll handler) |
+| `src/app/[locale]/admin/page.tsx` | Featured projects management UI (collapsible panel, slot cards, project picker) |
+| `src/app/globals.css` | Removed transform from `hero-photo-fade` keyframes |
+| `src/app/icon.png` | Grid lines between solar panels made transparent |
+| `src/components/layout/Header.tsx` | Unified SVG to mask-based cutout for both header states |
+
+### Technical Notes
+- **Prisma client regeneration**: After schema changes, must run `npx prisma generate` + `rm -rf .next` + restart dev server. The generated client in `.prisma/client/` won't have new models until regenerated.
+- **CSS animation vs inline transform**: `animation-fill-mode: forwards` can block inline `style.transform` updates even if the keyframes don't include `transform`. Solution: separate animated element from transform-controlled element.
+- **`inset-0` vs individual positioning**: Tailwind's `inset-0` (generates `inset: 0px`) overrides individual `top`/`bottom` values. Use `left-0 right-0` + inline `style` for top/bottom instead.

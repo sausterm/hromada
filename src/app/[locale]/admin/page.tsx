@@ -124,6 +124,14 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   const [subscribers, setSubscribers] = useState<{ id: string; email: string; subscribedAt: string; unsubscribed: boolean }[]>([])
   const [isLoadingSubscribers, setIsLoadingSubscribers] = useState(true)
   const [newSubscriberEmail, setNewSubscriberEmail] = useState('')
+  // Featured projects management
+  const [featuredSlots, setFeaturedSlots] = useState<Array<{ slot: number; projectId: string; project?: { facilityName: string; municipalityName: string } }>>([])
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true)
+  const [isSavingFeatured, setIsSavingFeatured] = useState(false)
+  const [showFeaturedManager, setShowFeaturedManager] = useState(false)
+  const [featuredSearchQuery, setFeaturedSearchQuery] = useState('')
+  const [activeSlot, setActiveSlot] = useState<number | null>(null)
+
   const [showUserForm, setShowUserForm] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [userFormData, setUserFormData] = useState({
@@ -225,6 +233,60 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
     }
     fetchSubscribers()
   }, [])
+
+  // Fetch featured projects
+  useEffect(() => {
+    async function fetchFeatured() {
+      try {
+        const response = await fetch('/api/admin/featured')
+        if (response.ok) {
+          const data = await response.json()
+          setFeaturedSlots(
+            (data.featured || []).map((f: { slot: number; projectId: string; project?: { facilityName: string; municipalityName: string } }) => ({
+              slot: f.slot,
+              projectId: f.projectId,
+              project: f.project,
+            }))
+          )
+        }
+      } catch (error) {
+        console.error('Failed to fetch featured:', error)
+      } finally {
+        setIsLoadingFeatured(false)
+      }
+    }
+    fetchFeatured()
+  }, [])
+
+  const handleSaveFeatured = async () => {
+    setIsSavingFeatured(true)
+    try {
+      const response = await fetch('/api/admin/featured', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slots: featuredSlots.map(s => ({ slot: s.slot, projectId: s.projectId })),
+        }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setFeaturedSlots(
+          (data.featured || []).map((f: { slot: number; projectId: string; project?: { facilityName: string; municipalityName: string } }) => ({
+            slot: f.slot,
+            projectId: f.projectId,
+            project: f.project,
+          }))
+        )
+      } else {
+        const data = await response.json()
+        console.error(data.error || 'Failed to save')
+      }
+    } catch (error) {
+      console.error('Failed to save featured:', error)
+    } finally {
+      setIsSavingFeatured(false)
+    }
+  }
 
   const handleAddSubscriber = async () => {
     if (!newSubscriberEmail || !newSubscriberEmail.includes('@')) return
@@ -798,6 +860,148 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
         {/* Content */}
         {activeTab === 'projects' && (
           <div className="space-y-4">
+            {/* Featured Projects Manager */}
+            <Card>
+              <button
+                onClick={() => setShowFeaturedManager(!showFeaturedManager)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 rounded-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                  <span className="font-semibold text-gray-900">Featured Projects</span>
+                  <Badge size="sm" variant="info">{featuredSlots.length}/4</Badge>
+                </div>
+                <svg className={`w-5 h-5 text-gray-400 transition-transform ${showFeaturedManager ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showFeaturedManager && (
+                <div className="px-4 pb-4 border-t">
+                  <p className="text-sm text-gray-500 mt-3 mb-4">
+                    Select up to 4 projects to feature on the homepage. Empty slots are filled with the newest projects.
+                  </p>
+
+                  {isLoadingFeatured ? (
+                    <div className="flex justify-center py-4">
+                      <LoadingSpinner size="sm" />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                        {[1, 2, 3, 4].map((slotNum) => {
+                          const slotData = featuredSlots.find(s => s.slot === slotNum)
+                          return (
+                            <div key={slotNum} className={`border-2 rounded-lg p-3 min-h-[80px] relative ${slotData ? 'border-amber-300 bg-amber-50' : 'border-dashed border-gray-300'}`}>
+                              <div className="text-xs font-bold text-gray-400 mb-1">Slot {slotNum}</div>
+                              {slotData ? (
+                                <div className="pr-6">
+                                  <p className="font-medium text-sm text-gray-900 truncate">
+                                    {slotData.project?.facilityName || 'Unknown'}
+                                  </p>
+                                  <p className="text-xs text-gray-500 truncate">
+                                    {slotData.project?.municipalityName || ''}
+                                  </p>
+                                  <button
+                                    onClick={() => setFeaturedSlots(prev => prev.filter(s => s.slot !== slotNum))}
+                                    className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 rounded"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => { setActiveSlot(slotNum); setFeaturedSearchQuery('') }}
+                                  className="w-full text-center text-sm text-blue-600 hover:text-blue-800 mt-1"
+                                >
+                                  + Assign project
+                                </button>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+
+                      {/* Project picker */}
+                      {activeSlot !== null && (
+                        <div className="border rounded-lg p-3 mb-4 bg-gray-50">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium">Select project for Slot {activeSlot}</span>
+                            <button onClick={() => setActiveSlot(null)} className="text-sm text-gray-500 hover:text-gray-700">
+                              Cancel
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            placeholder="Search projects..."
+                            value={featuredSearchQuery}
+                            onChange={(e) => setFeaturedSearchQuery(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-lg text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            autoFocus
+                          />
+                          <div className="max-h-48 overflow-y-auto space-y-1">
+                            {projects
+                              .filter(p => {
+                                const featuredIds = new Set(featuredSlots.map(s => s.projectId))
+                                if (featuredIds.has(p.id)) return false
+                                if (!featuredSearchQuery.trim()) return true
+                                const q = featuredSearchQuery.toLowerCase()
+                                return p.facilityName.toLowerCase().includes(q)
+                                    || p.municipalityName.toLowerCase().includes(q)
+                              })
+                              .slice(0, 20)
+                              .map(p => (
+                                <button
+                                  key={p.id}
+                                  onClick={() => {
+                                    setFeaturedSlots(prev => [
+                                      ...prev.filter(s => s.slot !== activeSlot),
+                                      {
+                                        slot: activeSlot!,
+                                        projectId: p.id,
+                                        project: { facilityName: p.facilityName, municipalityName: p.municipalityName },
+                                      },
+                                    ])
+                                    setActiveSlot(null)
+                                    setFeaturedSearchQuery('')
+                                  }}
+                                  className="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 flex justify-between items-center"
+                                >
+                                  <span className="font-medium truncate">{p.facilityName}</span>
+                                  <span className="text-gray-400 text-xs ml-2 flex-shrink-0">{p.municipalityName}</span>
+                                </button>
+                              ))
+                            }
+                            {projects.filter(p => {
+                              const featuredIds = new Set(featuredSlots.map(s => s.projectId))
+                              if (featuredIds.has(p.id)) return false
+                              if (!featuredSearchQuery.trim()) return true
+                              const q = featuredSearchQuery.toLowerCase()
+                              return p.facilityName.toLowerCase().includes(q) || p.municipalityName.toLowerCase().includes(q)
+                            }).length === 0 && (
+                              <p className="text-sm text-gray-400 text-center py-2">No matching projects</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      <Button
+                        onClick={handleSaveFeatured}
+                        disabled={isSavingFeatured}
+                        size="sm"
+                      >
+                        {isSavingFeatured ? 'Saving...' : 'Save Featured Projects'}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </Card>
+
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h2 className="text-xl font-semibold">{t('admin.projects.title')} ({filteredAndSortedProjects.length})</h2>
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">

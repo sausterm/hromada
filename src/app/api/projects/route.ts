@@ -42,24 +42,31 @@ export async function GET(request: NextRequest) {
 
     // If ?all=true, return all projects (needed for map markers)
     if (allParam === 'true') {
-      const projects = await prisma.project.findMany({
-        where,
-        include: {
-          photos: {
-            orderBy: { sortOrder: 'asc' },
+      const [projects, featuredRows] = await Promise.all([
+        prisma.project.findMany({
+          where,
+          include: {
+            photos: {
+              orderBy: { sortOrder: 'asc' },
+            },
           },
-        },
-        orderBy: [
-          { urgency: 'desc' },
-          { createdAt: 'desc' },
-        ],
-      })
+          orderBy: [
+            { urgency: 'desc' },
+            { createdAt: 'desc' },
+          ],
+        }),
+        prisma.featuredProject.findMany({
+          orderBy: { slot: 'asc' },
+          select: { projectId: true },
+        }),
+      ])
       // Transform photos relation to photos string array for frontend compatibility
       const transformedProjects = projects.map((project: { photos: { url: string }[] } & Record<string, unknown>) => ({
         ...project,
         photos: project.photos.map((img: { url: string }) => img.url),
       }))
-      return NextResponse.json({ projects: transformedProjects, total: projects.length })
+      const featuredProjectIds = featuredRows.map((f) => f.projectId)
+      return NextResponse.json({ projects: transformedProjects, total: projects.length, featuredProjectIds })
     }
 
     // Get total count for pagination info

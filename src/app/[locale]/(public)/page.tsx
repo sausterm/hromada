@@ -345,6 +345,7 @@ export default function HomePage() {
   const locale = useLocale()
 
   const [allProjects, setAllProjects] = useState<Project[]>([])
+  const [featuredProjectIds, setFeaturedProjectIds] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   // Fetch projects from API
@@ -356,6 +357,9 @@ export default function HomePage() {
           const data = await response.json()
           const projects = data.projects.map(transformProject)
           setAllProjects(projects)
+          if (data.featuredProjectIds) {
+            setFeaturedProjectIds(data.featuredProjectIds)
+          }
         }
       } catch (error) {
         console.error('Failed to fetch projects:', error)
@@ -377,12 +381,42 @@ export default function HomePage() {
     }
   }, [allProjects])
 
-  // Featured projects (newest 4)
+  // Featured projects: admin-selected (in slot order), backfilled with newest
   const featuredProjects = useMemo(() => {
+    if (featuredProjectIds.length > 0) {
+      const projectMap = new Map(allProjects.map(p => [p.id, p]))
+      const featured = featuredProjectIds
+        .map(id => projectMap.get(id))
+        .filter((p): p is Project => p !== undefined)
+
+      if (featured.length < 4) {
+        const featuredSet = new Set(featuredProjectIds)
+        const fillers = [...allProjects]
+          .filter(p => !featuredSet.has(p.id))
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 4 - featured.length)
+        return [...featured, ...fillers]
+      }
+      return featured
+    }
+
     return [...allProjects]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 4)
-  }, [allProjects])
+  }, [allProjects, featuredProjectIds])
+
+  // Hero parallax
+  const heroImageRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const handleScroll = () => {
+      if (heroImageRef.current) {
+        const scrollY = window.scrollY
+        heroImageRef.current.style.transform = `translateY(${scrollY * 0.4}px)`
+      }
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Scroll-triggered fade-in for sections
   useEffect(() => {
@@ -415,11 +449,20 @@ export default function HomePage() {
 
       {/* Hero Section - generous negative margin ensures hero covers behind the transparent header */}
       <section className="relative h-[calc(100vh+2rem)] -mt-24 pt-24 overflow-hidden">
+        {/* Outer div handles parallax transform via JS — inner div handles fade animation separately */}
         <div
-          className="hero-photo-animate absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466071929.jpeg)' }}
+          ref={heroImageRef}
+          className="absolute left-0 right-0 will-change-transform"
+          style={{ top: '-20%', bottom: '-20%' }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-900)]/80 via-[var(--navy-900)]/60 to-transparent" />
+          <div
+            className="hero-photo-animate absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: 'url(https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466071929.jpeg)',
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-900)]/80 via-[var(--navy-900)]/60 to-transparent" />
+          </div>
         </div>
 
         <div className="relative h-full max-w-7xl mx-auto px-4 lg:px-8 flex flex-col justify-center">

@@ -315,38 +315,21 @@ export function Header({ children, transparent = false }: HeaderProps) {
                   className="inline-block w-6 h-4 sm:w-8 sm:h-5 lg:w-10 lg:h-6 logo-flip"
                   style={{ transform: 'rotate(-38deg)', transformStyle: 'preserve-3d' }}
                 >
-                  {isTransparent ? (
-                    <>
-                      <defs>
-                        <mask id="panel-cutout">
-                          <rect x="0" y="0" width="48" height="30" rx="3" fill="white"/>
-                          <line x1="16" y1="0" x2="16" y2="30" stroke="black" strokeWidth="1.5"/>
-                          <line x1="32" y1="0" x2="32" y2="30" stroke="black" strokeWidth="1.5"/>
-                          <line x1="0" y1="15" x2="48" y2="15" stroke="black" strokeWidth="1.5"/>
-                          <circle cx="16" cy="15" r="2.5" fill="black"/>
-                          <circle cx="32" cy="15" r="2.5" fill="black"/>
-                          <circle cx="0" cy="0" r="2.5" fill="black"/>
-                          <circle cx="48" cy="0" r="2.5" fill="black"/>
-                          <circle cx="0" cy="30" r="2.5" fill="black"/>
-                          <circle cx="48" cy="30" r="2.5" fill="black"/>
-                        </mask>
-                      </defs>
-                      <rect x="0" y="0" width="48" height="30" rx="3" fill="white" mask="url(#panel-cutout)"/>
-                    </>
-                  ) : (
-                    <>
-                      <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>
-                      <line x1="16" y1="0" x2="16" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                      <line x1="32" y1="0" x2="32" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                      <line x1="0" y1="15" x2="48" y2="15" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                      <circle cx="16" cy="15" r="2.5" fill="var(--cream-100)"/>
-                      <circle cx="32" cy="15" r="2.5" fill="var(--cream-100)"/>
-                      <circle cx="0" cy="0" r="2.5" fill="var(--cream-100)"/>
-                      <circle cx="48" cy="0" r="2.5" fill="var(--cream-100)"/>
-                      <circle cx="0" cy="30" r="2.5" fill="var(--cream-100)"/>
-                      <circle cx="48" cy="30" r="2.5" fill="var(--cream-100)"/>
-                    </>
-                  )}
+                    <defs>
+                    <mask id="panel-cutout">
+                      <rect x="0" y="0" width="48" height="30" rx="3" fill="white"/>
+                      <line x1="16" y1="0" x2="16" y2="30" stroke="black" strokeWidth="1.5"/>
+                      <line x1="32" y1="0" x2="32" y2="30" stroke="black" strokeWidth="1.5"/>
+                      <line x1="0" y1="15" x2="48" y2="15" stroke="black" strokeWidth="1.5"/>
+                      <circle cx="16" cy="15" r="2.5" fill="black"/>
+                      <circle cx="32" cy="15" r="2.5" fill="black"/>
+                      <circle cx="0" cy="0" r="2.5" fill="black"/>
+                      <circle cx="48" cy="0" r="2.5" fill="black"/>
+                      <circle cx="0" cy="30" r="2.5" fill="black"/>
+                      <circle cx="48" cy="30" r="2.5" fill="black"/>
+                    </mask>
+                  </defs>
+                  <rect x="0" y="0" width="48" height="30" rx="3" fill={isTransparent ? 'white' : 'currentColor'} mask="url(#panel-cutout)"/>
                 </svg>
                 <style jsx>{`
                   @keyframes logoFlip {

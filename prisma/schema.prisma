@@ -38,6 +38,7 @@ model Project {
   municipalityNameUk   String?
   contactSubmissions   ContactSubmission[]
   photos               ProjectImage[]
+  featuredSlot         FeaturedProject?
 
   @@index([category])
   @@index([status])
@@ -389,4 +390,14 @@ model NewsletterSubscriber {
   unsubscribed Boolean  @default(false)
 
   @@index([subscribedAt])
+}
+
+model FeaturedProject {
+  id        String   @id @default(cuid())
+  projectId String   @unique
+  slot      Int      @unique
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([slot])
 }

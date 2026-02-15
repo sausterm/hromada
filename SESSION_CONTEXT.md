@@ -280,3 +280,194 @@ WISE_API_KEY=...             # For outbound transfer tracking
 - `planning/` folder renamed to `Vault/` (Obsidian-based planning hub added by Sloan)
 - Site password: `hromada!2026`
 - Admin login: use `HROMADA_ADMIN_SECRET` from `.env.local` as password
+
+---
+
+## Session 2026-02-10: Mobile Bug Fixes (main branch)
+
+### Mobile Map Fix (applied to both branches)
+Mobile map went through 3 iterations on homepage (`src/app/[locale]/(public)/page.tsx`):
+1. **Z-index fix** — adjusted z-index so zoom controls weren't hidden by header
+2. **Inline panel swap** — rendered map inline, but Leaflet rendered grey tiles (container started `display:none`)
+3. **Conditional rendering (final)** — two separate `<MapWrapper>` instances: mobile conditionally rendered (`{isMobileMapOpen && ...}`), desktop always rendered (`hidden lg:block`). Removed CSS Leaflet control offset hack.
+
+State split: `isDesktopMap` (window >= 1024px) + `isMobileMapOpen` (user toggle) → `isMapVisible` (combined).
+
+### Card Flash Fix
+Added `mapBoundsReported` state flag — starts `false`, set `true` on first `handleBoundsChange`. Cards show all projects until map fires first bounds event.
+
+### Card Navigation Fix
+- **Nested `<a>` hydration error** in `ProjectCard.tsx` — title renders as `<span>` when card is a `<Link>` (mobile), `<Link>` when card is a `<div>` (desktop)
+- **NaN LatLng** in `UkraineMap.tsx` — Prisma Decimals need `Number()` conversion + `isNaN` guard
+- **ProjectPopup import** — changed `next/link` to `@/i18n/navigation` Link for locale prefix
+
+### Filter Dropdown Mobile Support
+Added `toggleDropdown()` + `closeAllDropdowns()`, `onClick` handlers on all 5 dropdown buttons, `touchstart` outside listener.
+
+### Hamburger Menu Fix
+`Header.tsx` — added `onClick` toggle and `touchstart` outside listener.
+
+### API Response Slimming
+`src/app/api/projects/route.ts` — changed from `include: { photos }` to Prisma `select` with only summary fields.
+
+### Login Page Password Toggle (both branches)
+Added `showPassword` state with eye icon toggle. Committed on v2 (`811d631`), cherry-picked to main (`bf7e4fa`).
+
+### i18n Completeness (v2)
+- Converted hardcoded strings to `t()` calls in homepage and footer
+- Added ~43 missing locale keys: `homepage.viewList`, `footer.fiscalSponsor/candidSeal/copyright`, `homepage.caseStudy.*`, `homepage.liveStats.*`, `homepage.photoStrip.*`, `homepage.faq.*`
+
+---
+
+## Session 2026-02-10: Homepage Expert Review & Improvements (v2 branch)
+
+### Expert Panel Review
+Conducted a 6-expert review of the homepage (UX/UI, Fundraising, Ukrainian Civic Tech, Copywriter, Climate/Energy, CRO). Key consensus findings:
+1. The "100% goes to projects" model is the strongest asset but buried across the page
+2. Page sections blur together — cream-100 background everywhere, no visual rhythm
+3. Case study data appears fabricated even though it's real — needs verification labels
+4. No social proof from the donor side (no testimonials, press logos, donor count)
+5. Only one conversion path (Browse Projects) — no email capture, no micro-commitments
+
+### Implemented Changes (commit `32cd180`)
+
+**Hero section:**
+- Made hero full-viewport: `h-[calc(100svh-64px)]` (was fixed 500/550px)
+- Swapped hero image to ground-mounted solar array
+- Rewrote headline: "When Russia cuts the power, hospitals go dark" (was "Power Ukrainian hospitals, schools & homes")
+- Updated subheadline: "100% of your donation funds solar and battery systems that keep Ukrainian communities running."
+- Replaced "Total kW" stat with "Communities" count (unique municipalities from project data)
+- Added animated scroll-down chevron indicator at bottom of hero
+
+**Trust badge:**
+- Added POCACITO Network 501(c)(3) badge next to the "100% promise" in How It Works section
+- Links to Candid profile, shows "501(c)(3) Fiscal Sponsor · POCACITO Network · Candid Platinum Seal"
+
+**Final CTA rewrite:**
+- Title: "Choose a project. Fund it. Watch it power on." (was "Ready to Make a Difference?")
+- Subtitle: "Every project is verified, every dollar is tracked, and every system is monitored after installation."
+
+**Email capture:**
+- Added email signup below CTA buttons with divider "or stay in the loop"
+- `EmailCaptureForm` component with success/error states
+- New API route: `src/app/api/newsletter/route.ts` — rate-limited, sends notification to admin via Resend
+- Full EN/UK locale keys for email form
+
+**CSS:**
+- Added `@keyframes scroll-hint` bounce animation and `.animate-scroll-hint` class in `globals.css`
+
+### Files Changed
+| File | Changes |
+|------|---------|
+| `src/app/[locale]/(public)/page.tsx` | Hero height, headline, stats, scroll indicator, trust badge, email capture form |
+| `src/app/globals.css` | Scroll-hint animation keyframes |
+| `src/app/api/newsletter/route.ts` | **New** — newsletter signup API route |
+| `locales/en.json` | Hero headline/subheadline/stat, CTA rewrite, email capture keys |
+| `locales/uk.json` | Same keys translated to Ukrainian |
+
+### Expert Review Action Items NOT Yet Implemented
+| # | Action | Impact |
+|---|--------|--------|
+| 1 | Alternate section backgrounds (bg-white for How It Works, FAQ) | High |
+| 8 | Dedicated Trust/Social Proof section (100% model visual, Candid seal, partner logos, donor count) | Very High |
+| 10 | Make case study data verifiable or label as example | High |
+| 11 | Add funding progress indicators to project cards | High |
+| 12 | Translate "Total kW" into impact metrics (hours of backup power, homes powered, CO2 avoided) | Medium |
+| 13 | Add "How to Give" section or surface payment methods earlier | High |
+| 14 | Connect LiveStatsCard to real API data | Medium |
+| 15-20 | Donor testimonials, press logos, native UK review, carbon calculations, impact report, A/B testing | Various |
+
+---
+
+## Infrastructure Note: DNS Outage (2026-02-10)
+
+All of `hromadaproject.org` went down (NXDOMAIN for all subdomains). Not caused by code changes — was a DNS/Cloudflare configuration issue. Sloan resolved it. Domain DNS is managed through Cloudflare.
+
+---
+
+## Architecture Notes
+
+- **Leaflet + SSR:** Dynamically import with `ssr: false`. Hidden containers break tile rendering — use conditional mount/unmount.
+- **Prisma Decimals:** Lat/lng come as `Decimal` type. Always wrap with `Number()` before passing to Leaflet.
+- **i18n Links:** Use `import { Link } from '@/i18n/navigation'` (not `next/link`) for locale prefix.
+- **Mobile touch:** Always add `onClick` (not just hover). Use `touchstart` for outside-click listeners.
+- **Turbopack cache:** `rm -rf .next` if dev server crashes.
+- **Branch switching:** Kill dev server first (`pkill -f "next dev"`), then switch, then `npm run dev`.
+
+## Git Branch State
+
+- **main**: Mobile bug fixes, about page cleanup, login password toggle (cherry-picked from v2)
+- **v2-payment-processing**: All of main's fixes plus payment processing, MPP page, homepage redesign, i18n, expert review improvements, email capture
+- When merging v2 into main, expect conflicts in: `globals.css`, `Header.tsx`, locale files, homepage component
+
+## Design System
+
+### Color Palette
+- **Backgrounds**: `var(--cream-100)` (page bg), `var(--cream-200)`, `var(--cream-300)` (dividers)
+- **Text**: `var(--navy-700)` (headings), `var(--navy-600)` (body), `var(--navy-500)` (secondary)
+- **Accent**: `var(--ukraine-blue)` (#0057B8)
+- **Category colors**: teal (#5B8FA8), sage (#7B9E6B), amber (#D4954A), terracotta (#C75B39), taupe (#8B7355)
+
+### Page Layout (about, contact, partner-with-us)
+- Container: `max-w-3xl mx-auto px-4 py-12`
+- h1: `text-4xl font-bold`, h2: `text-3xl font-medium`
+- Dividers: `<hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />`
+
+### Hamburger Menu Order
+1. Projects → 2. About → 3. Municipal Partnership → 4. Contact → divider → 5. Dashboard/Login
+
+---
+
+## Session 2026-02-10: About Page Cleanup, Hero Copy, Mailing List, Animations (v2 branch)
+
+### About Page Simplified
+- Removed: How It Works section, FAQ section, Project Categories section
+- Removed unused imports (`useState`, `useRef`, `useEffect`, FAQItem component)
+- Remaining sections: Statement of Purpose, Our Partners, Trust Center, CTA buttons
+
+### Hero Adjustments
+- Made hero slightly taller: `h-[calc(100vh+2rem)]` to eliminate cream peek at bottom
+- Hero copy still being iterated — current headline/subheadline under discussion
+- Tried multiple rounds of expert-generated copy options; user wants headline to convey: empowering communities, resilience against Russian aggression, sustainable recovery, decentralizing grids
+- Target audience is donors — copy should speak to them, not just describe the mission
+
+### Hero Entrance Animations
+- **Photo fade-in**: `hero-photo-animate` class — 1.2s fade from opacity 0 with subtle scale(1.05→1) zoom settle
+- **Text stagger**: 5 elements cascade in with `hero-fade-up` animation (0.8s ease-out, 30px slide up)
+  - Photo fades in first (0s delay)
+  - Promise badge (0.4s), headline (0.55s), subheadline (0.7s), stats (0.85s), CTAs (1.0s)
+- All CSS-only, defined in `globals.css`
+
+### Newsletter / Mailing List System
+- **Database**: `NewsletterSubscriber` model in Prisma — `id`, `email` (unique), `subscribedAt`, `unsubscribed` flag
+- **Public API**: `src/app/api/newsletter/route.ts` — rate-limited, upserts subscriber, sends welcome email only to new/re-subscribers
+- **Admin API**: `src/app/api/admin/subscribers/route.ts` — GET (list), POST (add), DELETE (remove). Auth-protected via `verifyAdminAuth`.
+- **Admin dashboard**: New "Mailing List" tab — subscriber count badge, table with email/date/remove button, input to add subscribers manually
+- **Welcome email**: `sendNewsletterWelcomeEmail()` in `src/lib/email.ts` — branded HTML email with "hromada" wordmark, cream card explaining the platform, "Browse Projects" CTA button, POCACITO footer
+- **Note**: Resend `from` address currently uses `onboarding@resend.dev` (test address). To send to any email, need to verify `hromadaproject.org` domain in Resend (add DNS records in Cloudflare). Currently only delivers to the Resend account owner's email.
+
+### Files Changed
+| File | Changes |
+|------|---------|
+| `src/app/[locale]/(public)/about/page.tsx` | Removed How It Works, FAQ, Categories sections; cleaned imports |
+| `src/app/[locale]/(public)/page.tsx` | Hero height tweak, hero photo animation class, text entrance animations |
+| `src/app/globals.css` | `hero-photo-fade` keyframes, updated text animation delays (shifted later to let photo fade in first) |
+| `prisma/schema.prisma` | Added `NewsletterSubscriber` model |
+| `src/app/api/newsletter/route.ts` | Rewritten — saves to DB instead of emailing admin, sends welcome email |
+| `src/app/api/admin/subscribers/route.ts` | **New** — admin CRUD for subscribers |
+| `src/app/[locale]/admin/page.tsx` | Added "Mailing List" tab with subscriber table, add/remove functionality |
+| `src/lib/email.ts` | Added `sendNewsletterWelcomeEmail()` with branded HTML template |
+
+### Resend Email Setup TODO
+To send emails to any address (not just Resend account owner):
+1. Go to Resend dashboard → Domains → Add domain → `hromadaproject.org`
+2. Add the MX, SPF, and DKIM records Resend provides to Cloudflare DNS
+3. Once verified, change `from` in email.ts from `onboarding@resend.dev` to `updates@hromadaproject.org`
+
+### Hero Copy — Still Needs Finalization
+The headline/subheadline are still being iterated. Key requirements from the user:
+- Must speak to donors (not just describe the mission)
+- Should convey: community empowerment, resilience against Russian aggression, sustainable recovery, grid decentralization
+- Must be concise (headline ≤7 words)
+- The "Minimal transfer fees. No overhead. Maximum impact" badge is already above it — don't repeat financial messaging
+- Previous attempts were too long or too generic

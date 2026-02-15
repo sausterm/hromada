@@ -389,6 +389,57 @@ body {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Hero entrance animations */
+@keyframes hero-photo-fade {
+  0% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hero-photo-animate {
+  opacity: 0;
+  animation: hero-photo-fade 1.2s ease-out forwards;
+}
+
+@keyframes hero-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-animate {
+  opacity: 0;
+  animation: hero-fade-up 0.8s ease-out forwards;
+}
+
+.hero-animate-delay-1 { animation-delay: 0.4s; }
+.hero-animate-delay-2 { animation-delay: 0.55s; }
+.hero-animate-delay-3 { animation-delay: 0.7s; }
+.hero-animate-delay-4 { animation-delay: 0.85s; }
+.hero-animate-delay-5 { animation-delay: 1.0s; }
+
+/* Scroll-triggered fade-in */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Hero scroll indicator float */
 @keyframes scroll-hint {
   0%, 100% {

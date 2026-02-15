@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { prisma } from '@/lib/prisma'
+import { sendNewsletterWelcomeEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
-  // Rate limit: 3 requests per minute per IP
   const rateLimitResult = rateLimit(request, RATE_LIMITS.contact)
   if (rateLimitResult) return rateLimitResult
 
@@ -13,16 +14,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Valid email required' }, { status: 400 })
     }
 
-    // Send notification to admin
-    const { Resend } = await import('resend')
-    const resend = new Resend(process.env.RESEND_API_KEY)
+    const normalized = email.toLowerCase().trim()
 
-    await resend.emails.send({
-      from: 'hromada <updates@hromadaproject.org>',
-      to: process.env.ADMIN_EMAIL || 'admin@hromadaproject.org',
-      subject: `Newsletter signup: ${email}`,
-      text: `New newsletter signup:\n\nEmail: ${email}\nTime: ${new Date().toISOString()}`,
+    // Check if already subscribed (don't re-send welcome email)
+    const existing = await prisma.newsletterSubscriber.findUnique({
+      where: { email: normalized },
     })
+
+    // Upsert — if they unsubscribed before, re-subscribe them
+    await prisma.newsletterSubscriber.upsert({
+      where: { email: normalized },
+      update: { unsubscribed: false },
+      create: { email: normalized },
+    })
+
+    // Send welcome email only for new subscribers
+    if (!existing || existing.unsubscribed) {
+      await sendNewsletterWelcomeEmail(normalized)
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

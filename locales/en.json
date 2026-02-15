@@ -97,10 +97,11 @@
     "title": "Support Ukrainian Communities",
     "subtitle": "Connect with municipalities that need infrastructure support",
     "hero": {
-      "headline": "(Em)powering communities, building resilience",
-      "subheadline": "100% of your donation funds solar and battery systems chosen by Ukrainian municipalities to keep hospitals, schools, and homes running.",
+      "headline": "Ukrainian communities are powering their own recovery",
+      "subheadline": "Solar and battery systems for hospitals, schools, and homes — chosen by the municipalities that need them most.",
+      "promiseBadge": "Minimal transfer fees. No overhead. Maximum impact.",
       "statProjects": "Projects",
-      "statFunding": "Funding Needed",
+      "statFunding": "Ready to Fund",
       "statCommunities": "Communities",
       "ctaBrowse": "Browse Projects",
       "ctaHowItWorks": "How It Works"

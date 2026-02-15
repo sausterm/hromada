@@ -91,7 +91,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   const [isLoadingProjects, setIsLoadingProjects] = useState(true)
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(true)
   const [isLoadingProjectSubmissions, setIsLoadingProjectSubmissions] = useState(true)
-  const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'contacts' | 'users'>('projects')
+  const [activeTab, setActiveTab] = useState<'projects' | 'submissions' | 'contacts' | 'users' | 'mailingList'>('projects')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortField, setSortField] = useState<SortField>('facilityName')
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
@@ -121,6 +121,9 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   // Users management
   const [users, setUsers] = useState<User[]>([])
   const [isLoadingUsers, setIsLoadingUsers] = useState(true)
+  const [subscribers, setSubscribers] = useState<{ id: string; email: string; subscribedAt: string; unsubscribed: boolean }[]>([])
+  const [isLoadingSubscribers, setIsLoadingSubscribers] = useState(true)
+  const [newSubscriberEmail, setNewSubscriberEmail] = useState('')
   const [showUserForm, setShowUserForm] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [userFormData, setUserFormData] = useState({
@@ -204,6 +207,57 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
     }
     fetchUsers()
   }, [])
+
+  // Fetch subscribers
+  useEffect(() => {
+    async function fetchSubscribers() {
+      try {
+        const response = await fetch('/api/admin/subscribers')
+        if (response.ok) {
+          const data = await response.json()
+          setSubscribers(data.subscribers || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch subscribers:', error)
+      } finally {
+        setIsLoadingSubscribers(false)
+      }
+    }
+    fetchSubscribers()
+  }, [])
+
+  const handleAddSubscriber = async () => {
+    if (!newSubscriberEmail || !newSubscriberEmail.includes('@')) return
+    try {
+      const response = await fetch('/api/admin/subscribers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newSubscriberEmail }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setSubscribers((prev) => [data.subscriber, ...prev.filter(s => s.id !== data.subscriber.id)])
+        setNewSubscriberEmail('')
+      }
+    } catch (error) {
+      console.error('Failed to add subscriber:', error)
+    }
+  }
+
+  const handleRemoveSubscriber = async (id: string) => {
+    try {
+      const response = await fetch('/api/admin/subscribers', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      if (response.ok) {
+        setSubscribers((prev) => prev.filter(s => s.id !== id))
+      }
+    } catch (error) {
+      console.error('Failed to remove subscriber:', error)
+    }
+  }
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -727,6 +781,17 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
             onClick={() => setActiveTab('users')}
           >
             {t('admin.nav.users')}
+          </Button>
+          <Button
+            variant={activeTab === 'mailingList' ? 'primary' : 'ghost'}
+            onClick={() => setActiveTab('mailingList')}
+          >
+            Mailing List
+            {subscribers.filter(s => !s.unsubscribed).length > 0 && (
+              <Badge variant="info" size="sm" className="ml-2">
+                {subscribers.filter(s => !s.unsubscribed).length}
+              </Badge>
+            )}
           </Button>
         </div>
 
@@ -1683,6 +1748,70 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                                 {t('common.delete')}
                               </Button>
                             </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'mailingList' && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-xl font-semibold">Mailing List ({subscribers.filter(s => !s.unsubscribed).length})</h2>
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  value={newSubscriberEmail}
+                  onChange={(e) => setNewSubscriberEmail(e.target.value)}
+                  placeholder="Add email..."
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddSubscriber()}
+                />
+                <Button onClick={handleAddSubscriber}>Add</Button>
+              </div>
+            </div>
+
+            {isLoadingSubscribers ? (
+              <div className="flex justify-center py-8">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : subscribers.filter(s => !s.unsubscribed).length === 0 ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <p className="text-gray-500">No subscribers yet.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b">
+                      <tr>
+                        <th className="text-left p-4 text-sm font-medium text-gray-500">Email</th>
+                        <th className="text-left p-4 text-sm font-medium text-gray-500">Subscribed</th>
+                        <th className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                      {subscribers.filter(s => !s.unsubscribed).map((sub) => (
+                        <tr key={sub.id} className="hover:bg-gray-50">
+                          <td className="p-4 font-medium text-gray-900">{sub.email}</td>
+                          <td className="p-4 text-gray-500 text-sm">
+                            {new Date(sub.subscribedAt).toLocaleDateString()}
+                          </td>
+                          <td className="p-4 text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:bg-red-50"
+                              onClick={() => handleRemoveSubscriber(sub.id)}
+                            >
+                              Remove
+                            </Button>
                           </td>
                         </tr>
                       ))}

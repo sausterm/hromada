@@ -384,6 +384,23 @@ export default function HomePage() {
       .slice(0, 4)
   }, [allProjects])
 
+  // Scroll-triggered fade-in for sections
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible')
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+    const sections = document.querySelectorAll('.fade-in-section')
+    sections.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [isLoading])
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--cream-100)]">
@@ -394,12 +411,12 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--cream-100)]">
-      <Header />
+      <Header transparent />
 
-      {/* Hero Section */}
-      <section className="relative h-[calc(100svh-64px)] overflow-hidden">
+      {/* Hero Section - generous negative margin ensures hero covers behind the transparent header */}
+      <section className="relative h-[calc(100vh+2rem)] -mt-24 pt-24 overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center"
+          className="hero-photo-animate absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: 'url(https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466071929.jpeg)' }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-900)]/80 via-[var(--navy-900)]/60 to-transparent" />
@@ -407,15 +424,23 @@ export default function HomePage() {
 
         <div className="relative h-full max-w-7xl mx-auto px-4 lg:px-8 flex flex-col justify-center">
           <div className="max-w-2xl">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+            {/* 100% promise badge */}
+            <div className="hero-animate hero-animate-delay-1 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-sm font-medium text-white">{t('homepage.hero.promiseBadge')}</span>
+            </div>
+
+            <h1 className="hero-animate hero-animate-delay-2 text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
               {t('homepage.hero.headline')}
             </h1>
-            <p className="text-lg md:text-xl text-[var(--cream-200)] mb-8 leading-relaxed">
+            <p className="hero-animate hero-animate-delay-3 text-lg md:text-xl text-[var(--cream-200)] mb-8 leading-relaxed max-w-xl">
               {t('homepage.hero.subheadline')}
             </p>
 
             {/* Stats */}
-            <div className="flex flex-wrap gap-6 md:gap-10 mb-8">
+            <div className="hero-animate hero-animate-delay-4 flex flex-wrap gap-6 md:gap-10 mb-8">
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-white">{totalStats.communityCount}</div>
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statCommunities')}</div>
@@ -431,16 +456,14 @@ export default function HomePage() {
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-wrap gap-4">
+            <div className="hero-animate hero-animate-delay-5 flex flex-wrap gap-4 items-center">
               <Link href="/projects">
-                <Button variant="primary" size="lg" className="w-[220px] border-2 border-transparent bg-white text-[var(--navy-700)] hover:bg-[var(--cream-100)]">
+                <Button variant="primary" size="lg" className="px-8 py-3.5 text-base font-semibold bg-white text-[var(--navy-700)] hover:bg-[var(--cream-100)] shadow-lg">
                   {t('homepage.hero.ctaBrowse')}
                 </Button>
               </Link>
-              <Link href="/about">
-                <Button variant="outline" size="lg" className="w-[220px] border-white text-white hover:bg-white/10">
-                  {t('homepage.hero.ctaHowItWorks')}
-                </Button>
+              <Link href="#how-it-works" className="text-white/80 hover:text-white text-sm font-medium underline underline-offset-4 transition-colors">
+                {t('homepage.hero.ctaHowItWorks')}
               </Link>
             </div>
           </div>
@@ -459,7 +482,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Projects Section */}
-      <section id="featured-projects" className="py-16 md:py-24 bg-[var(--cream-100)]">
+      <section id="featured-projects" className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-[var(--navy-700)]">
@@ -482,7 +505,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
+      <section id="how-it-works" className="fade-in-section pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
         <div className="max-w-6xl mx-auto px-4 lg:px-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-[var(--navy-700)] mb-12">
             {t('homepage.howItWorks.title')}
@@ -588,7 +611,7 @@ export default function HomePage() {
       </section>
 
       {/* Case Study Section */}
-      <section className="pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
+      <section className="fade-in-section pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
         <div className="max-w-4xl mx-auto px-4 lg:px-8">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 text-[var(--ukraine-blue)] text-sm font-medium mb-4">
@@ -679,7 +702,7 @@ export default function HomePage() {
       </section>
 
       {/* Photo Strip */}
-      <section className="py-12 bg-[var(--cream-100)] overflow-hidden">
+      <section className="fade-in-section py-12 bg-[var(--cream-100)] overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 lg:px-8 mb-8">
           <h3 className="text-[var(--navy-700)] text-xl font-semibold text-center">{t('homepage.photoStrip.title')}</h3>
         </div>
@@ -733,7 +756,7 @@ export default function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 md:py-24 bg-[var(--cream-100)]">
+      <section className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)]">
         <div className="max-w-3xl mx-auto px-4 lg:px-8">
           <h2 className="text-2xl md:text-3xl font-bold text-[var(--navy-700)] text-center mb-12">
             {t('homepage.faq.title')}
@@ -773,7 +796,7 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-16 md:py-24 bg-[var(--cream-100)]">
+      <section className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)]">
         <div className="max-w-3xl mx-auto px-4 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-[var(--navy-700)] mb-4">
             {t('homepage.cta.title')}

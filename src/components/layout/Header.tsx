@@ -9,9 +9,10 @@ import { useAuth } from '@/hooks/useAuth'
 
 interface HeaderProps {
   children?: React.ReactNode // For filter bar content
+  transparent?: boolean // Start transparent over hero, solid on scroll
 }
 
-export function Header({ children }: HeaderProps) {
+export function Header({ children, transparent = false }: HeaderProps) {
   const t = useTranslations()
   const locale = useLocale()
   const pathname = usePathname()
@@ -20,8 +21,23 @@ export function Header({ children }: HeaderProps) {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false)
   const [isLangHovered, setIsLangHovered] = useState(false)
   const [isLangPrimed, setIsLangPrimed] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
   const langPrimeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const navMenuRef = useRef<HTMLDivElement>(null)
+
+  // Track scroll for transparent header — gradual transition over 300px
+  useEffect(() => {
+    if (!transparent) return
+    const handleScroll = () => {
+      const progress = Math.min(1, window.scrollY / 300)
+      setScrollProgress(progress)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [transparent])
+
+  const isTransparent = transparent && scrollProgress < 0.5
+  const headerOpacity = transparent ? scrollProgress : 1
 
   // Determine dashboard link based on user role
   const dashboardLink = isAdmin() ? '/admin' : '/partner'
@@ -138,7 +154,18 @@ export function Header({ children }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-[var(--cream-100)] border-b border-[var(--cream-300)] shadow-sm">
+    <header
+      className="sticky top-0 z-50"
+      style={transparent ? {
+        backgroundColor: `rgba(245, 240, 232, ${headerOpacity})`,
+        borderBottom: `1px solid rgba(224, 215, 201, ${headerOpacity})`,
+        boxShadow: headerOpacity > 0.8 ? `0 1px 2px rgba(0,0,0,${(headerOpacity - 0.8) * 0.5})` : 'none',
+      } : {
+        backgroundColor: 'var(--cream-100)',
+        borderBottom: '1px solid var(--cream-300)',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+      }}
+    >
       {/* Top Bar - Navigation */}
       <div className="px-4 lg:px-6 py-2">
         <div className="flex items-center justify-between gap-4">
@@ -151,7 +178,10 @@ export function Header({ children }: HeaderProps) {
               onMouseLeave={() => setIsNavMenuOpen(false)}
             >
               <button
-                className="inline-flex items-center justify-center w-10 h-10 rounded-lg text-[var(--navy-600)] hover:text-[var(--navy-800)] transition-colors"
+                onClick={() => setIsNavMenuOpen(!isNavMenuOpen)}
+                className={`inline-flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                  isTransparent ? 'text-white hover:text-white/80' : 'text-[var(--navy-600)] hover:text-[var(--navy-800)]'
+                }`}
                 aria-label={t('nav.menu')}
               >
                 <div className="relative w-6 h-6">
@@ -265,7 +295,9 @@ export function Header({ children }: HeaderProps) {
 
           {/* Center - Logo */}
           <div className="flex flex-col items-center min-w-0">
-            <span className="font-logo text-[var(--navy-700)] text-[1.4rem] sm:text-[2.5rem] lg:text-[3rem] leading-tight flex items-center">
+            <span className={`font-logo text-[1.4rem] sm:text-[2.5rem] lg:text-[3rem] leading-tight flex items-center transition-colors duration-300 ${
+              isTransparent ? 'text-white' : 'text-[var(--navy-700)]'
+            }`}>
               <button
                 onClick={() => handleLogoClick('en')}
                 className={`${locale === 'en' ? 'font-bold' : 'font-normal'} hover:opacity-70 transition-opacity cursor-pointer`}
@@ -283,16 +315,38 @@ export function Header({ children }: HeaderProps) {
                   className="inline-block w-6 h-4 sm:w-8 sm:h-5 lg:w-10 lg:h-6 logo-flip"
                   style={{ transform: 'rotate(-38deg)', transformStyle: 'preserve-3d' }}
                 >
-                  <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>
-                  <line x1="16" y1="0" x2="16" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                  <line x1="32" y1="0" x2="32" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                  <line x1="0" y1="15" x2="48" y2="15" stroke="var(--cream-100)" strokeWidth="1.5"/>
-                  <circle cx="16" cy="15" r="2.5" fill="var(--cream-100)"/>
-                  <circle cx="32" cy="15" r="2.5" fill="var(--cream-100)"/>
-                  <circle cx="0" cy="0" r="2.5" fill="var(--cream-100)"/>
-                  <circle cx="48" cy="0" r="2.5" fill="var(--cream-100)"/>
-                  <circle cx="0" cy="30" r="2.5" fill="var(--cream-100)"/>
-                  <circle cx="48" cy="30" r="2.5" fill="var(--cream-100)"/>
+                  {isTransparent ? (
+                    <>
+                      <defs>
+                        <mask id="panel-cutout">
+                          <rect x="0" y="0" width="48" height="30" rx="3" fill="white"/>
+                          <line x1="16" y1="0" x2="16" y2="30" stroke="black" strokeWidth="1.5"/>
+                          <line x1="32" y1="0" x2="32" y2="30" stroke="black" strokeWidth="1.5"/>
+                          <line x1="0" y1="15" x2="48" y2="15" stroke="black" strokeWidth="1.5"/>
+                          <circle cx="16" cy="15" r="2.5" fill="black"/>
+                          <circle cx="32" cy="15" r="2.5" fill="black"/>
+                          <circle cx="0" cy="0" r="2.5" fill="black"/>
+                          <circle cx="48" cy="0" r="2.5" fill="black"/>
+                          <circle cx="0" cy="30" r="2.5" fill="black"/>
+                          <circle cx="48" cy="30" r="2.5" fill="black"/>
+                        </mask>
+                      </defs>
+                      <rect x="0" y="0" width="48" height="30" rx="3" fill="white" mask="url(#panel-cutout)"/>
+                    </>
+                  ) : (
+                    <>
+                      <rect x="0" y="0" width="48" height="30" rx="3" fill="currentColor"/>
+                      <line x1="16" y1="0" x2="16" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                      <line x1="32" y1="0" x2="32" y2="30" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                      <line x1="0" y1="15" x2="48" y2="15" stroke="var(--cream-100)" strokeWidth="1.5"/>
+                      <circle cx="16" cy="15" r="2.5" fill="var(--cream-100)"/>
+                      <circle cx="32" cy="15" r="2.5" fill="var(--cream-100)"/>
+                      <circle cx="0" cy="0" r="2.5" fill="var(--cream-100)"/>
+                      <circle cx="48" cy="0" r="2.5" fill="var(--cream-100)"/>
+                      <circle cx="0" cy="30" r="2.5" fill="var(--cream-100)"/>
+                      <circle cx="48" cy="30" r="2.5" fill="var(--cream-100)"/>
+                    </>
+                  )}
                 </svg>
                 <style jsx>{`
                   @keyframes logoFlip {
@@ -311,7 +365,9 @@ export function Header({ children }: HeaderProps) {
                 громада
               </button>
             </span>
-            <span className="text-[0.6rem] sm:text-xs text-[var(--navy-500)] italic text-center truncate max-w-full">
+            <span className={`text-[0.6rem] sm:text-xs italic text-center truncate max-w-full transition-colors duration-300 ${
+              isTransparent ? 'text-white/70' : 'text-[var(--navy-500)]'
+            }`}>
               {t('nav.headerSubtitle')}
             </span>
           </div>

@@ -381,3 +381,12 @@ model PartnershipInquiry {
   @@index([createdAt])
   @@index([handled])
 }
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+  unsubscribed Boolean  @default(false)
+
+  @@index([subscribedAt])
+}

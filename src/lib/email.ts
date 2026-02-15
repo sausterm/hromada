@@ -332,6 +332,73 @@ export async function sendDonationNotificationToAdmin({
   }
 }
 
+export async function sendNewsletterWelcomeEmail(
+  email: string
+): Promise<{ success: boolean; error?: string }> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  if (!resend) {
+    console.warn('RESEND_API_KEY not configured, skipping newsletter welcome email')
+    return { success: true }
+  }
+
+  try {
+    await resend.emails.send({
+      from: 'Hromada <onboarding@resend.dev>',
+      to: email,
+      subject: "You're on the list — welcome to Hromada",
+      html: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 560px; margin: 0 auto; color: #2C3E50;">
+          <!-- Header -->
+          <div style="text-align: center; padding: 40px 0 24px;">
+            <h1 style="margin: 0; font-size: 28px; letter-spacing: 1px; color: #1a2744;">hromada</h1>
+            <div style="width: 40px; height: 2px; background: #0057B8; margin: 12px auto 0;"></div>
+          </div>
+
+          <!-- Body -->
+          <div style="padding: 0 20px;">
+            <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+              Thanks for signing up. We'll send occasional updates on projects being funded, communities being powered, and how your support makes a difference.
+            </p>
+
+            <div style="background: #F5F0E8; padding: 20px 24px; border-radius: 8px; margin: 24px 0;">
+              <p style="margin: 0 0 8px; font-weight: 600; color: #1a2744;">What we're building:</p>
+              <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #555;">
+                Hromada connects donors directly with Ukrainian municipalities installing solar and battery systems. Minimal transfer fees. No overhead. Every project is verified.
+              </p>
+            </div>
+
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="${appUrl}/projects" style="background: #1a2744; color: #F5F0E8; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 14px;">
+                Browse Projects
+              </a>
+            </div>
+
+            <p style="font-size: 14px; color: #777; line-height: 1.6;">
+              You're receiving this because you signed up at hromadaproject.org. We won't spam you.
+            </p>
+          </div>
+
+          <!-- Footer -->
+          <div style="border-top: 1px solid #E0D7C9; margin-top: 32px; padding: 20px; text-align: center;">
+            <p style="margin: 0; font-size: 12px; color: #999;">
+              Hromada is a project of POCACITO Network, a 501(c)(3) nonprofit.
+            </p>
+          </div>
+        </div>
+      `,
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send newsletter welcome email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
 interface PartnershipInquiryNotificationParams {
   communityName: string
   contactName: string

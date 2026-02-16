@@ -11,16 +11,16 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Geist, Geist_Mono, Outfit } from "next/font/google";
+import { Inter, Geist_Mono, Outfit } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import { Footer } from "@/components/layout/Footer";
 import { PartnerCarousel } from "@/components/layout/PartnerCarousel";
 import { locales, type Locale } from '@/i18n';
 import type { Metadata } from 'next';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "cyrillic"],
 });
 
 const geistMono = Geist_Mono({
@@ -95,7 +95,7 @@ export default async function LocaleLayout({
   return (
     <div
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}
+      className={`${inter.variable} ${geistMono.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}
     >
       <NextIntlClientProvider messages={messages} locale={locale}>
         <ToastProvider>

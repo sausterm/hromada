@@ -116,11 +116,32 @@ function FAQItem({ question, children }: { question: string; children: ReactNode
 }
 
 // Step component for How It Works
-function HowItWorksStep({ step, isLast, t }: { step: typeof STEPS[0]; isLast: boolean; t: ReturnType<typeof useTranslations> }) {
+function HowItWorksStep({ step, isLast, index, t }: { step: typeof STEPS[0]; isLast: boolean; index: number; t: ReturnType<typeof useTranslations> }) {
   const [isHovered, setIsHovered] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => setIsVisible(true), index * 300)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [index])
 
   return (
-    <div className="flex flex-col md:flex-row items-start">
+    <div
+      ref={ref}
+      className={`flex flex-col md:flex-row items-start transition-all duration-1000 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+    >
       <div
         className="flex flex-col items-center text-center group cursor-default w-[140px]"
         onMouseEnter={() => setIsHovered(true)}
@@ -475,7 +496,7 @@ export default function HomePage() {
               <span className="text-sm font-medium text-white">{t('homepage.hero.promiseBadge')}</span>
             </div>
 
-            <h1 className="hero-animate hero-animate-delay-2 text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+            <h1 className="hero-animate hero-animate-delay-2 font-logo text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-4 leading-tight tracking-tight">
               {t('homepage.hero.headline')}
             </h1>
             <p className="hero-animate hero-animate-delay-3 text-lg md:text-xl text-[var(--cream-200)] mb-8 leading-relaxed max-w-xl">
@@ -485,11 +506,11 @@ export default function HomePage() {
             {/* Stats */}
             <div className="hero-animate hero-animate-delay-4 flex flex-wrap gap-6 md:gap-10 mb-8">
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white">{totalStats.communityCount}</div>
+                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white">{totalStats.communityCount}</div>
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statCommunities')}</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white">{totalStats.projectCount}</div>
+                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white">{totalStats.projectCount}</div>
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statProjects')}</div>
               </div>
               <div className="text-center">
@@ -501,7 +522,7 @@ export default function HomePage() {
             {/* CTAs */}
             <div className="hero-animate hero-animate-delay-5 flex flex-wrap gap-4 items-center">
               <Link href="/projects">
-                <Button variant="primary" size="lg" className="px-8 py-3.5 text-base font-semibold bg-white text-[var(--navy-700)] hover:bg-[var(--cream-100)] shadow-lg">
+                <Button variant="primary" size="lg" className="px-8 py-3.5 text-base font-semibold bg-white text-[var(--navy-700)] hover:bg-[var(--cream-100)]">
                   {t('homepage.hero.ctaBrowse')}
                 </Button>
               </Link>
@@ -528,7 +549,7 @@ export default function HomePage() {
       <section id="featured-projects" className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-[var(--navy-700)]">
+            <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)]">
               {t('homepage.featured.title')}
             </h2>
             <Link href="/projects" className="text-[var(--navy-600)] hover:text-[var(--navy-800)] font-medium flex items-center gap-1">
@@ -550,13 +571,13 @@ export default function HomePage() {
       {/* How It Works Section */}
       <section id="how-it-works" className="fade-in-section pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
         <div className="max-w-6xl mx-auto px-4 lg:px-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-[var(--navy-700)] mb-12">
+          <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-12">
             {t('homepage.howItWorks.title')}
           </h2>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-0">
             {STEPS.map((step, index) => (
-              <HowItWorksStep key={step.number} step={step} isLast={index === STEPS.length - 1} t={t} />
+              <HowItWorksStep key={step.number} step={step} isLast={index === STEPS.length - 1} index={index} t={t} />
             ))}
           </div>
 
@@ -662,7 +683,7 @@ export default function HomePage() {
               {t('homepage.caseStudy.label')}
               <div className="w-8 h-px bg-current" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-[var(--navy-700)] mb-4">
+            <h2 className="font-logo text-3xl md:text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4">
               {t('homepage.caseStudy.title')}
             </h2>
           </div>
@@ -801,7 +822,7 @@ export default function HomePage() {
       {/* FAQ Section */}
       <section className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)]">
         <div className="max-w-3xl mx-auto px-4 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-[var(--navy-700)] text-center mb-12">
+          <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] text-center mb-12">
             {t('homepage.faq.title')}
           </h2>
 
@@ -841,7 +862,7 @@ export default function HomePage() {
       {/* Final CTA Section */}
       <section className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)]">
         <div className="max-w-3xl mx-auto px-4 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[var(--navy-700)] mb-4">
+          <h2 className="font-logo text-3xl md:text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4">
             {t('homepage.cta.title')}
           </h2>
           <p className="text-lg text-[var(--navy-500)] mb-8">
@@ -849,12 +870,12 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
             <Link href="/projects">
-              <Button variant="primary" size="lg" className="min-w-[200px] border-2 border-[var(--navy-600)]">
+              <Button variant="primary" size="lg" className="min-w-[200px]">
                 {t('homepage.cta.button')}
               </Button>
             </Link>
             <Link href="/about">
-              <Button variant="outline" size="lg" className="min-w-[200px] border-[var(--navy-600)] text-[var(--navy-600)] hover:bg-[var(--navy-100)]">
+              <Button variant="outline" size="lg" className="min-w-[200px]">
                 {t('homepage.hero.ctaHowItWorks')}
               </Button>
             </Link>

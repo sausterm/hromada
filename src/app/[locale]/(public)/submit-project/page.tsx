@@ -374,7 +374,7 @@ export default function SubmitProjectPage() {
       <Header />
 
       <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-6">
+        <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-6">
           {t('submitProject.title')}
         </h1>
 

@@ -56,7 +56,7 @@ export default function PartnerWithUsPage() {
 
       <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
         {/* Hero */}
-        <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-4 text-center">
+        <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
           {t('hero.title')}
         </h1>
         <p className="text-lg text-[var(--navy-500)] mb-4 text-center">

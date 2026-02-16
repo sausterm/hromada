@@ -21,7 +21,7 @@ export default function AboutPage() {
       <Header />
 
       <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-4 text-center">
+        <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
           {t('about.title')}
         </h1>
 
@@ -33,7 +33,7 @@ export default function AboutPage() {
 
           {/* 1. Statement of Purpose */}
           <section className="mb-12">
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
+            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
               {t('about.statementOfPurpose')}
             </h2>
             <blockquote className="text-lg leading-relaxed text-[var(--navy-600)] italic text-center border-l-4 border-r-4 border-[var(--ukraine-500)] px-6 py-2 mx-auto max-w-2xl">
@@ -45,7 +45,7 @@ export default function AboutPage() {
 
           {/* 2. Our Partners */}
           <section className="mb-12">
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-3 text-center">
+            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-3 text-center">
               {t('transparency.partnersTitle')}
             </h2>
             <p className="text-base leading-relaxed mb-6 text-center">
@@ -76,7 +76,7 @@ export default function AboutPage() {
               href="https://app.sprinto.com/trust-center/view/ef845d19-d94b-4d73-84d9-18fa1945b999"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--navy-700)] text-[var(--cream-100)] font-medium rounded-lg hover:bg-[var(--navy-800)] transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--navy-600)] text-white font-medium rounded-lg hover:bg-[var(--navy-700)] transition-colors"
             >
               {t('transparency.visitTrustCenter')}
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,12 +89,12 @@ export default function AboutPage() {
         {/* CTA Buttons */}
         <div className="mt-12 flex justify-center gap-4">
           <Link href="/">
-            <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
+            <Button variant="primary">
               {t('about.browseProjects')}
             </Button>
           </Link>
           <Link href="/submit-project">
-            <Button variant="primary" className="bg-[var(--navy-700)] hover:bg-[var(--navy-800)]">
+            <Button variant="primary">
               {t('nav.submitProject')}
             </Button>
           </Link>

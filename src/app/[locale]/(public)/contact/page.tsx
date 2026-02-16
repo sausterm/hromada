@@ -12,7 +12,7 @@ export default function ContactPage() {
       <Header />
 
       <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-[var(--navy-700)] mb-4 text-center">
+        <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
           {t('title')}
         </h1>
         <p className="text-xl leading-relaxed text-[var(--navy-500)] mb-2 text-center">
@@ -25,7 +25,7 @@ export default function ContactPage() {
         <div className="space-y-12">
           {/* For Municipalities */}
           <section>
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
+            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
               {t('forMunicipalities')}
             </h2>
             <p className="text-base leading-relaxed text-[var(--navy-600)] text-center">
@@ -45,7 +45,7 @@ export default function ContactPage() {
 
           {/* For Donors */}
           <section>
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
+            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
               {t('forDonors')}
             </h2>
             <p className="text-base leading-relaxed text-[var(--navy-600)] text-center">
@@ -65,7 +65,7 @@ export default function ContactPage() {
 
           {/* For NGO Partners */}
           <section>
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
+            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
               {t('forPartners')}
             </h2>
             <p className="text-base leading-relaxed text-[var(--navy-600)] text-center">
@@ -85,7 +85,7 @@ export default function ContactPage() {
 
           {/* Media & Press */}
           <section>
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
+            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
               {t('forMedia')}
             </h2>
             <p className="text-base leading-relaxed text-[var(--navy-600)] text-center">
@@ -105,7 +105,7 @@ export default function ContactPage() {
 
           {/* General Inquiries */}
           <section>
-            <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-4 text-center">
+            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
               {t('generalInquiries')}
             </h2>
             <p className="text-base leading-relaxed text-[var(--navy-600)] text-center">

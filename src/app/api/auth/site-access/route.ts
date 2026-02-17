@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const SITE_PASSWORD = 'hromada!2026'
+const SITE_PASSWORD = 'hromadav2!2026'
 const COOKIE_NAME = 'hromada_site_access'
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 

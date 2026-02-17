@@ -843,7 +843,7 @@ export default function HomePage() {
           <h3 className="text-[var(--navy-700)] text-xl font-semibold text-center">{t('homepage.photoStrip.title')}</h3>
         </div>
 
-        <div className="relative">
+        <div className="relative overflow-hidden overscroll-x-contain" style={{ touchAction: 'pan-y pinch-zoom' }}>
           <div className="flex gap-4 animate-scroll">
             {[
               { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613968183.jpeg', location: 'Lviv' },

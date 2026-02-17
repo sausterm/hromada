@@ -38,7 +38,7 @@ interface NextRequestWithGeo extends NextRequest {
 const BLOCKED_COUNTRIES = ['RU', 'BY']; // Russia, Belarus
 
 // Site password protection
-const SITE_PASSWORD = 'hromada!2026';
+const SITE_PASSWORD = 'hromadav2!2026';
 const AUTH_COOKIE_NAME = 'hromada_site_access';
 
 // Create the internationalization middleware

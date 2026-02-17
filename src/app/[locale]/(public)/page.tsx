@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo, type ReactNode } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback, type ReactNode } from 'react'
 import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
@@ -349,6 +349,73 @@ function EmailCaptureForm({ t }: { t: ReturnType<typeof useTranslations> }) {
   )
 }
 
+// Animated count-up for hero stats
+function CountUp({ end, duration = 2500, prefix = '', suffix = '' }: { end: number; duration?: number; prefix?: string; suffix?: string }) {
+  const [value, setValue] = useState(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  const hasAnimated = useRef(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
+          const start = performance.now()
+          const animate = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1)
+            // Ease-out cubic
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setValue(Math.round(eased * end))
+            if (progress < 1) requestAnimationFrame(animate)
+          }
+          requestAnimationFrame(animate)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [end, duration])
+
+  return <span ref={ref}>{prefix}{value.toLocaleString()}{suffix}</span>
+}
+
+// Animated count-up for currency (handles $XXK / $X.XM formatting)
+function CountUpCurrency({ end, duration = 2500 }: { end: number; duration?: number }) {
+  const [value, setValue] = useState(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  const hasAnimated = useRef(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true
+          const start = performance.now()
+          const animate = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1)
+            const eased = 1 - Math.pow(1 - progress, 3)
+            setValue(Math.round(eased * end))
+            if (progress < 1) requestAnimationFrame(animate)
+          }
+          requestAnimationFrame(animate)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [end, duration])
+
+  return <span ref={ref}>{formatCurrency(value, { compact: true })}</span>
+}
+
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {
   return {
@@ -426,13 +493,18 @@ export default function HomePage() {
       .slice(0, 4)
   }, [allProjects, featuredProjectIds])
 
-  // Hero parallax
+  // Hero parallax + content fade
   const heroImageRef = useRef<HTMLDivElement>(null)
+  const heroContentRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const handleScroll = () => {
+      const scrollY = window.scrollY
       if (heroImageRef.current) {
-        const scrollY = window.scrollY
         heroImageRef.current.style.transform = `translateY(${scrollY * 0.4}px)`
+      }
+      if (heroContentRef.current) {
+        const fade = Math.max(0, 1 - scrollY / (window.innerHeight * 0.5))
+        heroContentRef.current.style.opacity = `${fade}`
       }
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -486,10 +558,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="relative h-full max-w-7xl mx-auto px-4 lg:px-8 flex flex-col justify-center">
+        <div ref={heroContentRef} className="relative h-full max-w-7xl mx-auto px-4 lg:px-8 flex flex-col justify-center will-change-[opacity]">
           <div className="max-w-2xl">
             {/* 100% promise badge */}
-            <div className="hero-animate hero-animate-delay-1 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+            <div className="hero-animate hero-animate-delay-1 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 shimmer-badge">
               <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
@@ -506,15 +578,15 @@ export default function HomePage() {
             {/* Stats */}
             <div className="hero-animate hero-animate-delay-4 flex flex-wrap gap-6 md:gap-10 mb-8">
               <div className="text-center">
-                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white">{totalStats.communityCount}</div>
+                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white"><CountUp end={totalStats.communityCount} /></div>
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statCommunities')}</div>
               </div>
               <div className="text-center">
-                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white">{totalStats.projectCount}</div>
+                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white"><CountUp end={totalStats.projectCount} /></div>
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statProjects')}</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white">{formatCurrency(totalStats.fundingNeeded, { compact: true })}</div>
+                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white"><CountUpCurrency end={totalStats.fundingNeeded} /></div>
                 <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statFunding')}</div>
               </div>
             </div>
@@ -522,7 +594,7 @@ export default function HomePage() {
             {/* CTAs */}
             <div className="hero-animate hero-animate-delay-5 flex flex-wrap gap-4 items-center">
               <Link href="/projects">
-                <Button variant="primary" size="lg" className="px-8 py-3.5 text-base font-semibold bg-white text-[var(--navy-700)] hover:bg-[var(--cream-100)]">
+                <Button variant="primary" size="lg" className="px-8 py-3.5 text-base font-semibold bg-white text-[var(--navy-700)] hover:bg-[var(--cream-100)] hero-cta-pulse">
                   {t('homepage.hero.ctaBrowse')}
                 </Button>
               </Link>

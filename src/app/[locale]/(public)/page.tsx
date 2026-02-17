@@ -541,7 +541,7 @@ export default function HomePage() {
       <Header transparent />
 
       {/* Hero Section - generous negative margin ensures hero covers behind the transparent header */}
-      <section className="relative h-[calc(100vh+2rem)] -mt-24 pt-24 overflow-hidden">
+      <section className="relative h-[100svh] md:h-[calc(100vh+2rem)] -mt-24 pt-24 overflow-hidden">
         {/* Outer div handles parallax transform via JS — inner div handles fade animation separately */}
         <div
           ref={heroImageRef}
@@ -558,36 +558,36 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div ref={heroContentRef} className="relative h-full max-w-7xl mx-auto px-4 lg:px-8 flex flex-col justify-center will-change-[opacity]">
+        <div ref={heroContentRef} className="relative h-full max-w-7xl mx-auto px-4 lg:px-8 flex flex-col justify-center pb-16 md:pb-0 will-change-[opacity]">
           <div className="max-w-2xl">
             {/* 100% promise badge */}
-            <div className="hero-animate hero-animate-delay-1 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 shimmer-badge">
+            <div className="hero-animate hero-animate-delay-1 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-3 md:mb-6 shimmer-badge">
               <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
               <span className="text-sm font-medium text-white">{t('homepage.hero.promiseBadge')}</span>
             </div>
 
-            <h1 className="hero-animate hero-animate-delay-2 font-logo text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-4 leading-tight tracking-tight">
+            <h1 className="hero-animate hero-animate-delay-2 font-logo text-2xl md:text-4xl lg:text-5xl font-semibold text-white mb-2 md:mb-4 leading-tight tracking-tight">
               {t('homepage.hero.headline')}
             </h1>
-            <p className="hero-animate hero-animate-delay-3 text-lg md:text-xl text-[var(--cream-200)] mb-8 leading-relaxed max-w-xl">
+            <p className="hero-animate hero-animate-delay-3 text-base md:text-xl text-[var(--cream-200)] mb-5 md:mb-8 leading-relaxed max-w-xl">
               {t('homepage.hero.subheadline')}
             </p>
 
             {/* Stats */}
-            <div className="hero-animate hero-animate-delay-4 flex flex-wrap gap-6 md:gap-10 mb-8">
+            <div className="hero-animate hero-animate-delay-4 flex flex-wrap gap-4 md:gap-10 mb-5 md:mb-8">
               <div className="text-center">
-                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white"><CountUp end={totalStats.communityCount} /></div>
-                <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statCommunities')}</div>
+                <div className="font-logo text-2xl md:text-4xl font-bold tracking-tight text-white"><CountUp end={totalStats.communityCount} /></div>
+                <div className="text-xs md:text-sm text-[var(--cream-300)]">{t('homepage.hero.statCommunities')}</div>
               </div>
               <div className="text-center">
-                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white"><CountUp end={totalStats.projectCount} /></div>
-                <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statProjects')}</div>
+                <div className="font-logo text-2xl md:text-4xl font-bold tracking-tight text-white"><CountUp end={totalStats.projectCount} /></div>
+                <div className="text-xs md:text-sm text-[var(--cream-300)]">{t('homepage.hero.statProjects')}</div>
               </div>
               <div className="text-center">
-                <div className="font-logo text-3xl md:text-4xl font-bold tracking-tight text-white"><CountUpCurrency end={totalStats.fundingNeeded} /></div>
-                <div className="text-sm text-[var(--cream-300)]">{t('homepage.hero.statFunding')}</div>
+                <div className="font-logo text-2xl md:text-4xl font-bold tracking-tight text-white"><CountUpCurrency end={totalStats.fundingNeeded} /></div>
+                <div className="text-xs md:text-sm text-[var(--cream-300)]">{t('homepage.hero.statFunding')}</div>
               </div>
             </div>
 

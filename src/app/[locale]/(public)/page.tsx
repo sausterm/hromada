@@ -558,7 +558,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div ref={heroContentRef} className="relative h-full max-w-7xl mx-auto px-4 lg:px-8 flex flex-col justify-center will-change-[opacity]">
+        <div ref={heroContentRef} className="relative h-full max-w-7xl mx-auto px-4 lg:px-8 flex flex-col justify-center pb-24 md:pb-0 will-change-[opacity]">
           <div className="max-w-2xl">
             {/* 100% promise badge */}
             <div className="hero-animate hero-animate-delay-1 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 shimmer-badge">

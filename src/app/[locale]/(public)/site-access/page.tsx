@@ -84,7 +84,7 @@ function SiteAccessForm() {
   }
 
   return (
-    <div className="relative min-h-screen flex flex-col">
+    <div className="fixed inset-0 flex flex-col bg-[var(--navy-900)] z-50">
       {/* Blurred hero background */}
       <div className="absolute inset-0 overflow-hidden">
         <div

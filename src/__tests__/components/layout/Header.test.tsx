@@ -11,6 +11,7 @@ jest.mock('next-intl', () => ({
     const translations: Record<string, string> = {
       'nav.admin': 'Admin',
       'nav.aboutUs': 'About Us',
+      'nav.projects': 'Projects',
       'nav.submitProject': 'Submit a Project',
       'nav.home': 'Home',
       'nav.menu': 'Menu',
@@ -19,6 +20,7 @@ jest.mock('next-intl', () => ({
       'nav.contact': 'Contact',
       'nav.login': 'Login',
       'nav.dashboard': 'Dashboard',
+      'nav.mpp': 'Partner With Us',
     }
     return translations[key] || key
   },
@@ -57,6 +59,21 @@ jest.mock('@/hooks/useAuth', () => ({
     isPartner: mockIsPartner,
   }),
 }))
+
+// Mock window.matchMedia for language switcher hover detection
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: query === '(hover: hover)',
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+})
 
 describe('Header', () => {
   beforeEach(() => {
@@ -105,7 +122,7 @@ describe('Header', () => {
       fireEvent.mouseEnter(menuButton.parentElement!)
 
       await waitFor(() => {
-        expect(screen.getByTestId('link-/')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/projects')).toBeInTheDocument()
         expect(screen.getByTestId('link-/about')).toBeInTheDocument()
         expect(screen.getByTestId('link-/contact')).toBeInTheDocument()
       })
@@ -139,9 +156,10 @@ describe('Header', () => {
       fireEvent.mouseEnter(menuButton.parentElement!)
 
       await waitFor(() => {
-        expect(screen.getByText('Home')).toBeInTheDocument()
+        expect(screen.getByText('Projects')).toBeInTheDocument()
         expect(screen.getByText('About Us')).toBeInTheDocument()
         expect(screen.getByText('Contact')).toBeInTheDocument()
+        expect(screen.getByText('Partner With Us')).toBeInTheDocument()
       })
     })
 
@@ -165,26 +183,20 @@ describe('Header', () => {
       expect(langButton).toBeInTheDocument()
     })
 
-    it('shows language dropdown on mouse enter', async () => {
+    it('language button has title for other locale', () => {
       render(<Header />)
-
       const langButton = screen.getByRole('button', { name: /language/i })
-      fireEvent.mouseEnter(langButton.parentElement!)
-
-      await waitFor(() => {
-        const buttons = screen.getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(3)
-      })
+      expect(langButton).toHaveAttribute('title')
     })
 
-    it('hides language dropdown on mouse leave', async () => {
+    it('switches locale when clicking language button on desktop', async () => {
+      const user = userEvent.setup()
       render(<Header />)
 
       const langButton = screen.getByRole('button', { name: /language/i })
-      const langContainer = langButton.parentElement!
+      await user.click(langButton)
 
-      fireEvent.mouseEnter(langContainer)
-      fireEvent.mouseLeave(langContainer)
+      expect(mockReplace).toHaveBeenCalledWith('/', { locale: 'uk' })
     })
   })
 
@@ -276,22 +288,27 @@ describe('Header', () => {
   })
 
   describe('Styling', () => {
-    it('has proper background color class', () => {
+    it('has proper background styling (via inline style)', () => {
       render(<Header />)
       const header = screen.getByRole('banner')
-      expect(header).toHaveClass('bg-[var(--cream-100)]')
+      // Non-transparent header uses inline styles with CSS vars.
+      // jsdom strips CSS variable values from style properties, so we verify
+      // the box-shadow (which uses standard rgba values) as a proxy that
+      // inline styles are applied. CSS var-based properties (backgroundColor,
+      // borderBottom) are handled by the browser runtime.
+      expect(header.style.boxShadow).toContain('rgba(0,0,0,0.05)')
     })
 
-    it('has border bottom', () => {
+    it('has sticky positioning', () => {
       render(<Header />)
       const header = screen.getByRole('banner')
-      expect(header).toHaveClass('border-b')
+      expect(header).toHaveClass('sticky', 'top-0', 'z-50')
     })
 
-    it('has shadow', () => {
+    it('has shadow (via inline style)', () => {
       render(<Header />)
       const header = screen.getByRole('banner')
-      expect(header).toHaveClass('shadow-sm')
+      expect(header.style.boxShadow).toContain('rgba(0,0,0,0.05)')
     })
   })
 
@@ -317,28 +334,6 @@ describe('Header', () => {
         expect(dropdown).toHaveClass('opacity-0')
       })
     })
-
-    it('closes language menu when clicking outside', async () => {
-      render(<Header />)
-
-      const langButton = screen.getByRole('button', { name: /language/i })
-      const langContainer = langButton.parentElement!
-
-      // Open dropdown
-      fireEvent.mouseEnter(langContainer)
-      await waitFor(() => {
-        const buttons = screen.getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(3)
-      })
-
-      // Simulate click outside
-      fireEvent.mouseDown(document.body)
-
-      await waitFor(() => {
-        const buttons = screen.getAllByRole('button')
-        expect(buttons.length).toBeLessThanOrEqual(5)
-      })
-    })
   })
 
   describe('Navigation link clicks', () => {
@@ -350,11 +345,11 @@ describe('Header', () => {
       fireEvent.mouseEnter(menuButton.parentElement!)
 
       await waitFor(() => {
-        const dropdown = screen.getByTestId('link-/').closest('div[class*="absolute"]')
+        const dropdown = screen.getByTestId('link-/projects').closest('div[class*="absolute"]')
         expect(dropdown).toHaveClass('opacity-100')
       })
 
-      await user.click(screen.getByTestId('link-/'))
+      await user.click(screen.getByTestId('link-/projects'))
 
       await waitFor(() => {
         const dropdown = screen.getByTestId('link-/contact').closest('div[class*="absolute"]')
@@ -380,34 +375,6 @@ describe('Header', () => {
         const dropdown = screen.getByTestId('link-/contact').closest('div[class*="absolute"]')
         expect(dropdown).toHaveClass('opacity-0')
       })
-    })
-  })
-
-  describe('Language switcher dropdown', () => {
-    it('switches language when clicking on dropdown option', async () => {
-      const user = userEvent.setup()
-      render(<Header />)
-
-      const langButton = screen.getByRole('button', { name: /language/i })
-      fireEvent.mouseEnter(langButton.parentElement!)
-
-      await waitFor(() => {
-        const buttons = screen.getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(3)
-      })
-
-      const switchButtons = screen.getAllByRole('button')
-      const dropdownButton = switchButtons.find(btn => btn.getAttribute('title'))
-      if (dropdownButton) {
-        await user.click(dropdownButton)
-        expect(mockReplace).toHaveBeenCalledWith('/', { locale: 'uk' })
-      }
-    })
-
-    it('language button has title for other locale', () => {
-      render(<Header />)
-      const langButton = screen.getByRole('button', { name: /language/i })
-      expect(langButton).toHaveAttribute('title')
     })
   })
 

@@ -3,14 +3,15 @@ import { Footer } from '@/components/layout/Footer'
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => {
+  useTranslations: () => (key: string, params?: Record<string, unknown>) => {
     const translations: Record<string, string> = {
-      aboutUs: 'About Us',
+      fiscalSponsor: 'hromada is a project of',
+      candidSeal: 'Candid Platinum Seal of Transparency',
       terms: 'Terms of Service',
       privacy: 'Privacy Policy',
-      contact: 'Contact',
-      builtFor: 'Built to support renewable infrastructure',
-      geoRestrictions: 'Service restricted in certain regions for security',
+    }
+    if (key === 'copyright') {
+      return `© ${params?.year} Thomas D. Protzman. All rights reserved.`
     }
     return translations[key] || key
   },
@@ -47,17 +48,32 @@ describe('Footer', () => {
       render(<Footer />)
       expect(screen.getByText(/All rights reserved/)).toBeInTheDocument()
     })
+
+    it('renders fiscal sponsor text', () => {
+      render(<Footer />)
+      expect(screen.getByText(/hromada is a project of/)).toBeInTheDocument()
+    })
+
+    it('renders POCACITO Network link', () => {
+      render(<Footer />)
+      const pocacitoLink = screen.getByText('POCACITO Network')
+      expect(pocacitoLink).toBeInTheDocument()
+      expect(pocacitoLink).toHaveAttribute('href', 'https://pocacito.org')
+      expect(pocacitoLink).toHaveAttribute('target', '_blank')
+      expect(pocacitoLink).toHaveAttribute('rel', 'noopener noreferrer')
+    })
+
+    it('renders Candid Platinum Seal link', () => {
+      render(<Footer />)
+      const candidLink = screen.getByText('Candid Platinum Seal of Transparency')
+      expect(candidLink).toBeInTheDocument()
+      expect(candidLink).toHaveAttribute('href', 'https://app.candid.org/profile/16026326/pocacito-network/')
+      expect(candidLink).toHaveAttribute('target', '_blank')
+      expect(candidLink).toHaveAttribute('rel', 'noopener noreferrer')
+    })
   })
 
   describe('Navigation Links', () => {
-    it('renders About Us link', () => {
-      render(<Footer />)
-      const aboutLink = screen.getByTestId('link-/about')
-      expect(aboutLink).toBeInTheDocument()
-      expect(aboutLink).toHaveAttribute('href', '/about')
-      expect(screen.getByText('About Us')).toBeInTheDocument()
-    })
-
     it('renders Terms of Service link', () => {
       render(<Footer />)
       const termsLink = screen.getByTestId('link-/terms')
@@ -74,30 +90,30 @@ describe('Footer', () => {
       expect(screen.getByText('Privacy Policy')).toBeInTheDocument()
     })
 
-    it('renders Contact link', () => {
+    it('renders Sanctions Policy link', () => {
       render(<Footer />)
-      const contactLink = screen.getByTestId('link-/contact')
-      expect(contactLink).toBeInTheDocument()
-      expect(contactLink).toHaveAttribute('href', '/contact')
-      expect(screen.getByText('Contact')).toBeInTheDocument()
+      const sanctionsLink = screen.getByTestId('link-/ofac-policy')
+      expect(sanctionsLink).toBeInTheDocument()
+      expect(sanctionsLink).toHaveAttribute('href', '/ofac-policy')
+      expect(screen.getByText('Sanctions Policy')).toBeInTheDocument()
     })
 
-    it('renders all four navigation links', () => {
+    it('does not render About Us link', () => {
       render(<Footer />)
+      expect(screen.queryByTestId('link-/about')).not.toBeInTheDocument()
+    })
+
+    it('does not render Contact link', () => {
+      render(<Footer />)
+      expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
+    })
+
+    it('renders exactly five links total', () => {
+      render(<Footer />)
+      // 3 internal navigation links (Terms, Privacy, Sanctions Policy)
+      // + 2 external links (POCACITO Network, Candid Seal)
       const links = screen.getAllByRole('link')
-      expect(links).toHaveLength(4)
-    })
-  })
-
-  describe('Footer Messages', () => {
-    it('renders builtFor message', () => {
-      render(<Footer />)
-      expect(screen.getByText(/Built to support renewable infrastructure/)).toBeInTheDocument()
-    })
-
-    it('renders geo restrictions notice', () => {
-      render(<Footer />)
-      expect(screen.getByText(/Service restricted in certain regions for security/)).toBeInTheDocument()
+      expect(links).toHaveLength(5)
     })
   })
 

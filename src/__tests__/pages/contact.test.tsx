@@ -7,7 +7,21 @@ jest.mock('next-intl', () => ({
     const translations: Record<string, string> = {
       title: 'Contact Us',
       description: 'Get in touch with our team.',
+      responseTime: 'We typically respond within 48 hours.',
+      generalInquiries: 'General Inquiries',
       generalInquiriesText: 'For questions or partnership opportunities, reach out at',
+      forMunicipalities: 'For Municipalities',
+      forMunicipalitiesText: 'Submit your project for review.',
+      forMunicipalitiesAction: 'Submit a Project',
+      forDonors: 'For Donors',
+      forDonorsText: 'Browse projects seeking support.',
+      forDonorsAction: 'Browse Projects',
+      forPartners: 'For NGO Partners',
+      forPartnersText: 'Partner with us.',
+      forPartnersAction: 'Get in Touch',
+      forMedia: 'Media & Press',
+      forMediaText: 'For press inquiries.',
+      forMediaAction: 'Contact Press',
     }
     return translations[key] || key
   },
@@ -54,7 +68,7 @@ describe('ContactPage', () => {
     it('has proper background', () => {
       const { container } = render(<ContactPage />)
       const wrapper = container.firstChild as HTMLElement
-      expect(wrapper).toHaveClass('bg-[var(--cream-50)]')
+      expect(wrapper).toHaveClass('bg-[var(--cream-100)]')
     })
 
     it('has min-height screen', () => {

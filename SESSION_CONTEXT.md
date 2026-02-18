@@ -1,14 +1,16 @@
 # Session Context — Hromada
 
 **Date**: 2026-02-18
-**Branch**: `v2-payment-processing` (currently checked out)
-**Status**: Payment processing complete, MPP page live, homepage consolidated, messaging framework applied, i18n mostly done, mobile map fix deployed, RLS enabled, FSA drafted
+**Branch**: `v2-payment-processing`
+**Status**: Payment processing complete, i18n complete (DeepL), document system built, homepage case study live, FSA drafted, RLS enabled
 
 ---
 
 ## Summary
 
-Built the complete payment processing infrastructure for Hromada. Donors can support projects via Wire Transfer, DAF Grant, or Check. When they confirm a contribution, a donor account is auto-created and they can track their donation through a dashboard. Nonprofit managers have a separate dashboard to track incoming donations and outbound wire transfers to Ukraine.
+Hromada is a Next.js platform connecting American donors with Ukrainian municipalities for infrastructure rebuilding. Fiscal sponsor: POCACITO Network (501(c)(3), EIN 99-0392258).
+
+Donors support projects via Wire Transfer, DAF Grant, or Check. When they confirm a contribution, a donor account is auto-created. Nonprofit managers track donations and outbound wire transfers to Ukraine via a separate dashboard.
 
 ---
 
@@ -32,8 +34,6 @@ Account auto-created → Receipt email with login →
 Tracks donation in /donor dashboard
 ```
 
-The manual "I've Sent My Contribution" step will be removed once Plaid is integrated.
-
 ---
 
 ## Money Flow
@@ -48,7 +48,6 @@ Plaid detects payment (future)
 Nonprofit Manager reviews in dashboard
        ↓
 Initiates transfer via Wise or Bank Wire
-(whichever has lower fees for the amount)
        ↓
 Ukrainian municipal bank account
        ↓
@@ -57,83 +56,42 @@ Donor receives "Funds Delivered" update
 
 ---
 
-## What Was Built
+## Key Systems Built
 
-### 1. Support This Project Card
-**File**: `src/components/projects/SupportProjectCard.tsx`
-- Replaces "Express Interest" on project detail pages
-- Shows estimated cost and co-financing info
-- Three payment methods: Wire Transfer, DAF Grant, Check
-- Each shows payment instructions with copy buttons
-- "I've Sent My Contribution" confirmation form
-- Success state with account creation messaging
+### Payment & Donations
+- **SupportProjectCard** (`src/components/projects/SupportProjectCard.tsx`) — fully internationalized, 3 payment methods with copy buttons and confirmation form
+- **Donation confirmation API** (`src/app/api/donations/confirm/route.ts`) — validates input, creates donor accounts, sends welcome emails
+- **Donor dashboard** (`src/app/[locale]/(public)/donor/page.tsx`) — stats, donation list, status timeline
+- **Nonprofit dashboard** (`src/app/[locale]/(public)/nonprofit/page.tsx`) — pending actions, mark received, wire transfer tracking
 
-### 2. Donation Confirmation API
-**File**: `src/app/api/donations/confirm/route.ts`
-- Validates donor input
-- Checks if donor has existing account
-- If new donor: creates DONOR account with temp password
-- Creates Donation record in database
-- Sends welcome email to new donors
-- Sends notification to admin/nonprofit manager
+### Translation & i18n
+- **DeepL API** (`src/lib/translate.ts`) — migrated from Google Cloud Translation, better Ukrainian quality
+- **Batch translation** — all 66 projects have Ukrainian translations (facilityNameUk, municipalityNameUk, briefDescriptionUk, fullDescriptionUk)
+- **Admin translate-all endpoint** (`src/app/api/admin/translate-all/route.ts`)
+- **Batch script** (`scripts/translate-projects.ts`)
+- **SupportProjectCard** — all ~40 hardcoded strings converted to locale keys in both en.json and uk.json
 
-### 3. Donor Dashboard
-**File**: `src/app/[locale]/(public)/donor/page.tsx`
-- Stats: total contributed, projects supported, pending, delivered
-- List of donations with status badges
-- Click donation to see update timeline
-- Status progression: PENDING → RECEIVED → FORWARDED → COMPLETED
-- Tax deduction information
+### Document System
+- **Schema**: `ProjectDocument` model — url, filename, documentType (COST_ESTIMATE, ENGINEERING_ASSESSMENT, ITEMIZED_BUDGET, SITE_SURVEY, OTHER), extracted text, translation status
+- **Upload API** (`src/app/api/projects/[id]/documents/route.ts`) — multipart upload to Supabase Storage, background PDF text extraction + translation
+- **Admin UI** (`src/components/admin/DocumentUpload.tsx`) — drag-and-drop with type selector, status polling
+- **Public display** — DocumentCard on project detail page: download original PDF link + expandable translated text inline
+- **PDF extraction** (`src/lib/pdf-extract.ts`) — pdf-parse library, chunked translation for long documents
 
-### 4. Nonprofit Manager Dashboard
-**File**: `src/app/[locale]/(public)/nonprofit/page.tsx`
-- Overview tab with pending actions
-- Donations tab with "Mark Received" functionality
-- Wire Transfers tab with status tracking
-- Fee comparison: Wise vs Bank Wire
+### Homepage
+- **"See It Happen" case study** — School #7, Novohrodivka (NGO Ecoaction partner showcase). 5-step timeline, partner attribution badge, impact stats card. Uses real project from database as example of partner track record.
+- **Featured projects** — admin-managed 4-slot system with fallback to newest projects
+- **Photo strip** — scrolling completed project photos
+- **FAQ** — 5 expandable questions
+- **Email capture** — newsletter signup with Resend welcome email
+- **Hero** — full-viewport with parallax, entrance animations, promise badge
 
-### 5. Database Schema
-**File**: `prisma/schema.prisma`
-
-```prisma
-enum UserRole {
-  ADMIN
-  PARTNER
-  NONPROFIT_MANAGER
-  DONOR  // NEW
-}
-
-model Donation {
-  id, projectId, projectName
-  donorUserId, donorName, donorEmail, donorOrganization
-  amount, paymentMethod, referenceNumber
-  status (PENDING_CONFIRMATION → RECEIVED → ALLOCATED → FORWARDED → COMPLETED)
-  wireTransferId
-  timestamps
-}
-
-model DonationUpdate {
-  id, donationId, title, message, isPublic, createdAt
-}
-
-model WireTransfer {
-  id, referenceNumber
-  recipientName, recipientBankName, recipientBankSwift, recipientAccountIban
-  amountUsd, status, projectId
-  donations[] (linked)
-  timestamps
-}
-```
-
-### 6. Email Templates
-**File**: `src/lib/email.ts`
-- `sendDonorWelcomeEmail()` - Welcome with temp password, tracking info, next steps
-- `sendDonationNotificationToAdmin()` - Alert with donation details, "NEW DONOR" badge
-
-### 7. Auth Updates
-**File**: `src/hooks/useAuth.ts`
-- Added `isDonor()`, `isNonprofitManager()`, `getDashboardPath()`
-- Login redirects to role-appropriate dashboard
+### Other
+- **Municipal Partnership Program** — landing page, inquiry form, API, PartnershipInquiry model
+- **Password reset flow** — forgot-password page, reset-password API
+- **OFAC compliance policy page** (`/ofac-policy`)
+- **Supabase Storage** — project photos migrated from local to CDN
+- **RLS enabled** on all 14 tables (no policies = deny all via PostgREST, Prisma bypasses)
 
 ---
 
@@ -148,87 +106,36 @@ model WireTransfer {
 
 ---
 
-## Payment Methods Supported
-
-| Method | Best For | How It Works |
-|--------|----------|--------------|
-| Wire Transfer | $10k+ | Donor wires to BoA, we provide routing/account |
-| DAF Grant | Wealthy individuals | Donor recommends grant from their DAF to POCACITO Network |
-| Check | Foundations | Donor mails check to POCACITO Network address |
-
-Credit cards/Stripe intentionally not included - 3% fee is too high for large donations.
-
----
-
-## Files Created/Modified
-
-### New Files
-- `src/components/projects/SupportProjectCard.tsx`
-- `src/app/api/donations/confirm/route.ts`
-- `src/app/[locale]/(public)/nonprofit/page.tsx`
-- `src/app/[locale]/(public)/donor/page.tsx`
-
-### Modified Files
-- `prisma/schema.prisma` - Added Donation, DonationUpdate, WireTransfer, DONOR role
-- `src/lib/email.ts` - Added donor welcome and admin notification emails
-- `src/lib/security.ts` - Added donation/wire audit actions
-- `src/hooks/useAuth.ts` - Added isDonor, isNonprofitManager, getDashboardPath
-- `src/app/[locale]/(public)/login/page.tsx` - Updated redirect logic
-- `src/app/[locale]/(public)/projects/[id]/page.tsx` - Replaced ContactForm with SupportProjectCard
-- `locales/en.json` - Added donor and support translations
-
----
-
-## Environment Variables Needed
+## Environment Variables
 
 ```bash
-# Already configured
-RESEND_API_KEY=re_...        # For sending emails
+# Configured
+RESEND_API_KEY=re_...        # Sending emails
 ADMIN_EMAIL=admin@...        # Receives donation notifications
+DEEPL_API_KEY=...            # Translation (DeepL free tier, 500K chars/month)
 
-# Needed for production
-# Real POCACITO Network bank details (currently placeholders in SupportProjectCard.tsx):
-# - Bank of America routing number
-# - Account number
-# - SWIFT code
-# - POCACITO Network EIN
-# - Mailing address
+# Production (AWS Amplify)
+# Same vars must be added in Amplify console → Environment variables
+
+# Needed before launch
+# Real POCACITO Network bank details (currently placeholders in SupportProjectCard)
 
 # Future
-PLAID_CLIENT_ID=...          # For bank transaction monitoring
+PLAID_CLIENT_ID=...          # Bank transaction monitoring
 PLAID_SECRET=...
-WISE_API_KEY=...             # For outbound transfer tracking
+WISE_API_KEY=...             # Outbound transfer tracking
 ```
-
----
-
-## Next Steps
-
-### Immediate
-1. Replace placeholder bank details in `SupportProjectCard.tsx` with real POCACITO Network info
-2. Test full flow: project page → support → confirm → check email → login to donor dashboard
-
-### Short Term
-3. Add Plaid integration for automatic payment detection
-4. Remove manual "I've Sent My Contribution" step
-5. Connect nonprofit dashboard to real API (currently using mock data)
-
-### Medium Term
-6. Add Wise API for outbound transfer tracking
-7. Auto-update donation status when Wise confirms delivery
-8. Add password reset flow for donors
 
 ---
 
 ## Business Context
 
 - **Fiscal Sponsor**: POCACITO Network, 501(c)(3), EIN 99-0392258
-- **Candid Profile**: Platinum Seal of Transparency — https://app.candid.org/profile/16026326/pocacito-network/
-- **Website**: https://pocacito.org
+- **Candid Profile**: Platinum Seal — https://app.candid.org/profile/16026326/pocacito-network/
 - **Receiving Bank**: Bank of America
-- **Outbound Transfers**: Wise (cheaper for most amounts) or Bank Wire (better for very large)
+- **Outbound Transfers**: Wise (cheaper for most amounts) or Bank Wire (very large)
 - **Target Donors**: Wealthy individuals, corporations, foundations
-- **Destination**: Ukrainian municipal bank accounts for infrastructure projects
+- **Credit cards/Stripe**: Intentionally excluded — 3% fee too high for large donations
 
 ---
 
@@ -240,166 +147,6 @@ WISE_API_KEY=...             # For outbound transfer tracking
 
 ---
 
-## Session 2026-02-10: Homepage Consolidation & Infrastructure Updates
-
-### Homepage Changes (v2-payment-processing)
-1. **Consolidated How It Works** into homepage — deleted standalone `/how-it-works` page
-2. **Added case study section** (Kharkiv hospital with timeline and live stats card)
-3. **Added photo strip** (scrolling completed projects, cream-100 background)
-4. **Added FAQ section** (5 expandable questions with `<details>` elements)
-5. **Updated final CTA** to cream background with two buttons (Browse Projects + Learn More)
-6. **Removed Trust/Impact navy stripe** from homepage
-7. **Removed How It Works** from hamburger menu navigation
-8. **How It Works buttons**: Aligned with fixed width, earth tone colors matching map category colors (teal, sage, amber, terracotta, taupe)
-
-### Fiscal Sponsor Update
-- Changed from CSBE to **POCACITO Network** across entire codebase
-- EIN: **99-0392258**
-- Updated all references in: SupportProjectCard, email templates, donor dashboard, homepage FAQ, locale files, tests
-- Contact email updated to `donations@pocacito.org`
-
-### Footer Reorder
-1. hromada is a project of POCACITO Network · Candid Platinum Seal of Transparency
-2. About Us · Terms · Privacy · Contact
-3. © 2026 Thomas D. Protzman. All rights reserved.
-- Removed "Built for Ukraine" / geo restrictions line
-
-### Image Migration to Supabase Storage
-- Created `project-images` bucket in Supabase Storage (public)
-- Uploaded 11 site photos to `site-photos/` folder
-- Updated all image references from `/photos/` to Supabase CDN URLs
-- Added `remotePatterns` to `next.config.ts` for `next/image` support
-- Base URL: `https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/`
-- Sloan (and any dev) can now see all images without local files
-
-### About Page
-- Added project categories section with map-matching icons and colors (from CATEGORY_CONFIG)
-- Switched partner logos to cream background versions
-
-### Other
-- `planning/` folder renamed to `Vault/` (Obsidian-based planning hub added by Sloan)
-- Site password: `hromada!2026`
-- Admin login: use `HROMADA_ADMIN_SECRET` from `.env.local` as password
-
----
-
-## Session 2026-02-10: Mobile Bug Fixes (main branch)
-
-### Mobile Map Fix (applied to both branches)
-Mobile map went through 3 iterations on homepage (`src/app/[locale]/(public)/page.tsx`):
-1. **Z-index fix** — adjusted z-index so zoom controls weren't hidden by header
-2. **Inline panel swap** — rendered map inline, but Leaflet rendered grey tiles (container started `display:none`)
-3. **Conditional rendering (final)** — two separate `<MapWrapper>` instances: mobile conditionally rendered (`{isMobileMapOpen && ...}`), desktop always rendered (`hidden lg:block`). Removed CSS Leaflet control offset hack.
-
-State split: `isDesktopMap` (window >= 1024px) + `isMobileMapOpen` (user toggle) → `isMapVisible` (combined).
-
-### Card Flash Fix
-Added `mapBoundsReported` state flag — starts `false`, set `true` on first `handleBoundsChange`. Cards show all projects until map fires first bounds event.
-
-### Card Navigation Fix
-- **Nested `<a>` hydration error** in `ProjectCard.tsx` — title renders as `<span>` when card is a `<Link>` (mobile), `<Link>` when card is a `<div>` (desktop)
-- **NaN LatLng** in `UkraineMap.tsx` — Prisma Decimals need `Number()` conversion + `isNaN` guard
-- **ProjectPopup import** — changed `next/link` to `@/i18n/navigation` Link for locale prefix
-
-### Filter Dropdown Mobile Support
-Added `toggleDropdown()` + `closeAllDropdowns()`, `onClick` handlers on all 5 dropdown buttons, `touchstart` outside listener.
-
-### Hamburger Menu Fix
-`Header.tsx` — added `onClick` toggle and `touchstart` outside listener.
-
-### API Response Slimming
-`src/app/api/projects/route.ts` — changed from `include: { photos }` to Prisma `select` with only summary fields.
-
-### Login Page Password Toggle (both branches)
-Added `showPassword` state with eye icon toggle. Committed on v2 (`811d631`), cherry-picked to main (`bf7e4fa`).
-
-### i18n Completeness (v2)
-- Converted hardcoded strings to `t()` calls in homepage and footer
-- Added ~43 missing locale keys: `homepage.viewList`, `footer.fiscalSponsor/candidSeal/copyright`, `homepage.caseStudy.*`, `homepage.liveStats.*`, `homepage.photoStrip.*`, `homepage.faq.*`
-
----
-
-## Session 2026-02-10: Homepage Expert Review & Improvements (v2 branch)
-
-### Expert Panel Review
-Conducted a 6-expert review of the homepage (UX/UI, Fundraising, Ukrainian Civic Tech, Copywriter, Climate/Energy, CRO). Key consensus findings:
-1. The "100% goes to projects" model is the strongest asset but buried across the page
-2. Page sections blur together — cream-100 background everywhere, no visual rhythm
-3. Case study data appears fabricated even though it's real — needs verification labels
-4. No social proof from the donor side (no testimonials, press logos, donor count)
-5. Only one conversion path (Browse Projects) — no email capture, no micro-commitments
-
-### Implemented Changes (commit `32cd180`)
-
-**Hero section:**
-- Made hero full-viewport: `h-[calc(100svh-64px)]` (was fixed 500/550px)
-- Swapped hero image to ground-mounted solar array
-- Rewrote headline: "When Russia cuts the power, hospitals go dark" (was "Power Ukrainian hospitals, schools & homes")
-- Updated subheadline: "100% of your donation funds solar and battery systems that keep Ukrainian communities running."
-- Replaced "Total kW" stat with "Communities" count (unique municipalities from project data)
-- Added animated scroll-down chevron indicator at bottom of hero
-
-**Trust badge:**
-- Added POCACITO Network 501(c)(3) badge next to the "100% promise" in How It Works section
-- Links to Candid profile, shows "501(c)(3) Fiscal Sponsor · POCACITO Network · Candid Platinum Seal"
-
-**Final CTA rewrite:**
-- Title: "Choose a project. Fund it. Watch it power on." (was "Ready to Make a Difference?")
-- Subtitle: "Every project is verified, every dollar is tracked, and every system is monitored after installation."
-
-**Email capture:**
-- Added email signup below CTA buttons with divider "or stay in the loop"
-- `EmailCaptureForm` component with success/error states
-- New API route: `src/app/api/newsletter/route.ts` — rate-limited, sends notification to admin via Resend
-- Full EN/UK locale keys for email form
-
-**CSS:**
-- Added `@keyframes scroll-hint` bounce animation and `.animate-scroll-hint` class in `globals.css`
-
-### Files Changed
-| File | Changes |
-|------|---------|
-| `src/app/[locale]/(public)/page.tsx` | Hero height, headline, stats, scroll indicator, trust badge, email capture form |
-| `src/app/globals.css` | Scroll-hint animation keyframes |
-| `src/app/api/newsletter/route.ts` | **New** — newsletter signup API route |
-| `locales/en.json` | Hero headline/subheadline/stat, CTA rewrite, email capture keys |
-| `locales/uk.json` | Same keys translated to Ukrainian |
-
-### Expert Review Action Items NOT Yet Implemented
-| # | Action | Impact |
-|---|--------|--------|
-| 1 | Alternate section backgrounds (bg-white for How It Works, FAQ) | High |
-| 8 | Dedicated Trust/Social Proof section (100% model visual, Candid seal, partner logos, donor count) | Very High |
-| 10 | Make case study data verifiable or label as example | High |
-| 11 | Add funding progress indicators to project cards | High |
-| 12 | Translate "Total kW" into impact metrics (hours of backup power, homes powered, CO2 avoided) | Medium |
-| 13 | Add "How to Give" section or surface payment methods earlier | High |
-| 14 | Connect LiveStatsCard to real API data | Medium |
-| 15-20 | Donor testimonials, press logos, native UK review, carbon calculations, impact report, A/B testing | Various |
-
----
-
-## Infrastructure Note: DNS Outage (2026-02-10)
-
-All of `hromadaproject.org` went down (NXDOMAIN for all subdomains). Not caused by code changes — was a DNS/Cloudflare configuration issue. Sloan resolved it. Domain DNS is managed through Cloudflare.
-
----
-
-## Architecture Notes
-
-- **Leaflet + SSR:** Dynamically import with `ssr: false`. Hidden containers break tile rendering — use conditional mount/unmount.
-- **Prisma Decimals:** Lat/lng come as `Decimal` type. Always wrap with `Number()` before passing to Leaflet.
-- **i18n Links:** Use `import { Link } from '@/i18n/navigation'` (not `next/link`) for locale prefix.
-- **Mobile touch:** Always add `onClick` (not just hover). Use `touchstart` for outside-click listeners.
-- **Turbopack cache:** `rm -rf .next` if dev server crashes.
-- **Branch switching:** Kill dev server first (`pkill -f "next dev"`), then switch, then `npm run dev`.
-
-## Git Branch State
-
-- **main**: Mobile bug fixes, about page cleanup, login password toggle (cherry-picked from v2)
-- **v2-payment-processing**: All of main's fixes plus payment processing, MPP page, homepage redesign, i18n, expert review improvements, email capture
-- When merging v2 into main, expect conflicts in: `globals.css`, `Header.tsx`, locale files, homepage component
-
 ## Design System
 
 ### Color Palette
@@ -408,225 +155,39 @@ All of `hromadaproject.org` went down (NXDOMAIN for all subdomains). Not caused 
 - **Accent**: `var(--ukraine-blue)` (#0057B8)
 - **Category colors**: teal (#5B8FA8), sage (#7B9E6B), amber (#D4954A), terracotta (#C75B39), taupe (#8B7355)
 
-### Page Layout (about, contact, partner-with-us)
+### Partner Logos
+Two variants in `public/partners/`: `Logo.png` (cream bg) and `Logo-white.png` (white bg). Match variant to section background.
+
+### Page Layout
 - Container: `max-w-3xl mx-auto px-4 py-12`
-- h1: `text-4xl font-bold`, h2: `text-3xl font-medium`
-- Dividers: `<hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />`
-
-### Hamburger Menu Order
-1. Projects → 2. About → 3. Municipal Partnership → 4. Contact → divider → 5. Dashboard/Login
+- Hamburger menu: Projects → About → Municipal Partnership → Contact → divider → Dashboard/Login
 
 ---
 
-## Session 2026-02-10: About Page Cleanup, Hero Copy, Mailing List, Animations (v2 branch)
+## Git Branch State
 
-### About Page Simplified
-- Removed: How It Works section, FAQ section, Project Categories section
-- Removed unused imports (`useState`, `useRef`, `useEffect`, FAQItem component)
-- Remaining sections: Statement of Purpose, Our Partners, Trust Center, CTA buttons
-
-### Hero Adjustments
-- Made hero slightly taller: `h-[calc(100vh+2rem)]` to eliminate cream peek at bottom
-- Hero copy still being iterated — current headline/subheadline under discussion
-- Tried multiple rounds of expert-generated copy options; user wants headline to convey: empowering communities, resilience against Russian aggression, sustainable recovery, decentralizing grids
-- Target audience is donors — copy should speak to them, not just describe the mission
-
-### Hero Entrance Animations
-- **Photo fade-in**: `hero-photo-animate` class — 1.2s fade from opacity 0 with subtle scale(1.05→1) zoom settle
-- **Text stagger**: 5 elements cascade in with `hero-fade-up` animation (0.8s ease-out, 30px slide up)
-  - Photo fades in first (0s delay)
-  - Promise badge (0.4s), headline (0.55s), subheadline (0.7s), stats (0.85s), CTAs (1.0s)
-- All CSS-only, defined in `globals.css`
-
-### Newsletter / Mailing List System
-- **Database**: `NewsletterSubscriber` model in Prisma — `id`, `email` (unique), `subscribedAt`, `unsubscribed` flag
-- **Public API**: `src/app/api/newsletter/route.ts` — rate-limited, upserts subscriber, sends welcome email only to new/re-subscribers
-- **Admin API**: `src/app/api/admin/subscribers/route.ts` — GET (list), POST (add), DELETE (remove). Auth-protected via `verifyAdminAuth`.
-- **Admin dashboard**: New "Mailing List" tab — subscriber count badge, table with email/date/remove button, input to add subscribers manually
-- **Welcome email**: `sendNewsletterWelcomeEmail()` in `src/lib/email.ts` — branded HTML email with "hromada" wordmark, cream card explaining the platform, "Browse Projects" CTA button, POCACITO footer
-- **Note**: Resend `from` address currently uses `onboarding@resend.dev` (test address). To send to any email, need to verify `hromadaproject.org` domain in Resend (add DNS records in Cloudflare). Currently only delivers to the Resend account owner's email.
-
-### Files Changed
-| File | Changes |
-|------|---------|
-| `src/app/[locale]/(public)/about/page.tsx` | Removed How It Works, FAQ, Categories sections; cleaned imports |
-| `src/app/[locale]/(public)/page.tsx` | Hero height tweak, hero photo animation class, text entrance animations |
-| `src/app/globals.css` | `hero-photo-fade` keyframes, updated text animation delays (shifted later to let photo fade in first) |
-| `prisma/schema.prisma` | Added `NewsletterSubscriber` model |
-| `src/app/api/newsletter/route.ts` | Rewritten — saves to DB instead of emailing admin, sends welcome email |
-| `src/app/api/admin/subscribers/route.ts` | **New** — admin CRUD for subscribers |
-| `src/app/[locale]/admin/page.tsx` | Added "Mailing List" tab with subscriber table, add/remove functionality |
-| `src/lib/email.ts` | Added `sendNewsletterWelcomeEmail()` with branded HTML template |
-
-### Resend Email Setup TODO
-To send emails to any address (not just Resend account owner):
-1. Go to Resend dashboard → Domains → Add domain → `hromadaproject.org`
-2. Add the MX, SPF, and DKIM records Resend provides to Cloudflare DNS
-3. Once verified, change `from` in email.ts from `onboarding@resend.dev` to `updates@hromadaproject.org`
-
-### Hero Copy — Still Needs Finalization
-The headline/subheadline are still being iterated. Key requirements from the user:
-- Must speak to donors (not just describe the mission)
-- Should convey: community empowerment, resilience against Russian aggression, sustainable recovery, grid decentralization
-- Must be concise (headline ≤7 words)
-- The "Minimal transfer fees. No overhead. Maximum impact" badge is already above it — don't repeat financial messaging
-- Previous attempts were too long or too generic
+- **main**: Mobile bug fixes, about page, login password toggle
+- **v2-payment-processing**: All of main + payment processing, MPP, homepage redesign, i18n, document system, DeepL migration, case study
+- When merging v2 into main, expect conflicts in: `globals.css`, `Header.tsx`, locale files, homepage
 
 ---
 
-## Session 2026-02-10: Featured Projects, Hero Parallax, Favicon (v2 branch)
+## FSA Status
 
-### Featured Projects Admin Management (commit `11abad1`)
-- **Prisma schema**: Added `FeaturedProject` model — `projectId` (unique), `slot` (unique, 1-4), cascade delete on project removal. Reverse relation `featuredSlot` on Project model.
-- **Admin API**: `src/app/api/admin/featured/route.ts` — GET (list with project names), PUT (atomic replace via `$transaction([deleteMany, ...creates])`). Auth via `verifyAdminAuth`.
-- **Public API**: `src/app/api/projects/route.ts` — `?all=true` branch now also fetches `featuredProjectIds` (ordered by slot) via `Promise.all`.
-- **Homepage**: `featuredProjectIds` state populated from API. `featuredProjects` memo prioritizes admin-selected projects in slot order, backfills remaining slots with newest projects.
-- **Admin dashboard**: Collapsible "Featured Projects" panel inside projects tab. 4 numbered slot cards in a grid. Click "Assign" to open inline search/picker (filters existing projects, excludes already-featured). "X" to clear a slot. "Save" button persists via PUT.
-
-### Hero Parallax Scroll Effect
-- Added scroll handler that applies `translateY(scrollY * 0.4)` to the hero background image as user scrolls
-- **Key fix**: Separated animation and parallax into two nested divs to avoid CSS `animation-fill-mode: forwards` blocking inline transform updates
-  - Outer div (`heroImageRef`): handles parallax transform via JS, no animation, `top: -20%` / `bottom: -20%` for overflow room
-  - Inner div: handles `hero-photo-animate` fade-in, `bg-cover bg-center`
-- Removed `transform: scale()` from `hero-photo-fade` keyframes in `globals.css` — animation now only handles opacity
-
-### Favicon & Header Logo Transparency
-- **Header SVG** (`src/components/layout/Header.tsx`): Unified both transparent/non-transparent states to use a single SVG mask (`#panel-cutout`) that cuts out grid lines and junction dots. Fill color switches between `white` (transparent header) and `currentColor` (solid header). Grid lines are now transparent in both states.
-- **Favicon PNG** (`src/app/icon.png`): Used PIL to make 5,414 cream grid line pixels fully transparent. 566 anti-aliased edge pixels given partial alpha with navy coloring for smooth edges. Cream circle background preserved.
-
-### Files Changed
-| File | Changes |
-|------|---------|
-| `prisma/schema.prisma` | Added `FeaturedProject` model, `featuredSlot` relation on Project |
-| `src/app/api/admin/featured/route.ts` | **New** — admin GET/PUT for featured project slots |
-| `src/app/api/projects/route.ts` | Added `featuredProjectIds` to `?all=true` response |
-| `src/app/[locale]/(public)/page.tsx` | Featured projects logic, hero parallax (nested divs + scroll handler) |
-| `src/app/[locale]/admin/page.tsx` | Featured projects management UI (collapsible panel, slot cards, project picker) |
-| `src/app/globals.css` | Removed transform from `hero-photo-fade` keyframes |
-| `src/app/icon.png` | Grid lines between solar panels made transparent |
-| `src/components/layout/Header.tsx` | Unified SVG to mask-based cutout for both header states |
-
-### Technical Notes
-- **Prisma client regeneration**: After schema changes, must run `npx prisma generate` + `rm -rf .next` + restart dev server. The generated client in `.prisma/client/` won't have new models until regenerated.
-- **CSS animation vs inline transform**: `animation-fill-mode: forwards` can block inline `style.transform` updates even if the keyframes don't include `transform`. Solution: separate animated element from transform-controlled element.
-- **`inset-0` vs individual positioning**: Tailwind's `inset-0` (generates `inset: 0px`) overrides individual `top`/`bottom` values. Use `left-0 right-0` + inline `style` for top/bottom instead.
+Fiscal Sponsorship Agreement drafted and under review. Key points:
+- 0% fee guaranteed through March 2027 or independent 501(c)(3)
+- POCACITO retains variance power (protects tax-deductibility)
+- All IP belongs to Hromada/Thomas
+- OFAC/sanctions compliance required before first international disbursement
+- Governing law: Virginia
 
 ---
 
-## Session 2026-02-18: FSA Review, RLS Security Fix, Messaging Framework, UI Polish (v2 branch)
+## Technical Notes
 
-### Fiscal Sponsorship Agreement (FSA) Review
-
-**Document**: `Fiscal_Sponsorship_Agreement.docx` (project root)
-
-The FSA between Hromada (unincorporated project, Thomas D. Protzman) and POCACITO Network has been drafted and reviewed. Key structural elements:
-
-- **Model**: Reads as Model A (comprehensive) in Section 1 but behaves as Model C (pre-approved grant) in practice. Section 1 still says POCACITO "assumes administrative, programmatic, financial, and legal responsibility" while Section 14 gives Hromada operational autonomy. **Recommended fix**: Change Section 1 to "fiduciary and financial responsibility" instead of "programmatic."
-- **Variance power** (Section 15): Added and well-structured. POCACITO retains ultimate discretion over donated funds; donor designations are non-binding recommendations. This is the clause that protects tax-deductibility.
-- **0% fee** (Section 10): Guaranteed through March 31, 2027 or independent 501(c)(3). Wind-down provision if no fee agreement reached after that.
-- **Succession** (Section 7): Sloan T. Austermann named as alternate Project Director.
-- **Disbursement** (Section 6): Clear thresholds — $5k and under processed in 10 business days, over $5k needs written POCACITO approval within 5 business days.
-- **IP** (Section 13): All IP belongs to Hromada/Thomas. POCACITO has no ownership claim.
-- **OFAC/Sanctions** (Section 18): Written sanctions compliance policy required before first international disbursement. SDN screening, 5-year documentation retention, end-use monitoring.
-- **Indemnification** (Section 19): Thomas and Sloan jointly and severally liable as individuals (since Hromada is unincorporated). Agreement is assignable to an LLC if formed.
-- **Conflict of interest** (Section 22): Disclosure required for any financial interest with vendors/contractors/partners.
-- **Gift acceptance** (Section 23): Cash, check, wire, ACH, card, DAF grants, corporate matching. Non-cash gifts (securities, crypto, property) require POCACITO approval.
-- **Governing law**: Virginia (POCACITO's state).
-
-**Relationship clarification from Tom**: POCACITO will issue tax receipts, receive donations, and forward them to Ukraine. Nothing more. They don't control Hromada, don't fund Hromada, don't own Hromada. The FSA's variance power clause exists to protect tax-deductibility, not to give POCACITO operational control.
-
-**Spec document**: `Vault/specs/fiscal-sponsorship.md` — 5-phase process (Research → Draft → POCACITO Review → Legal Review → Execution). Target: FSA signed by end of March 2026 (realistic: mid-April).
-
-### Supabase RLS Security Fix
-
-All 14 public tables had Row Level Security (RLS) disabled. Supabase linter flagged them as SECURITY errors.
-
-**Context**: The app uses Prisma (server-side) for all database access. The Supabase JS client is only used for Storage (file uploads). No client-side code queries tables via PostgREST. So the anon key couldn't be used to query tables in practice, but it was still a defense-in-depth gap.
-
-**Fix**: Enabled RLS on all 14 tables via `psql` (installed `libpq` via Homebrew). No RLS policies were created — with RLS enabled and no policies, PostgREST denies all access by default. Prisma bypasses RLS since it connects directly to Postgres.
-
-**Tables fixed**: `_prisma_migrations`, `PasswordResetToken`, `ProjectImage`, `ContactSubmission`, `Project`, `FeaturedProject`, `AuditLog`, `ProjectSubmission`, `User`, `DonationUpdate`, `PartnershipInquiry`, `NewsletterSubscriber`, `Donation`, `WireTransfer`
-
-**Note**: `psql` installed at `/opt/homebrew/opt/libpq/bin/psql`. The `DATABASE_URL` password contains special characters that break shell URL parsing — use Python's `urllib.parse` to extract components and pass via `PGPASSWORD` env var.
-
-### RBAC Verification
-
-Confirmed that admin accounts cannot access the partner dashboard (`/partner`). Role-based dashboard isolation is working correctly. No "superadmin" or "webmaster" role was added — keeping strict role separation. For dev/QA, use test accounts with each role or temporarily change roles via Supabase.
-
-### Messaging Framework Applied (other session, v2 branch)
-
-A messaging framework PDF was added to the project and site copy was updated to align with it. Key principles:
-
-- **Ukrainian agency first**: Communities are the subject, not Hromada. "Communities identify needs" not "We find projects."
-- **Layer pattern**: Layer 1 (Ukrainian communities) → Layer 2 (the platform/process) → Layer 3 (donor action)
-- **Avoid "we" as subject**: Use passive voice or make communities the subject. "Donations are processed" not "We process donations." "Trusted NGOs verify projects" not "We work with NGOs."
-
-**Changes made (EN + UK locales)**:
-- Hero headline: "Ukrainian communities are recovering. They're asking for your support."
-- Hero subheadline: "Every project was identified and requested by the Ukrainian municipality it serves. Browse their needs. Fund their plan."
-- Promise badge: "Total transparency. From request to completion."
-- How It Works: 5 steps → 3 steps (Communities identify needs → We verify and publish → You fund their plan)
-- CTA: "Browse projects. Choose a community. Fund their plan."
-- About page, FAQ, transparency section: Rewrote to reduce "we" as subject, center Ukrainian communities
-
-**How It Works layout**: Changed from horizontal row of 5 step cards to vertical left-aligned stack with icons on left, text on right, connector lines between steps. Container narrowed from `max-w-6xl` to `max-w-3xl`.
-
-### UI Polish (other session, v2 branch)
-
-**Map cluster markers**: Briefly changed to white fill / navy border, then reverted to original navy gradient / white border per user preference.
-
-**Project card hover**: Fixed jittery hover animation caused by competing transition systems — Tailwind `transition-all` + `hover:-translate-y` was fighting `.card-hover` CSS class. Removed Tailwind hover classes, consolidated to single CSS source of truth: `transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out` with gentler shadow.
-
-**Hero-to-cream transition**: Tried bottom gradient (looked bad), removed it. Added subtle `shadow-[inset_0_8px_12px_-8px_rgba(0,0,0,0.08)]` on featured projects section instead — reads as hero casting shadow onto cream below.
-
-### UI Feedback (Discussed, Not Yet Implemented)
-
-1. **Map clusters**: Solid dark navy circles are the heaviest visual element on the page. They compete with project cards for attention. Lighter treatment (white fill, navy border) would balance the page better. (Was tried and reverted — user prefers current navy style.)
-2. **Filter pills with category colors**: When tapping "Hospital" give it terracotta fill, "School" gets sage green, etc. Creates visual connection between filter and matching card badges.
-3. **The cream + navy palette is solid** — just needs contrast tweaks to make key information pop more.
-
-### Previous UI Feedback (from earlier sessions, still not implemented)
-
-1. Consolidate two toolbar rows (filter pills + search/sort) into one
-2. Remove redundant category badges on cards
-3. Replace "Posted X weeks ago" with funding progress
-4. Make cost amount more prominent
-5. Drop redundant description text on cards
-6. Move home icon onto the map with +/- zoom controls
-
----
-
-## Session 2026-02-18: Mobile Map Crash Fix — Invalid LatLng (NaN, NaN)
-
-### The Bug
-Tapping an individual marker on the mobile projects map crashed the page with `Error: Invalid LatLng object: (NaN, NaN)`. The crash occurred at `UkraineMap.tsx:364` inside `FlyToProject.useEffect` when calling `map.flyTo([offsetLat, lng], 12)`.
-
-### Root Cause
-Prisma returns `Decimal` columns as **strings** (e.g., `"49.99"`). The `transformProject` functions in 4 files were converting `technicalPowerKw` and `estimatedCostUsd` to numbers but **not** the coordinate fields (`cityLatitude`, `cityLongitude`, `latitude`, `longitude`). When `FlyToProject` did `lat + 0.05`, JavaScript performed string concatenation (`"49.990.05"`) instead of math (`50.04`), which Leaflet parsed as `NaN`.
-
-Markers rendered correctly because `getOffsetPositions` happened to convert coordinates through a `split(',').map(Number)` code path — but every other code path (flyTo, popup positioning, bounds checking) got raw strings.
-
-### Fixes Applied
-
-**Commit `34c2b7a`** — `UkraineMap.tsx`:
-- Wrapped coordinate access in `Number()` in `FlyToProject` (line 317-318)
-- Wrapped coordinate access in `Number()` in `MapEventHandler` visible projects filter (line 163-164)
-
-**Commit `62589b9`** — All 4 `transformProject` functions:
-- `src/app/[locale]/(public)/projects/page.tsx` — Added `cityLatitude: Number()`, `cityLongitude: Number()`, `latitude: Number()`, `longitude: Number()`
-- `src/app/[locale]/(public)/page.tsx` — Same
-- `src/app/[locale]/(public)/projects/[id]/page.tsx` — Same
-- `src/app/[locale]/admin/page.tsx` — Same
-
-**Also in `62589b9`**:
-- Removed the 300ms `setTimeout` mobile workaround in `handleMarkerClick` (projects page.tsx) — the real fix was Number() conversion, not a timing delay
-
-### Other Changes This Session
-- **CLAUDE.md updated**: Added `Communication Style` section requiring precise, step-by-step instructions for browser/tooling tasks. Added `Hosting: AWS Amplify (NOT Vercel)` to Code Conventions.
-- **Hosting reminder**: Hromada deploys on **AWS Amplify**, never Vercel. Amplify deploy times are slower than Vercel — check Amplify console for build status.
-
-### Debugging Notes
-- Safari Web Inspector on Mac can connect to iPhone for console errors: Safari → Develop → [iPhone name] → [tab]
-- The JS chunk hash in the error stack trace indicates which build is running — if the hash doesn't change after a deploy, the old code is still cached
-- On Mac, Chrome DevTools opens with **Cmd+Option+I** (not F12, which changes volume)
-- To test localhost on phone: use Mac's local IP (`ipconfig getifaddr en0`) on same WiFi
+- **Resend emails**: Currently using `onboarding@resend.dev` (test). Need to verify `hromadaproject.org` domain in Resend for production sends.
+- **Placeholder bank details**: Still in SupportProjectCard — blocked on FSA signing and real POCACITO account info.
+- **Site password**: `hromada!2026`
+- **Admin login**: Use `HROMADA_ADMIN_SECRET` from `.env.local`
+- **Hosting**: AWS Amplify (NOT Vercel). Push to branch triggers build automatically.
+- **DNS**: Managed through Cloudflare for `hromadaproject.org`

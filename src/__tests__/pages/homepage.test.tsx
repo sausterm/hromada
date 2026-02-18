@@ -1,52 +1,89 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen, waitFor } from '@testing-library/react'
 import HomePage from '@/app/[locale]/(public)/page'
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, params?: Record<string, any>) => {
     const translations: Record<string, string> = {
-      'homepage.filters.price': 'Price',
-      'homepage.filters.projectType': 'Project Type',
-      'homepage.filters.urgency': 'Urgency',
-      'homepage.filters.status': 'Status',
-      'homepage.filters.cofinancing': 'Co-financing',
-      'homepage.filters.clear': 'Clear',
-      'homepage.searchPlaceholder': 'Search projects...',
-      'homepage.searchClear': 'Clear search',
-      'homepage.noProjectsFound': 'No projects found',
-      'homepage.noProjectsHint': 'Try adjusting your filters',
-      'homepage.clearAllFilters': 'Clear all filters',
-      'homepage.footer': 'connects American donors with Ukrainian communities.',
-      'homepage.noPaymentProcessing': 'We do not process payments.',
-      'homepage.viewMap': 'View Map',
-      'homepage.sortOptions.newest': 'Newest',
-      'homepage.sortOptions.oldest': 'Oldest',
-      'homepage.sortOptions.highestCost': 'Highest Cost',
-      'homepage.sortOptions.lowestCost': 'Lowest Cost',
-      'homepage.sortOptions.alphabetical': 'A-Z',
-      'categories.HOSPITAL': 'Hospital',
-      'categories.SCHOOL': 'School',
-      'categories.WATER': 'Water',
-      'categories.ENERGY': 'Energy',
-      'categories.OTHER': 'Other',
-      'urgency.LOW': 'Low',
-      'urgency.MEDIUM': 'Medium',
-      'urgency.HIGH': 'High',
-      'urgency.CRITICAL': 'Critical',
-      'status.OPEN': 'Open',
-      'status.IN_DISCUSSION': 'In Discussion',
-      'status.MATCHED': 'Matched',
-      'status.FULFILLED': 'Fulfilled',
-      'cofinancing.YES': 'Yes',
-      'cofinancing.NO': 'No',
-      'cofinancing.NEEDS_CLARIFICATION': 'Needs Clarification',
-      'projectTypes.SOLAR_PV': 'Solar PV',
-      'projectTypes.HEAT_PUMP': 'Heat Pump',
-      'projectTypes.BATTERY_STORAGE': 'Battery Storage',
-      'projectTypes.THERMO_MODERNIZATION': 'Thermo-modernization',
-      'common.projects': 'projects',
-      'common.needed': 'needed',
+      'homepage.hero.promiseBadge': '100% of your donation goes to the project',
+      'homepage.hero.headline': 'Fund Renewable Energy for Ukrainian Communities',
+      'homepage.hero.subheadline': 'Browse vetted infrastructure projects and fund them directly.',
+      'homepage.hero.ctaBrowse': 'Browse Projects',
+      'homepage.hero.ctaHowItWorks': 'How It Works',
+      'homepage.hero.statCommunities': 'Communities',
+      'homepage.hero.statProjects': 'Projects',
+      'homepage.hero.statFunding': 'Funding Needed',
+      'homepage.featured.title': 'Featured Projects',
+      'homepage.featured.viewAll': 'View All',
+      'homepage.howItWorks.title': 'How It Works',
+      'homepage.howItWorks.step1Title': 'Browse Projects',
+      'homepage.howItWorks.step1Desc': 'Explore verified projects.',
+      'homepage.howItWorks.step2Title': 'Fund Directly',
+      'homepage.howItWorks.step2Desc': 'Your donation goes directly.',
+      'homepage.howItWorks.step3Title': 'Track Impact',
+      'homepage.howItWorks.step3Desc': 'See the impact.',
+      'homepage.howItWorks.promiseTitle': 'Promise',
+      'homepage.howItWorks.promiseDesc': 'Promise description',
+      'homepage.caseStudy.label': 'Case Study',
+      'homepage.caseStudy.title': 'Novohrodivka School',
+      'homepage.caseStudy.photoCaption1': 'Solar panels on school',
+      'homepage.caseStudy.photoCaption2': 'Panels on rooftop',
+      'homepage.caseStudy.photoCaption3': 'School interior',
+      'homepage.caseStudy.badge': 'Completed',
+      'homepage.caseStudy.partnerLabel': 'Partner',
+      'homepage.caseStudy.partnerName': 'Ecoaction',
+      'homepage.caseStudy.projectName': 'School Solar PV',
+      'homepage.caseStudy.projectDesc': 'A case study project.',
+      'homepage.caseStudy.timeline1Date': 'Jan 2024',
+      'homepage.caseStudy.timeline1Title': 'Started',
+      'homepage.caseStudy.timeline1Desc': 'Project launched.',
+      'homepage.caseStudy.timeline2Date': 'Feb 2024',
+      'homepage.caseStudy.timeline2Title': 'Funded',
+      'homepage.caseStudy.timeline2Desc': 'Fully funded.',
+      'homepage.caseStudy.timeline3Date': 'Mar 2024',
+      'homepage.caseStudy.timeline3Title': 'Installation',
+      'homepage.caseStudy.timeline3Desc': 'Panels installed.',
+      'homepage.caseStudy.timeline4Date': 'Apr 2024',
+      'homepage.caseStudy.timeline4Title': 'Connected',
+      'homepage.caseStudy.timeline4Desc': 'Connected to grid.',
+      'homepage.caseStudy.timeline5Date': 'May 2024',
+      'homepage.caseStudy.timeline5Title': 'Complete',
+      'homepage.caseStudy.timeline5Desc': 'Project complete.',
+      'homepage.caseStudy.impactTitle': 'Impact',
+      'homepage.caseStudy.impactPower': '50 kW',
+      'homepage.caseStudy.impactPanels': '100 panels',
+      'homepage.caseStudy.impactCost': '$75,000',
+      'homepage.caseStudy.impactBeneficiaries': '500 students',
+      'homepage.photoStrip.title': 'From the Field',
+      'homepage.faq.title': 'Frequently Asked Questions',
+      'homepage.faq.q1': 'FAQ Q1',
+      'homepage.faq.a1': 'FAQ A1',
+      'homepage.faq.q2': 'FAQ Q2',
+      'homepage.faq.a2': 'FAQ A2',
+      'homepage.faq.q3': 'FAQ Q3',
+      'homepage.faq.a3': 'FAQ A3',
+      'homepage.faq.q4': 'FAQ Q4',
+      'homepage.faq.a4': 'FAQ A4',
+      'homepage.faq.q5': 'FAQ Q5',
+      'homepage.faq.a5': 'FAQ A5',
+      'homepage.cta.title': 'Ready to Make a Difference?',
+      'homepage.cta.subtitle': 'Browse projects and fund directly.',
+      'homepage.cta.button': 'Browse Projects',
+      'homepage.cta.emailDivider': 'Or stay updated',
+      'about.projectCategories': 'Project Categories',
+      'about.categoryIntro': 'We support the following categories.',
+      'about.categoryHospital': 'Medical facilities',
+      'about.categorySchool': 'Education buildings',
+      'about.categoryWater': 'Water infrastructure',
+      'about.categoryEnergy': 'Energy systems',
+      'about.categoryOther': 'Other infrastructure',
+      'transparency.civilianOnlyTitle': 'Civilian Only',
+      'transparency.civilianOnlyText': 'Only civilian infrastructure.',
+      'categories.HOSPITAL': 'Hospital / Medical',
+      'categories.SCHOOL': 'School / Education',
+      'categories.WATER': 'Water Utility',
+      'categories.ENERGY': 'Energy Infrastructure',
+      'categories.OTHER': 'Other Infrastructure',
     }
     return translations[key] || key
   },
@@ -55,46 +92,18 @@ jest.mock('next-intl', () => ({
 
 // Mock Header component
 jest.mock('@/components/layout/Header', () => ({
-  Header: ({ children }: { children?: React.ReactNode }) => (
-    <header data-testid="mock-header">
+  Header: ({ children, transparent }: { children?: React.ReactNode; transparent?: boolean }) => (
+    <header data-testid="mock-header" data-transparent={transparent}>
       Header
       {children}
     </header>
   ),
 }))
 
-// Mock MapWrapper component
-jest.mock('@/components/map/MapWrapper', () => ({
-  MapWrapper: ({ projects, onProjectClick, onProjectHover }: any) => (
-    <div data-testid="mock-map">
-      Map with {projects?.length || 0} projects
-      <button
-        data-testid="map-marker-click"
-        onClick={() => onProjectClick && projects?.[0] && onProjectClick(projects[0])}
-      >
-        Click Marker
-      </button>
-      <button
-        data-testid="map-marker-hover"
-        onMouseEnter={() => onProjectHover && projects?.[0] && onProjectHover(projects[0])}
-        onMouseLeave={() => onProjectHover && onProjectHover(null)}
-      >
-        Hover Marker
-      </button>
-    </div>
-  ),
-}))
-
 // Mock ProjectCard component
 jest.mock('@/components/projects/ProjectCard', () => ({
-  ProjectCard: ({ project, isHighlighted, onMouseEnter, onMouseLeave, onClick }: any) => (
-    <div
-      data-testid={`project-card-${project.id}`}
-      data-highlighted={isHighlighted}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={onClick}
-    >
+  ProjectCard: ({ project }: any) => (
+    <div data-testid={`project-card-${project.id}`}>
       {project.facilityName}
     </div>
   ),
@@ -102,8 +111,8 @@ jest.mock('@/components/projects/ProjectCard', () => ({
 
 // Mock Button component
 jest.mock('@/components/ui/Button', () => ({
-  Button: ({ children, onClick, className, variant }: any) => (
-    <button onClick={onClick} className={className} data-variant={variant}>
+  Button: ({ children, onClick, className, variant, size }: any) => (
+    <button onClick={onClick} className={className} data-variant={variant} data-size={size}>
       {children}
     </button>
   ),
@@ -116,42 +125,63 @@ jest.mock('@/components/ui/LoadingSpinner', () => ({
   ),
 }))
 
+// Mock homepage sub-components
+jest.mock('@/components/homepage/FAQItem', () => ({
+  FAQItem: ({ question, children }: { question: string; children: React.ReactNode }) => (
+    <div data-testid="faq-item"><strong>{question}</strong><p>{children}</p></div>
+  ),
+}))
+
+jest.mock('@/components/homepage/TimelineEvent', () => ({
+  TimelineEvent: ({ title }: { title: string }) => (
+    <div data-testid="timeline-event">{title}</div>
+  ),
+}))
+
+jest.mock('@/components/homepage/DocumentaryPhoto', () => ({
+  DocumentaryPhoto: ({ alt }: { alt: string; src: string; caption?: string; location?: string }) => (
+    <div data-testid="documentary-photo">{alt}</div>
+  ),
+}))
+
+jest.mock('@/components/homepage/EmailCaptureForm', () => ({
+  EmailCaptureForm: () => (
+    <div data-testid="email-capture">Email Capture</div>
+  ),
+}))
+
+jest.mock('@/components/homepage/CountUp', () => ({
+  CountUp: ({ end }: { end: number }) => <span>{end}</span>,
+  CountUpCurrency: ({ end }: { end: number }) => <span>${Math.round(end/1000)}K</span>,
+}))
+
+// Mock next/image
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ alt, ...props }: any) => <img alt={alt} {...props} />,
+}))
+
+// Mock i18n/navigation
+jest.mock('@/i18n/navigation', () => ({
+  Link: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
+    <a href={href} className={className} data-testid={`link-${href}`}>{children}</a>
+  ),
+}))
+
 // Mock types module
 jest.mock('@/types', () => ({
-  CATEGORY_CONFIG: {
-    HOSPITAL: { icon: '🏥' },
-    SCHOOL: { icon: '🏫' },
-    WATER: { icon: '💧' },
-    ENERGY: { icon: '⚡' },
-    OTHER: { icon: '🏢' },
-  },
-  URGENCY_CONFIG: {
-    LOW: {},
-    MEDIUM: {},
-    HIGH: {},
-    CRITICAL: {},
-  },
-  STATUS_CONFIG: {
-    OPEN: {},
-    IN_DISCUSSION: {},
-    MATCHED: {},
-    FULFILLED: {},
-  },
-  COFINANCING_CONFIG: {
-    YES: {},
-    NO: {},
-    NEEDS_CLARIFICATION: {},
-  },
-  PROJECT_TYPE_CONFIG: {
-    SOLAR_PV: {},
-    HEAT_PUMP: {},
-    BATTERY_STORAGE: {},
-    THERMO_MODERNIZATION: {},
-  },
   formatCurrency: (value: number, options?: { compact?: boolean }) =>
     options?.compact ? `$${Math.round(value/1000)}K` : `$${value.toLocaleString()}`,
-  getLocalizedProject: (project: any, locale: string) => project,
 }))
+
+// Mock IntersectionObserver
+const mockIntersectionObserver = jest.fn()
+mockIntersectionObserver.mockReturnValue({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+})
+window.IntersectionObserver = mockIntersectionObserver
 
 // Mock fetch
 global.fetch = jest.fn()
@@ -221,7 +251,7 @@ describe('HomePage', () => {
       })
     })
 
-    it('renders projects after loading', async () => {
+    it('renders page after loading', async () => {
       ;(global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => ({ projects: mockProjects }),
@@ -230,9 +260,7 @@ describe('HomePage', () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-        expect(screen.getByTestId('project-card-project-2')).toBeInTheDocument()
-        expect(screen.getByTestId('project-card-project-3')).toBeInTheDocument()
+        expect(screen.getByText('Fund Renewable Energy for Ukrainian Communities')).toBeInTheDocument()
       })
     })
 
@@ -242,13 +270,13 @@ describe('HomePage', () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        // Should not crash, should show empty state
-        expect(screen.getByText('No projects found')).toBeInTheDocument()
+        // Should not crash — shows the page without projects
+        expect(screen.getByText('Fund Renewable Energy for Ukrainian Communities')).toBeInTheDocument()
       })
     })
   })
 
-  describe('Header and Filter Bar', () => {
+  describe('Header', () => {
     beforeEach(() => {
       ;(global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -256,49 +284,18 @@ describe('HomePage', () => {
       })
     })
 
-    it('renders header component', async () => {
+    it('renders header component with transparent prop', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('mock-header')).toBeInTheDocument()
-      })
-    })
-
-    it('renders price filter button', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('Price')).toBeInTheDocument()
-      })
-    })
-
-    it('renders project type filter button', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('Project Type')).toBeInTheDocument()
-      })
-    })
-
-    it('renders cofinancing filter button', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('Co-financing')).toBeInTheDocument()
-      })
-    })
-
-    it('renders category filter chips', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('Hospital')).toBeInTheDocument()
-        expect(screen.getByText('School')).toBeInTheDocument()
+        const header = screen.getByTestId('mock-header')
+        expect(header).toBeInTheDocument()
+        expect(header).toHaveAttribute('data-transparent', 'true')
       })
     })
   })
 
-  describe('Search Functionality', () => {
+  describe('Hero Section', () => {
     beforeEach(() => {
       ;(global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -306,66 +303,53 @@ describe('HomePage', () => {
       })
     })
 
-    it('renders search input', async () => {
+    it('renders hero headline', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search projects...')).toBeInTheDocument()
+        expect(screen.getByText('Fund Renewable Energy for Ukrainian Communities')).toBeInTheDocument()
       })
     })
 
-    it('filters projects by search query', async () => {
-      const user = userEvent.setup()
+    it('renders hero subheadline', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const searchInput = screen.getByPlaceholderText('Search projects...')
-      await user.type(searchInput, 'Hospital A')
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-        expect(screen.queryByTestId('project-card-project-2')).not.toBeInTheDocument()
+        expect(screen.getByText('Browse vetted infrastructure projects and fund them directly.')).toBeInTheDocument()
       })
     })
 
-    it('shows clear button when search has value', async () => {
-      const user = userEvent.setup()
+    it('renders hero stats', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const searchInput = screen.getByPlaceholderText('Search projects...')
-      await user.type(searchInput, 'test')
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Clear search' })).toBeInTheDocument()
+        expect(screen.getByText('Communities')).toBeInTheDocument()
+        expect(screen.getByText('Projects')).toBeInTheDocument()
+        expect(screen.getByText('Funding Needed')).toBeInTheDocument()
       })
     })
 
-    it('clears search when clear button is clicked', async () => {
-      const user = userEvent.setup()
+    it('renders CTA buttons', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+        // "Browse Projects" appears in hero CTA, how-it-works step, and final CTA section
+        expect(screen.getAllByText('Browse Projects').length).toBeGreaterThanOrEqual(1)
+        // "How It Works" appears as hero CTA button and section title
+        expect(screen.getAllByText('How It Works').length).toBeGreaterThanOrEqual(1)
       })
+    })
 
-      const searchInput = screen.getByPlaceholderText('Search projects...')
-      await user.type(searchInput, 'test')
+    it('renders promise badge', async () => {
+      render(<HomePage />)
 
-      const clearButton = screen.getByRole('button', { name: 'Clear search' })
-      await user.click(clearButton)
-
-      expect(searchInput).toHaveValue('')
+      await waitFor(() => {
+        expect(screen.getByText('100% of your donation goes to the project')).toBeInTheDocument()
+      })
     })
   })
 
-  describe('Category Filters', () => {
+  describe('Featured Projects Section', () => {
     beforeEach(() => {
       ;(global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -373,561 +357,35 @@ describe('HomePage', () => {
       })
     })
 
-    it('filters projects when category chip is clicked', async () => {
-      const user = userEvent.setup()
+    it('renders featured projects section title', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Click Hospital category
-      const hospitalChip = screen.getByText('Hospital')
-      await user.click(hospitalChip)
-
-      await waitFor(() => {
-        // Hospital A should be visible
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-        // School B should not be visible
-        expect(screen.queryByTestId('project-card-project-2')).not.toBeInTheDocument()
+        expect(screen.getByText('Featured Projects')).toBeInTheDocument()
       })
     })
 
-    it('toggles category filter off when clicked again', async () => {
-      const user = userEvent.setup()
+    it('renders featured project cards', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const hospitalChip = screen.getByText('Hospital')
-
-      // Click to enable
-      await user.click(hospitalChip)
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('project-card-project-2')).not.toBeInTheDocument()
-      })
-
-      // Click to disable
-      await user.click(hospitalChip)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-2')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Sort Functionality', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('shows sort dropdown on hover', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Find the sort button (first "Newest" text in a button)
-      const sortButtons = screen.getAllByText('Newest')
-      const sortButton = sortButtons[0]
-      fireEvent.mouseEnter(sortButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Oldest')).toBeInTheDocument()
-        expect(screen.getByText('Highest Cost')).toBeInTheDocument()
-        expect(screen.getByText('Lowest Cost')).toBeInTheDocument()
-        expect(screen.getByText('A-Z')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Clear Filters', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('shows clear button when filters are active', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Apply a filter
-      const hospitalChip = screen.getByText('Hospital')
-      await user.click(hospitalChip)
-
-      await waitFor(() => {
-        expect(screen.getByText('Clear')).toBeInTheDocument()
-      })
-    })
-
-    it('shows filter count badge', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Apply a filter
-      const hospitalChip = screen.getByText('Hospital')
-      await user.click(hospitalChip)
-
-      await waitFor(() => {
-        // Should show count badge (the small circle with number inside the clear button)
-        const clearButton = screen.getByText('Clear').closest('button')
-        expect(clearButton).toBeInTheDocument()
-        // The badge is inside the clear button - verify it exists
-        const badge = clearButton?.querySelector('.rounded-full.bg-\\[var\\(--navy-600\\)\\]')
-        expect(badge).toBeInTheDocument()
-      })
-    })
-
-    it('clears all filters when clear button is clicked', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Apply a filter
-      const hospitalChip = screen.getByText('Hospital')
-      await user.click(hospitalChip)
-
-      await waitFor(() => {
-        expect(screen.queryByTestId('project-card-project-2')).not.toBeInTheDocument()
-      })
-
-      // Clear filters
-      const clearButton = screen.getByText('Clear')
-      await user.click(clearButton)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-2')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Project Count and Funding', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('displays project count', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('3')).toBeInTheDocument()
-        expect(screen.getByText('projects')).toBeInTheDocument()
-      })
-    })
-
-    it('displays total funding needed', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        // Total: 50000 + 30000 + 100000 = 180000 -> $180K
-        expect(screen.getByText('$180K')).toBeInTheDocument()
-        expect(screen.getByText('needed')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Empty State', () => {
-    it('shows empty state when no projects match filters', async () => {
-      const user = userEvent.setup()
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Search for something that doesn't exist
-      const searchInput = screen.getByPlaceholderText('Search projects...')
-      await user.type(searchInput, 'xyznonexistent')
-
-      await waitFor(() => {
-        expect(screen.getByText('No projects found')).toBeInTheDocument()
-        expect(screen.getByText('Try adjusting your filters')).toBeInTheDocument()
-      })
-    })
-
-    it('shows clear all filters button in empty state', async () => {
-      const user = userEvent.setup()
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Search for something that doesn't exist
-      const searchInput = screen.getByPlaceholderText('Search projects...')
-      await user.type(searchInput, 'xyznonexistent')
-
-      await waitFor(() => {
-        expect(screen.getByText('Clear all filters')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Card Interactions', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('highlights card on hover', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const card = screen.getByTestId('project-card-project-1')
-      fireEvent.mouseEnter(card)
-
-      await waitFor(() => {
-        expect(card).toHaveAttribute('data-highlighted', 'true')
-      })
-    })
-
-    it('removes highlight on mouse leave', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const card = screen.getByTestId('project-card-project-1')
-      fireEvent.mouseEnter(card)
-      fireEvent.mouseLeave(card)
-
-      await waitFor(() => {
-        expect(card).toHaveAttribute('data-highlighted', 'false')
-      })
-    })
-  })
-
-  describe('Map Integration', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('renders map with projects', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('mock-map')).toBeInTheDocument()
-        expect(screen.getByText('Map with 3 projects')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Footer', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('renders footer text', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText(/connects American donors with Ukrainian communities/)).toBeInTheDocument()
-      })
-    })
-
-    it('renders hromada brand in footer', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('hromada')).toBeInTheDocument()
-      })
-    })
-
-    it('renders payment disclaimer', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('We do not process payments.')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Mobile Map Toggle', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('renders view map button for mobile', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('View Map')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Cofinancing Filter', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('filters projects by cofinancing status', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Hover over cofinancing filter to open dropdown
-      const cofinancingButton = screen.getByText('Co-financing')
-      fireEvent.mouseEnter(cofinancingButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Yes')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Project Type Filter', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-    })
-
-    it('shows project type dropdown on hover', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const projectTypeButton = screen.getByText('Project Type')
-      fireEvent.mouseEnter(projectTypeButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Solar PV')).toBeInTheDocument()
-        expect(screen.getByText('Heat Pump')).toBeInTheDocument()
-        expect(screen.getByText('Battery Storage')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Power Range Filter', () => {
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({
-          projects: [
-            ...mockProjects,
-            createMockProject({ id: 'project-4', technicalPowerKw: 100 }),
-          ],
-        }),
-      })
-    })
-
-    it('renders power filter button', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('homepage.filters.power')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Sorting', () => {
-    const projectsWithDifferentDates = [
-      createMockProject({ id: 'project-1', facilityName: 'Alpha Hospital', estimatedCostUsd: 100000, createdAt: '2024-01-15T10:00:00Z' }),
-      createMockProject({ id: 'project-2', facilityName: 'Beta School', estimatedCostUsd: 50000, createdAt: '2024-02-15T10:00:00Z' }),
-      createMockProject({ id: 'project-3', facilityName: 'Gamma Water', estimatedCostUsd: 75000, createdAt: '2024-03-15T10:00:00Z' }),
-    ]
-
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: projectsWithDifferentDates }),
-      })
-    })
-
-    it('sorts by highest cost', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Open sort dropdown
-      const sortButtons = screen.getAllByText('Newest')
-      const sortButton = sortButtons[0]
-      fireEvent.mouseEnter(sortButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Highest Cost')).toBeInTheDocument()
-      })
-
-      // Click on highest cost option
-      await user.click(screen.getByText('Highest Cost'))
-
-      // Projects should be sorted by cost
-      const projectCards = screen.getAllByTestId(/project-card/)
-      expect(projectCards.length).toBe(3)
-    })
-
-    it('sorts by lowest cost', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Open sort dropdown
-      const sortButtons = screen.getAllByText('Newest')
-      const sortButton = sortButtons[0]
-      fireEvent.mouseEnter(sortButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Lowest Cost')).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByText('Lowest Cost'))
-    })
-
-    it('sorts alphabetically', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Open sort dropdown
-      const sortButtons = screen.getAllByText('Newest')
-      const sortButton = sortButtons[0]
-      fireEvent.mouseEnter(sortButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('A-Z')).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByText('A-Z'))
-    })
-
-    it('sorts by oldest first', async () => {
-      const user = userEvent.setup()
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Open sort dropdown
-      const sortButtons = screen.getAllByText('Newest')
-      const sortButton = sortButtons[0]
-      fireEvent.mouseEnter(sortButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Oldest')).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByText('Oldest'))
-    })
-  })
-
-  describe('Projects with missing cost data', () => {
-    const projectsWithMissingCost = [
-      createMockProject({ id: 'project-1', facilityName: 'Hospital A', estimatedCostUsd: 50000 }),
-      createMockProject({ id: 'project-2', facilityName: 'School B', estimatedCostUsd: undefined }),
-      createMockProject({ id: 'project-3', facilityName: 'Water C', estimatedCostUsd: null }),
-    ]
-
-    it('handles projects with undefined cost', async () => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: projectsWithMissingCost }),
-      })
-
-      render(<HomePage />)
-
-      await waitFor(() => {
+        // The homepage shows up to 4 featured projects
         expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
         expect(screen.getByTestId('project-card-project-2')).toBeInTheDocument()
+        expect(screen.getByTestId('project-card-project-3')).toBeInTheDocument()
       })
     })
 
-    it('handles sorting with missing cost data', async () => {
-      const user = userEvent.setup()
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: projectsWithMissingCost }),
-      })
-
+    it('renders view all link', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+        expect(screen.getByText('View All')).toBeInTheDocument()
       })
-
-      const sortButtons = screen.getAllByText('Newest')
-      const sortButton = sortButtons[0]
-      fireEvent.mouseEnter(sortButton.parentElement!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Highest Cost')).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByText('Highest Cost'))
-
-      // Should not crash
-      expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
     })
   })
 
-  describe('Price filter edge cases', () => {
+  describe('How It Works Section', () => {
     beforeEach(() => {
       ;(global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -935,118 +393,29 @@ describe('HomePage', () => {
       })
     })
 
-    it('renders price filter button', async () => {
+    it('renders how it works section title', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Price filter button should exist
-      expect(screen.getByText('Price')).toBeInTheDocument()
-    })
-  })
-
-  describe('Map marker interactions', () => {
-    beforeEach(() => {
-      // Mock scrollTo for jsdom
-      Element.prototype.scrollTo = jest.fn()
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
+        // "How It Works" appears as both hero CTA button and section title
+        const howItWorksElements = screen.getAllByText('How It Works')
+        expect(howItWorksElements.length).toBeGreaterThanOrEqual(2) // CTA button + section title
       })
     })
 
-    it('handles marker click from map', async () => {
-      const user = userEvent.setup()
+    it('renders step titles', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('mock-map')).toBeInTheDocument()
-      })
-
-      // Click on the mock marker
-      const markerClickButton = screen.getByTestId('map-marker-click')
-      await user.click(markerClickButton)
-
-      // Should trigger highlighting
-      await waitFor(() => {
-        const card = screen.getByTestId('project-card-project-1')
-        expect(card).toBeInTheDocument()
-      })
-    })
-
-    it('handles marker hover from map', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('mock-map')).toBeInTheDocument()
-      })
-
-      const markerHoverButton = screen.getByTestId('map-marker-hover')
-      fireEvent.mouseEnter(markerHoverButton)
-
-      await waitFor(() => {
-        const card = screen.getByTestId('project-card-project-1')
-        expect(card).toHaveAttribute('data-highlighted', 'true')
-      })
-
-      fireEvent.mouseLeave(markerHoverButton)
-
-      await waitFor(() => {
-        const card = screen.getByTestId('project-card-project-1')
-        expect(card).toHaveAttribute('data-highlighted', 'false')
+        // "Browse Projects" appears in multiple places (hero CTA, step title, final CTA)
+        expect(screen.getAllByText('Browse Projects').length).toBeGreaterThanOrEqual(1)
+        expect(screen.getByText('Fund Directly')).toBeInTheDocument()
+        expect(screen.getByText('Track Impact')).toBeInTheDocument()
       })
     })
   })
 
-  describe('Pagination', () => {
-    it('shows show more button when there are more projects', async () => {
-      // Create more than 12 projects
-      const manyProjects = Array.from({ length: 15 }, (_, i) =>
-        createMockProject({ id: `project-${i + 1}`, facilityName: `Project ${i + 1}` })
-      )
-
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: manyProjects }),
-      })
-
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText(/Show More/)).toBeInTheDocument()
-      })
-    })
-
-    it('loads more projects when show more is clicked', async () => {
-      const user = userEvent.setup()
-      const manyProjects = Array.from({ length: 15 }, (_, i) =>
-        createMockProject({ id: `project-${i + 1}`, facilityName: `Project ${i + 1}` })
-      )
-
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: manyProjects }),
-      })
-
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByText(/Show More/)).toBeInTheDocument()
-      })
-
-      const showMoreButton = screen.getByText(/Show More/)
-      await user.click(showMoreButton)
-
-      // Should now show more projects
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-13')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Card click interaction', () => {
+  describe('Case Study Section', () => {
     beforeEach(() => {
       ;(global.fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -1054,20 +423,63 @@ describe('HomePage', () => {
       })
     })
 
-    it('handles card click', async () => {
-      const user = userEvent.setup()
+    it('renders case study section', async () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
+        expect(screen.getByText('Case Study')).toBeInTheDocument()
+        expect(screen.getByText('Novohrodivka School')).toBeInTheDocument()
       })
+    })
+  })
 
-      const card = screen.getByTestId('project-card-project-1')
-      await user.click(card)
+  describe('FAQ Section', () => {
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: mockProjects }),
+      })
+    })
 
-      // Card click should trigger fly to project
+    it('renders FAQ section title', async () => {
+      render(<HomePage />)
+
       await waitFor(() => {
-        expect(card).toHaveAttribute('data-highlighted', 'true')
+        expect(screen.getByText('Frequently Asked Questions')).toBeInTheDocument()
+      })
+    })
+
+    it('renders FAQ items', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        const faqItems = screen.getAllByTestId('faq-item')
+        expect(faqItems.length).toBe(5)
+      })
+    })
+  })
+
+  describe('Final CTA Section', () => {
+    beforeEach(() => {
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({ projects: mockProjects }),
+      })
+    })
+
+    it('renders CTA title', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Ready to Make a Difference?')).toBeInTheDocument()
+      })
+    })
+
+    it('renders email capture form', async () => {
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByTestId('email-capture')).toBeInTheDocument()
       })
     })
   })
@@ -1082,155 +494,8 @@ describe('HomePage', () => {
       render(<HomePage />)
 
       await waitFor(() => {
-        expect(screen.getByText('No projects found')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Search with region and address', () => {
-    it('searches in region field', async () => {
-      const user = userEvent.setup()
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: mockProjects }),
-      })
-
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      const searchInput = screen.getByPlaceholderText('Search projects...')
-      await user.type(searchInput, 'Kyiv Oblast')
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Sorting with undefined cost values', () => {
-    const projectsWithMixedCosts = [
-      ...mockProjects,
-      {
-        id: 'no-cost-project',
-        municipalityName: 'Test City',
-        facilityName: 'No Cost Facility',
-        category: 'HOSPITAL' as const,
-        briefDescription: 'Test description',
-        description: 'Full description',
-        address: 'Test Address',
-        cityLatitude: 50.45,
-        cityLongitude: 30.52,
-        contactName: 'Contact',
-        contactEmail: 'test@test.com',
-        urgency: 'MEDIUM' as const,
-        status: 'OPEN' as const,
-        region: 'Test Oblast',
-        estimatedCostUsd: undefined,
-        createdAt: new Date('2024-03-01'),
-        updatedAt: new Date('2024-03-01'),
-      },
-    ]
-
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: projectsWithMixedCosts }),
-      })
-    })
-
-    it('places undefined costs at end when sorting by highest cost', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Use the same pattern as other sorting tests
-      const sortButtons = screen.getAllByText('Newest')
-      const sortButton = sortButtons[0]
-      fireEvent.mouseEnter(sortButton.parentElement!)
-
-      await waitFor(() => {
-        const highestOption = screen.getByText('Highest Cost')
-        expect(highestOption).toBeInTheDocument()
-      })
-
-      const highestCostOption = screen.getByText('Highest Cost')
-      fireEvent.click(highestCostOption)
-
-      // The project without cost should be last (project cards will be in different order)
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-no-cost-project')).toBeInTheDocument()
-      })
-    })
-
-    it('places undefined costs at end when sorting by lowest cost', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-project-1')).toBeInTheDocument()
-      })
-
-      // Use the same pattern as other sorting tests
-      const sortButtons = screen.getAllByText('Newest')
-      const sortButton = sortButtons[0]
-      fireEvent.mouseEnter(sortButton.parentElement!)
-
-      await waitFor(() => {
-        const lowestOption = screen.getByText('Lowest Cost')
-        expect(lowestOption).toBeInTheDocument()
-      })
-
-      const lowestCostOption = screen.getByText('Lowest Cost')
-      fireEvent.click(lowestCostOption)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-no-cost-project')).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('Price and power range filtering edge cases', () => {
-    const projectsWithVariousCosts = [
-      {
-        ...mockProjects[0],
-        id: 'high-cost',
-        estimatedCostUsd: 600000,
-        technicalPowerKw: 600,
-      },
-      {
-        ...mockProjects[0],
-        id: 'no-cost',
-        estimatedCostUsd: null,
-        technicalPowerKw: null,
-      },
-    ]
-
-    beforeEach(() => {
-      ;(global.fetch as jest.Mock).mockResolvedValue({
-        ok: true,
-        json: async () => ({ projects: projectsWithVariousCosts }),
-      })
-    })
-
-    it('includes projects with undefined cost in price filter', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        expect(screen.getByTestId('project-card-high-cost')).toBeInTheDocument()
-        expect(screen.getByTestId('project-card-no-cost')).toBeInTheDocument()
-      })
-    })
-
-    it('includes high-cost projects when max price is at maximum', async () => {
-      render(<HomePage />)
-
-      await waitFor(() => {
-        // Both projects should be visible with default (max) price range
-        expect(screen.getByTestId('project-card-high-cost')).toBeInTheDocument()
+        // Should not crash — page renders with no projects
+        expect(screen.getByText('Fund Renewable Energy for Ukrainian Communities')).toBeInTheDocument()
       })
     })
   })

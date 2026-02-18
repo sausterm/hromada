@@ -65,7 +65,7 @@ describe('PrivacyPage', () => {
     it('title has proper styling', () => {
       render(<PrivacyPage />)
       const title = screen.getByRole('heading', { level: 1 })
-      expect(title).toHaveClass('text-3xl', 'font-bold')
+      expect(title).toHaveClass('text-3xl', 'font-semibold')
     })
   })
 })

@@ -26,11 +26,19 @@
 - [x] Remove default password fallback in `/api/admin/verify` #p0 @sloan
 - [ ] Connect nonprofit dashboard to real APIs (currently mock data) #p1 @sloan
 - [ ] Add rate limiting to public file upload endpoint #p1
-- [ ] Donor password reset flow #p2
+- [x] Donor password reset flow #p2
 - [ ] Receipt generation for completed donations #p2
 
 ## Done
 
+- [x] Migrate translation engine from Google Cloud to DeepL API #p1 @sloan
+- [x] Batch translate all 66 projects to Ukrainian via DeepL #p1 @sloan
+- [x] Internationalize SupportProjectCard (~40 hardcoded strings → locale keys) #p1 @sloan
+- [x] Add full Ukrainian locale for support namespace (en.json + uk.json) #p1 @sloan
+- [x] Document upload/display system — Prisma model, Supabase storage, PDF text extraction, auto-translation #p1 @sloan
+- [x] Admin "Translate All" button and batch translation endpoint #p2 @sloan
+- [x] Homepage "See It Happen" — replace Kharkiv placeholder with School #7 / NGO Ecoaction partner showcase #p1 @sloan
+- [x] Partner logo background-matching rule added to CLAUDE.md #p3 @sloan
 - [x] Remove default password fallback in `/api/admin/verify` #p0 @sloan
 - [x] OFAC sanctions compliance policy page (`/ofac-policy`) #p1 @sloan
 - [x] Decompose homepage into smaller components #p2 @sloan

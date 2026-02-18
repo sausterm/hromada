@@ -7,6 +7,12 @@ jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }))
 
+// Mock @/types
+jest.mock('@/types', () => ({
+  formatCurrency: (value: number, options?: { compact?: boolean }) =>
+    options?.compact ? `$${Math.round(value/1000)}K` : `$${value.toLocaleString()}`,
+}))
+
 // Mock clipboard API
 Object.assign(navigator, {
   clipboard: {
@@ -29,17 +35,17 @@ describe('SupportProjectCard', () => {
   describe('Options view', () => {
     it('renders the support card with title', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      expect(screen.getByText('Support This Project')).toBeInTheDocument()
+      expect(screen.getByText('title')).toBeInTheDocument()
     })
 
     it('displays estimated cost when provided', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      expect(screen.getByText('Estimated Cost')).toBeInTheDocument()
+      expect(screen.getByText('estimatedCostLabel')).toBeInTheDocument()
     })
 
     it('hides estimated cost section when not provided', () => {
       render(<SupportProjectCard {...defaultProps} estimatedCostUsd={undefined} />)
-      expect(screen.queryByText('Estimated Cost')).not.toBeInTheDocument()
+      expect(screen.queryByText('estimatedCostLabel')).not.toBeInTheDocument()
     })
 
     it('displays co-financing information when available', () => {
@@ -50,9 +56,7 @@ describe('SupportProjectCard', () => {
           cofinancingDetails="50% from local government"
         />
       )
-      expect(screen.getByText('Co-financing Available')).toBeInTheDocument()
-      expect(screen.getByText('50% from local government')).toBeInTheDocument()
-      expect(screen.getByText('Funding Needed')).toBeInTheDocument()
+      expect(screen.getByText('cofinancingBadge')).toBeInTheDocument()
     })
 
     it('hides co-financing when not available', () => {
@@ -63,7 +67,7 @@ describe('SupportProjectCard', () => {
           cofinancingDetails="Some details"
         />
       )
-      expect(screen.queryByText('Co-financing Available')).not.toBeInTheDocument()
+      expect(screen.queryByText('cofinancingBadge')).not.toBeInTheDocument()
     })
 
     it('hides co-financing when details are missing', () => {
@@ -74,19 +78,19 @@ describe('SupportProjectCard', () => {
           cofinancingDetails={undefined}
         />
       )
-      expect(screen.queryByText('Co-financing Available')).not.toBeInTheDocument()
+      expect(screen.queryByText('cofinancingBadge')).not.toBeInTheDocument()
     })
 
     it('renders all payment method options', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      expect(screen.getByText('Wire Transfer')).toBeInTheDocument()
-      expect(screen.getByText('Donor Advised Fund')).toBeInTheDocument()
-      expect(screen.getByText('Mail a Check')).toBeInTheDocument()
+      expect(screen.getByText('methods.wire.title')).toBeInTheDocument()
+      expect(screen.getByText('methods.daf.title')).toBeInTheDocument()
+      expect(screen.getByText('methods.check.title')).toBeInTheDocument()
     })
 
     it('displays tax-deductible notice', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      expect(screen.getByText(/tax-deductible/i)).toBeInTheDocument()
+      expect(screen.getByText('taxNote')).toBeInTheDocument()
     })
   })
 
@@ -94,54 +98,54 @@ describe('SupportProjectCard', () => {
     it('navigates to wire transfer details when selected', async () => {
       render(<SupportProjectCard {...defaultProps} />)
 
-      fireEvent.click(screen.getByText('Wire Transfer'))
+      fireEvent.click(screen.getByText('methods.wire.title'))
 
-      expect(screen.getByText('Wire Transfer Instructions')).toBeInTheDocument()
+      expect(screen.getByText('wireInstructions.title')).toBeInTheDocument()
     })
 
     it('navigates to DAF details when selected', async () => {
       render(<SupportProjectCard {...defaultProps} />)
 
-      fireEvent.click(screen.getByText('Donor Advised Fund'))
+      fireEvent.click(screen.getByText('methods.daf.title'))
 
-      expect(screen.getByText('DAF Grant Instructions')).toBeInTheDocument()
+      expect(screen.getByText('dafInstructions.title')).toBeInTheDocument()
     })
 
     it('navigates to check details when selected', async () => {
       render(<SupportProjectCard {...defaultProps} />)
 
-      fireEvent.click(screen.getByText('Mail a Check'))
+      fireEvent.click(screen.getByText('methods.check.title'))
 
-      expect(screen.getByText('Check Instructions')).toBeInTheDocument()
+      expect(screen.getByText('checkInstructions.title')).toBeInTheDocument()
     })
   })
 
   describe('Wire transfer details', () => {
     it('displays bank information', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
+      fireEvent.click(screen.getByText('methods.wire.title'))
 
-      expect(screen.getByText('Bank')).toBeInTheDocument()
+      expect(screen.getByText('wireInstructions.bank')).toBeInTheDocument()
       expect(screen.getByText('Bank of America')).toBeInTheDocument()
-      expect(screen.getByText('Account Name')).toBeInTheDocument()
-      expect(screen.getByText('Routing Number')).toBeInTheDocument()
-      expect(screen.getByText('Account Number')).toBeInTheDocument()
+      expect(screen.getByText('wireInstructions.accountName')).toBeInTheDocument()
+      expect(screen.getByText('wireInstructions.routingNumber')).toBeInTheDocument()
+      expect(screen.getByText('wireInstructions.accountNumber')).toBeInTheDocument()
     })
 
     it('shows reference with project name', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
+      fireEvent.click(screen.getByText('methods.wire.title'))
 
-      expect(screen.getByText('Reference')).toBeInTheDocument()
+      expect(screen.getByText('wireInstructions.reference')).toBeInTheDocument()
       expect(screen.getByText(`Hromada - ${defaultProps.projectName}`)).toBeInTheDocument()
     })
 
     it('copies routing number to clipboard', async () => {
       jest.useFakeTimers()
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
+      fireEvent.click(screen.getByText('methods.wire.title'))
 
-      const copyButtons = screen.getAllByText('Copy')
+      const copyButtons = screen.getAllByText('copy')
       fireEvent.click(copyButtons[0]) // First copy button is for routing number
 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith('XXXXXXXXX')
@@ -153,57 +157,57 @@ describe('SupportProjectCard', () => {
 
     it('has back button that returns to options', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
+      fireEvent.click(screen.getByText('methods.wire.title'))
 
-      fireEvent.click(screen.getByText('Back'))
+      fireEvent.click(screen.getByText('back'))
 
-      expect(screen.getByText('Support This Project')).toBeInTheDocument()
+      expect(screen.getByText('title')).toBeInTheDocument()
     })
   })
 
   describe('DAF details', () => {
     it('displays EIN information', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Donor Advised Fund'))
+      fireEvent.click(screen.getByText('methods.daf.title'))
 
-      expect(screen.getByText('Organization')).toBeInTheDocument()
+      expect(screen.getByText('dafInstructions.organization')).toBeInTheDocument()
       expect(screen.getByText('POCACITO Network')).toBeInTheDocument()
-      expect(screen.getByText('EIN')).toBeInTheDocument()
+      expect(screen.getByText('dafInstructions.ein')).toBeInTheDocument()
     })
 
     it('shows grant memo with project name', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Donor Advised Fund'))
+      fireEvent.click(screen.getByText('methods.daf.title'))
 
-      expect(screen.getByText('Grant Memo')).toBeInTheDocument()
+      expect(screen.getByText('dafInstructions.grantMemo')).toBeInTheDocument()
     })
 
     it('copies EIN to clipboard', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Donor Advised Fund'))
+      fireEvent.click(screen.getByText('methods.daf.title'))
 
-      const copyButtons = screen.getAllByText('Copy')
+      const copyButtons = screen.getAllByText('copy')
       fireEvent.click(copyButtons[0])
 
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('XX-XXXXXXX')
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('99-0392258')
     })
   })
 
   describe('Check details', () => {
     it('displays check instructions', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Mail a Check'))
+      fireEvent.click(screen.getByText('methods.check.title'))
 
-      expect(screen.getByText('Pay to')).toBeInTheDocument()
-      expect(screen.getByText('Memo')).toBeInTheDocument()
-      expect(screen.getByText('Mail to')).toBeInTheDocument()
+      expect(screen.getByText('checkInstructions.payTo')).toBeInTheDocument()
+      expect(screen.getByText('checkInstructions.memo')).toBeInTheDocument()
+      expect(screen.getByText('checkInstructions.mailTo')).toBeInTheDocument()
     })
 
     it('copies mailing address to clipboard', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Mail a Check'))
+      fireEvent.click(screen.getByText('methods.check.title'))
 
-      const copyButtons = screen.getAllByText('Copy')
+      const copyButtons = screen.getAllByText('copy')
       fireEvent.click(copyButtons[1]) // Second copy button is for address
 
       expect(navigator.clipboard.writeText).toHaveBeenCalled()
@@ -213,43 +217,43 @@ describe('SupportProjectCard', () => {
   describe('Confirmation flow', () => {
     it('navigates to confirmation form when clicking confirm button', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      expect(screen.getByText('Confirm Your Contribution')).toBeInTheDocument()
-      expect(screen.getByLabelText('Your Name *')).toBeInTheDocument()
-      expect(screen.getByLabelText('Email *')).toBeInTheDocument()
+      expect(screen.getByText('confirm.title')).toBeInTheDocument()
+      expect(screen.getByLabelText(/confirm\.name/)).toBeInTheDocument()
+      expect(screen.getByLabelText(/confirm\.email/)).toBeInTheDocument()
     })
 
     it('renders all form fields', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      expect(screen.getByLabelText('Your Name *')).toBeInTheDocument()
-      expect(screen.getByLabelText('Email *')).toBeInTheDocument()
-      expect(screen.getByLabelText('Organization')).toBeInTheDocument()
-      expect(screen.getByLabelText('Amount (USD)')).toBeInTheDocument()
-      expect(screen.getByLabelText('Reference/Confirmation Number')).toBeInTheDocument()
-      expect(screen.getByLabelText('Message')).toBeInTheDocument()
+      expect(screen.getByLabelText(/confirm\.name/)).toBeInTheDocument()
+      expect(screen.getByLabelText(/confirm\.email/)).toBeInTheDocument()
+      expect(screen.getByLabelText('confirm.organization')).toBeInTheDocument()
+      expect(screen.getByLabelText('confirm.amount')).toBeInTheDocument()
+      expect(screen.getByLabelText('confirm.referenceNumber')).toBeInTheDocument()
+      expect(screen.getByLabelText('confirm.message')).toBeInTheDocument()
     })
 
     it('back button returns to payment details from confirm', () => {
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
-      fireEvent.click(screen.getByText('Back'))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
+      fireEvent.click(screen.getByText('back'))
 
-      expect(screen.getByText('Wire Transfer Instructions')).toBeInTheDocument()
+      expect(screen.getByText('wireInstructions.title')).toBeInTheDocument()
     })
 
     it('updates form fields on change', async () => {
       const user = userEvent.setup()
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      const nameInput = screen.getByLabelText('Your Name *')
+      const nameInput = screen.getByLabelText(/confirm\.name/)
       await user.type(nameInput, 'John Doe')
 
       expect(nameInput).toHaveValue('John Doe')
@@ -263,15 +267,15 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John Doe')
-      await user.type(screen.getByLabelText('Email *'), 'john@example.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John Doe')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@example.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
-        expect(screen.getByText('Thank You!')).toBeInTheDocument()
+        expect(screen.getByText('success.title')).toBeInTheDocument()
       })
     })
 
@@ -283,16 +287,16 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John Doe')
-      await user.type(screen.getByLabelText('Email *'), 'john@example.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John Doe')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@example.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
-        expect(screen.getByText(/created a donor account/i)).toBeInTheDocument()
-        expect(screen.getByText(/Check your email for login details/i)).toBeInTheDocument()
+        expect(screen.getByText('successNewDonor')).toBeInTheDocument()
+        expect(screen.getByText(/successStep1/)).toBeInTheDocument()
       })
     })
 
@@ -304,15 +308,15 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John Doe')
-      await user.type(screen.getByLabelText('Email *'), 'john@example.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John Doe')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@example.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
-        expect(screen.getByText(/Check your donor dashboard/i)).toBeInTheDocument()
+        expect(screen.getByText('successExisting')).toBeInTheDocument()
       })
     })
 
@@ -324,12 +328,12 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John Doe')
-      await user.type(screen.getByLabelText('Email *'), 'john@example.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John Doe')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@example.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
         expect(screen.getByText('Server error occurred')).toBeInTheDocument()
@@ -341,12 +345,12 @@ describe('SupportProjectCard', () => {
       ;(global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John Doe')
-      await user.type(screen.getByLabelText('Email *'), 'john@example.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John Doe')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@example.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
         expect(screen.getByText('Network error')).toBeInTheDocument()
@@ -358,12 +362,12 @@ describe('SupportProjectCard', () => {
       ;(global.fetch as jest.Mock).mockRejectedValue('String error')
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John Doe')
-      await user.type(screen.getByLabelText('Email *'), 'john@example.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John Doe')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@example.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
         expect(screen.getByText('Something went wrong')).toBeInTheDocument()
@@ -378,16 +382,16 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John Doe')
-      await user.type(screen.getByLabelText('Email *'), 'john@example.com')
-      await user.type(screen.getByLabelText('Organization'), 'Acme Corp')
-      await user.type(screen.getByLabelText('Amount (USD)'), '5000')
-      await user.type(screen.getByLabelText('Reference/Confirmation Number'), 'REF123')
-      await user.type(screen.getByLabelText('Message'), 'Thank you!')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John Doe')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@example.com')
+      await user.type(screen.getByLabelText('confirm.organization'), 'Acme Corp')
+      await user.type(screen.getByLabelText('confirm.amount'), '5000')
+      await user.type(screen.getByLabelText('confirm.referenceNumber'), 'REF123')
+      await user.type(screen.getByLabelText('confirm.message'), 'Thank you!')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith('/api/donations/confirm', {
@@ -418,15 +422,15 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John')
-      await user.type(screen.getByLabelText('Email *'), 'john@test.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@test.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
-        expect(screen.getByText(/wire transfer/i)).toBeInTheDocument()
+        expect(screen.getByText('successExisting')).toBeInTheDocument()
       })
     })
 
@@ -438,15 +442,15 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Donor Advised Fund'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.daf.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John')
-      await user.type(screen.getByLabelText('Email *'), 'john@test.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@test.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
-        expect(screen.getByText(/DAF grant/i)).toBeInTheDocument()
+        expect(screen.getByText('successExisting')).toBeInTheDocument()
       })
     })
 
@@ -458,15 +462,15 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Mail a Check'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.check.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John')
-      await user.type(screen.getByLabelText('Email *'), 'john@test.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@test.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
-        expect(screen.getByText(/check/i)).toBeInTheDocument()
+        expect(screen.getByText('successExisting')).toBeInTheDocument()
       })
     })
   })
@@ -480,12 +484,12 @@ describe('SupportProjectCard', () => {
       })
 
       render(<SupportProjectCard {...defaultProps} />)
-      fireEvent.click(screen.getByText('Wire Transfer'))
-      fireEvent.click(screen.getByText("I've Sent My Contribution"))
+      fireEvent.click(screen.getByText('methods.wire.title'))
+      fireEvent.click(screen.getByText('confirm.button'))
 
-      await user.type(screen.getByLabelText('Your Name *'), 'John')
-      await user.type(screen.getByLabelText('Email *'), 'john@test.com')
-      await user.click(screen.getByText('Submit Confirmation'))
+      await user.type(screen.getByLabelText(/confirm\.name/), 'John')
+      await user.type(screen.getByLabelText(/confirm\.email/), 'john@test.com')
+      await user.click(screen.getByText('confirm.submit'))
 
       await waitFor(() => {
         expect(screen.getByText('Failed to submit confirmation')).toBeInTheDocument()

@@ -64,7 +64,7 @@ describe('translate module', () => {
     const originalEnv = process.env
 
     beforeEach(() => {
-      process.env = { ...originalEnv, GOOGLE_CLOUD_API_KEY: 'test-api-key' }
+      process.env = { ...originalEnv, DEEPL_API_KEY: 'test-api-key' }
     })
 
     afterEach(() => {
@@ -72,14 +72,14 @@ describe('translate module', () => {
     })
 
     it('returns null when API key is not configured', async () => {
-      delete process.env.GOOGLE_CLOUD_API_KEY
+      delete process.env.DEEPL_API_KEY
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       const result = await translateText('Hello', 'uk')
 
       expect(result).toBeNull()
       expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('GOOGLE_CLOUD_API_KEY not configured')
+        expect.stringContaining('DEEPL_API_KEY not configured')
       )
 
       consoleSpy.mockRestore()
@@ -102,14 +102,12 @@ describe('translate module', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: {
-              translations: [
-                {
-                  translatedText: 'Привіт',
-                  detectedSourceLanguage: 'en',
-                },
-              ],
-            },
+            translations: [
+              {
+                text: 'Привіт',
+                detected_source_language: 'EN',
+              },
+            ],
           }),
       })
 
@@ -120,10 +118,13 @@ describe('translate module', () => {
         detectedSourceLanguage: 'en',
       })
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('translation.googleapis.com'),
+        expect.stringContaining('api-free.deepl.com'),
         expect.objectContaining({
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Authorization': 'DeepL-Auth-Key test-api-key',
+            'Content-Type': 'application/json',
+          },
         })
       )
     })
@@ -133,17 +134,18 @@ describe('translate module', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: {
-              translations: [{ translatedText: 'Hello' }],
-            },
+            translations: [{ text: 'Hello' }],
           }),
       })
 
       await translateText('Привіт', 'en', 'uk')
 
+      // DeepL sends source_lang in the JSON body
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('source=uk'),
-        expect.any(Object)
+        expect.any(String),
+        expect.objectContaining({
+          body: expect.stringContaining('"source_lang":"UK"'),
+        })
       )
     })
 
@@ -151,7 +153,7 @@ describe('translate module', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
       ;(global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
-        json: () => Promise.resolve({ error: 'API Error' }),
+        text: () => Promise.resolve('API Error'),
       })
 
       const result = await translateText('Hello', 'uk')
@@ -179,9 +181,7 @@ describe('translate module', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: {
-              translations: [],
-            },
+            translations: [],
           }),
       })
 
@@ -195,7 +195,7 @@ describe('translate module', () => {
     const originalEnv = process.env
 
     beforeEach(() => {
-      process.env = { ...originalEnv, GOOGLE_CLOUD_API_KEY: 'test-api-key' }
+      process.env = { ...originalEnv, DEEPL_API_KEY: 'test-api-key' }
     })
 
     afterEach(() => {
@@ -203,7 +203,7 @@ describe('translate module', () => {
     })
 
     it('returns array of nulls when API key is not configured', async () => {
-      delete process.env.GOOGLE_CLOUD_API_KEY
+      delete process.env.DEEPL_API_KEY
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       const result = await translateTexts(['Hello', 'World'], 'uk')
@@ -230,12 +230,10 @@ describe('translate module', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: {
-              translations: [
-                { translatedText: 'Привіт' },
-                { translatedText: 'Світ' },
-              ],
-            },
+            translations: [
+              { text: 'Привіт' },
+              { text: 'Світ' },
+            ],
           }),
       })
 
@@ -249,11 +247,10 @@ describe('translate module', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: {
-              translations: [
-                { translatedText: 'Привіт' },
-              ],
-            },
+            translations: [
+              { text: 'Привіт' },
+              { text: 'Світ' },
+            ],
           }),
       })
 
@@ -268,7 +265,7 @@ describe('translate module', () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
       ;(global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
-        json: () => Promise.resolve({ error: 'API Error' }),
+        text: () => Promise.resolve('API Error'),
       })
 
       const result = await translateTexts(['Hello', 'World'], 'uk')
@@ -296,7 +293,7 @@ describe('translate module', () => {
     const originalEnv = process.env
 
     beforeEach(() => {
-      process.env = { ...originalEnv, GOOGLE_CLOUD_API_KEY: 'test-api-key' }
+      process.env = { ...originalEnv, DEEPL_API_KEY: 'test-api-key' }
     })
 
     afterEach(() => {
@@ -308,14 +305,12 @@ describe('translate module', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: {
-              translations: [
-                { translatedText: 'Київ' },
-                { translatedText: 'Центральна лікарня' },
-                { translatedText: 'Короткий опис' },
-                { translatedText: 'Повний опис' },
-              ],
-            },
+            translations: [
+              { text: 'Київ' },
+              { text: 'Центральна лікарня' },
+              { text: 'Короткий опис' },
+              { text: 'Повний опис' },
+            ],
           }),
       })
 
@@ -335,7 +330,7 @@ describe('translate module', () => {
     })
 
     it('returns nulls when translation fails', async () => {
-      delete process.env.GOOGLE_CLOUD_API_KEY
+      delete process.env.DEEPL_API_KEY
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       const result = await translateProjectToUkrainian({
@@ -360,7 +355,7 @@ describe('translate module', () => {
     const originalEnv = process.env
 
     beforeEach(() => {
-      process.env = { ...originalEnv, GOOGLE_CLOUD_API_KEY: 'test-api-key' }
+      process.env = { ...originalEnv, DEEPL_API_KEY: 'test-api-key' }
     })
 
     afterEach(() => {
@@ -372,14 +367,12 @@ describe('translate module', () => {
         ok: true,
         json: () =>
           Promise.resolve({
-            data: {
-              translations: [
-                { translatedText: 'Kyiv' },
-                { translatedText: 'Central Hospital' },
-                { translatedText: 'Brief description' },
-                { translatedText: 'Full description' },
-              ],
-            },
+            translations: [
+              { text: 'Kyiv' },
+              { text: 'Central Hospital' },
+              { text: 'Brief description' },
+              { text: 'Full description' },
+            ],
           }),
       })
 
@@ -399,7 +392,7 @@ describe('translate module', () => {
     })
 
     it('returns nulls when translation fails', async () => {
-      delete process.env.GOOGLE_CLOUD_API_KEY
+      delete process.env.DEEPL_API_KEY
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       const result = await translateProjectToEnglish({

@@ -13,6 +13,9 @@ jest.mock('@/lib/prisma', () => ({
       create: jest.fn(),
       count: jest.fn(),
     },
+    featuredProject: {
+      findMany: jest.fn(),
+    },
   },
 }))
 
@@ -30,6 +33,7 @@ describe('GET /api/projects', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     ;(mockPrisma.project.count as jest.Mock).mockResolvedValue(2)
+    ;((prisma as any).featuredProject.findMany as jest.Mock).mockResolvedValue([])
   })
 
   it('returns paginated projects by default', async () => {
@@ -98,6 +102,7 @@ describe('GET /api/projects', () => {
     expect(response.status).toBe(200)
     expect(data.projects).toHaveLength(2)
     expect(data.total).toBe(2)
+    expect(data.featuredProjectIds).toEqual([])
     expect(data.pagination).toBeUndefined()
     expect(mockPrisma.project.findMany).toHaveBeenCalledWith({
       where: {},

@@ -53,7 +53,10 @@ describe('GET /api/projects/[id]', () => {
     expect(data.project.photos).toEqual(['https://example.com/photo.jpg'])
     expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
       where: { id: '1' },
-      include: { photos: { orderBy: { sortOrder: 'asc' } } },
+      include: {
+        photos: { orderBy: { sortOrder: 'asc' } },
+        documents: { orderBy: { createdAt: 'asc' } },
+      },
     })
   })
 

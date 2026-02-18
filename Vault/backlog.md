@@ -35,7 +35,7 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 - [ ] Plaid integration — auto-detect incoming wire transfers #p1
 - [ ] Wise API integration — track outbound transfers to Ukraine #p1
 - [ ] Connect nonprofit dashboard APIs (currently returns mock data) #p1
-- [ ] Donor password reset flow #p2
+- [x] Donor password reset flow #p2
 - [ ] Receipt/tax documentation generation (PDF) #p2
 - [ ] Email notifications on donation status changes #p2
 - [ ] ACH payment method support #p3

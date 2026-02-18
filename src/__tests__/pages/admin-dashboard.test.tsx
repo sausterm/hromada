@@ -32,6 +32,7 @@ jest.mock('next-intl', () => ({
       'admin.projects.bulkDeleteSuccess': `${params?.count || 0} projects deleted`,
       'admin.projects.bulkDeletePartialFail': 'Some deletes failed',
       'admin.projects.bulkDeleteFail': 'Delete failed',
+      'admin.nav.users': 'Users',
       'admin.submissions.approveSuccess': 'Submission approved',
       'admin.submissions.rejectSuccess': 'Submission rejected',
       'admin.submissions.provideReason': 'Please provide a reason',
@@ -343,9 +344,11 @@ describe('AdminPage', () => {
       render(<AdminPage />)
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Projects/i })).toBeInTheDocument()
-        expect(screen.getByRole('button', { name: /Submissions/i })).toBeInTheDocument()
-        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
+        // Use getAllByRole since "Projects" may match multiple buttons (tab + featured projects manager)
+        const projectButtons = screen.getAllByRole('button', { name: /Projects/i })
+        expect(projectButtons.length).toBeGreaterThanOrEqual(1)
+        expect(screen.getAllByRole('button', { name: /Submissions/i }).length).toBeGreaterThanOrEqual(1)
+        expect(screen.getAllByRole('button', { name: /Contacts/i }).length).toBeGreaterThanOrEqual(1)
       })
     })
   })

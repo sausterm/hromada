@@ -8,6 +8,11 @@ jest.mock('next/navigation', () => ({
   useSearchParams: () => mockSearchParams,
 }))
 
+// Mock next-intl
+jest.mock('next-intl', () => ({
+  useLocale: () => 'en',
+}))
+
 // Mock fetch
 global.fetch = jest.fn()
 
@@ -42,9 +47,10 @@ describe('SiteAccessPage', () => {
       expect(screen.getByText('hromada')).toBeInTheDocument()
     })
 
-    it('renders the tagline', () => {
+    it('renders the logo text', () => {
       render(<SiteAccessPage />)
-      expect(screen.getByText('Built to support renewable infrastructure recovery')).toBeInTheDocument()
+      // The logo shows both English and Ukrainian text
+      expect(screen.getByText('громада')).toBeInTheDocument()
     })
 
     it('renders password input field', () => {
@@ -334,8 +340,8 @@ describe('SiteAccessPage', () => {
   describe('Styling', () => {
     it('renders card container with proper styling', () => {
       render(<SiteAccessPage />)
-      const card = screen.getByLabelText('Enter site password').closest('.bg-white')
-      expect(card).toHaveClass('rounded-xl')
+      const card = screen.getByLabelText('Enter site password').closest('.rounded-2xl')
+      expect(card).toBeInTheDocument()
     })
 
     it('password input has autofocus', () => {

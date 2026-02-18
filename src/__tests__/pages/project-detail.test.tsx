@@ -77,6 +77,59 @@ jest.mock('@/components/ui/LoadingSpinner', () => ({
   ),
 }))
 
+// Mock @/types module
+jest.mock('@/types', () => ({
+  CATEGORY_CONFIG: {
+    HOSPITAL: { label: 'Hospital / Medical', color: '#C75B39', icon: '<path d="M19 14"/>' },
+    SCHOOL: { label: 'School / Education', color: '#7B9E6B', icon: '<path d="M21 10"/>' },
+    WATER: { label: 'Water Utility', color: '#5B8FA8', icon: '<path d="M12 22"/>' },
+    ENERGY: { label: 'Energy Infrastructure', color: '#D4954A', icon: '<path d="M13 2"/>' },
+    OTHER: { label: 'Other Infrastructure', color: '#8B7355', icon: '<path d="M3 9"/>' },
+  },
+  STATUS_CONFIG: {
+    OPEN: { label: 'Seeking Donors', color: '#7B9E6B' },
+    IN_DISCUSSION: { label: 'In Discussion', color: '#D4954A' },
+    MATCHED: { label: 'Matched', color: '#5B8FA8' },
+    FULFILLED: { label: 'Fulfilled', color: '#8B7355' },
+  },
+  PROJECT_TYPE_CONFIG: {
+    SOLAR_PV: { label: 'Solar PV', color: '#D4954A', icon: '<circle cx="12" cy="12" r="4"/>' },
+    HEAT_PUMP: { label: 'Heat Pump', color: '#C75B39', icon: '<path d="M8.5 14.5"/>' },
+    BATTERY_STORAGE: { label: 'Battery Storage', color: '#5B8FA8', icon: '<rect width="16"/>' },
+    THERMO_MODERNIZATION: { label: 'Thermo-modernization', color: '#8B7355', icon: '<path d="m3 9"/>' },
+  },
+  COFINANCING_CONFIG: {
+    YES: { label: 'Yes', color: '#7B9E6B' },
+    NO: { label: 'No', color: '#B84A32' },
+    NEEDS_CLARIFICATION: { label: 'Needs Clarification', color: '#D4954A' },
+  },
+  DOCUMENT_TYPE_LABELS: {
+    COST_ESTIMATE: 'Cost Estimate',
+    ENGINEERING_ASSESSMENT: 'Engineering Assessment',
+    ITEMIZED_BUDGET: 'Itemized Budget',
+    SITE_SURVEY: 'Site Survey',
+    OTHER: 'Document',
+  },
+  formatCurrency: (amount: number) => {
+    if (amount >= 1000000) {
+      const millions = amount / 1000000
+      return `$${millions % 1 === 0 ? millions.toFixed(0) : millions.toFixed(1)}M`
+    } else if (amount >= 1000) {
+      const thousands = amount / 1000
+      return `$${thousands % 1 === 0 ? thousands.toFixed(0) : thousands.toFixed(1)}K`
+    }
+    return `$${amount}`
+  },
+  formatPower: (kw: number) => `${kw.toLocaleString()} kW`,
+  formatRelativeTime: () => '5 days ago',
+  getLocalizedProject: (project: any, _locale: string) => ({
+    municipalityName: project.municipalityName,
+    facilityName: project.facilityName,
+    briefDescription: project.briefDescription,
+    fullDescription: project.fullDescription || project.description,
+  }),
+}))
+
 // Mock SupportProjectCard component
 jest.mock('@/components/projects/SupportProjectCard', () => ({
   SupportProjectCard: ({ projectId, projectName }: { projectId: string; projectName: string }) => (
@@ -234,22 +287,14 @@ describe('ProjectDetailPage', () => {
       })
     })
 
-    it('renders status badge', async () => {
-      render(<ProjectDetailPage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('Seeking Donors')).toBeInTheDocument()
-      })
-    })
-
-    // Note: Urgency badges are not displayed on the project detail page,
+    // Note: Status and urgency badges are not displayed on the project detail page,
     // only on the project cards and map popups
 
-    it('renders back to map link', async () => {
+    it('renders back to projects link', async () => {
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        expect(screen.getByTestId('link-/')).toBeInTheDocument()
+        expect(screen.getByTestId('link-/projects')).toBeInTheDocument()
       })
     })
 
@@ -358,7 +403,7 @@ describe('ProjectDetailPage', () => {
       })
     })
 
-    it('renders estimated cost when present', async () => {
+    it('passes estimated cost to support project card', async () => {
       ;(global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => ({ project: createMockProject() }),
@@ -367,11 +412,8 @@ describe('ProjectDetailPage', () => {
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        // Use getAllByText since the text appears in specs section
-        const estimatedCostLabels = screen.getAllByText('Estimated Cost')
-        expect(estimatedCostLabels.length).toBeGreaterThan(0)
-        const costValues = screen.getAllByText(/\$75K/)
-        expect(costValues.length).toBeGreaterThan(0)
+        // Estimated cost is not shown in specs section - it's passed to SupportProjectCard
+        expect(screen.getByTestId('support-project-card')).toBeInTheDocument()
       })
     })
 
@@ -474,16 +516,15 @@ describe('ProjectDetailPage', () => {
         ok: true,
         json: async () => ({ project: createMockProject({
           projectType: undefined,
-          estimatedCostUsd: 50000, // Need at least one field to show specs section
+          technicalPowerKw: 50, // Need at least one field to show specs section
         }) }),
       })
 
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        // $50K may appear in both specs and support card, so use getAllByText
-        const costValues = screen.getAllByText(/\$50K/)
-        expect(costValues.length).toBeGreaterThan(0)
+        // Technical power should be visible since it's still specified
+        expect(screen.getByText('50 kW')).toBeInTheDocument()
       })
       // Project type field should not be shown when undefined
       expect(screen.queryByText('Project Type')).not.toBeInTheDocument()

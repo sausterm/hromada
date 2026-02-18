@@ -10,7 +10,7 @@ describe('Card', () => {
   it('applies variant styles', () => {
     const { rerender, container } = render(<Card variant="default">Default</Card>)
     let cardElement = container.firstChild as HTMLElement
-    expect(cardElement.className).toContain('bg-white')
+    expect(cardElement.className).toContain('bg-[var(--cream-100)]')
     expect(cardElement.className).toContain('border')
 
     rerender(<Card variant="elevated">Elevated</Card>)
@@ -67,7 +67,7 @@ describe('Card subcomponents', () => {
     render(<CardDescription>Description</CardDescription>)
     const desc = screen.getByText('Description')
     expect(desc.className).toContain('text-sm')
-    expect(desc.className).toContain('text-gray-600')
+    expect(desc.className).toContain('text-[var(--navy-500)]')
   })
 
   it('renders CardContent correctly', () => {

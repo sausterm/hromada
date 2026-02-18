@@ -25,18 +25,39 @@ jest.mock('next-intl', () => ({
       'projectTypes.THERMO_MODERNIZATION': 'Thermo-modernization',
       'projectDetail.viewDetails': 'View Details',
       'projectDetail.urgencyLabel': `${params?.level || ''} Urgency`,
+      'projectDetail.cofinancingAvailable': 'Co-financing Available',
     }
     return translations[key] || key
   },
   useLocale: () => 'en',
 }))
 
-// Mock next/link
+// Mock next/link — component uses next/link (not i18n/navigation)
 jest.mock('next/link', () => {
   return function MockLink({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) {
     return <a href={href} className={className} data-testid="project-link">{children}</a>
   }
 })
+
+// Mock @/types — provide CATEGORY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, getLocalizedProject
+jest.mock('@/types', () => ({
+  CATEGORY_CONFIG: {
+    HOSPITAL: { color: '#C75B39', icon: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3"/>' },
+    SCHOOL: { color: '#7B9E6B', icon: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838"/>' },
+    WATER: { color: '#5B8FA8', icon: '<path d="M12 22a7 7 0 0 0 7-7"/>' },
+    ENERGY: { color: '#D4954A', icon: '<path d="M13 2 3 14h9l-1 8"/>' },
+    OTHER: { color: '#8B7355', icon: '<path d="M2 20a2 2 0 0 0 2 2h16"/>' },
+  },
+  PROJECT_TYPE_CONFIG: {
+    SOLAR_PV: { color: '#D4954A', icon: '<circle cx="12" cy="12" r="5"/>' },
+    HEAT_PUMP: { color: '#5B8FA8', icon: '<path d="M12 22a7 7 0 0 0 7-7"/>' },
+    BATTERY_STORAGE: { color: '#7B9E6B', icon: '<rect x="4" y="8" width="16" height="12"/>' },
+    THERMO_MODERNIZATION: { color: '#C75B39', icon: '<path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26"/>' },
+  },
+  formatCurrency: (value: number, options?: { compact?: boolean }) =>
+    options?.compact ? `$${Math.round(value/1000)}K` : `$${value.toLocaleString()}`,
+  getLocalizedProject: (project: any, _locale: string) => project,
+}))
 
 describe('ProjectPopup', () => {
   const baseProject: Project = {
@@ -72,6 +93,7 @@ describe('ProjectPopup', () => {
 
     it('renders category badge', () => {
       render(<ProjectPopup project={baseProject} />)
+      // Component uses t(`categories.${category}`).split(' ')[0] — "Hospital".split(' ')[0] = "Hospital"
       expect(screen.getByText('Hospital')).toBeInTheDocument()
     })
 
@@ -80,13 +102,11 @@ describe('ProjectPopup', () => {
       const links = screen.getAllByTestId('project-link')
       expect(links.length).toBe(2) // Title link and View Details button
       links.forEach(link => {
-        expect(link).toHaveAttribute('href', '/projects/proj-123')
+        expect(link).toHaveAttribute('href', '/en/projects/proj-123')
       })
       expect(screen.getByText('View Details')).toBeInTheDocument()
     })
   })
-
-
 
   describe('Project type and cost', () => {
     it('renders project type when available', () => {
@@ -157,7 +177,7 @@ describe('ProjectPopup', () => {
         cofinancingAvailable: 'YES' as const,
       }
       render(<ProjectPopup project={projectWithCofinancing} />)
-      expect(screen.getByText('projectDetail.cofinancingAvailable')).toBeInTheDocument()
+      expect(screen.getByText('Co-financing Available')).toBeInTheDocument()
     })
 
     it('does not render cofinancing badge when not available', () => {
@@ -166,7 +186,7 @@ describe('ProjectPopup', () => {
         cofinancingAvailable: 'NO' as const,
       }
       render(<ProjectPopup project={projectWithoutCofinancing} />)
-      expect(screen.queryByText('projectDetail.cofinancingAvailable')).not.toBeInTheDocument()
+      expect(screen.queryByText('Co-financing Available')).not.toBeInTheDocument()
     })
   })
 })

@@ -4,7 +4,6 @@ import {
   getUserByEmail,
   verifyPassword,
   createSession,
-  createLegacyAdminSession,
 } from '@/lib/auth'
 import {
   isAccountLocked,
@@ -29,89 +28,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, password } = body
 
-    // Support legacy password-only login for backward compatibility
-    if (!email && password) {
-      const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-      if (!adminSecret) {
-        return NextResponse.json(
-          { error: 'Server configuration error' },
-          { status: 500 }
-        )
-      }
-
-      if (password !== adminSecret) {
-        await logAuditEvent(AuditAction.LOGIN_FAILED, {
-          ipAddress: getClientIp(request),
-          userAgent: getUserAgent(request),
-          details: 'Legacy admin login failed - invalid password',
-        })
-        return NextResponse.json(
-          { error: 'Invalid password' },
-          { status: 401 }
-        )
-      }
-
-      // Create legacy admin session
-      await createLegacyAdminSession()
-      await logAuditEvent(AuditAction.LOGIN_SUCCESS, {
-        ipAddress: getClientIp(request),
-        userAgent: getUserAgent(request),
-        details: 'Legacy admin login',
-      })
-      return NextResponse.json({ success: true, role: 'ADMIN' })
-    }
-
-    // Email/password login
+    // Email and password are always required
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
         { status: 400 }
       )
-    }
-
-    // First, check if this is an admin using the legacy password
-    const adminSecret = process.env.HROMADA_ADMIN_SECRET
-    if (adminSecret && password === adminSecret) {
-      // Try to find user by email to get their role, or default to ADMIN
-      const user = await getUserByEmail(email)
-      if (user) {
-        // Check if account is active
-        if (!user.isActive) {
-          await logAuditEvent(AuditAction.LOGIN_BLOCKED_INACTIVE, {
-            userId: user.id,
-            ipAddress: getClientIp(request),
-            userAgent: getUserAgent(request),
-          })
-          return NextResponse.json(
-            { error: 'Account is deactivated' },
-            { status: 403 }
-          )
-        }
-
-        await createSession(user.id, user.email, user.role, user.sessionVersion)
-        await handleSuccessfulLogin(user, request)
-        return NextResponse.json({
-          success: true,
-          role: user.role,
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            organization: user.organization,
-            role: user.role,
-          },
-        })
-      } else {
-        // Legacy admin login without user record
-        await createLegacyAdminSession()
-        await logAuditEvent(AuditAction.LOGIN_SUCCESS, {
-          ipAddress: getClientIp(request),
-          userAgent: getUserAgent(request),
-          details: 'Legacy admin login (no user record)',
-        })
-        return NextResponse.json({ success: true, role: 'ADMIN' })
-      }
     }
 
     // Look up user by email

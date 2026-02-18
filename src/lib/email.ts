@@ -1,7 +1,11 @@
 import { Resend } from 'resend'
+import { sanitizeInput } from '@/lib/security'
 
 // Only create Resend client if API key is configured
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+
+// Helper to sanitize values before HTML interpolation
+const s = sanitizeInput
 
 interface PasswordResetEmailParams {
   name: string
@@ -29,12 +33,12 @@ export async function sendPasswordResetEmail({
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #2C3E50;">Password Reset</h2>
 
-          <p>Hi ${name},</p>
+          <p>Hi ${s(name)},</p>
 
           <p>You requested a password reset for your Hromada account. Use this code to set a new password:</p>
 
           <div style="background: #F5F1E8; padding: 24px; border-radius: 8px; margin: 24px 0; text-align: center;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #2C3E50;">${code}</span>
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #2C3E50;">${s(code)}</span>
           </div>
 
           <p style="color: #666;">This code expires in <strong>15 minutes</strong>.</p>
@@ -94,27 +98,27 @@ export async function sendContactNotification({
     await resend.emails.send({
       from: 'Hromada <onboarding@resend.dev>',
       to: adminEmail,
-      subject: `New Donor Interest: ${projectName}`,
+      subject: `New Donor Interest: ${s(projectName)}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #0057B8;">New Donor Contact Submission</h2>
 
           <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Project Details</h3>
-            <p><strong>Project:</strong> ${projectName}</p>
-            <p><strong>Municipality:</strong> ${municipalityName}</p>
-            <p><strong>Municipality Contact:</strong> ${municipalityEmail}</p>
+            <p><strong>Project:</strong> ${s(projectName)}</p>
+            <p><strong>Municipality:</strong> ${s(municipalityName)}</p>
+            <p><strong>Municipality Contact:</strong> ${s(municipalityEmail)}</p>
           </div>
 
           <div style="background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Donor Information</h3>
-            <p><strong>Name:</strong> ${donorName}</p>
-            <p><strong>Email:</strong> <a href="mailto:${donorEmail}">${donorEmail}</a></p>
+            <p><strong>Name:</strong> ${s(donorName)}</p>
+            <p><strong>Email:</strong> <a href="mailto:${s(donorEmail)}">${s(donorEmail)}</a></p>
           </div>
 
           <div style="background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Message</h3>
-            <p style="white-space: pre-wrap;">${message}</p>
+            <p style="white-space: pre-wrap;">${s(message)}</p>
           </div>
 
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
@@ -125,7 +129,7 @@ export async function sendContactNotification({
 
           <p style="color: #666; font-size: 12px; margin-top: 30px;">
             This notification was sent from Hromada.
-            <a href="${appUrl}/projects/${projectId}">View Project</a>
+            <a href="${appUrl}/projects/${s(projectId)}">View Project</a>
           </p>
         </div>
       `,
@@ -176,7 +180,7 @@ export async function sendDonorWelcomeEmail({
     await resend.emails.send({
       from: 'Hromada <onboarding@resend.dev>',
       to: donorEmail,
-      subject: `Thank you for supporting ${projectName}`,
+      subject: `Thank you for supporting ${s(projectName)}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="text-align: center; padding: 20px 0;">
@@ -184,20 +188,20 @@ export async function sendDonorWelcomeEmail({
             <p style="color: #666; margin: 5px 0;">Supporting Ukrainian Infrastructure Recovery</p>
           </div>
 
-          <h2 style="color: #333;">Thank you, ${donorName}!</h2>
+          <h2 style="color: #333;">Thank you, ${s(donorName)}!</h2>
 
-          <p>We've received your notification of a${amount ? ` <strong>$${amount.toLocaleString()}</strong>` : ''} ${paymentMethodLabels[paymentMethod] || paymentMethod} for:</p>
+          <p>We've received your notification of a${amount ? ` <strong>$${amount.toLocaleString()}</strong>` : ''} ${s(paymentMethodLabels[paymentMethod] || paymentMethod)} for:</p>
 
           <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 0; font-size: 18px; font-weight: bold; color: #0057B8;">${projectName}</p>
+            <p style="margin: 0; font-size: 18px; font-weight: bold; color: #0057B8;">${s(projectName)}</p>
           </div>
 
           <p>We've created a donor account for you to track your contribution as it makes its way to Ukraine.</p>
 
           <div style="background: #fff; border: 2px solid #0057B8; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #0057B8;">Your Login Credentials</h3>
-            <p><strong>Email:</strong> ${donorEmail}</p>
-            <p><strong>Temporary Password:</strong> <code style="background: #f5f5f5; padding: 4px 8px; border-radius: 4px;">${temporaryPassword}</code></p>
+            <p><strong>Email:</strong> ${s(donorEmail)}</p>
+            <p><strong>Temporary Password:</strong> <code style="background: #f5f5f5; padding: 4px 8px; border-radius: 4px;">${s(temporaryPassword)}</code></p>
             <p style="font-size: 12px; color: #666;">We recommend changing your password after your first login.</p>
           </div>
 
@@ -209,7 +213,7 @@ export async function sendDonorWelcomeEmail({
 
           <h3>What Happens Next?</h3>
           <ol style="color: #555; line-height: 1.8;">
-            <li><strong>Confirmation:</strong> We'll verify receipt of your ${paymentMethodLabels[paymentMethod] || 'payment'} (usually 1-3 business days)</li>
+            <li><strong>Confirmation:</strong> We'll verify receipt of your ${s(paymentMethodLabels[paymentMethod] || 'payment')} (usually 1-3 business days)</li>
             <li><strong>Transfer:</strong> Funds will be wired to the municipality in Ukraine</li>
             <li><strong>Updates:</strong> You'll receive updates as your contribution reaches its destination</li>
           </ol>
@@ -284,7 +288,7 @@ export async function sendDonationNotificationToAdmin({
     await resend.emails.send({
       from: 'Hromada <onboarding@resend.dev>',
       to: adminEmail,
-      subject: `💰 New Donation: ${amount ? `$${amount.toLocaleString()}` : 'Amount TBD'} for ${projectName}`,
+      subject: `New Donation: ${amount ? `$${amount.toLocaleString()}` : 'Amount TBD'} for ${s(projectName)}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #0057B8;">New Donation Confirmation Received</h2>
@@ -293,20 +297,20 @@ export async function sendDonationNotificationToAdmin({
             <p style="margin: 0; font-size: 24px; font-weight: bold; color: #28a745;">
               ${amount ? `$${amount.toLocaleString()}` : 'Amount to be confirmed'}
             </p>
-            <p style="margin: 5px 0 0; color: #666;">via ${paymentMethodLabels[paymentMethod] || paymentMethod}</p>
+            <p style="margin: 5px 0 0; color: #666;">via ${s(paymentMethodLabels[paymentMethod] || paymentMethod)}</p>
           </div>
 
           <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Donor Information</h3>
-            <p><strong>Name:</strong> ${donorName} ${isNewDonor ? '<span style="background: #0057B8; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">NEW DONOR</span>' : ''}</p>
-            <p><strong>Email:</strong> <a href="mailto:${donorEmail}">${donorEmail}</a></p>
-            ${donorOrganization ? `<p><strong>Organization:</strong> ${donorOrganization}</p>` : ''}
-            ${referenceNumber ? `<p><strong>Reference #:</strong> ${referenceNumber}</p>` : ''}
+            <p><strong>Name:</strong> ${s(donorName)} ${isNewDonor ? '<span style="background: #0057B8; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">NEW DONOR</span>' : ''}</p>
+            <p><strong>Email:</strong> <a href="mailto:${s(donorEmail)}">${s(donorEmail)}</a></p>
+            ${donorOrganization ? `<p><strong>Organization:</strong> ${s(donorOrganization)}</p>` : ''}
+            ${referenceNumber ? `<p><strong>Reference #:</strong> ${s(referenceNumber)}</p>` : ''}
           </div>
 
           <div style="background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Project</h3>
-            <p style="font-size: 18px; margin: 0;"><strong>${projectName}</strong></p>
+            <p style="font-size: 18px; margin: 0;"><strong>${s(projectName)}</strong></p>
           </div>
 
           <div style="margin-top: 30px;">
@@ -443,28 +447,28 @@ export async function sendPartnershipInquiryNotification({
     await resend.emails.send({
       from: 'Hromada <onboarding@resend.dev>',
       to: adminEmail,
-      subject: `New MPP Inquiry: ${communityName}`,
+      subject: `New MPP Inquiry: ${s(communityName)}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #0057B8;">New Municipal Partnership Program Inquiry</h2>
 
           <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Community Details</h3>
-            <p><strong>Community:</strong> ${communityName}</p>
-            <p><strong>Type:</strong> ${communityTypeLabels[communityType] || communityType}</p>
-            ${approximateSize ? `<p><strong>Size:</strong> ${approximateSize}</p>` : ''}
+            <p><strong>Community:</strong> ${s(communityName)}</p>
+            <p><strong>Type:</strong> ${s(communityTypeLabels[communityType] || communityType)}</p>
+            ${approximateSize ? `<p><strong>Size:</strong> ${s(approximateSize)}</p>` : ''}
           </div>
 
           <div style="background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Contact</h3>
-            <p><strong>Name:</strong> ${contactName}</p>
-            <p><strong>Email:</strong> <a href="mailto:${contactEmail}">${contactEmail}</a></p>
+            <p><strong>Name:</strong> ${s(contactName)}</p>
+            <p><strong>Email:</strong> <a href="mailto:${s(contactEmail)}">${s(contactEmail)}</a></p>
           </div>
 
           ${message ? `
           <div style="background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Message</h3>
-            <p style="white-space: pre-wrap;">${message}</p>
+            <p style="white-space: pre-wrap;">${s(message)}</p>
           </div>
           ` : ''}
 

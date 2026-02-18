@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyPartnerAuth, getSessionData } from '@/lib/auth'
+import { verifyPartnerAuth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import type { Category, Urgency } from '@prisma/client'
+import { parseBody, projectSubmissionSchema } from '@/lib/validations'
+import type { Urgency } from '@prisma/client'
 
 // GET /api/partner/projects - List partner's own project submissions
 export async function GET(request: NextRequest) {
@@ -33,78 +34,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const parsed = await parseBody(request, projectSubmissionSchema)
+  if (parsed.error) return parsed.error
+
   try {
-    const body = await request.json()
+    const body = parsed.data
 
-    // Validate required fields
-    const requiredFields = [
-      'municipalityName',
-      'municipalityEmail',
-      'facilityName',
-      'category',
-      'projectType',
-      'briefDescription',
-      'fullDescription',
-      'cityName',
-      'cityLatitude',
-      'cityLongitude',
-      'contactName',
-      'contactEmail',
-    ]
-
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { error: `${field} is required` },
-          { status: 400 }
-        )
-      }
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(body.municipalityEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid municipality email format' },
-        { status: 400 }
-      )
-    }
-    if (!emailRegex.test(body.contactEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid contact email format' },
-        { status: 400 }
-      )
-    }
-
-    // Validate category
-    const validCategories: Category[] = ['HOSPITAL', 'SCHOOL', 'WATER', 'ENERGY', 'OTHER']
-    if (!validCategories.includes(body.category)) {
-      return NextResponse.json(
-        { error: 'Invalid category' },
-        { status: 400 }
-      )
-    }
-
-    // Validate urgency if provided
-    const validUrgencies: Urgency[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
-    const urgency: Urgency = body.urgency && validUrgencies.includes(body.urgency) ? body.urgency : 'MEDIUM'
-
-    // Parse numeric fields
-    const cityLatitude = parseFloat(body.cityLatitude)
-    const cityLongitude = parseFloat(body.cityLongitude)
-
-    if (isNaN(cityLatitude) || cityLatitude < -90 || cityLatitude > 90) {
-      return NextResponse.json(
-        { error: 'Invalid city latitude' },
-        { status: 400 }
-      )
-    }
-    if (isNaN(cityLongitude) || cityLongitude < -180 || cityLongitude > 180) {
-      return NextResponse.json(
-        { error: 'Invalid city longitude' },
-        { status: 400 }
-      )
-    }
+    const cityLatitude = parseFloat(String(body.cityLatitude))
+    const cityLongitude = parseFloat(String(body.cityLongitude))
+    const urgency: Urgency = (body.urgency as Urgency) || 'MEDIUM'
 
     // Create submission
     const submission = await prisma.projectSubmission.create({
@@ -118,9 +56,9 @@ export async function POST(request: NextRequest) {
         briefDescription: body.briefDescription.substring(0, 150),
         fullDescription: body.fullDescription.substring(0, 2000),
         urgency,
-        estimatedCostUsd: body.estimatedCostUsd ? parseFloat(body.estimatedCostUsd) : null,
-        technicalPowerKw: body.technicalPowerKw ? parseFloat(body.technicalPowerKw) : null,
-        numberOfPanels: body.numberOfPanels ? parseInt(body.numberOfPanels, 10) : null,
+        estimatedCostUsd: body.estimatedCostUsd ? parseFloat(String(body.estimatedCostUsd)) : null,
+        technicalPowerKw: body.technicalPowerKw ? parseFloat(String(body.technicalPowerKw)) : null,
+        numberOfPanels: body.numberOfPanels ? parseInt(String(body.numberOfPanels), 10) : null,
         cofinancingAvailable: body.cofinancingAvailable || null,
         cofinancingDetails: body.cofinancingDetails || null,
         cityName: body.cityName,

@@ -3,12 +3,12 @@ import { rateLimit } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
 import { hashPassword, getUserByEmail } from '@/lib/auth'
 import { sendDonorWelcomeEmail, sendDonationNotificationToAdmin } from '@/lib/email'
-import { logAuditEvent, AuditAction, getClientIp, getUserAgent } from '@/lib/security'
+import { logAuditEvent, AuditAction, getClientIp, getUserAgent, detectSuspiciousInput } from '@/lib/security'
+import { parseBody, donationConfirmSchema } from '@/lib/validations'
 import crypto from 'crypto'
 
 // Generate a random temporary password
 function generateTemporaryPassword(): string {
-  // Generate a readable password: 3 words + 2 digits
   const words = ['Solar', 'Power', 'Hope', 'Build', 'Help', 'Light', 'Energy', 'Ukraine', 'Peace', 'Strong']
   const word1 = words[Math.floor(Math.random() * words.length)]
   const word2 = words[Math.floor(Math.random() * words.length)]
@@ -18,7 +18,6 @@ function generateTemporaryPassword(): string {
 
 // POST /api/donations/confirm - Record that a donor has sent funds
 export async function POST(request: NextRequest) {
-  // Rate limit: 5 confirmations per minute per IP
   const rateLimitResponse = rateLimit(request, {
     limit: 5,
     windowSeconds: 60,
@@ -27,47 +26,35 @@ export async function POST(request: NextRequest) {
     return rateLimitResponse
   }
 
+  const parsed = await parseBody(request, donationConfirmSchema)
+  if (parsed.error) return parsed.error
+
+  const {
+    projectId,
+    projectName,
+    paymentMethod,
+    donorName,
+    donorEmail,
+    donorOrganization,
+    amount,
+    referenceNumber,
+    message,
+  } = parsed.data
+
+  // Check for suspicious input in free-text fields
+  const freeText = [donorName, donorOrganization, message, referenceNumber].filter(Boolean).join(' ')
+  if (detectSuspiciousInput(freeText)) {
+    await logAuditEvent(AuditAction.SUSPICIOUS_ACTIVITY, {
+      ipAddress: getClientIp(request),
+      userAgent: getUserAgent(request),
+      details: 'Suspicious input in donation confirmation form',
+    })
+    return NextResponse.json({ error: 'Invalid input detected' }, { status: 400 })
+  }
+
   try {
-    const body = await request.json()
-    const {
-      projectId,
-      projectName,
-      paymentMethod,
-      donorName,
-      donorEmail,
-      donorOrganization,
-      amount,
-      referenceNumber,
-      message,
-    } = body
-
-    // Validate required fields
-    if (!projectId || !donorName || !donorEmail || !paymentMethod) {
-      return NextResponse.json(
-        { error: 'Project ID, donor name, email, and payment method are required' },
-        { status: 400 }
-      )
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     const normalizedEmail = donorEmail.toLowerCase().trim()
-    if (!emailRegex.test(normalizedEmail)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      )
-    }
-
-    // Validate payment method
-    const validMethods = ['wire', 'daf', 'check', 'ach']
     const normalizedMethod = paymentMethod.toLowerCase()
-    if (!validMethods.includes(normalizedMethod)) {
-      return NextResponse.json(
-        { error: 'Invalid payment method' },
-        { status: 400 }
-      )
-    }
 
     // Map payment method to enum
     const paymentMethodMap: Record<string, 'WIRE' | 'DAF' | 'CHECK' | 'ACH' | 'OTHER'> = {
@@ -83,7 +70,6 @@ export async function POST(request: NextRequest) {
     let temporaryPassword: string | null = null
 
     if (!donorUser) {
-      // Create new donor account
       isNewDonor = true
       temporaryPassword = generateTemporaryPassword()
       const passwordHash = await hashPassword(temporaryPassword)
@@ -99,7 +85,6 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      // Audit log
       await logAuditEvent(AuditAction.USER_CREATED, {
         userId: donorUser.id,
         ipAddress: getClientIp(request),
@@ -117,7 +102,7 @@ export async function POST(request: NextRequest) {
         donorName: donorName.trim(),
         donorEmail: normalizedEmail,
         donorOrganization: donorOrganization?.trim() || null,
-        amount: amount ? parseFloat(amount) : null,
+        amount: amount ? parseFloat(String(amount)) : null,
         paymentMethod: paymentMethodMap[normalizedMethod] || 'OTHER',
         referenceNumber: referenceNumber?.trim() || null,
         status: 'PENDING_CONFIRMATION',
@@ -125,7 +110,6 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Audit log
     await logAuditEvent('DONATION_CREATED' as any, {
       userId: donorUser.id,
       ipAddress: getClientIp(request),
@@ -136,7 +120,6 @@ export async function POST(request: NextRequest) {
     // Send emails (non-blocking)
     const emailPromises: Promise<any>[] = []
 
-    // Send welcome email to new donors
     if (isNewDonor && temporaryPassword) {
       emailPromises.push(
         sendDonorWelcomeEmail({
@@ -144,13 +127,12 @@ export async function POST(request: NextRequest) {
           donorEmail: normalizedEmail,
           temporaryPassword,
           projectName: projectName || 'General Fund',
-          amount: amount ? parseFloat(amount) : undefined,
+          amount: amount ? parseFloat(String(amount)) : undefined,
           paymentMethod: normalizedMethod,
         }).catch(err => console.error('Failed to send donor welcome email:', err))
       )
     }
 
-    // Send notification to admin/nonprofit manager
     emailPromises.push(
       sendDonationNotificationToAdmin({
         donorName: donorName.trim(),
@@ -158,14 +140,13 @@ export async function POST(request: NextRequest) {
         donorOrganization: donorOrganization?.trim(),
         projectName: projectName || 'General Fund',
         projectId,
-        amount: amount ? parseFloat(amount) : undefined,
+        amount: amount ? parseFloat(String(amount)) : undefined,
         paymentMethod: normalizedMethod,
         referenceNumber: referenceNumber?.trim(),
         isNewDonor,
       }).catch(err => console.error('Failed to send admin notification:', err))
     )
 
-    // Don't await emails - let them send in background
     Promise.all(emailPromises)
 
     return NextResponse.json({

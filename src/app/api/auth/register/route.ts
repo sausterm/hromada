@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyAdminAuth, hashPassword, getUserByEmail } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import type { UserRole } from '@prisma/client'
+import { parseBody, registerSchema } from '@/lib/validations'
 
 // POST /api/auth/register - Admin-only endpoint to create partner accounts
 export async function POST(request: NextRequest) {
@@ -14,38 +15,13 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  const parsed = await parseBody(request, registerSchema)
+  if (parsed.error) return parsed.error
+
   try {
-    const body = await request.json()
-    const { email, password, name, organization, role } = body
+    const { email, password, name, organization, role } = parsed.data
 
-    // Validate required fields
-    if (!email || !password || !name) {
-      return NextResponse.json(
-        { error: 'Email, password, and name are required' },
-        { status: 400 }
-      )
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      )
-    }
-
-    // Validate password length
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: 'Password must be at least 8 characters' },
-        { status: 400 }
-      )
-    }
-
-    // Validate role if provided
-    const validRoles: UserRole[] = ['ADMIN', 'PARTNER', 'NONPROFIT_MANAGER']
-    const userRole: UserRole = role && validRoles.includes(role) ? role : 'PARTNER'
+    const userRole: UserRole = role || 'PARTNER'
 
     // Check if user already exists
     const existingUser = await getUserByEmail(email)

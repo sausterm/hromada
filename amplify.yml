@@ -3,7 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm install
+        - npm ci
         - npx prisma generate
         # Create .env.production for runtime environment variables
         - |
@@ -14,6 +14,8 @@ frontend:
           echo "DB_NAME=$DB_NAME" >> .env.production
           echo "DB_USER=$DB_USER" >> .env.production
           echo "DB_PASSWORD=$DB_PASSWORD" >> .env.production
+          echo "SESSION_SECRET=$SESSION_SECRET" >> .env.production
+          echo "SITE_PASSWORD=$SITE_PASSWORD" >> .env.production
           echo "HROMADA_ADMIN_SECRET=$HROMADA_ADMIN_SECRET" >> .env.production
           echo "RESEND_API_KEY=$RESEND_API_KEY" >> .env.production
           echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> .env.production

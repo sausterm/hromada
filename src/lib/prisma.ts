@@ -27,7 +27,7 @@ export function getPrisma(): PrismaClient {
       database: process.env.DB_NAME || 'postgres',
       user: process.env.DB_USER || 'postgres',
       password: process.env.DB_PASSWORD,
-      ssl: { rejectUnauthorized: false },
+      ssl: { rejectUnauthorized: process.env.NODE_ENV === 'production' },
     }
   } else if (isRemoteDb) {
     poolConfig.ssl = { rejectUnauthorized: false }

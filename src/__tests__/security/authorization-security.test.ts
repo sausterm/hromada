@@ -76,7 +76,7 @@ describe('Authorization Security Tests', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env = { ...originalEnv, HROMADA_ADMIN_SECRET: 'test-secret-123' }
+    process.env = { ...originalEnv, SESSION_SECRET: 'test-session-secret-that-is-at-least-32-chars' }
   })
 
   afterEach(() => {
@@ -96,6 +96,20 @@ describe('Authorization Security Tests', () => {
       expect(result).toBeNull()
     })
 
+    it('should deny admin auth with Bearer token (no longer supported)', async () => {
+      const { verifyAdminAuth } = await import('@/lib/auth')
+      const { NextRequest } = require('next/server')
+
+      const request = new NextRequest('http://localhost/api/admin/users', {
+        headers: {
+          'authorization': 'Bearer test-secret-123',
+        },
+      })
+
+      const isAuthorized = await verifyAdminAuth(request)
+      expect(isAuthorized).toBe(false)
+    })
+
     it('should deny admin auth with wrong Bearer token', async () => {
       const { verifyAdminAuth } = await import('@/lib/auth')
       const { NextRequest } = require('next/server')
@@ -108,20 +122,6 @@ describe('Authorization Security Tests', () => {
 
       const isAuthorized = await verifyAdminAuth(request)
       expect(isAuthorized).toBe(false)
-    })
-
-    it('should allow admin access with valid Bearer token', async () => {
-      const { verifyAdminAuth } = await import('@/lib/auth')
-      const { NextRequest } = require('next/server')
-
-      const request = new NextRequest('http://localhost/api/admin/users', {
-        headers: {
-          'authorization': 'Bearer test-secret-123',
-        },
-      })
-
-      const isAuthorized = await verifyAdminAuth(request)
-      expect(isAuthorized).toBe(true)
     })
   })
 

@@ -4,7 +4,10 @@ export async function GET(request: NextRequest) {
   const adminPassword = process.env.ADMIN_PASSWORD
   if (!adminPassword) {
     console.error('[admin/verify] ADMIN_PASSWORD environment variable is not set')
-    return NextResponse.json({ valid: false, error: 'Server configuration error' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Admin verification is not configured' },
+      { status: 503 }
+    )
   }
 
   const authHeader = request.headers.get('authorization')

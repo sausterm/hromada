@@ -328,7 +328,12 @@ export default function ProjectsPage() {
   // Handle marker click - scroll to card in list and zoom
   const handleMarkerClick = useCallback((project: Project) => {
     setHighlightedProjectId(project.id)
-    setFlyToProjectId(project.id)
+    // On mobile, Leaflet natively opens the popup on marker tap.
+    // Calling setFlyToProjectId would trigger FlyToProject which tries to
+    // openPopup() again, causing a double-open crash. Only fly on desktop.
+    if (window.innerWidth >= 1024) {
+      setFlyToProjectId(project.id)
+    }
     const cardElement = cardRefs.current[project.id]
     const container = listContainerRef.current
     if (cardElement && container) {
@@ -789,7 +794,7 @@ export default function ProjectsPage() {
       {/* Main Content - Split Screen */}
       <main className="flex-1 flex overflow-hidden">
         {/* Left Panel - Project List (hidden when mobile map is open) */}
-        <div ref={listContainerRef} className={`${isMobileMapOpen ? 'hidden' : ''} w-full lg:block lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-100)]`}>
+        <div ref={listContainerRef} className={`${isMobileMapOpen ? 'hidden' : ''} w-full lg:block lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-100)] lg:border-r lg:border-[var(--cream-300)] lg:shadow-[2px_0_8px_-2px_rgba(0,0,0,0.06)]`}>
           {/* Results Header - Single Line */}
           <div className="sticky top-0 z-10 bg-[var(--cream-100)] px-4 py-2.5 border-b border-[var(--cream-300)]">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">

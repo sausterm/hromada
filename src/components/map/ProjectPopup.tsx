@@ -1,6 +1,6 @@
 'use client'
 
-import { Link } from '@/i18n/navigation'
+import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { type Project, CATEGORY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, getLocalizedProject } from '@/types'
 
@@ -65,7 +65,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
         </div>
 
         {/* Title */}
-        <Link href={`/projects/${project.id}`} className="block mb-1 group">
+        <Link href={`/${locale}/projects/${project.id}`} className="block mb-1 group">
           <h3 className="font-semibold text-[var(--navy-800)] text-base leading-snug line-clamp-2 group-hover:text-[var(--ukraine-600)] group-hover:underline transition-colors">
             {localized.facilityName}
           </h3>
@@ -112,7 +112,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
 
         {/* View details link */}
         <Link
-          href={`/projects/${project.id}`}
+          href={`/${locale}/projects/${project.id}`}
           className="block w-full text-center py-2.5 px-4 bg-[var(--navy-600)] text-sm font-medium rounded-lg hover:bg-[var(--navy-700)] transition-colors"
           style={{ color: '#F5F1E8' }}
         >

@@ -777,8 +777,8 @@ export default function HomePage() {
                     {t('homepage.caseStudy.badge')}
                   </span>
                   <span className="inline-flex items-center gap-1.5 text-xs text-[var(--navy-500)]">
-                    <img src="/partners/EcoactionLogo.png" alt="Ecoaction" className="h-4 w-auto" />
                     {t('homepage.caseStudy.partnerLabel')}: <strong className="text-[var(--navy-700)]">{t('homepage.caseStudy.partnerName')}</strong>
+                    <img src="/partners/EcoactionLogo.png" alt="Ecoaction" className="h-4 w-auto" />
                   </span>
                 </div>
                 <h3 className="text-2xl font-bold text-[var(--navy-700)] mb-2">

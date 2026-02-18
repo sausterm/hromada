@@ -27,12 +27,6 @@ export function Footer() {
           {/* Links */}
           <div className="flex justify-center gap-6 text-sm flex-wrap">
             <Link
-              href="/about"
-              className="text-[var(--navy-500)] hover:text-[var(--ukraine-blue)] transition-colors"
-            >
-              {t('aboutUs')}
-            </Link>
-            <Link
               href="/terms"
               className="text-[var(--navy-500)] hover:text-[var(--ukraine-blue)] transition-colors"
             >
@@ -45,22 +39,10 @@ export function Footer() {
               {t('privacy')}
             </Link>
             <Link
-              href="/contact"
-              className="text-[var(--navy-500)] hover:text-[var(--ukraine-blue)] transition-colors"
-            >
-              {t('contact')}
-            </Link>
-            <Link
-              href="/partner-with-us"
-              className="text-[var(--navy-500)] hover:text-[var(--ukraine-blue)] transition-colors"
-            >
-              {t('mpp')}
-            </Link>
-            <Link
               href="/ofac-policy"
               className="text-[var(--navy-500)] hover:text-[var(--ukraine-blue)] transition-colors"
             >
-              OFAC Policy
+              Sanctions Policy
             </Link>
           </div>
 

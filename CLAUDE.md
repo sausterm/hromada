@@ -33,6 +33,20 @@ This repo includes an Obsidian vault at `Vault/` for project coordination.
 
 When making a significant technical choice, create an ADR in `Vault/decisions/` using the template at `Vault/templates/decision.md`. Number sequentially (002, 003, ...).
 
+## Donation Model
+
+Hromada does NOT accept partial donations toward projects. Each project is funded as a whole — there is no per-project funding meter or progress bar. The only context where incremental funding tracking may apply is the Municipal Partnership Program.
+
+## Project Prioritization
+
+Projects with stronger documentation should be prioritized in the browse/featured experience. "Stronger documentation" means: cost estimates provided by NGO partners, engineering assessments, site photos, or other third-party verification artifacts. This is both a trust signal for donors and an internal quality bar.
+
+## Transparency & Trust
+
+- **Donor trust comes from evidence, not claims.** Show what NGO partners have already built — completed projects with photos, partner attribution, and cost documentation. The Kharkiv case study on the homepage is the model.
+- **OFAC compliance policy** should be published and accessible (footer legal section or about/trust page) but not prominently featured. It's for institutional donors and due diligence, not the average individual donor.
+- **Legal pages** (`/terms`, `/privacy`) are currently placeholders and need completion.
+
 ## Code Conventions
 
 - **Framework:** Next.js 16 with App Router

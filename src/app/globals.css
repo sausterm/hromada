@@ -506,12 +506,13 @@ body {
 
 /* Smooth card hover effect */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out;
 }
 
 .card-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(58, 54, 51, 0.12);
+  box-shadow: 0 10px 30px rgba(58, 54, 51, 0.16);
+  border-color: var(--cream-400);
 }
 
 /* Custom scrollbar for split view */

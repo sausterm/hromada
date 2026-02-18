@@ -29,10 +29,10 @@ export function ProjectCard({
   const mainPhoto = project.photos?.[0]
 
   // Common class names for the card container
-  const cardClassName = `flex flex-col h-full bg-[var(--cream-100)] rounded-xl overflow-hidden card-hover border-2 transition-all duration-200 ${
+  const cardClassName = `group flex flex-col h-full bg-white rounded-xl overflow-hidden card-hover border-2 ${
     isHighlighted
       ? 'border-[var(--navy-600)] shadow-lg ring-2 ring-[var(--navy-200)]'
-      : 'border-[var(--cream-300)] shadow-sm hover:shadow-md hover:border-[var(--cream-400)]'
+      : 'border-[var(--cream-300)] shadow-sm'
   }`
 
   // Card content - shared between both modes
@@ -44,7 +44,7 @@ export function ProjectCard({
           <img
             src={mainPhoto}
             alt={localized.facilityName}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-[var(--navy-400)]">
@@ -97,7 +97,7 @@ export function ProjectCard({
             />
             <span>{t(`categories.${project.category}`)}</span>
           </div>
-          {project.projectType && (
+          {project.projectType && PROJECT_TYPE_CONFIG[project.projectType] && (
             <div
               className="px-2.5 py-1 rounded-full text-xs font-medium text-white flex items-center gap-1.5 shadow-sm w-fit"
               style={{ backgroundColor: PROJECT_TYPE_CONFIG[project.projectType].color }}
@@ -129,7 +129,7 @@ export function ProjectCard({
       </div>
 
       {/* Content Section */}
-      <div className="flex flex-col flex-1 p-3 bg-[var(--cream-100)]">
+      <div className="flex flex-col flex-1 p-3">
         {/* Title - fixed 2-line height */}
         <h3 className="font-semibold text-base leading-tight mb-0.5 line-clamp-2 min-h-[2.5rem] text-[var(--navy-700)]">
           {onClick ? (

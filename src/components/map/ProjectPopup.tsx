@@ -41,7 +41,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
             />
             {t(`categories.${project.category}`).split(' ')[0]}
           </span>
-          {project.projectType && (
+          {project.projectType && PROJECT_TYPE_CONFIG[project.projectType] && (
             <span
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
               style={{

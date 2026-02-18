@@ -70,6 +70,9 @@ When giving instructions to the user (especially for browser/tooling tasks), be 
 - **Prisma Decimals**: Lat/lng come from Prisma as `Decimal` (string). All `transformProject` functions convert them with `Number()`. In map components, use `??` (nullish coalescing) not `||` for coordinate fallbacks — `||` treats `0` as falsy.
 - **i18n Links**: Use `import { Link } from '@/i18n/navigation'` (not `next/link`) for locale prefix.
 
+### Partner Logos
+- **Background matching**: Partner logos in `public/partners/` come in two variants: `Logo.png` (cream/beige background) and `Logo-white.png` (white background). Always use the variant that matches the section's background color — use the cream variant on `var(--cream-100)` sections, the white variant on white or dark sections. The goal is seamless blending with no visible logo bounding box.
+
 ### Mobile
 - Always add `onClick` handlers (not just hover). Use `touchstart` for outside-click listeners.
 - **Turbopack cache**: `rm -rf .next` if dev server crashes or serves stale code.

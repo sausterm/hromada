@@ -1012,7 +1012,7 @@ export default function ProjectsPage() {
           <MapWrapper
             projects={sortedProjects}
             highlightedProjectId={highlightedProjectId}
-            flyToProjectId={flyToProjectId}
+            flyToProjectId={isMobileMapOpen ? null : flyToProjectId}
             onProjectClick={handleMarkerClick}
             onProjectHover={handleMarkerHover}
             onBoundsChange={handleBoundsChange}

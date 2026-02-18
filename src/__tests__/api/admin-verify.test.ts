@@ -65,16 +65,15 @@ describe('/api/admin/verify', () => {
       expect(data.valid).toBe(false)
     })
 
-    it('uses default password when ADMIN_PASSWORD not set', async () => {
+    it('returns 503 when ADMIN_PASSWORD is not set', async () => {
       delete process.env.ADMIN_PASSWORD
-      const defaultAuth = `Basic ${Buffer.from('admin:admin').toString('base64')}`
 
-      const request = createMockRequest(defaultAuth)
+      const request = createMockRequest()
       const response = await GET(request)
       const data = await response.json()
 
-      expect(response.status).toBe(200)
-      expect(data.valid).toBe(true)
+      expect(response.status).toBe(503)
+      expect(data.error).toBe('Admin verification is not configured')
     })
 
     it('returns 401 with incorrect username', async () => {

@@ -6,36 +6,24 @@ export async function GET() {
   try {
     const session = await getSessionData()
 
-    if (!session) {
+    if (!session || !session.userId) {
       return NextResponse.json({ authenticated: false })
     }
 
-    // Legacy admin session
-    if (session.isLegacyAdmin) {
+    const user = await getUserById(session.userId)
+
+    if (user) {
       return NextResponse.json({
         authenticated: true,
-        role: 'ADMIN',
-        isLegacyAdmin: true,
-      })
-    }
-
-    // New session format - fetch user details
-    if (session.userId) {
-      const user = await getUserById(session.userId)
-
-      if (user) {
-        return NextResponse.json({
-          authenticated: true,
+        role: user.role,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          organization: user.organization,
           role: user.role,
-          user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            organization: user.organization,
-            role: user.role,
-          },
-        })
-      }
+        },
+      })
     }
 
     // Session exists but no valid user found

@@ -1,11 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase, STORAGE_BUCKET } from '@/lib/supabase'
+import { rateLimit } from '@/lib/rate-limit'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const MAX_FILES_PER_SUBMISSION = 5
+
+// Magic byte signatures for file type validation
+const MAGIC_BYTES: Record<string, number[]> = {
+  'image/jpeg': [0xFF, 0xD8, 0xFF],
+  'image/png': [0x89, 0x50, 0x4E, 0x47],
+  'image/webp': [0x52, 0x49, 0x46, 0x46], // RIFF header
+}
+
+function validateMagicBytes(buffer: ArrayBuffer, claimedType: string): boolean {
+  const expected = MAGIC_BYTES[claimedType]
+  if (!expected) return false
+
+  const bytes = new Uint8Array(buffer)
+  if (bytes.length < expected.length) return false
+
+  for (let i = 0; i < expected.length; i++) {
+    if (bytes[i] !== expected[i]) return false
+  }
+
+  return true
+}
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 uploads per hour per IP
+  const rateLimitResponse = rateLimit(request, { limit: 10, windowSeconds: 3600 })
+  if (rateLimitResponse) return rateLimitResponse
+
   try {
     // Check if Supabase is configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -25,7 +50,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file type
+    // Validate file type (client-claimed)
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
         { error: 'Invalid file type. Only JPG, PNG, and WebP are allowed.' },
@@ -41,14 +66,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Convert file to buffer
+    const arrayBuffer = await file.arrayBuffer()
+
+    // Validate magic bytes (don't trust client Content-Type alone)
+    if (!validateMagicBytes(arrayBuffer, file.type)) {
+      return NextResponse.json(
+        { error: 'File content does not match declared type.' },
+        { status: 400 }
+      )
+    }
+
     // Generate unique filename with submissions prefix
     const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg'
     const timestamp = Date.now()
     const randomString = Math.random().toString(36).substring(2, 10)
     const filename = `submissions/${timestamp}-${randomString}.${extension}`
 
-    // Convert file to buffer
-    const arrayBuffer = await file.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
 
     // Upload to Supabase Storage

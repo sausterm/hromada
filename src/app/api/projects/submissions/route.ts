@@ -3,13 +3,14 @@ import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
 import { verifyAdminAuth } from '@/lib/auth'
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
+import { parseBody, projectSubmissionSchema } from '@/lib/validations'
+import { sanitizeInput, detectSuspiciousInput, logAuditEvent, AuditAction, getClientIp, getUserAgent } from '@/lib/security'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@hromada.org'
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL
 
 // GET - List all submissions (admin only)
 export async function GET(request: NextRequest) {
-  // Check for admin authorization (supports both cookie and Bearer token)
   const isAuthorized = await verifyAdminAuth(request)
   if (!isAuthorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -29,63 +30,33 @@ export async function GET(request: NextRequest) {
 
 // POST - Create new submission (public)
 export async function POST(request: NextRequest) {
-  // Rate limit: 3 submissions per hour per IP
   const rateLimitResponse = rateLimit(request, RATE_LIMITS.projectSubmission)
   if (rateLimitResponse) {
     return rateLimitResponse
   }
 
+  const parsed = await parseBody(request, projectSubmissionSchema)
+  if (parsed.error) return parsed.error
+
+  const data = parsed.data
+
+  // Check for suspicious input in free-text fields
+  const freeText = [
+    data.facilityName, data.briefDescription, data.fullDescription,
+    data.additionalNotes, data.contactName, data.partnerOrganization,
+  ].filter(Boolean).join(' ')
+  if (detectSuspiciousInput(freeText)) {
+    await logAuditEvent(AuditAction.SUSPICIOUS_ACTIVITY, {
+      ipAddress: getClientIp(request),
+      userAgent: getUserAgent(request),
+      details: 'Suspicious input in project submission form',
+    })
+    return NextResponse.json({ error: 'Invalid input detected' }, { status: 400 })
+  }
+
   try {
-    const data = await request.json()
-
-    // Validate required fields
-    const requiredFields = [
-      'municipalityName',
-      'municipalityEmail',
-      'facilityName',
-      'category',
-      'projectType',
-      'briefDescription',
-      'fullDescription',
-      'cityName',
-      'cityLatitude',
-      'cityLongitude',
-      'contactName',
-      'contactEmail',
-    ]
-
-    for (const field of requiredFields) {
-      if (!data[field] || (typeof data[field] === 'string' && !data[field].trim())) {
-        return NextResponse.json({ error: `${field} is required` }, { status: 400 })
-      }
-    }
-
-    // Validate email formats
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(data.municipalityEmail)) {
-      return NextResponse.json({ error: 'Invalid municipality email format' }, { status: 400 })
-    }
-    if (!emailRegex.test(data.contactEmail)) {
-      return NextResponse.json({ error: 'Invalid contact email format' }, { status: 400 })
-    }
-
-    // Validate character limits
-    if (data.briefDescription.length > 150) {
-      return NextResponse.json({ error: 'Brief description must be 150 characters or less' }, { status: 400 })
-    }
-    if (data.fullDescription.length > 2000) {
-      return NextResponse.json({ error: 'Full description must be 2000 characters or less' }, { status: 400 })
-    }
-
-    // Validate coordinates
-    const lat = parseFloat(data.cityLatitude)
-    const lng = parseFloat(data.cityLongitude)
-    if (isNaN(lat) || lat < -90 || lat > 90) {
-      return NextResponse.json({ error: 'Invalid latitude' }, { status: 400 })
-    }
-    if (isNaN(lng) || lng < -180 || lng > 180) {
-      return NextResponse.json({ error: 'Invalid longitude' }, { status: 400 })
-    }
+    const lat = parseFloat(String(data.cityLatitude))
+    const lng = parseFloat(String(data.cityLongitude))
 
     // Create submission
     const submission = await prisma.projectSubmission.create({
@@ -99,9 +70,9 @@ export async function POST(request: NextRequest) {
         briefDescription: data.briefDescription.trim(),
         fullDescription: data.fullDescription.trim(),
         urgency: data.urgency || 'MEDIUM',
-        estimatedCostUsd: data.estimatedCostUsd ? parseFloat(data.estimatedCostUsd) : null,
-        technicalPowerKw: data.technicalPowerKw ? parseFloat(data.technicalPowerKw) : null,
-        numberOfPanels: data.numberOfPanels ? parseInt(data.numberOfPanels) : null,
+        estimatedCostUsd: data.estimatedCostUsd ? parseFloat(String(data.estimatedCostUsd)) : null,
+        technicalPowerKw: data.technicalPowerKw ? parseFloat(String(data.technicalPowerKw)) : null,
+        numberOfPanels: data.numberOfPanels ? parseInt(String(data.numberOfPanels)) : null,
         cofinancingAvailable: data.cofinancingAvailable || null,
         cofinancingDetails: data.cofinancingDetails?.trim() || null,
         cityName: data.cityName.trim(),
@@ -118,34 +89,34 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send email notification to admin
+    // Send email notification to admin — sanitize all user-provided values
     if (resend && ADMIN_EMAIL) {
       try {
         await resend.emails.send({
           from: 'Hromada <noreply@hromada.org>',
           to: ADMIN_EMAIL,
-          subject: `New Project Submission: ${data.facilityName}`,
+          subject: `New Project Submission: ${sanitizeInput(data.facilityName)}`,
           html: `
             <h2>New Project Submission</h2>
             <p>A new project has been submitted for review.</p>
 
             <h3>Municipality Information</h3>
             <ul>
-              <li><strong>Municipality:</strong> ${data.municipalityName}</li>
-              <li><strong>Email:</strong> ${data.municipalityEmail}</li>
-              ${data.region ? `<li><strong>Region:</strong> ${data.region}</li>` : ''}
+              <li><strong>Municipality:</strong> ${sanitizeInput(data.municipalityName)}</li>
+              <li><strong>Email:</strong> ${sanitizeInput(data.municipalityEmail)}</li>
+              ${data.region ? `<li><strong>Region:</strong> ${sanitizeInput(data.region)}</li>` : ''}
             </ul>
 
             <h3>Project Details</h3>
             <ul>
-              <li><strong>Facility:</strong> ${data.facilityName}</li>
-              <li><strong>Category:</strong> ${data.category}</li>
-              <li><strong>Type:</strong> ${data.projectType}</li>
-              <li><strong>Urgency:</strong> ${data.urgency || 'MEDIUM'}</li>
+              <li><strong>Facility:</strong> ${sanitizeInput(data.facilityName)}</li>
+              <li><strong>Category:</strong> ${sanitizeInput(data.category)}</li>
+              <li><strong>Type:</strong> ${sanitizeInput(data.projectType)}</li>
+              <li><strong>Urgency:</strong> ${sanitizeInput(data.urgency || 'MEDIUM')}</li>
             </ul>
 
             <h3>Brief Description</h3>
-            <p>${data.briefDescription}</p>
+            <p>${sanitizeInput(data.briefDescription)}</p>
 
             ${data.photos && data.photos.length > 0 ? `
             <h3>Photos</h3>
@@ -154,9 +125,9 @@ export async function POST(request: NextRequest) {
 
             <h3>Contact Information</h3>
             <ul>
-              <li><strong>Name:</strong> ${data.contactName}</li>
-              <li><strong>Email:</strong> ${data.contactEmail}</li>
-              ${data.contactPhone ? `<li><strong>Phone:</strong> ${data.contactPhone}</li>` : ''}
+              <li><strong>Name:</strong> ${sanitizeInput(data.contactName)}</li>
+              <li><strong>Email:</strong> ${sanitizeInput(data.contactEmail)}</li>
+              ${data.contactPhone ? `<li><strong>Phone:</strong> ${sanitizeInput(data.contactPhone)}</li>` : ''}
             </ul>
 
             <p><a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin">Review in Admin Dashboard</a></p>
@@ -164,7 +135,6 @@ export async function POST(request: NextRequest) {
         })
       } catch (emailError) {
         console.error('Failed to send admin notification email:', emailError)
-        // Don't fail the request if email fails
       }
     }
 
@@ -177,9 +147,9 @@ export async function POST(request: NextRequest) {
           subject: 'Project Submission Received - Hromada',
           html: `
             <h2>Thank You for Your Submission</h2>
-            <p>Dear ${data.contactName},</p>
+            <p>Dear ${sanitizeInput(data.contactName)},</p>
 
-            <p>We have received your project submission for <strong>${data.facilityName}</strong>.</p>
+            <p>We have received your project submission for <strong>${sanitizeInput(data.facilityName)}</strong>.</p>
 
             <h3>What Happens Next?</h3>
             <ul>
@@ -197,7 +167,6 @@ export async function POST(request: NextRequest) {
         })
       } catch (emailError) {
         console.error('Failed to send confirmation email:', emailError)
-        // Don't fail the request if email fails
       }
     }
 

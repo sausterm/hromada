@@ -25,8 +25,12 @@ function SiteAccessForm() {
       if (response.ok) {
         // Small delay to ensure cookie is set before redirect
         await new Promise(resolve => setTimeout(resolve, 100))
+        // Validate redirect is a safe relative path (prevent open redirect)
+        let redirect = searchParams.get('redirect') || '/'
+        if (!redirect.startsWith('/') || redirect.startsWith('//')) {
+          redirect = '/'
+        }
         // Redirect using window.location to ensure full page load with new cookie
-        const redirect = searchParams.get('redirect') || '/'
         window.location.href = redirect
       } else {
         const data = await response.json()

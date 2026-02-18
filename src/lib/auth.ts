@@ -10,13 +10,16 @@ const SALT_ROUNDS = 12
 const JWT_EXPIRATION = '7d'
 
 /**
- * Get the secret key for JWT signing
- * Falls back to HROMADA_ADMIN_SECRET for backward compatibility
+ * Get the secret key for JWT signing.
+ * Requires SESSION_SECRET (min 32 chars). No fallbacks.
  */
 function getSecretKey(): Uint8Array {
-  const secret = process.env.SESSION_SECRET || process.env.HROMADA_ADMIN_SECRET
+  const secret = process.env.SESSION_SECRET
   if (!secret) {
-    throw new Error('SESSION_SECRET or HROMADA_ADMIN_SECRET environment variable is required')
+    throw new Error('SESSION_SECRET environment variable is required')
+  }
+  if (secret.length < 32) {
+    throw new Error('SESSION_SECRET must be at least 32 characters')
   }
   return new TextEncoder().encode(secret)
 }
@@ -26,7 +29,6 @@ export interface SessionData {
   email?: string
   role?: UserRole
   sessionVersion?: number
-  isLegacyAdmin?: boolean
 }
 
 interface JWTSessionPayload extends JWTPayload {
@@ -106,10 +108,8 @@ export async function validateSessionWithDatabase(session: SessionData): Promise
 }
 
 /**
- * Parse the session cookie and return session data
- * Supports:
- * 1. New JWT-signed sessions (secure)
- * 2. Legacy base64 admin sessions (for backward compatibility, will be phased out)
+ * Parse the session cookie and return session data.
+ * Only accepts JWT-signed sessions.
  */
 export async function getSessionData(): Promise<SessionData | null> {
   try {
@@ -122,7 +122,6 @@ export async function getSessionData(): Promise<SessionData | null> {
 
     const token = sessionCookie.value
 
-    // Method 1: Try to verify as JWT (new secure format)
     try {
       const secret = getSecretKey()
       const { payload } = await jwtVerify(token, secret)
@@ -135,25 +134,8 @@ export async function getSessionData(): Promise<SessionData | null> {
         sessionVersion: sessionPayload.sessionVersion,
       }
     } catch {
-      // Not a valid JWT, try legacy formats
+      return null
     }
-
-    // Method 2: Legacy base64 format (for backward compatibility during transition)
-    try {
-      const decoded = Buffer.from(token, 'base64').toString()
-
-      // Legacy admin format (secret:timestamp)
-      const [secret] = decoded.split(':')
-      const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-      if (adminSecret && secret === adminSecret) {
-        return { isLegacyAdmin: true, role: 'ADMIN' as UserRole }
-      }
-    } catch {
-      // Invalid base64
-    }
-
-    return null
   } catch (error) {
     return null
   }
@@ -187,25 +169,6 @@ export async function createSession(userId: string, email: string, role: UserRol
 }
 
 /**
- * Create a legacy admin session (for backward compatibility)
- */
-export async function createLegacyAdminSession() {
-  const adminSecret = process.env.HROMADA_ADMIN_SECRET
-  if (!adminSecret) return
-
-  const sessionToken = Buffer.from(`${adminSecret}:${Date.now()}`).toString('base64')
-
-  const cookieStore = await cookies()
-  cookieStore.set(COOKIE_NAME, sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
-  })
-}
-
-/**
  * Clear the session cookie
  */
 export async function clearSession() {
@@ -215,66 +178,50 @@ export async function clearSession() {
 
 /**
  * Verify admin authentication from request.
- * Supports both:
- * - httpOnly cookie (preferred, secure)
- * - Bearer token header (for API clients, backwards compatibility)
+ * Only accepts JWT sessions with role === 'ADMIN', validated against the database.
  */
 export async function verifyAdminAuth(request: NextRequest): Promise<boolean> {
-  const adminSecret = process.env.HROMADA_ADMIN_SECRET
-
-  // Method 1: Check Bearer token (for API clients)
-  if (adminSecret) {
-    const authHeader = request.headers.get('authorization')
-    if (authHeader === `Bearer ${adminSecret}`) {
-      return true
-    }
-  }
-
-  // Method 2: Check session cookie
   const session = await getSessionData()
 
-  if (session) {
-    // Legacy admin session
-    if (session.isLegacyAdmin) {
-      return true
-    }
-
-    // New session format - check role
-    if (session.role === 'ADMIN') {
-      return true
-    }
+  if (!session || session.role !== 'ADMIN') {
+    return false
   }
 
-  return false
+  // Validate against database
+  const { valid } = await validateSessionWithDatabase(session)
+  return valid
 }
 
 /**
- * Verify partner authentication from request
+ * Verify partner authentication from request.
+ * Only accepts JWT sessions with PARTNER or NONPROFIT_MANAGER role, validated against DB.
  */
 export async function verifyPartnerAuth(request: NextRequest): Promise<SessionData | null> {
   const session = await getSessionData()
 
-  if (session && (session.role === 'PARTNER' || session.role === 'NONPROFIT_MANAGER')) {
-    return session
+  if (!session || (session.role !== 'PARTNER' && session.role !== 'NONPROFIT_MANAGER')) {
+    return null
   }
 
-  return null
+  // Validate against database
+  const { valid } = await validateSessionWithDatabase(session)
+  if (!valid) return null
+
+  return session
 }
 
 /**
- * Verify any authenticated user from request
+ * Verify any authenticated user from request.
+ * Only accepts JWT sessions, validated against the database.
  */
 export async function verifyAuth(request: NextRequest): Promise<SessionData | null> {
-  // Check Bearer token for admin
-  const adminSecret = process.env.HROMADA_ADMIN_SECRET
-  if (adminSecret) {
-    const authHeader = request.headers.get('authorization')
-    if (authHeader === `Bearer ${adminSecret}`) {
-      return { isLegacyAdmin: true, role: 'ADMIN' as UserRole }
-    }
-  }
+  const session = await getSessionData()
+  if (!session || !session.userId) return null
 
-  return getSessionData()
+  const { valid } = await validateSessionWithDatabase(session)
+  if (!valid) return null
+
+  return session
 }
 
 /**
@@ -289,7 +236,6 @@ export function unauthorizedResponse() {
 
 /**
  * Create a signed JWT token (for testing purposes)
- * This is exported to allow tests to create valid tokens
  */
 export async function createSignedToken(payload: {
   userId?: string

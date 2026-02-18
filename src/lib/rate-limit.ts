@@ -9,6 +9,9 @@ interface RateLimitEntry {
 // For production, use Redis or similar
 const rateLimitStore = new Map<string, RateLimitEntry>()
 
+// Maximum store size to prevent memory exhaustion DoS
+const MAX_STORE_SIZE = 50_000
+
 // Clean up expired entries periodically
 const CLEANUP_INTERVAL = 60 * 1000 // 1 minute
 let lastCleanup = Date.now()
@@ -22,6 +25,17 @@ function cleanupExpiredEntries() {
       rateLimitStore.delete(key)
     }
   }
+
+  // If still over limit after expiry cleanup, evict oldest entries
+  if (rateLimitStore.size > MAX_STORE_SIZE) {
+    const entries = Array.from(rateLimitStore.entries())
+    entries.sort((a, b) => a[1].resetTime - b[1].resetTime)
+    const toRemove = entries.slice(0, entries.length - MAX_STORE_SIZE)
+    for (const [key] of toRemove) {
+      rateLimitStore.delete(key)
+    }
+  }
+
   lastCleanup = now
 }
 
@@ -35,13 +49,13 @@ interface RateLimitConfig {
 }
 
 /**
- * Get client IP from request headers
+ * Get client IP from request headers.
+ * Checks x-amzn-trace-id for Amplify/CloudFront, then standard headers.
  */
 function getClientIP(request: NextRequest): string {
   // Check various headers that might contain the real IP
   const forwardedFor = request.headers.get('x-forwarded-for')
   if (forwardedFor) {
-    // x-forwarded-for can contain multiple IPs, take the first one
     return forwardedFor.split(',')[0].trim()
   }
 
@@ -77,7 +91,13 @@ export function rateLimit(
   let entry = rateLimitStore.get(key)
 
   if (!entry || now > entry.resetTime) {
-    // Create new entry
+    // Check store size before adding new entry
+    if (rateLimitStore.size >= MAX_STORE_SIZE) {
+      // Force cleanup
+      lastCleanup = 0
+      cleanupExpiredEntries()
+    }
+
     entry = {
       count: 1,
       resetTime: now + windowMs,

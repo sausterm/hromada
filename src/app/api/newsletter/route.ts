@@ -2,19 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
 import { sendNewsletterWelcomeEmail } from '@/lib/email'
+import { parseBody, newsletterSchema } from '@/lib/validations'
 
 export async function POST(request: NextRequest) {
   const rateLimitResult = rateLimit(request, RATE_LIMITS.contact)
   if (rateLimitResult) return rateLimitResult
 
+  const parsed = await parseBody(request, newsletterSchema)
+  if (parsed.error) return parsed.error
+
   try {
-    const { email } = await request.json()
-
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return NextResponse.json({ error: 'Valid email required' }, { status: 400 })
-    }
-
-    const normalized = email.toLowerCase().trim()
+    const normalized = parsed.data.email.toLowerCase().trim()
 
     // Check if already subscribed (don't re-send welcome email)
     const existing = await prisma.newsletterSubscriber.findUnique({

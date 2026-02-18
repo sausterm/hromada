@@ -16,7 +16,6 @@ export interface AuthState {
   isLoading: boolean
   role: UserRole | null
   user: AuthUser | null
-  isLegacyAdmin: boolean
 }
 
 export function useAuth() {
@@ -25,7 +24,6 @@ export function useAuth() {
     isLoading: true,
     role: null,
     user: null,
-    isLegacyAdmin: false,
   })
 
   // Check auth status on mount via secure httpOnly cookie
@@ -41,7 +39,6 @@ export function useAuth() {
             isLoading: false,
             role: data.role || null,
             user: data.user || null,
-            isLegacyAdmin: data.isLegacyAdmin || false,
           })
         } else {
           setState({
@@ -49,7 +46,6 @@ export function useAuth() {
             isLoading: false,
             role: null,
             user: null,
-            isLegacyAdmin: false,
           })
         }
       } catch (error) {
@@ -59,7 +55,6 @@ export function useAuth() {
           isLoading: false,
           role: null,
           user: null,
-          isLegacyAdmin: false,
         })
       }
     }
@@ -67,16 +62,12 @@ export function useAuth() {
   }, [])
 
   const login = useCallback(
-    async (emailOrPassword: string, password?: string): Promise<{ success: boolean; role?: UserRole }> => {
+    async (email: string, password: string): Promise<{ success: boolean; role?: UserRole }> => {
       try {
-        const body = password
-          ? { email: emailOrPassword, password }
-          : { password: emailOrPassword }
-
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          body: JSON.stringify({ email, password }),
         })
 
         if (response.ok) {
@@ -86,7 +77,6 @@ export function useAuth() {
             isLoading: false,
             role: data.role || null,
             user: data.user || null,
-            isLegacyAdmin: !password,
           })
           return { success: true, role: data.role }
         }
@@ -111,7 +101,6 @@ export function useAuth() {
         isLoading: false,
         role: null,
         user: null,
-        isLegacyAdmin: false,
       })
     }
   }, [])
@@ -132,8 +121,8 @@ export function useAuth() {
 
   // Helper to check if user is admin
   const isAdmin = useCallback((): boolean => {
-    return state.role === 'ADMIN' || state.isLegacyAdmin
-  }, [state.role, state.isLegacyAdmin])
+    return state.role === 'ADMIN'
+  }, [state.role])
 
   // Helper to check if user is partner
   const isPartner = useCallback((): boolean => {
@@ -152,12 +141,12 @@ export function useAuth() {
 
   // Get the appropriate dashboard path for the user's role
   const getDashboardPath = useCallback((): string => {
-    if (state.isLegacyAdmin || state.role === 'ADMIN') return '/admin'
+    if (state.role === 'ADMIN') return '/admin'
     if (state.role === 'NONPROFIT_MANAGER') return '/nonprofit'
     if (state.role === 'PARTNER') return '/partner'
     if (state.role === 'DONOR') return '/donor'
     return '/'
-  }, [state.role, state.isLegacyAdmin])
+  }, [state.role])
 
   return {
     ...state,

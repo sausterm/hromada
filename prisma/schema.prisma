@@ -38,6 +38,7 @@ model Project {
   municipalityNameUk   String?
   contactSubmissions   ContactSubmission[]
   photos               ProjectImage[]
+  documents            ProjectDocument[]
   featuredSlot         FeaturedProject?
 
   @@index([category])
@@ -390,6 +391,34 @@ model NewsletterSubscriber {
   unsubscribed Boolean  @default(false)
 
   @@index([subscribedAt])
+}
+
+enum DocumentType {
+  COST_ESTIMATE
+  ENGINEERING_ASSESSMENT
+  ITEMIZED_BUDGET
+  SITE_SURVEY
+  OTHER
+}
+
+/// Partner-provided documents (cost estimates, engineering assessments, etc.)
+/// Uploaded as PDFs; text is extracted and translated for donor transparency.
+model ProjectDocument {
+  id               String       @id @default(cuid())
+  projectId        String
+  url              String       // Supabase storage URL for original PDF
+  filename         String       // Original filename for display
+  documentType     DocumentType @default(OTHER)
+  label            String?      @db.VarChar(100)
+  labelUk          String?      @db.VarChar(150)
+  originalTextUk   String?      @db.Text
+  translatedTextEn String?      @db.Text
+  extractionStatus String       @default("pending") // pending, extracted, translated, failed
+  fileSize         Int?         // Size in bytes
+  createdAt        DateTime     @default(now())
+  project          Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
 }
 
 model FeaturedProject {

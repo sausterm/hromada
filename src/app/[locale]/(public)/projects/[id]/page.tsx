@@ -12,10 +12,12 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { SupportProjectCard } from '@/components/projects/SupportProjectCard'
 import {
   type Project,
+  type ProjectDocument,
   CATEGORY_CONFIG,
   STATUS_CONFIG,
   PROJECT_TYPE_CONFIG,
   COFINANCING_CONFIG,
+  DOCUMENT_TYPE_LABELS,
   formatCurrency,
   formatPower,
   formatRelativeTime,
@@ -78,6 +80,93 @@ function transformProject(data: any): Project {
     technicalPowerKw: data.technicalPowerKw ? Number(data.technicalPowerKw) : undefined,
     estimatedCostUsd: data.estimatedCostUsd ? Number(data.estimatedCostUsd) : undefined,
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function DocumentCard({ document: doc, locale, t }: { document: ProjectDocument; locale: string; t: any }) {
+  const [showTranslation, setShowTranslation] = useState(false)
+  const typeLabel = locale === 'uk'
+    ? t(`projectDetail.documentation.types.${doc.documentType}`)
+    : (DOCUMENT_TYPE_LABELS[doc.documentType as keyof typeof DOCUMENT_TYPE_LABELS] || 'Document')
+
+  const fileSize = doc.fileSize
+    ? doc.fileSize < 1024 * 1024
+      ? `${(doc.fileSize / 1024).toFixed(0)} KB`
+      : `${(doc.fileSize / (1024 * 1024)).toFixed(1)} MB`
+    : null
+
+  return (
+    <div className="border border-[var(--cream-300)] rounded-lg p-4">
+      <div className="flex items-start gap-3">
+        {/* PDF icon */}
+        <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+          <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+          </svg>
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[var(--cream-200)] text-[var(--navy-600)]">
+              {typeLabel}
+            </span>
+            {fileSize && <span className="text-xs text-[var(--navy-400)]">{fileSize}</span>}
+            {doc.extractionStatus === 'pending' && (
+              <span className="text-xs text-amber-600 flex items-center gap-1">
+                <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                {t('projectDetail.documentation.translationPending')}
+              </span>
+            )}
+          </div>
+          <p className="text-sm font-medium text-[var(--navy-700)] mt-1">
+            {doc.label || doc.filename}
+          </p>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3 mt-2">
+            <a
+              href={doc.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-[var(--ukraine-blue)] hover:underline"
+            >
+              {t('projectDetail.documentation.downloadOriginal')}
+            </a>
+            {doc.translatedTextEn && locale === 'en' && (
+              <button
+                onClick={() => setShowTranslation(!showTranslation)}
+                className="text-xs font-medium text-[var(--ukraine-blue)] hover:underline"
+              >
+                {showTranslation
+                  ? t('projectDetail.documentation.hideTranslation')
+                  : t('projectDetail.documentation.viewTranslation')}
+              </button>
+            )}
+            {doc.originalTextUk && locale === 'uk' && (
+              <button
+                onClick={() => setShowTranslation(!showTranslation)}
+                className="text-xs font-medium text-[var(--ukraine-blue)] hover:underline"
+              >
+                {showTranslation ? t('projectDetail.documentation.hideTranslation') : t('projectDetail.documentation.viewOriginalText')}
+              </button>
+            )}
+          </div>
+
+          {/* Expanded translation/text */}
+          {showTranslation && (
+            <div className="mt-3 p-3 bg-[var(--cream-100)] rounded-lg max-h-80 overflow-y-auto">
+              <p className="text-sm text-[var(--navy-600)] whitespace-pre-line leading-relaxed">
+                {locale === 'en' ? doc.translatedTextEn : doc.originalTextUk}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function ProjectDetailPage() {
@@ -357,6 +446,25 @@ export default function ProjectDetailPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Documentation Section */}
+            {project.documents && project.documents.length > 0 && (
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold text-[var(--navy-700)] mb-1">
+                    {t('projectDetail.documentation.title')}
+                  </h2>
+                  <p className="text-sm text-[var(--navy-500)] mb-4">
+                    {t('projectDetail.documentation.subtitle')}
+                  </p>
+                  <div className="space-y-3">
+                    {project.documents.map((doc: ProjectDocument) => (
+                      <DocumentCard key={doc.id} document={doc} locale={locale} t={t} />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             </div>
 
           </div>

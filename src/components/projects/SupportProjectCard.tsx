@@ -37,7 +37,7 @@ export function SupportProjectCard({
   cofinancingAvailable,
   cofinancingDetails,
 }: SupportProjectCardProps) {
-  const t = useTranslations()
+  const t = useTranslations('support')
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>(null)
   const [viewState, setViewState] = useState<ViewState>('options')
   const [copied, setCopied] = useState<string | null>(null)
@@ -122,9 +122,9 @@ export function SupportProjectCard({
     setFormData((prev) => ({ ...prev, [field]: e.target.value }))
   }
 
-  // Calculate funding needed if co-financing is available
-  const fundingNeeded = estimatedCostUsd
   const hasCofinancing = cofinancingAvailable === 'YES' && cofinancingDetails
+
+  const copyLabel = (field: string) => copied === field ? '✓' : t('copy')
 
   // Success state
   if (viewState === 'success') {
@@ -137,28 +137,25 @@ export function SupportProjectCard({
             </svg>
           </div>
           <h3 className="text-lg font-semibold text-green-800 mb-2 text-center">
-            Thank You!
+            {t('success.title')}
           </h3>
           {isNewDonor ? (
             <>
               <p className="text-green-700 text-center text-sm mb-4">
-                We've created a donor account for you to track your contribution.
-                Check your email for login details.
+                {t('successNewDonor')}
               </p>
               <div className="bg-white rounded-lg p-4 border border-green-200">
                 <p className="text-sm text-gray-600 text-center">
-                  <strong>What's next:</strong><br />
-                  1. Check your email for login credentials<br />
-                  2. We'll confirm receipt of your {selectedMethod === 'wire' ? 'wire transfer' : selectedMethod === 'daf' ? 'DAF grant' : 'check'}<br />
-                  3. Track updates as funds reach Ukraine
+                  <strong>{t('successWhatsNext')}</strong><br />
+                  1. {t('successStep1')}<br />
+                  2. {selectedMethod === 'wire' ? t('successStep2Wire') : selectedMethod === 'daf' ? t('successStep2Daf') : t('successStep2Check')}<br />
+                  3. {t('successStep3')}
                 </p>
               </div>
             </>
           ) : (
             <p className="text-green-700 text-center text-sm">
-              We've received your notification. Check your donor dashboard to track
-              your {selectedMethod === 'wire' ? 'wire transfer' : selectedMethod === 'daf' ? 'DAF grant' : 'check'} as
-              it makes its way to Ukraine.
+              {t('successExisting')}
             </p>
           )}
         </CardContent>
@@ -171,7 +168,7 @@ export function SupportProjectCard({
     return (
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl">Support This Project</CardTitle>
+          <CardTitle className="text-xl">{t('title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
           {/* Funding summary */}
@@ -180,14 +177,14 @@ export function SupportProjectCard({
               <div className="text-3xl font-bold text-[var(--navy-700)]">
                 {formatCurrency(estimatedCostUsd, { compact: true })}
               </div>
-              <div className="text-sm text-gray-500">estimated cost</div>
+              <div className="text-sm text-gray-500">{t('estimatedCostLabel')}</div>
               {hasCofinancing && (
                 <div className="mt-2">
                   <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    Co-financing available
+                    {t('cofinancingBadge')}
                   </span>
                 </div>
               )}
@@ -197,7 +194,7 @@ export function SupportProjectCard({
           {/* Primary CTA - Schedule a Call */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-gray-700 mb-3">
-              Interested in funding this project? Let's discuss how your contribution can make an impact.
+              {t('scheduleCallDescription')}
             </p>
             <a
               href="https://calendly.com/hromada/donor-call"
@@ -208,7 +205,7 @@ export function SupportProjectCard({
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Schedule a Call
+              {t('scheduleCall')}
             </a>
           </div>
 
@@ -218,7 +215,7 @@ export function SupportProjectCard({
               <div className="w-full border-t border-gray-200" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-gray-500">Ready to give?</span>
+              <span className="px-3 bg-white text-gray-500">{t('readyToGive')}</span>
             </div>
           </div>
 
@@ -234,7 +231,7 @@ export function SupportProjectCard({
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-medium text-gray-900 text-sm">Wire Transfer</div>
+                <div className="font-medium text-gray-900 text-sm">{t('methods.wire.title')}</div>
               </div>
               <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -251,7 +248,7 @@ export function SupportProjectCard({
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-medium text-gray-900 text-sm">DAF Grant</div>
+                <div className="font-medium text-gray-900 text-sm">{t('methods.daf.title')}</div>
               </div>
               <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -268,7 +265,7 @@ export function SupportProjectCard({
                 </svg>
               </div>
               <div className="flex-1">
-                <div className="font-medium text-gray-900 text-sm">Check</div>
+                <div className="font-medium text-gray-900 text-sm">{t('methods.check.title')}</div>
               </div>
               <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -277,7 +274,7 @@ export function SupportProjectCard({
           </div>
 
           <p className="text-xs text-gray-500 text-center">
-            All donations are tax-deductible through POCACITO Network, a 501(c)(3) organization (EIN 99-0392258).
+            {t('taxNote')}
           </p>
         </CardContent>
       </Card>
@@ -296,12 +293,12 @@ export function SupportProjectCard({
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back
+            {t('back')}
           </button>
           <CardTitle className="text-lg">
-            {selectedMethod === 'wire' && 'Wire Transfer Instructions'}
-            {selectedMethod === 'daf' && 'DAF Grant Instructions'}
-            {selectedMethod === 'check' && 'Check Instructions'}
+            {selectedMethod === 'wire' && t('wireInstructions.title')}
+            {selectedMethod === 'daf' && t('dafInstructions.title')}
+            {selectedMethod === 'check' && t('checkInstructions.title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -309,43 +306,43 @@ export function SupportProjectCard({
             <>
               <div className="bg-gray-50 rounded-lg p-4 space-y-3 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Bank</span>
+                  <span className="text-gray-600">{t('wireInstructions.bank')}</span>
                   <span className="font-medium">{PAYMENT_INFO.bankName}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Account Name</span>
+                  <span className="text-gray-600">{t('wireInstructions.accountName')}</span>
                   <span className="font-medium">{PAYMENT_INFO.accountName}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Routing Number</span>
+                  <span className="text-gray-600">{t('wireInstructions.routingNumber')}</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-medium">{PAYMENT_INFO.routingNumber}</span>
                     <button
                       onClick={() => handleCopy(PAYMENT_INFO.routingNumber, 'routing')}
                       className="text-blue-600 hover:text-blue-800"
                     >
-                      {copied === 'routing' ? '✓' : 'Copy'}
+                      {copyLabel('routing')}
                     </button>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Account Number</span>
+                  <span className="text-gray-600">{t('wireInstructions.accountNumber')}</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-medium">{PAYMENT_INFO.accountNumber}</span>
                     <button
                       onClick={() => handleCopy(PAYMENT_INFO.accountNumber, 'account')}
                       className="text-blue-600 hover:text-blue-800"
                     >
-                      {copied === 'account' ? '✓' : 'Copy'}
+                      {copyLabel('account')}
                     </button>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">SWIFT (Int'l)</span>
+                  <span className="text-gray-600">{t('wireInstructions.swift')}</span>
                   <span className="font-mono font-medium">{PAYMENT_INFO.swiftCode}</span>
                 </div>
                 <div className="border-t pt-3 mt-3">
-                  <span className="text-gray-600">Reference</span>
+                  <span className="text-gray-600">{t('wireInstructions.reference')}</span>
                   <div className="flex items-center gap-2 mt-1">
                     <code className="bg-white px-2 py-1 rounded border text-sm flex-1">
                       Hromada - {projectName}
@@ -354,13 +351,13 @@ export function SupportProjectCard({
                       onClick={() => handleCopy(`Hromada - ${projectName}`, 'ref')}
                       className="text-blue-600 hover:text-blue-800 text-sm"
                     >
-                      {copied === 'ref' ? '✓' : 'Copy'}
+                      {copyLabel('ref')}
                     </button>
                   </div>
                 </div>
               </div>
               <p className="text-sm text-gray-600">
-                Initiate a wire transfer from your bank using these details. Include the reference to help us match your donation.
+                {t('wireInstructions.instructions')}
               </p>
             </>
           )}
@@ -369,23 +366,23 @@ export function SupportProjectCard({
             <>
               <div className="bg-gray-50 rounded-lg p-4 space-y-3 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Organization</span>
+                  <span className="text-gray-600">{t('dafInstructions.organization')}</span>
                   <span className="font-medium">{PAYMENT_INFO.accountName}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">EIN</span>
+                  <span className="text-gray-600">{t('dafInstructions.ein')}</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-medium">{PAYMENT_INFO.ein}</span>
                     <button
                       onClick={() => handleCopy(PAYMENT_INFO.ein, 'ein')}
                       className="text-blue-600 hover:text-blue-800"
                     >
-                      {copied === 'ein' ? '✓' : 'Copy'}
+                      {copyLabel('ein')}
                     </button>
                   </div>
                 </div>
                 <div className="border-t pt-3 mt-3">
-                  <span className="text-gray-600">Grant Memo</span>
+                  <span className="text-gray-600">{t('dafInstructions.grantMemo')}</span>
                   <div className="flex items-center gap-2 mt-1">
                     <code className="bg-white px-2 py-1 rounded border text-sm flex-1">
                       Hromada - {projectName}
@@ -394,13 +391,13 @@ export function SupportProjectCard({
                       onClick={() => handleCopy(`Hromada - ${projectName}`, 'memo')}
                       className="text-blue-600 hover:text-blue-800 text-sm"
                     >
-                      {copied === 'memo' ? '✓' : 'Copy'}
+                      {copyLabel('memo')}
                     </button>
                   </div>
                 </div>
               </div>
               <p className="text-sm text-gray-600">
-                Log into your DAF provider (Fidelity Charitable, Schwab Charitable, Vanguard, etc.) and recommend a grant to POCACITO Network (EIN 99-0392258).
+                {t('dafInstructions.instructions')}
               </p>
             </>
           )}
@@ -409,11 +406,11 @@ export function SupportProjectCard({
             <>
               <div className="bg-gray-50 rounded-lg p-4 space-y-3 text-sm">
                 <div>
-                  <span className="text-gray-600">Pay to</span>
+                  <span className="text-gray-600">{t('checkInstructions.payTo')}</span>
                   <p className="font-medium mt-1">{PAYMENT_INFO.accountName}</p>
                 </div>
                 <div>
-                  <span className="text-gray-600">Memo</span>
+                  <span className="text-gray-600">{t('checkInstructions.memo')}</span>
                   <div className="flex items-center gap-2 mt-1">
                     <code className="bg-white px-2 py-1 rounded border text-sm">
                       Hromada - {projectName}
@@ -422,12 +419,12 @@ export function SupportProjectCard({
                       onClick={() => handleCopy(`Hromada - ${projectName}`, 'checkmemo')}
                       className="text-blue-600 hover:text-blue-800 text-sm"
                     >
-                      {copied === 'checkmemo' ? '✓' : 'Copy'}
+                      {copyLabel('checkmemo')}
                     </button>
                   </div>
                 </div>
                 <div className="border-t pt-3 mt-3">
-                  <span className="text-gray-600">Mail to</span>
+                  <span className="text-gray-600">{t('checkInstructions.mailTo')}</span>
                   <div className="flex items-start gap-2 mt-1">
                     <pre className="bg-white px-2 py-1 rounded border text-sm flex-1 whitespace-pre-wrap font-sans">
                       {PAYMENT_INFO.accountName}{'\n'}{PAYMENT_INFO.address}
@@ -436,7 +433,7 @@ export function SupportProjectCard({
                       onClick={() => handleCopy(`${PAYMENT_INFO.accountName}\n${PAYMENT_INFO.address}`, 'address')}
                       className="text-blue-600 hover:text-blue-800 text-sm"
                     >
-                      {copied === 'address' ? '✓' : 'Copy'}
+                      {copyLabel('address')}
                     </button>
                   </div>
                 </div>
@@ -445,7 +442,7 @@ export function SupportProjectCard({
           )}
 
           <Button onClick={handleConfirmPayment} fullWidth>
-            I've Sent My Contribution
+            {t('confirm.button')}
           </Button>
         </CardContent>
       </Card>
@@ -464,19 +461,19 @@ export function SupportProjectCard({
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back
+            {t('back')}
           </button>
-          <CardTitle className="text-lg">Confirm Your Contribution</CardTitle>
+          <CardTitle className="text-lg">{t('confirm.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmitConfirmation} className="space-y-4">
             <p className="text-sm text-gray-600">
-              Let us know you've sent funds so we can track and confirm receipt.
+              {t('confirm.description')}
             </p>
 
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Your Name *
+                {t('confirm.name')} *
               </label>
               <Input
                 id="name"
@@ -489,7 +486,7 @@ export function SupportProjectCard({
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email *
+                {t('confirm.email')} *
               </label>
               <Input
                 id="email"
@@ -502,52 +499,52 @@ export function SupportProjectCard({
 
             <div>
               <label htmlFor="organization" className="block text-sm font-medium text-gray-700 mb-1">
-                Organization
+                {t('confirm.organization')}
               </label>
               <Input
                 id="organization"
                 type="text"
                 value={formData.organization}
                 onChange={handleChange('organization')}
-                placeholder="Optional"
+                placeholder={t('optional')}
               />
             </div>
 
             <div>
               <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
-                Amount (USD)
+                {t('confirm.amount')}
               </label>
               <Input
                 id="amount"
                 type="number"
                 value={formData.amount}
                 onChange={handleChange('amount')}
-                placeholder="Optional"
+                placeholder={t('optional')}
               />
             </div>
 
             <div>
               <label htmlFor="referenceNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                Reference/Confirmation Number
+                {t('confirm.referenceNumber')}
               </label>
               <Input
                 id="referenceNumber"
                 type="text"
                 value={formData.referenceNumber}
                 onChange={handleChange('referenceNumber')}
-                placeholder="Optional - helps us match your payment"
+                placeholder={t('confirm.referencePlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                Message
+                {t('confirm.message')}
               </label>
               <Textarea
                 id="message"
                 value={formData.message}
                 onChange={handleChange('message')}
-                placeholder="Any additional information..."
+                placeholder={t('confirm.messagePlaceholder')}
                 rows={3}
               />
             </div>
@@ -562,9 +559,9 @@ export function SupportProjectCard({
               type="submit"
               fullWidth
               isLoading={isSubmitting}
-              loadingText="Submitting..."
+              loadingText={t('submitting')}
             >
-              Submit Confirmation
+              {t('confirm.submit')}
             </Button>
           </form>
         </CardContent>

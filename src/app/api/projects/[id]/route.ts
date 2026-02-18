@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAdminAuth } from '@/lib/auth'
+import { translateProjectToUkrainian } from '@/lib/translate'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -16,6 +17,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       include: {
         photos: {
           orderBy: { sortOrder: 'asc' },
+        },
+        documents: {
+          orderBy: { createdAt: 'asc' },
         },
       },
     })
@@ -98,6 +102,33 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         }),
       },
     })
+
+    // Fire-and-forget: re-translate to Ukrainian if English content changed
+    const englishChanged = body.fullDescription || body.briefDescription || body.facilityName || body.municipalityName
+    if (englishChanged && process.env.DEEPL_API_KEY) {
+      const updated = await prisma.project.findUnique({ where: { id } })
+      if (updated) {
+        translateProjectToUkrainian({
+          municipalityName: updated.municipalityName,
+          facilityName: updated.facilityName,
+          briefDescription: updated.briefDescription,
+          fullDescription: updated.fullDescription,
+        }).then(async (translations) => {
+          if (translations.fullDescriptionUk) {
+            await prisma.project.update({
+              where: { id },
+              data: {
+                municipalityNameUk: translations.municipalityNameUk,
+                facilityNameUk: translations.facilityNameUk,
+                briefDescriptionUk: translations.briefDescriptionUk,
+                fullDescriptionUk: translations.fullDescriptionUk,
+              },
+            })
+            console.log(`[translate] Re-translated project ${id} to Ukrainian`)
+          }
+        }).catch(err => console.error('[translate] Re-translate failed:', err))
+      }
+    }
 
     return NextResponse.json({ project })
   } catch (error) {

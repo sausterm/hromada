@@ -13,6 +13,32 @@ export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO
 // Co-financing availability status
 export type CofinancingStatus = 'YES' | 'NO' | 'NEEDS_CLARIFICATION'
 
+// Document types for NGO partner documentation
+export type DocumentType = 'COST_ESTIMATE' | 'ENGINEERING_ASSESSMENT' | 'ITEMIZED_BUDGET' | 'SITE_SURVEY' | 'OTHER'
+
+export interface ProjectDocument {
+  id: string
+  projectId: string
+  url: string
+  filename: string
+  documentType: DocumentType
+  label?: string
+  labelUk?: string
+  originalTextUk?: string
+  translatedTextEn?: string
+  extractionStatus: string
+  fileSize?: number
+  createdAt: Date
+}
+
+export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
+  COST_ESTIMATE: 'Cost Estimate',
+  ENGINEERING_ASSESSMENT: 'Engineering Assessment',
+  ITEMIZED_BUDGET: 'Itemized Budget',
+  SITE_SURVEY: 'Site Survey',
+  OTHER: 'Document',
+}
+
 // Main Project type
 export interface Project {
   id: string
@@ -37,6 +63,7 @@ export interface Project {
   urgency: Urgency
   status: Status
   photos?: string[]
+  documents?: ProjectDocument[]
   // Technical & Financial Details (for renewable energy projects)
   projectType?: ProjectType
   projectSubtype?: string

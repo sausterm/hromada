@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { ImageUpload } from './ImageUpload'
+import { DocumentUpload } from './DocumentUpload'
 import {
   type Project,
   type Category,
@@ -574,6 +575,14 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
               maxImages={5}
             />
           </div>
+
+          {/* Documents (only when editing an existing project) */}
+          {isEditing && project && (
+            <div className="space-y-4">
+              <h3 className="font-medium text-gray-900 border-b pb-2">Partner Documents</h3>
+              <DocumentUpload projectId={project.id} />
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-4 border-t">

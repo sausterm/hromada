@@ -132,6 +132,8 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   const [featuredSlots, setFeaturedSlots] = useState<Array<{ slot: number; projectId: string; project?: { facilityName: string; municipalityName: string } }>>([])
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true)
   const [isSavingFeatured, setIsSavingFeatured] = useState(false)
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [translateMessage, setTranslateMessage] = useState<string | null>(null)
   const [showFeaturedManager, setShowFeaturedManager] = useState(false)
   const [featuredSearchQuery, setFeaturedSearchQuery] = useState('')
   const [activeSlot, setActiveSlot] = useState<number | null>(null)
@@ -1034,7 +1036,35 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                 <Link href="/admin/projects/new">
                   <Button>{t('admin.projects.addNew')}</Button>
                 </Link>
+                <Button
+                  variant="ghost"
+                  disabled={isTranslating}
+                  onClick={async () => {
+                    setIsTranslating(true)
+                    setTranslateMessage(null)
+                    try {
+                      const res = await fetch('/api/admin/translate-all', {
+                        method: 'POST',
+                      })
+                      const data = await res.json()
+                      if (res.ok) {
+                        setTranslateMessage(data.message)
+                      } else {
+                        setTranslateMessage(data.error || 'Translation failed')
+                      }
+                    } catch {
+                      setTranslateMessage('Translation request failed')
+                    } finally {
+                      setIsTranslating(false)
+                    }
+                  }}
+                >
+                  {isTranslating ? 'Translating...' : 'Translate All to Ukrainian'}
+                </Button>
               </div>
+              {translateMessage && (
+                <p className="text-sm text-gray-600 mt-1">{translateMessage}</p>
+              )}
             </div>
 
             {/* Bulk Actions Toolbar */}

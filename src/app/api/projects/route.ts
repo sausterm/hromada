@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAdminAuth } from '@/lib/auth'
+import { translateProjectToUkrainian } from '@/lib/translate'
 
 // Default page size
 const DEFAULT_PAGE_SIZE = 20
@@ -196,6 +197,29 @@ export async function POST(request: NextRequest) {
         partnerOrganization: body.partnerOrganization || null,
       },
     })
+
+    // Fire-and-forget: auto-translate to Ukrainian if no Ukrainian fields provided
+    if (!body.fullDescriptionUk && process.env.DEEPL_API_KEY) {
+      translateProjectToUkrainian({
+        municipalityName: body.municipalityName,
+        facilityName: body.facilityName,
+        briefDescription: body.briefDescription,
+        fullDescription: body.fullDescription,
+      }).then(async (translations) => {
+        if (translations.fullDescriptionUk) {
+          await prisma.project.update({
+            where: { id: project.id },
+            data: {
+              municipalityNameUk: translations.municipalityNameUk,
+              facilityNameUk: translations.facilityNameUk,
+              briefDescriptionUk: translations.briefDescriptionUk,
+              fullDescriptionUk: translations.fullDescriptionUk,
+            },
+          })
+          console.log(`[translate] Auto-translated project ${project.id} to Ukrainian`)
+        }
+      }).catch(err => console.error('[translate] Auto-translate failed:', err))
+    }
 
     return NextResponse.json({ project }, { status: 201 })
   } catch (error) {

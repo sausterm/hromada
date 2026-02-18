@@ -17,7 +17,8 @@ export function Footer() {
             <a href="https://pocacito.org" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
               POCACITO Network
             </a>
-            {' · '}
+            <span className="hidden sm:inline">{' · '}</span>
+            <br className="sm:hidden" />
             <a href="https://app.candid.org/profile/16026326/pocacito-network/" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
               {t('candidSeal')}
             </a>

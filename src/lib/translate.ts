@@ -1,40 +1,45 @@
 /**
- * Google Cloud Translation API integration
+ * DeepL Translation API integration
  *
- * Requires GOOGLE_CLOUD_API_KEY environment variable
+ * Requires DEEPL_API_KEY environment variable
  * Free tier: 500,000 characters/month
  *
- * @see https://cloud.google.com/translate/docs/reference/rest/v2/translate
+ * @see https://developers.deepl.com/docs/api-reference/translate
  */
 
-const GOOGLE_TRANSLATE_API_URL = 'https://translation.googleapis.com/language/translate/v2'
+// DeepL free tier uses api-free.deepl.com; pro uses api.deepl.com
+const DEEPL_API_URL = 'https://api-free.deepl.com/v2/translate'
+
+// DeepL uses uppercase language codes
+const DEEPL_LANG: Record<string, string> = {
+  uk: 'UK',
+  en: 'EN',
+}
 
 interface TranslationResult {
   translatedText: string
   detectedSourceLanguage?: string
 }
 
-interface GoogleTranslateResponse {
-  data: {
-    translations: Array<{
-      translatedText: string
-      detectedSourceLanguage?: string
-    }>
-  }
+interface DeepLResponse {
+  translations: Array<{
+    detected_source_language: string
+    text: string
+  }>
 }
 
 /**
- * Translate text using Google Cloud Translation API
+ * Translate text using DeepL API
  */
 export async function translateText(
   text: string,
   targetLanguage: 'uk' | 'en',
   sourceLanguage?: 'uk' | 'en'
 ): Promise<TranslationResult | null> {
-  const apiKey = process.env.GOOGLE_CLOUD_API_KEY
+  const apiKey = process.env.DEEPL_API_KEY
 
   if (!apiKey) {
-    console.warn('[translate] GOOGLE_CLOUD_API_KEY not configured, skipping translation')
+    console.warn('[translate] DEEPL_API_KEY not configured, skipping translation')
     return null
   }
 
@@ -43,36 +48,36 @@ export async function translateText(
   }
 
   try {
-    const params = new URLSearchParams({
-      key: apiKey,
-      q: text,
-      target: targetLanguage,
-      format: 'text',
-    })
-
-    if (sourceLanguage) {
-      params.append('source', sourceLanguage)
+    const body: Record<string, unknown> = {
+      text: [text],
+      target_lang: DEEPL_LANG[targetLanguage],
     }
 
-    const response = await fetch(`${GOOGLE_TRANSLATE_API_URL}?${params}`, {
+    if (sourceLanguage) {
+      body.source_lang = DEEPL_LANG[sourceLanguage]
+    }
+
+    const response = await fetch(DEEPL_API_URL, {
       method: 'POST',
       headers: {
+        'Authorization': `DeepL-Auth-Key ${apiKey}`,
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(body),
     })
 
     if (!response.ok) {
-      const error = await response.json()
-      console.error('[translate] Google API error:', error)
+      const error = await response.text()
+      console.error('[translate] DeepL API error:', response.status, error)
       return null
     }
 
-    const data: GoogleTranslateResponse = await response.json()
+    const data: DeepLResponse = await response.json()
 
-    if (data.data?.translations?.[0]) {
+    if (data.translations?.[0]) {
       return {
-        translatedText: data.data.translations[0].translatedText,
-        detectedSourceLanguage: data.data.translations[0].detectedSourceLanguage,
+        translatedText: data.translations[0].text,
+        detectedSourceLanguage: data.translations[0].detected_source_language?.toLowerCase(),
       }
     }
 
@@ -91,10 +96,10 @@ export async function translateTexts(
   targetLanguage: 'uk' | 'en',
   sourceLanguage?: 'uk' | 'en'
 ): Promise<(string | null)[]> {
-  const apiKey = process.env.GOOGLE_CLOUD_API_KEY
+  const apiKey = process.env.DEEPL_API_KEY
 
   if (!apiKey) {
-    console.warn('[translate] GOOGLE_CLOUD_API_KEY not configured, skipping translation')
+    console.warn('[translate] DEEPL_API_KEY not configured, skipping translation')
     return texts.map(() => null)
   }
 
@@ -106,41 +111,39 @@ export async function translateTexts(
   }
 
   try {
-    const params = new URLSearchParams({
-      key: apiKey,
-      target: targetLanguage,
-      format: 'text',
-    })
-
-    // Add each text as a separate 'q' parameter
-    validTexts.forEach(({ text }) => params.append('q', text))
-
-    if (sourceLanguage) {
-      params.append('source', sourceLanguage)
+    const body: Record<string, unknown> = {
+      text: validTexts.map(({ text }) => text),
+      target_lang: DEEPL_LANG[targetLanguage],
     }
 
-    const response = await fetch(`${GOOGLE_TRANSLATE_API_URL}?${params}`, {
+    if (sourceLanguage) {
+      body.source_lang = DEEPL_LANG[sourceLanguage]
+    }
+
+    const response = await fetch(DEEPL_API_URL, {
       method: 'POST',
       headers: {
+        'Authorization': `DeepL-Auth-Key ${apiKey}`,
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify(body),
     })
 
     if (!response.ok) {
-      const error = await response.json()
-      console.error('[translate] Google API error:', error)
+      const error = await response.text()
+      console.error('[translate] DeepL API error:', response.status, error)
       return texts.map(() => null)
     }
 
-    const data: GoogleTranslateResponse = await response.json()
+    const data: DeepLResponse = await response.json()
 
     // Map results back to original indices
     const results: (string | null)[] = texts.map(() => null)
 
-    if (data.data?.translations) {
+    if (data.translations) {
       validTexts.forEach(({ index }, i) => {
-        if (data.data.translations[i]) {
-          results[index] = data.data.translations[i].translatedText
+        if (data.translations[i]) {
+          results[index] = data.translations[i].text
         }
       })
     }

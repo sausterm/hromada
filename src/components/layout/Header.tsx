@@ -348,7 +348,7 @@ export function Header({ children, transparent = false }: HeaderProps) {
                 громада
               </button>
             </span>
-            <span className={`text-[0.6rem] sm:text-xs italic text-center truncate max-w-full transition-colors duration-300 ${
+            <span className={`hidden sm:block text-xs italic text-center whitespace-nowrap transition-colors duration-300 ${
               isTransparent ? 'text-white/70' : 'text-[var(--navy-500)]'
             }`}>
               {t('nav.headerSubtitle')}

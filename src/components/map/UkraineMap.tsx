@@ -499,8 +499,8 @@ const ProjectMarkers = memo(function ProjectMarkers({
             }}
           >
             <Popup
-              maxWidth={300}
-              minWidth={280}
+              maxWidth={290}
+              minWidth={290}
               autoPan={false}
             >
               <PopupErrorBoundary>

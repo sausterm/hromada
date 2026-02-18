@@ -45,7 +45,7 @@
   },
   "nav": {
     "siteName": "hromada | громада",
-    "headerSubtitle": "Built to support Ukrainian renewable infrastructure recovery",
+    "headerSubtitle": "From Ukrainian communities to American donors",
     "admin": "Admin",
     "login": "Login",
     "dashboard": "Dashboard",
@@ -97,8 +97,8 @@
     "title": "Support Ukrainian Communities",
     "subtitle": "Connect with municipalities that need infrastructure support",
     "hero": {
-      "headline": "Ukrainian communities are recovering. They're asking for your support.",
-      "subheadline": "Every project was identified and requested by the Ukrainian municipality it serves. Browse their needs. Fund their plan.",
+      "headline": "Ukrainian communities are rebuilding. Support them.",
+      "subheadline": "Every project requested by the community it serves. Browse their needs. Fund their plan.",
       "promiseBadge": "Total transparency. From request to completion.",
       "statProjects": "Projects",
       "statFunding": "Ready to Fund",
@@ -242,6 +242,23 @@
     "urgencyLabel": "{level} Urgency",
     "cofinancingAvailable": "Co-financing Available",
     "providedInUkrainian": "Project details provided in Ukrainian by municipality",
+    "documentation": {
+      "title": "Documentation",
+      "subtitle": "Supporting documents provided by our NGO partners",
+      "downloadOriginal": "Download Original (Ukrainian)",
+      "viewTranslation": "View English Translation",
+      "hideTranslation": "Hide",
+      "viewOriginalText": "View Extracted Text",
+      "translationPending": "Translation in progress...",
+      "translationFailed": "Translation unavailable",
+      "types": {
+        "COST_ESTIMATE": "Cost Estimate",
+        "ENGINEERING_ASSESSMENT": "Engineering Assessment",
+        "ITEMIZED_BUDGET": "Itemized Budget",
+        "SITE_SURVEY": "Site Survey",
+        "OTHER": "Document"
+      }
+    },
     "specifications": {
       "category": "Category",
       "projectType": "Project Type",

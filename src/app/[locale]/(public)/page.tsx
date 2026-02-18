@@ -304,14 +304,14 @@ function EmailCaptureForm({ t }: { t: ReturnType<typeof useTranslations> }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
       <input
         type="email"
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder={t('homepage.cta.emailPlaceholder')}
-        className="flex-1 px-4 py-2.5 rounded-lg border border-[var(--cream-300)] bg-white text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+        className="flex-1 min-w-0 px-4 py-2.5 rounded-lg border border-[var(--cream-300)] bg-white text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
       />
       <button
         type="submit"
@@ -863,6 +863,7 @@ export default function HomePage() {
                   src={photo.src}
                   alt={`Project in ${photo.location}`}
                   fill
+                  sizes="288px"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

@@ -15,7 +15,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
   const categoryConfig = CATEGORY_CONFIG[project.category]
 
   return (
-    <div className="w-64 bg-[var(--cream-50)] rounded-xl overflow-hidden shadow-xl border border-[var(--cream-200)]">
+    <div className="w-[272px] bg-[var(--cream-50)] rounded-xl overflow-hidden shadow-xl border border-[var(--cream-200)]">
       {/* Colored accent bar */}
       <div
         className="h-1.5"
@@ -87,7 +87,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
             </span>
           )}
           {project.cofinancingAvailable === 'YES' && (
-            <span className="group inline-flex items-center h-6 rounded-full bg-green-100 text-green-600 px-1.5 transition-all duration-300 ease-out hover:px-2.5 hover:gap-1.5">
+            <span className="inline-flex items-center gap-1 h-6 rounded-full bg-green-100 text-green-600 px-2 text-xs font-medium whitespace-nowrap">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -95,7 +95,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="w-3.5 h-3.5 flex-shrink-0 transition-transform duration-500 group-hover:rotate-[360deg]"
+                className="w-3.5 h-3.5 flex-shrink-0"
               >
                 <path d="m11 17 2 2a1 1 0 1 0 3-3" />
                 <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" />
@@ -103,9 +103,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
                 <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" />
                 <path d="M3 4h8" />
               </svg>
-              <span className="text-xs font-medium whitespace-nowrap max-w-0 overflow-hidden transition-all duration-300 ease-out group-hover:max-w-[150px]">
-                {t('projectDetail.cofinancingAvailable')}
-              </span>
+              {t('projectDetail.cofinancingAvailable')}
             </span>
           )}
         </div>

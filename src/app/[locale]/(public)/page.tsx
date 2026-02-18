@@ -21,8 +21,8 @@ const STEPS: { number: number; titleKey: string; descKey: string; hexColor: stri
     descKey: 'homepage.howItWorks.step1Desc',
     hexColor: '#5B8FA8', // Muted teal
     icon: (
-      <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 21h18M9 8h10M9 12h10M9 16h10M5 8h.01M5 12h.01M5 16h.01"/>
       </svg>
     ),
   },
@@ -32,8 +32,8 @@ const STEPS: { number: number; titleKey: string; descKey: string; hexColor: stri
     descKey: 'homepage.howItWorks.step2Desc',
     hexColor: '#7B9E6B', // Sage green
     icon: (
-      <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
       </svg>
     ),
   },
@@ -43,30 +43,8 @@ const STEPS: { number: number; titleKey: string; descKey: string; hexColor: stri
     descKey: 'homepage.howItWorks.step3Desc',
     hexColor: '#D4954A', // Warm amber
     icon: (
-      <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-      </svg>
-    ),
-  },
-  {
-    number: 4,
-    titleKey: 'homepage.howItWorks.step4Title',
-    descKey: 'homepage.howItWorks.step4Desc',
-    hexColor: '#C75B39', // Deep terracotta
-    icon: (
-      <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
-      </svg>
-    ),
-  },
-  {
-    number: 5,
-    titleKey: 'homepage.howItWorks.step5Title',
-    descKey: 'homepage.howItWorks.step5Desc',
-    hexColor: '#8B7355', // Warm taupe
-    icon: (
-      <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
       </svg>
     ),
   },
@@ -143,7 +121,7 @@ function HowItWorksStep({ step, isLast, index, t }: { step: typeof STEPS[0]; isL
       className={`flex flex-col md:flex-row items-start transition-all duration-1000 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
     >
       <div
-        className="flex flex-col items-center text-center group cursor-default w-[140px]"
+        className="flex flex-col items-center text-center group cursor-default w-[200px]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -423,6 +401,10 @@ function transformProject(data: any): Project {
     description: data.fullDescription || data.description || '',
     createdAt: new Date(data.createdAt),
     updatedAt: new Date(data.updatedAt),
+    cityLatitude: data.cityLatitude ? Number(data.cityLatitude) : 0,
+    cityLongitude: data.cityLongitude ? Number(data.cityLongitude) : 0,
+    latitude: data.latitude ? Number(data.latitude) : undefined,
+    longitude: data.longitude ? Number(data.longitude) : undefined,
     technicalPowerKw: data.technicalPowerKw ? Number(data.technicalPowerKw) : undefined,
     estimatedCostUsd: data.estimatedCostUsd ? Number(data.estimatedCostUsd) : undefined,
   }
@@ -618,7 +600,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Projects Section */}
-      <section id="featured-projects" className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)] scroll-mt-20">
+      <section id="featured-projects" className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)] scroll-mt-20 shadow-[inset_0_8px_12px_-8px_rgba(0,0,0,0.08)]">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)]">
@@ -642,18 +624,36 @@ export default function HomePage() {
 
       {/* How It Works Section */}
       <section id="how-it-works" className="fade-in-section pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
-        <div className="max-w-6xl mx-auto px-4 lg:px-8 text-center">
-          <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-12">
+        <div className="max-w-3xl mx-auto px-4 lg:px-8">
+          <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-10 text-center">
             {t('homepage.howItWorks.title')}
           </h2>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-0">
+          <div className="space-y-0">
             {STEPS.map((step, index) => (
-              <HowItWorksStep key={step.number} step={step} isLast={index === STEPS.length - 1} index={index} t={t} />
+              <div key={step.number} className="flex items-start gap-5">
+                {/* Left: icon + connector line */}
+                <div className="flex flex-col items-center">
+                  <div
+                    className="w-12 h-12 rounded-xl text-white flex items-center justify-center shadow-md flex-shrink-0"
+                    style={{ backgroundColor: step.hexColor }}
+                  >
+                    {step.icon}
+                  </div>
+                  {index < STEPS.length - 1 && (
+                    <div className="w-0.5 h-8 bg-[var(--cream-300)] my-1" />
+                  )}
+                </div>
+                {/* Right: text */}
+                <div className={`pt-1 ${index < STEPS.length - 1 ? 'pb-4' : ''}`}>
+                  <h3 className="font-semibold text-[var(--navy-700)] text-base">{t(step.titleKey)}</h3>
+                  <p className="text-[var(--navy-500)] text-sm mt-0.5 leading-relaxed">{t(step.descKey)}</p>
+                </div>
+              </div>
             ))}
           </div>
 
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <div className="inline-flex items-center gap-3 bg-white px-8 py-4 rounded-2xl border border-[var(--cream-200)] shadow-lg">
               <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

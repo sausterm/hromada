@@ -41,7 +41,11 @@ function transformProject(data: any): Project {
     // Ensure dates are Date objects
     createdAt: new Date(data.createdAt),
     updatedAt: new Date(data.updatedAt),
-    // Convert Decimal strings to numbers
+    // Convert Decimal strings to numbers (Prisma returns Decimals as strings)
+    cityLatitude: data.cityLatitude ? Number(data.cityLatitude) : 0,
+    cityLongitude: data.cityLongitude ? Number(data.cityLongitude) : 0,
+    latitude: data.latitude ? Number(data.latitude) : undefined,
+    longitude: data.longitude ? Number(data.longitude) : undefined,
     technicalPowerKw: data.technicalPowerKw ? Number(data.technicalPowerKw) : undefined,
     estimatedCostUsd: data.estimatedCostUsd ? Number(data.estimatedCostUsd) : undefined,
   }

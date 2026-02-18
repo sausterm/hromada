@@ -23,7 +23,7 @@
 ### Payment / Security
 - [ ] Replace placeholder bank details with real POCACITO account info (blocked by FSA) #p0 @sloan
 - [ ] Fix session token vulnerability — replace base64 encoding with crypto.randomBytes #p0 @sloan
-- [ ] Remove default password fallback in `/api/admin/verify` #p0 @sloan
+- [x] Remove default password fallback in `/api/admin/verify` #p0 @sloan
 - [ ] Connect nonprofit dashboard to real APIs (currently mock data) #p1 @sloan
 - [ ] Add rate limiting to public file upload endpoint #p1
 - [ ] Donor password reset flow #p2
@@ -31,6 +31,12 @@
 
 ## Done
 
+- [x] Remove default password fallback in `/api/admin/verify` #p0 @sloan
+- [x] OFAC sanctions compliance policy page (`/ofac-policy`) #p1 @sloan
+- [x] Decompose homepage into smaller components #p2 @sloan
+- [x] Fix partner logo backgrounds on project detail page #p2 @sloan
+- [x] Fix pdf-parse ESM import build failure #p1 @sloan
+- [x] Fix favicon consistency between branches #p2 @sloan
 - [x] Municipal Partnership Program page and inquiry form #p1 @tom
 - [x] Partnership inquiry API route with email notifications #p1 @tom
 - [x] PartnershipInquiry database model #p1 @tom

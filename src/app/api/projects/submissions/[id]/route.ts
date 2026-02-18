@@ -130,7 +130,7 @@ export async function PATCH(
         data: {
           status: 'APPROVED',
           reviewedAt: new Date(),
-          reviewedBy: reviewedBy || 'admin',
+          reviewedBy: reviewedBy || 'unknown',
           approvedProjectId: project.id,
         },
       })
@@ -180,7 +180,7 @@ export async function PATCH(
         data: {
           status: 'REJECTED',
           reviewedAt: new Date(),
-          reviewedBy: reviewedBy || 'admin',
+          reviewedBy: reviewedBy || 'unknown',
           rejectionReason: rejectionReason.trim(),
         },
       })

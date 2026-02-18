@@ -21,7 +21,7 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 ## Security #p0
 
 - [ ] Fix session token vulnerability — base64 is encoding, not encryption; use `crypto.randomBytes()` #p0 @sloan
-- [ ] Remove default password fallback ('admin') in `/api/admin/verify` #p0 @sloan
+- [x] Remove default password fallback ('admin') in `/api/admin/verify` #p0 @sloan
 - [ ] Replace placeholder bank details with real POCACITO account info #p0 @sloan
 - [ ] Add rate limiting to public file upload (`/api/upload/public`) #p1
 - [ ] Audit all API endpoints for proper auth checks (some routes may be unprotected) #p1
@@ -69,9 +69,9 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 
 ## Code Quality #p2
 
-- [ ] Decompose homepage (`src/app/[locale]/(public)/page.tsx` — 754 lines) #p2
+- [x] Decompose homepage (`src/app/[locale]/(public)/page.tsx` — 754 lines) #p2
 - [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2
-- [ ] Fix remaining TypeScript errors (3) #p3
+- [x] Fix remaining TypeScript errors (3) #p3
 - [ ] Add missing type definitions for Leaflet marker clustering #p3
 - [ ] Increase test coverage from ~70% to 85% #p2
 - [ ] Add E2E tests for critical flows: donate, browse projects, admin CRUD #p2
@@ -96,7 +96,7 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 
 - [ ] CI/CD pipeline with automated testing (GitHub Actions) #p2
 - [ ] Error monitoring — Sentry or similar #p2
-- [ ] Staging environment on Vercel #p2
+- [ ] Staging environment on AWS Amplify #p2
 - [ ] Database backup automation #p2
 - [ ] Uptime monitoring #p3
 - [ ] Log aggregation #p3

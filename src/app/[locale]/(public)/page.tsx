@@ -763,18 +763,24 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             <div>
               <DocumentaryPhoto
-                src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748586682092.jpeg"
-                alt="Battery storage installation with Victron inverters"
+                src="https://images.unsplash.com/photo-1613896527026-f195d5c818ed?w=1200&q=80"
+                alt="Solar panels installed on school rooftop"
                 caption={t('homepage.caseStudy.photoCaption1')}
-                location="Kharkiv, Ukraine"
+                location="Novohrodivka, Donetsk Oblast"
               />
             </div>
 
             <div>
               <div className="mb-6">
-                <span className="inline-block bg-[#C75B39] text-white text-xs px-2 py-1 rounded-full mb-3">
-                  {t('homepage.caseStudy.badge')}
-                </span>
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="inline-block bg-[var(--ukraine-blue)] text-white text-xs px-2 py-1 rounded-full">
+                    {t('homepage.caseStudy.badge')}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-xs text-[var(--navy-500)]">
+                    <img src="/partners/EcoactionLogo-white.png" alt="Ecoaction" className="h-4 w-auto" />
+                    {t('homepage.caseStudy.partnerLabel')}: <strong className="text-[var(--navy-700)]">{t('homepage.caseStudy.partnerName')}</strong>
+                  </span>
+                </div>
                 <h3 className="text-2xl font-bold text-[var(--navy-700)] mb-2">
                   {t('homepage.caseStudy.projectName')}
                 </h3>
@@ -816,22 +822,49 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-3 gap-6 mt-12">
             <DocumentaryPhoto
-              src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613965913.jpeg"
-              alt="Solar inverter display showing live power data"
+              src="https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?w=1200&q=80"
+              alt="Solar panels on school rooftop"
               caption={t('homepage.caseStudy.photoCaption2')}
-              location="Kharkiv, Ukraine"
+              location="Novohrodivka"
             />
             <DocumentaryPhoto
-              src="https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466071929.jpeg"
-              alt="Ground-mounted solar array"
+              src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80"
+              alt="School interior classroom"
               caption={t('homepage.caseStudy.photoCaption3')}
-              location="Poltava Oblast"
+              location="Donetsk Oblast"
             />
             <div className="flex flex-col justify-center">
-              <LiveStatsCard />
-              <p className="text-xs text-[var(--navy-400)] mt-3 text-center">
-                {t('homepage.caseStudy.dataNote')}
-              </p>
+              <div className="bg-white rounded-xl border border-[var(--cream-200)] overflow-hidden shadow-sm">
+                <div className="bg-[var(--cream-50)] px-4 py-3 border-b border-[var(--cream-200)]">
+                  <span className="text-sm font-medium text-[var(--navy-700)]">{t('homepage.caseStudy.impactTitle')}</span>
+                </div>
+                <div className="p-4 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <span className="text-sm font-medium text-[var(--navy-700)]">{t('homepage.caseStudy.impactPower')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                    </div>
+                    <span className="text-sm font-medium text-[var(--navy-700)]">{t('homepage.caseStudy.impactPanels')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <span className="text-sm font-medium text-[var(--navy-700)]">{t('homepage.caseStudy.impactCost')}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </div>
+                    <span className="text-sm font-medium text-[var(--navy-700)]">{t('homepage.caseStudy.impactBeneficiaries')}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

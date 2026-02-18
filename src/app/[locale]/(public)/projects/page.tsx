@@ -328,12 +328,7 @@ export default function ProjectsPage() {
   // Handle marker click - scroll to card in list and zoom
   const handleMarkerClick = useCallback((project: Project) => {
     setHighlightedProjectId(project.id)
-    // On mobile, Leaflet natively opens the popup on marker tap.
-    // Calling setFlyToProjectId would trigger FlyToProject which tries to
-    // openPopup() again, causing a double-open crash. Only fly on desktop.
-    if (window.innerWidth >= 1024) {
-      setFlyToProjectId(project.id)
-    }
+    setFlyToProjectId(project.id)
     const cardElement = cardRefs.current[project.id]
     const container = listContainerRef.current
     if (cardElement && container) {

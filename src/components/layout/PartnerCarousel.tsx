@@ -8,7 +8,7 @@ const partners = [
   { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/' },
   { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/' },
   { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/' },
-  { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/' },
+  { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/', height: 'h-16' },
   { name: 'POCACITO', logo: '/partners/pocacitologo.png', url: 'https://www.pocacito.org/' },
 ]
 
@@ -218,7 +218,7 @@ export function PartnerCarousel() {
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className="h-12 w-auto object-contain pointer-events-none"
+                className={`${partner.height || 'h-12'} w-auto object-contain pointer-events-none`}
                 loading="lazy"
                 draggable={false}
               />

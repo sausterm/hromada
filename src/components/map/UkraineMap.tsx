@@ -335,9 +335,10 @@ function FlyToProject({
                 zoom: currentZoom,
               }
             }
-            // Open popup (may already be open if marker was clicked directly)
-            // popupopen handler will center it
-            marker.openPopup()
+            // Only open popup if not already open (avoids double-open crash on mobile tap)
+            if (!marker.isPopupOpen()) {
+              marker.openPopup()
+            }
             onComplete?.()
             return
           }
@@ -367,7 +368,7 @@ function FlyToProject({
           map.off('moveend', onMoveEnd)
           setTimeout(() => {
             const marker = markerRefs.current[projectId]
-            if (marker) {
+            if (marker && !marker.isPopupOpen()) {
               marker.openPopup()
             }
             onComplete?.()

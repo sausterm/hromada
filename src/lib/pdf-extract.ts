@@ -1,4 +1,5 @@
-import pdfParse from 'pdf-parse'
+import * as pdfParseModule from 'pdf-parse'
+const pdfParse = (pdfParseModule as { default?: typeof pdfParseModule } & typeof pdfParseModule).default ?? pdfParseModule
 import { translateText, detectLanguage } from '@/lib/translate'
 import { prisma } from '@/lib/prisma'
 

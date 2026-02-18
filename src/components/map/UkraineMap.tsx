@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef, memo, useMemo } from 'react'
+import { Component, useState, useCallback, useEffect, useRef, memo, useMemo, type ReactNode } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import L from 'leaflet'
@@ -9,6 +9,23 @@ import { ProjectPopup } from './ProjectPopup'
 import 'leaflet/dist/leaflet.css'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.Default.css'
+
+// Error boundary to prevent popup crashes from taking down the page
+class PopupErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div className="p-4 text-sm text-red-600">Failed to load project details</div>
+    }
+    return this.props.children
+  }
+}
 
 // Ukraine center coordinates
 const UKRAINE_CENTER: [number, number] = [48.3794, 31.1656]
@@ -478,7 +495,9 @@ const ProjectMarkers = memo(function ProjectMarkers({
               minWidth={280}
               autoPan={false}
             >
-              <ProjectPopup project={project} />
+              <PopupErrorBoundary>
+                <ProjectPopup project={project} />
+              </PopupErrorBoundary>
             </Popup>
           </Marker>
         )

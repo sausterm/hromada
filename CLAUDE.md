@@ -47,14 +47,33 @@ Projects with stronger documentation should be prioritized in the browse/feature
 - **OFAC compliance policy** should be published and accessible (footer legal section or about/trust page) but not prominently featured. It's for institutional donors and due diligence, not the average individual donor.
 - **Legal pages** (`/terms`, `/privacy`) are currently placeholders and need completion.
 
+## Communication Style
+
+When giving instructions to the user (especially for browser/tooling tasks), be extremely specific and precise. Reference exact locations, exact menu names, exact button positions. Never say vague things like "click the icon" without describing exactly where it is and what it looks like. Assume the user is not a developer and needs step-by-step guidance.
+
 ## Code Conventions
 
 - **Framework:** Next.js 16 with App Router
 - **Language:** TypeScript (strict)
 - **Styling:** Tailwind CSS
 - **Database:** Supabase (Postgres + Storage)
+- **Hosting:** AWS Amplify (NOT Vercel). Pushing to a branch triggers an Amplify build automatically. There is no Vercel integration, no `vercel.json`, no Vercel CLI. Do not suggest or reference Vercel.
 - **i18n:** English and Ukrainian (EN/UK)
 - **Testing:** Jest + React Testing Library
+
+## Architecture Notes
+
+### Leaflet Maps
+- **Dual-map pattern**: The projects page (`projects/page.tsx`) renders TWO `MapWrapper` instances — one for mobile (conditionally mounted via `{isMobileMapOpen && ...}`) and one for desktop (always mounted, CSS-hidden on mobile via `hidden lg:block`). Shared state like `flyToProjectId` must only be passed to the currently visible map, or Leaflet will operate on a zero-size container and produce NaN.
+- **Leaflet + hidden containers**: ANY Leaflet spatial operation (`flyTo`, `getBounds`, tile rendering) on a zero-size or CSS-hidden container will fail or produce NaN. This applies to `flyTo`, not just tile rendering. Always use conditional mount/unmount (`{condition && <Map/>}`) rather than CSS hiding for Leaflet.
+- **Leaflet + SSR**: Dynamically import with `ssr: false`.
+- **Prisma Decimals**: Lat/lng come from Prisma as `Decimal` (string). All `transformProject` functions convert them with `Number()`. In map components, use `??` (nullish coalescing) not `||` for coordinate fallbacks — `||` treats `0` as falsy.
+- **i18n Links**: Use `import { Link } from '@/i18n/navigation'` (not `next/link`) for locale prefix.
+
+### Mobile
+- Always add `onClick` handlers (not just hover). Use `touchstart` for outside-click listeners.
+- **Turbopack cache**: `rm -rf .next` if dev server crashes or serves stale code.
+- **Branch switching**: Kill dev server first (`pkill -f "next dev"`), then switch, then `npm run dev`.
 
 ## Key Directories
 

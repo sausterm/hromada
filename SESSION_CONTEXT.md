@@ -1,8 +1,8 @@
-# Session Context - Payment Processing Implementation
+# Session Context — Hromada
 
-**Date**: 2026-02-10
-**Branch**: `v2-payment-processing`
-**Status**: Core UI and database complete, homepage consolidated, fiscal sponsor updated, images migrated to Supabase
+**Date**: 2026-02-18
+**Branch**: `v2-payment-processing` (currently checked out)
+**Status**: Payment processing complete, MPP page live, homepage consolidated, messaging framework applied, i18n mostly done, mobile map fix deployed, RLS enabled, FSA drafted
 
 ---
 
@@ -510,3 +510,123 @@ The headline/subheadline are still being iterated. Key requirements from the use
 - **Prisma client regeneration**: After schema changes, must run `npx prisma generate` + `rm -rf .next` + restart dev server. The generated client in `.prisma/client/` won't have new models until regenerated.
 - **CSS animation vs inline transform**: `animation-fill-mode: forwards` can block inline `style.transform` updates even if the keyframes don't include `transform`. Solution: separate animated element from transform-controlled element.
 - **`inset-0` vs individual positioning**: Tailwind's `inset-0` (generates `inset: 0px`) overrides individual `top`/`bottom` values. Use `left-0 right-0` + inline `style` for top/bottom instead.
+
+---
+
+## Session 2026-02-18: FSA Review, RLS Security Fix, Messaging Framework, UI Polish (v2 branch)
+
+### Fiscal Sponsorship Agreement (FSA) Review
+
+**Document**: `Fiscal_Sponsorship_Agreement.docx` (project root)
+
+The FSA between Hromada (unincorporated project, Thomas D. Protzman) and POCACITO Network has been drafted and reviewed. Key structural elements:
+
+- **Model**: Reads as Model A (comprehensive) in Section 1 but behaves as Model C (pre-approved grant) in practice. Section 1 still says POCACITO "assumes administrative, programmatic, financial, and legal responsibility" while Section 14 gives Hromada operational autonomy. **Recommended fix**: Change Section 1 to "fiduciary and financial responsibility" instead of "programmatic."
+- **Variance power** (Section 15): Added and well-structured. POCACITO retains ultimate discretion over donated funds; donor designations are non-binding recommendations. This is the clause that protects tax-deductibility.
+- **0% fee** (Section 10): Guaranteed through March 31, 2027 or independent 501(c)(3). Wind-down provision if no fee agreement reached after that.
+- **Succession** (Section 7): Sloan T. Austermann named as alternate Project Director.
+- **Disbursement** (Section 6): Clear thresholds — $5k and under processed in 10 business days, over $5k needs written POCACITO approval within 5 business days.
+- **IP** (Section 13): All IP belongs to Hromada/Thomas. POCACITO has no ownership claim.
+- **OFAC/Sanctions** (Section 18): Written sanctions compliance policy required before first international disbursement. SDN screening, 5-year documentation retention, end-use monitoring.
+- **Indemnification** (Section 19): Thomas and Sloan jointly and severally liable as individuals (since Hromada is unincorporated). Agreement is assignable to an LLC if formed.
+- **Conflict of interest** (Section 22): Disclosure required for any financial interest with vendors/contractors/partners.
+- **Gift acceptance** (Section 23): Cash, check, wire, ACH, card, DAF grants, corporate matching. Non-cash gifts (securities, crypto, property) require POCACITO approval.
+- **Governing law**: Virginia (POCACITO's state).
+
+**Relationship clarification from Tom**: POCACITO will issue tax receipts, receive donations, and forward them to Ukraine. Nothing more. They don't control Hromada, don't fund Hromada, don't own Hromada. The FSA's variance power clause exists to protect tax-deductibility, not to give POCACITO operational control.
+
+**Spec document**: `Vault/specs/fiscal-sponsorship.md` — 5-phase process (Research → Draft → POCACITO Review → Legal Review → Execution). Target: FSA signed by end of March 2026 (realistic: mid-April).
+
+### Supabase RLS Security Fix
+
+All 14 public tables had Row Level Security (RLS) disabled. Supabase linter flagged them as SECURITY errors.
+
+**Context**: The app uses Prisma (server-side) for all database access. The Supabase JS client is only used for Storage (file uploads). No client-side code queries tables via PostgREST. So the anon key couldn't be used to query tables in practice, but it was still a defense-in-depth gap.
+
+**Fix**: Enabled RLS on all 14 tables via `psql` (installed `libpq` via Homebrew). No RLS policies were created — with RLS enabled and no policies, PostgREST denies all access by default. Prisma bypasses RLS since it connects directly to Postgres.
+
+**Tables fixed**: `_prisma_migrations`, `PasswordResetToken`, `ProjectImage`, `ContactSubmission`, `Project`, `FeaturedProject`, `AuditLog`, `ProjectSubmission`, `User`, `DonationUpdate`, `PartnershipInquiry`, `NewsletterSubscriber`, `Donation`, `WireTransfer`
+
+**Note**: `psql` installed at `/opt/homebrew/opt/libpq/bin/psql`. The `DATABASE_URL` password contains special characters that break shell URL parsing — use Python's `urllib.parse` to extract components and pass via `PGPASSWORD` env var.
+
+### RBAC Verification
+
+Confirmed that admin accounts cannot access the partner dashboard (`/partner`). Role-based dashboard isolation is working correctly. No "superadmin" or "webmaster" role was added — keeping strict role separation. For dev/QA, use test accounts with each role or temporarily change roles via Supabase.
+
+### Messaging Framework Applied (other session, v2 branch)
+
+A messaging framework PDF was added to the project and site copy was updated to align with it. Key principles:
+
+- **Ukrainian agency first**: Communities are the subject, not Hromada. "Communities identify needs" not "We find projects."
+- **Layer pattern**: Layer 1 (Ukrainian communities) → Layer 2 (the platform/process) → Layer 3 (donor action)
+- **Avoid "we" as subject**: Use passive voice or make communities the subject. "Donations are processed" not "We process donations." "Trusted NGOs verify projects" not "We work with NGOs."
+
+**Changes made (EN + UK locales)**:
+- Hero headline: "Ukrainian communities are recovering. They're asking for your support."
+- Hero subheadline: "Every project was identified and requested by the Ukrainian municipality it serves. Browse their needs. Fund their plan."
+- Promise badge: "Total transparency. From request to completion."
+- How It Works: 5 steps → 3 steps (Communities identify needs → We verify and publish → You fund their plan)
+- CTA: "Browse projects. Choose a community. Fund their plan."
+- About page, FAQ, transparency section: Rewrote to reduce "we" as subject, center Ukrainian communities
+
+**How It Works layout**: Changed from horizontal row of 5 step cards to vertical left-aligned stack with icons on left, text on right, connector lines between steps. Container narrowed from `max-w-6xl` to `max-w-3xl`.
+
+### UI Polish (other session, v2 branch)
+
+**Map cluster markers**: Briefly changed to white fill / navy border, then reverted to original navy gradient / white border per user preference.
+
+**Project card hover**: Fixed jittery hover animation caused by competing transition systems — Tailwind `transition-all` + `hover:-translate-y` was fighting `.card-hover` CSS class. Removed Tailwind hover classes, consolidated to single CSS source of truth: `transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-color 0.3s ease-out` with gentler shadow.
+
+**Hero-to-cream transition**: Tried bottom gradient (looked bad), removed it. Added subtle `shadow-[inset_0_8px_12px_-8px_rgba(0,0,0,0.08)]` on featured projects section instead — reads as hero casting shadow onto cream below.
+
+### UI Feedback (Discussed, Not Yet Implemented)
+
+1. **Map clusters**: Solid dark navy circles are the heaviest visual element on the page. They compete with project cards for attention. Lighter treatment (white fill, navy border) would balance the page better. (Was tried and reverted — user prefers current navy style.)
+2. **Filter pills with category colors**: When tapping "Hospital" give it terracotta fill, "School" gets sage green, etc. Creates visual connection between filter and matching card badges.
+3. **The cream + navy palette is solid** — just needs contrast tweaks to make key information pop more.
+
+### Previous UI Feedback (from earlier sessions, still not implemented)
+
+1. Consolidate two toolbar rows (filter pills + search/sort) into one
+2. Remove redundant category badges on cards
+3. Replace "Posted X weeks ago" with funding progress
+4. Make cost amount more prominent
+5. Drop redundant description text on cards
+6. Move home icon onto the map with +/- zoom controls
+
+---
+
+## Session 2026-02-18: Mobile Map Crash Fix — Invalid LatLng (NaN, NaN)
+
+### The Bug
+Tapping an individual marker on the mobile projects map crashed the page with `Error: Invalid LatLng object: (NaN, NaN)`. The crash occurred at `UkraineMap.tsx:364` inside `FlyToProject.useEffect` when calling `map.flyTo([offsetLat, lng], 12)`.
+
+### Root Cause
+Prisma returns `Decimal` columns as **strings** (e.g., `"49.99"`). The `transformProject` functions in 4 files were converting `technicalPowerKw` and `estimatedCostUsd` to numbers but **not** the coordinate fields (`cityLatitude`, `cityLongitude`, `latitude`, `longitude`). When `FlyToProject` did `lat + 0.05`, JavaScript performed string concatenation (`"49.990.05"`) instead of math (`50.04`), which Leaflet parsed as `NaN`.
+
+Markers rendered correctly because `getOffsetPositions` happened to convert coordinates through a `split(',').map(Number)` code path — but every other code path (flyTo, popup positioning, bounds checking) got raw strings.
+
+### Fixes Applied
+
+**Commit `34c2b7a`** — `UkraineMap.tsx`:
+- Wrapped coordinate access in `Number()` in `FlyToProject` (line 317-318)
+- Wrapped coordinate access in `Number()` in `MapEventHandler` visible projects filter (line 163-164)
+
+**Commit `62589b9`** — All 4 `transformProject` functions:
+- `src/app/[locale]/(public)/projects/page.tsx` — Added `cityLatitude: Number()`, `cityLongitude: Number()`, `latitude: Number()`, `longitude: Number()`
+- `src/app/[locale]/(public)/page.tsx` — Same
+- `src/app/[locale]/(public)/projects/[id]/page.tsx` — Same
+- `src/app/[locale]/admin/page.tsx` — Same
+
+**Also in `62589b9`**:
+- Removed the 300ms `setTimeout` mobile workaround in `handleMarkerClick` (projects page.tsx) — the real fix was Number() conversion, not a timing delay
+
+### Other Changes This Session
+- **CLAUDE.md updated**: Added `Communication Style` section requiring precise, step-by-step instructions for browser/tooling tasks. Added `Hosting: AWS Amplify (NOT Vercel)` to Code Conventions.
+- **Hosting reminder**: Hromada deploys on **AWS Amplify**, never Vercel. Amplify deploy times are slower than Vercel — check Amplify console for build status.
+
+### Debugging Notes
+- Safari Web Inspector on Mac can connect to iPhone for console errors: Safari → Develop → [iPhone name] → [tab]
+- The JS chunk hash in the error stack trace indicates which build is running — if the hash doesn't change after a deploy, the old code is still cached
+- On Mac, Chrome DevTools opens with **Cmd+Option+I** (not F12, which changes volume)
+- To test localhost on phone: use Mac's local IP (`ipconfig getifaddr en0`) on same WiFi

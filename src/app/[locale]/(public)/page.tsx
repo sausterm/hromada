@@ -523,7 +523,7 @@ export default function HomePage() {
       <Header transparent />
 
       {/* Hero Section - generous negative margin ensures hero covers behind the transparent header */}
-      <section className="relative h-[calc(100svh+4rem)] md:h-[calc(100vh+4rem)] -mt-24 pt-24 overflow-hidden">
+      <section className="relative h-[calc(100svh+4rem)] md:h-[calc(100vh+2rem)] -mt-24 pt-24 overflow-hidden">
         {/* Outer div handles parallax transform via JS — inner div handles fade animation separately */}
         <div
           ref={heroImageRef}

@@ -160,8 +160,8 @@ function MapEventHandler({
     }
 
     const visibleProjects = projects.filter((p) => {
-      const lat = p.latitude || p.cityLatitude
-      const lng = p.longitude || p.cityLongitude
+      const lat = Number(p.latitude || p.cityLatitude)
+      const lng = Number(p.longitude || p.cityLongitude)
       return (
         lat >= mapBounds.south &&
         lat <= mapBounds.north &&
@@ -314,8 +314,8 @@ function FlyToProject({
     if (projectId) {
       const project = projects.find((p) => p.id === projectId)
       if (project) {
-        const lat = project.latitude || project.cityLatitude
-        const lng = project.longitude || project.cityLongitude
+        const lat = Number(project.latitude || project.cityLatitude)
+        const lng = Number(project.longitude || project.cityLongitude)
         const currentZoom = map.getZoom()
         const marker = markerRefs.current[projectId]
 

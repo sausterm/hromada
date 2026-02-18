@@ -523,7 +523,7 @@ export default function HomePage() {
       <Header transparent />
 
       {/* Hero Section - generous negative margin ensures hero covers behind the transparent header */}
-      <section className="relative h-[calc(100svh+2rem)] md:h-[calc(100vh+2rem)] -mt-24 pt-24 overflow-hidden">
+      <section className="relative h-[calc(100svh+4rem)] md:h-[calc(100vh+4rem)] -mt-24 pt-24 overflow-hidden">
         {/* Outer div handles parallax transform via JS — inner div handles fade animation separately */}
         <div
           ref={heroImageRef}
@@ -590,7 +590,7 @@ export default function HomePage() {
         {/* Scroll indicator */}
         <button
           onClick={() => document.getElementById('featured-projects')?.scrollIntoView({ behavior: 'smooth' })}
-          className="absolute bottom-4 md:bottom-12 left-1/2 -translate-x-1/2 animate-scroll-hint cursor-pointer p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200"
+          className="absolute bottom-10 md:bottom-12 left-1/2 -translate-x-1/2 animate-scroll-hint cursor-pointer p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200"
           aria-label="Scroll to featured projects"
         >
           <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

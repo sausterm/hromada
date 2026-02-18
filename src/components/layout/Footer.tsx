@@ -56,6 +56,12 @@ export function Footer() {
             >
               {t('mpp')}
             </Link>
+            <Link
+              href="/ofac-policy"
+              className="text-[var(--navy-500)] hover:text-[var(--ukraine-blue)] transition-colors"
+            >
+              OFAC Policy
+            </Link>
           </div>
 
           {/* Copyright Notice */}

@@ -87,7 +87,7 @@ export function ProjectPopup({ project }: ProjectPopupProps) {
             </span>
           )}
           {project.cofinancingAvailable === 'YES' && (
-            <span className="inline-flex items-center gap-1 h-6 rounded-full bg-green-100 text-green-600 px-2 text-xs font-medium whitespace-nowrap">
+            <span className="inline-flex items-center gap-1.5 h-6 rounded-full bg-green-100 text-green-600 px-2 text-xs font-medium whitespace-nowrap">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"

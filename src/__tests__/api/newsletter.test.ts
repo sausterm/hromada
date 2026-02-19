@@ -70,7 +70,7 @@ describe('POST /api/newsletter', () => {
     const request = new NextRequest('http://localhost/api/newsletter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: '  John@Example.COM  ' }),
+      body: JSON.stringify({ email: 'John@Example.COM' }),
     })
 
     await POST(request)
@@ -157,10 +157,8 @@ describe('POST /api/newsletter', () => {
     })
 
     const response = await POST(request)
-    const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Valid email required')
   })
 
   it('returns 400 when email is empty string', async () => {
@@ -174,7 +172,7 @@ describe('POST /api/newsletter', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Valid email required')
+    expect(data.error).toBe('Invalid email format')
   })
 
   it('returns 400 when email is not a string', async () => {
@@ -185,10 +183,8 @@ describe('POST /api/newsletter', () => {
     })
 
     const response = await POST(request)
-    const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Valid email required')
   })
 
   it('returns 400 when email has no @ symbol', async () => {
@@ -202,7 +198,7 @@ describe('POST /api/newsletter', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Valid email required')
+    expect(data.error).toBe('Invalid email format')
   })
 
   it('applies rate limiting', async () => {

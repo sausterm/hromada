@@ -22,10 +22,14 @@
 
 ### Payment / Security
 - [ ] Replace placeholder bank details with real POCACITO account info (blocked by FSA) #p0 @sloan
-- [ ] Fix session token vulnerability — replace base64 encoding with crypto.randomBytes #p0 @sloan
+- [x] Fix session token vulnerability — JWT (jose/HS256) with SESSION_SECRET #p0 @sloan
 - [x] Remove default password fallback in `/api/admin/verify` #p0 @sloan
+- [x] Rate limiting on all public endpoints (upload, login, contact, newsletter, etc.) #p1 @sloan
+- [x] CSRF protection — Origin header verification in middleware #p2 @sloan
+- [x] Content Security Policy + security headers #p2 @sloan
+- [x] Zod validation on all public API routes #p2 @sloan
+- [x] Sentry error monitoring (client + server + global error boundary) #p2 @sloan
 - [ ] Connect nonprofit dashboard to real APIs (currently mock data) #p1 @sloan
-- [ ] Add rate limiting to public file upload endpoint #p1
 - [x] Donor password reset flow #p2
 - [ ] Receipt generation for completed donations #p2
 

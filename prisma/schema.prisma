@@ -430,3 +430,40 @@ model FeaturedProject {
 
   @@index([slot])
 }
+
+/// Append-only financial transaction audit trail.
+/// Every donation/wire status change, creation, and financial event is recorded here.
+/// Designed for fiscal sponsor compliance and future Plaid/Wise webhook data.
+model TransactionEvent {
+  id              String   @id @default(cuid())
+
+  // What changed
+  transactionType String   // DONATION or WIRE_TRANSFER
+  transactionId   String   // ID of the Donation or WireTransfer
+  action          String   // CREATED, STATUS_CHANGED, AMOUNT_UPDATED, NOTE_ADDED, etc.
+
+  // State transition
+  previousStatus  String?  // null on creation
+  newStatus       String?  // null if not a status change
+
+  // Financial context
+  amount          Decimal? @db.Decimal(12, 2)
+  currency        String   @default("USD") @db.VarChar(3)
+  paymentMethod   String?
+  referenceNumber String?  // wire ref, check number, DAF grant ID
+
+  // Who did it
+  actorId         String?  // User ID (null for system/webhook actions)
+  actorRole       String?  // ADMIN, NONPROFIT_MANAGER, DONOR, SYSTEM
+  ipAddress       String?
+
+  // Additional context
+  metadata        Json?    // Flexible field for Plaid/Wise webhook data, notes, etc.
+
+  createdAt       DateTime @default(now())
+
+  @@index([transactionType, transactionId])
+  @@index([action])
+  @@index([actorId])
+  @@index([createdAt])
+}

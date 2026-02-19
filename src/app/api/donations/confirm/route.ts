@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { hashPassword, getUserByEmail } from '@/lib/auth'
 import { sendDonorWelcomeEmail, sendDonationNotificationToAdmin } from '@/lib/email'
 import { logAuditEvent, AuditAction, getClientIp, getUserAgent, detectSuspiciousInput } from '@/lib/security'
+import { logTransactionEvent, TransactionAction } from '@/lib/audit'
 import { parseBody, donationConfirmSchema } from '@/lib/validations'
 import crypto from 'crypto'
 
@@ -110,11 +111,24 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    await logAuditEvent('DONATION_CREATED' as any, {
-      userId: donorUser.id,
+    // Structured financial audit trail
+    await logTransactionEvent({
+      transactionType: 'DONATION',
+      transactionId: donation.id,
+      action: TransactionAction.DONATION_CREATED,
+      newStatus: 'PENDING_CONFIRMATION',
+      amount: amount ? parseFloat(String(amount)) : undefined,
+      paymentMethod: paymentMethodMap[normalizedMethod] || 'OTHER',
+      referenceNumber: referenceNumber?.trim() || undefined,
+      actorId: donorUser.id,
+      actorRole: 'DONOR',
       ipAddress: getClientIp(request),
-      userAgent: getUserAgent(request),
-      details: `Donation confirmation submitted: ${amount ? `$${amount}` : 'amount TBD'} for ${projectName}`,
+      metadata: {
+        projectId: projectId === 'general' ? null : projectId,
+        projectName: projectName || 'General Fund',
+        donorEmail: normalizedEmail,
+        isNewDonor,
+      },
     })
 
     // Send emails (non-blocking)

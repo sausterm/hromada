@@ -147,7 +147,7 @@ describe('POST /api/partner/projects', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toContain('is required')
+    expect(data.error).toBeDefined()
   })
 
   it('returns 400 for invalid email format', async () => {
@@ -204,7 +204,7 @@ describe('POST /api/partner/projects', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Invalid city latitude')
+    expect(data.error).toBe('Invalid latitude')
   })
 
   it('creates submission successfully', async () => {

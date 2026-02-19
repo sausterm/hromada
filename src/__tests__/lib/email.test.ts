@@ -1,5 +1,13 @@
 import { sendContactNotification, sendDonorWelcomeEmail, sendDonationNotificationToAdmin } from '@/lib/email'
 
+// Mock security module to avoid Prisma dependency chain (security → prisma → @prisma/client)
+// which causes TextEncoder issues during jest.resetModules() re-imports
+jest.mock('@/lib/security', () => ({
+  sanitizeInput: jest.fn((str: string) => str),
+  logAuditEvent: jest.fn(),
+  AuditAction: {},
+}))
+
 // Mock the Resend module
 jest.mock('resend', () => ({
   Resend: jest.fn().mockImplementation(() => ({

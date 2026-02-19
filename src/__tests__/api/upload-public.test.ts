@@ -5,6 +5,11 @@
 import { POST } from '@/app/api/upload/public/route'
 import { NextRequest } from 'next/server'
 
+// Mock rate limiting
+jest.mock('@/lib/rate-limit', () => ({
+  rateLimit: jest.fn(() => null),
+}))
+
 // Mock supabase
 jest.mock('@/lib/supabase', () => ({
   STORAGE_BUCKET: 'test-bucket',
@@ -19,6 +24,11 @@ jest.mock('@/lib/supabase', () => ({
 }))
 
 import { supabase } from '@/lib/supabase'
+
+// Magic bytes for valid file types
+const JPEG_BYTES = new Uint8Array([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46])
+const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
+const WEBP_BYTES = new Uint8Array([0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50])
 
 describe('/api/upload/public', () => {
   const originalEnv = process.env
@@ -44,6 +54,7 @@ describe('/api/upload/public', () => {
 
     return {
       formData: () => Promise.resolve(formData),
+      headers: new Headers({ 'x-forwarded-for': '127.0.0.1' }),
     } as unknown as NextRequest
   }
 
@@ -114,7 +125,7 @@ describe('/api/upload/public', () => {
         getPublicUrl: mockGetPublicUrl,
       })
 
-      const file = new File(['test content'], 'test.jpg', { type: 'image/jpeg' })
+      const file = new File([JPEG_BYTES], 'test.jpg', { type: 'image/jpeg' })
       const request = createMockRequest(file)
       const response = await POST(request)
       const data = await response.json()
@@ -142,7 +153,7 @@ describe('/api/upload/public', () => {
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
-      const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' })
+      const file = new File([JPEG_BYTES], 'test.jpg', { type: 'image/jpeg' })
       const request = createMockRequest(file)
       const response = await POST(request)
       const data = await response.json()
@@ -167,7 +178,7 @@ describe('/api/upload/public', () => {
         getPublicUrl: mockGetPublicUrl,
       })
 
-      const file = new File(['test'], 'test.jpeg', { type: 'image/jpeg' })
+      const file = new File([JPEG_BYTES], 'test.jpeg', { type: 'image/jpeg' })
       const request = createMockRequest(file)
       const response = await POST(request)
 
@@ -188,7 +199,7 @@ describe('/api/upload/public', () => {
         getPublicUrl: mockGetPublicUrl,
       })
 
-      const file = new File(['test'], 'test.png', { type: 'image/png' })
+      const file = new File([PNG_BYTES], 'test.png', { type: 'image/png' })
       const request = createMockRequest(file)
       const response = await POST(request)
 
@@ -209,7 +220,7 @@ describe('/api/upload/public', () => {
         getPublicUrl: mockGetPublicUrl,
       })
 
-      const file = new File(['test'], 'test.webp', { type: 'image/webp' })
+      const file = new File([WEBP_BYTES], 'test.webp', { type: 'image/webp' })
       const request = createMockRequest(file)
       const response = await POST(request)
 
@@ -230,7 +241,7 @@ describe('/api/upload/public', () => {
         getPublicUrl: mockGetPublicUrl,
       })
 
-      const file = new File(['test'], 'noextension', { type: 'image/jpeg' })
+      const file = new File([JPEG_BYTES], 'noextension', { type: 'image/jpeg' })
       const request = createMockRequest(file)
       const response = await POST(request)
 
@@ -252,7 +263,7 @@ describe('/api/upload/public', () => {
 
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
-      const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' })
+      const file = new File([JPEG_BYTES], 'test.jpg', { type: 'image/jpeg' })
       const request = createMockRequest(file)
       const response = await POST(request)
       const data = await response.json()

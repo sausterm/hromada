@@ -20,18 +20,19 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 
 ## Security #p0
 
-- [ ] Fix session token vulnerability — base64 is encoding, not encryption; use `crypto.randomBytes()` #p0 @sloan
+- [x] Fix session token vulnerability — migrated to JWT (jose/HS256) with SESSION_SECRET, httpOnly cookies #p0 @sloan
 - [x] Remove default password fallback ('admin') in `/api/admin/verify` #p0 @sloan
-- [ ] Replace placeholder bank details with real POCACITO account info #p0 @sloan
-- [ ] Add rate limiting to public file upload (`/api/upload/public`) #p1
-- [ ] Audit all API endpoints for proper auth checks (some routes may be unprotected) #p1
-- [ ] Add CSRF protection to all mutation endpoints #p2
-- [ ] Implement Content Security Policy headers #p2
-- [ ] Review Zod schemas — ensure all user input is validated at API boundary #p2
+- [ ] Replace placeholder bank details with real POCACITO account info (blocked by FSA) #p0 @sloan
+- [x] Add rate limiting to public file upload (`/api/upload/public`) — 10 req/hr per IP #p1 @sloan
+- [x] Audit all API endpoints for proper auth checks — edge JWT + role-based route protection #p1 @sloan
+- [x] Add CSRF protection to all mutation endpoints — Origin header verification in middleware #p2 @sloan
+- [x] Implement Content Security Policy headers — full CSP + HSTS + X-Frame-Options #p2 @sloan
+- [x] Review Zod schemas — `validations.ts` with `parseBody` across all public API routes #p2 @sloan
 - [ ] Add account lockout notification emails #p3
 
 ## Payment Processing #p0
 
+- [x] Financial transaction audit trail — append-only TransactionEvent table for donation/wire lifecycle #p1 @sloan
 - [ ] Plaid integration — auto-detect incoming wire transfers #p1
 - [ ] Wise API integration — track outbound transfers to Ukraine #p1
 - [ ] Connect nonprofit dashboard APIs (currently returns mock data) #p1
@@ -95,7 +96,7 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 ## Infrastructure #p2
 
 - [ ] CI/CD pipeline with automated testing (GitHub Actions) #p2
-- [ ] Error monitoring — Sentry or similar #p2
+- [x] Error monitoring — Sentry integrated (client + server + global error boundary) #p2 @sloan
 - [ ] Staging environment on AWS Amplify #p2
 - [ ] Database backup automation #p2
 - [ ] Uptime monitoring #p3

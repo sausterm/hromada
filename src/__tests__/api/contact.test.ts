@@ -150,7 +150,7 @@ describe('POST /api/contact', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Project ID is required')
+    expect(data.error).toContain('expected string')
   })
 
   it('returns 400 when donorName is missing', async () => {
@@ -178,7 +178,7 @@ describe('POST /api/contact', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Email is required')
+    expect(data.error).toBe('Invalid email format')
   })
 
   it('returns 400 when message is missing', async () => {

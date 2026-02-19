@@ -156,7 +156,7 @@ describe('POST /api/projects/submissions', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('facilityName is required')
+    expect(data.error).toContain('expected string')
   })
 
   it('returns 400 for invalid municipality email format', async () => {
@@ -173,7 +173,7 @@ describe('POST /api/projects/submissions', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Invalid municipality email format')
+    expect(data.error).toBe('Invalid email format')
   })
 
   it('returns 400 for invalid contact email format', async () => {
@@ -190,7 +190,7 @@ describe('POST /api/projects/submissions', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Invalid contact email format')
+    expect(data.error).toBe('Invalid email format')
   })
 
   it('returns 400 for briefDescription over 150 characters', async () => {
@@ -301,7 +301,7 @@ describe('POST /api/projects/submissions', () => {
       ...validSubmission,
       region: 'Kyiv Oblast',
       contactPhone: '+380123456789',
-      photos: ['photo1.jpg', 'photo2.jpg'],
+      photos: ['https://example.com/photo1.jpg', 'https://example.com/photo2.jpg'],
     }
     const createdSubmission = { id: '1', ...submissionWithOptionalFields }
     ;(mockPrisma.projectSubmission.create as jest.Mock).mockResolvedValue(createdSubmission)
@@ -360,13 +360,15 @@ describe('POST /api/projects/submissions', () => {
     expect(data.success).toBe(true)
   })
 
-  it('limits photos to 5', async () => {
+  it('rejects more than 5 photos', async () => {
     const submissionManyPhotos = {
       ...validSubmission,
-      photos: ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg'],
+      photos: [
+        'https://example.com/1.jpg', 'https://example.com/2.jpg',
+        'https://example.com/3.jpg', 'https://example.com/4.jpg',
+        'https://example.com/5.jpg', 'https://example.com/6.jpg',
+      ],
     }
-    const createdSubmission = { id: '1', ...submissionManyPhotos }
-    ;(mockPrisma.projectSubmission.create as jest.Mock).mockResolvedValue(createdSubmission)
 
     const request = new NextRequest('http://localhost/api/projects/submissions', {
       method: 'POST',
@@ -376,13 +378,7 @@ describe('POST /api/projects/submissions', () => {
 
     const response = await POST(request)
 
-    expect(response.status).toBe(200)
-    // Check that only 5 photos were passed to create
-    expect(mockPrisma.projectSubmission.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        photos: ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg'],
-      }),
-    })
+    expect(response.status).toBe(400)
   })
 })
 

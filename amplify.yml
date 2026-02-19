@@ -26,6 +26,7 @@ frontend:
       commands:
         - npm run build
         - find .next -name '*.map' -delete
+        - cp .env.production .next/.env.production
   artifacts:
     baseDirectory: .next
     files:

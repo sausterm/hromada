@@ -14,11 +14,12 @@ A trusted, transparent platform where donors can discover Ukrainian community pr
 
 ## Fiscal Sponsorship — POCACITO Network
 
-**Status:** Verbal agreement secured (Feb 2026). FSA drafting in progress.
+**Status:** FSA drafted, attorney-reviewed, ready to send to POCACITO (Feb 19, 2026).
 
 - POCACITO Network has agreed to serve as fiscal sponsor at **0% fee**
 - Tom has relationships with half the POCACITO board — they are actively helping get Hromada going
-- **Next step:** Draft the Fiscal Sponsorship Agreement (FSA), then finalize with POCACITO and an attorney
+- ✅ FSA drafted and reviewed by lawyers (Feb 19)
+- **Next step:** Send FSA to POCACITO for board review (Feb 20)
 - Bank details (routing, account, SWIFT) available from POCACITO immediately upon FSA signing
 - See: [[specs/fiscal-sponsorship]]
 
@@ -27,9 +28,9 @@ A trusted, transparent platform where donors can discover Ukrainian community pr
 ## Phase Overview
 
 ```
-Phase 0: Foundation        ████████████████████░░  ~85% ← current code work
-Phase 1: Launch Readiness  ████████░░░░░░░░░░░░░  ~40% ← blocked by FSA
-Phase 2: Automation        ░░░░░░░░░░░░░░░░░░░░░   0% ← post-launch
+Phase 0: Foundation        █████████████████████  ~95% ← nearly complete
+Phase 1: Launch Readiness  ██████████████░░░░░░░  ~70% ← blocked by FSA signing only
+Phase 2: Automation        ██░░░░░░░░░░░░░░░░░░░  ~10% ← Sentry done
 Phase 3: Growth            ░░░░░░░░░░░░░░░░░░░░░   0% ← post-traction
 Phase 4: Scale             ░░░░░░░░░░░░░░░░░░░░░   0% ← future
 ```
@@ -48,7 +49,7 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 
 ---
 
-## Phase 0: Foundation (Current — ~85% Complete)
+## Phase 0: Foundation (Current — ~95% Complete)
 
 **Goal:** Build the core platform: projects, map, donations, dashboards, auth.
 **Timeline:** Jan–Feb 2026 (mostly done)
@@ -56,15 +57,17 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 ### What's Done
 - [x] Next.js 16 app with App Router, TypeScript strict mode
 - [x] PostgreSQL database via Prisma on Supabase
-- [x] Role-based auth (Admin, Partner, Nonprofit Manager, Donor)
+- [x] Role-based auth (Admin, Partner, Nonprofit Manager, Donor) with JWT sessions
 - [x] Internationalization (EN/UK) with next-intl
 - [x] Interactive Leaflet map with project markers and clustering
+- [x] Mobile map view with list/map toggle
 - [x] Project CRUD with admin dashboard
 - [x] Project submission workflow (partner submits → admin approves)
 - [x] Photo upload to Supabase Storage
 - [x] Edge middleware: geo-blocking (RU/BY), password protection, security headers
 - [x] Contact form with email notifications (Resend)
-- [x] Transparency page, privacy policy, terms of service
+- [x] Transparency page with TI Ukraine pre-screening criteria
+- [x] Privacy policy, terms of service, OFAC sanctions policy pages
 - [x] ~70% test coverage (Jest + React Testing Library)
 - [x] Earth-tone humanitarian design system (cream/navy/ukraine-blue palette)
 - [x] Donation database model (PENDING → RECEIVED → ALLOCATED → FORWARDED → COMPLETED)
@@ -80,12 +83,12 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 - [x] Partnership inquiry form with email notifications
 - [x] PartnershipInquiry database model
 - [x] Obsidian planning vault
+- [x] CI/CD pipeline (GitHub Actions)
 
 ### What Remains in Phase 0
 - [ ] Connect nonprofit dashboard to real donation/wire-transfer APIs (currently mock data) #p1 @sloan
 - [ ] Decompose 754-line homepage into components #p2 @sloan
 - [ ] Add `Cache-Control` headers to public API routes #p2
-- [ ] Replace native `<img>` with Next.js `<Image>` component #p2
 
 ---
 
@@ -95,26 +98,26 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 **Blocked by:** FSA signing (legal) + security fixes (technical)
 **See:** [[specs/launch-readiness]], [[specs/security-hardening]], [[specs/fiscal-sponsorship]]
 
-### Track A: Security Hardening (Technical — @sloan)
+### Track A: Security Hardening (Technical — @sloan) ✅ COMPLETE
 
-Can start immediately. ~4 hours of focused work.
+All critical and high-priority security items resolved.
 
-- [ ] Fix session token vulnerability (base64 → `crypto.randomBytes`) #p0
-- [ ] Remove default password fallback (`'admin'`) in `/api/admin/verify` #p0
-- [ ] Move hardcoded site password to `SITE_PASSWORD` env var #p0
-- [ ] Set `httpOnly: true` on site access cookie #p0
-- [ ] Add rate limiting to `/api/upload/public` #p0
-- [ ] Update Next.js to patched version (DoS CVE) #p1
-- [ ] Sanitize user input in email templates #p1
+- [x] Fix session token vulnerability — now using JWT with jose (not base64)
+- [x] Remove default password fallback — `ADMIN_PASSWORD` env var required
+- [x] Move hardcoded site password to `SITE_PASSWORD` env var
+- [x] Set `httpOnly: true` on site access cookie
+- [x] Add rate limiting to `/api/upload/public`
+- [x] Update Next.js to 16.1.6 (latest, patched)
+- [x] Sanitize user input in email templates (`sanitizeInput` from security lib)
 
 ### Track B: Fiscal Sponsorship (Legal — @tom @sloan)
 
-Parallel to Track A. ~6-8 weeks total.
+**Status:** FSA ready to send to POCACITO (Feb 20, 2026)
 
-- [ ] Research FSA models/templates #p0 @sloan
-- [ ] Draft Fiscal Sponsorship Agreement #p0 @sloan @tom
-- [ ] POCACITO board review #p0 @tom
-- [ ] Attorney review and finalization #p0 @tom
+- [x] Research FSA models/templates #p0 @sloan
+- [x] Draft Fiscal Sponsorship Agreement #p0 @sloan @tom
+- [x] Attorney review and finalization #p0 @tom ← completed Feb 19
+- [ ] POCACITO board review #p0 @tom ← **NEXT: sending Feb 20**
 - [ ] Sign FSA #p0 @tom
 - [ ] Obtain real bank details #p0 @sloan
 - [ ] Replace placeholder bank details in `SupportProjectCard.tsx` #p0 @sloan
@@ -126,20 +129,41 @@ Can start after Track A, before FSA is signed.
 - [ ] Connect nonprofit dashboard to real APIs #p1
 - [ ] Test full donation flow end-to-end #p1
 - [ ] Verify email delivery in production #p1
-- [ ] Set production environment variables in Vercel #p1
+- [ ] Set production environment variables in Vercel/Amplify #p1
 - [ ] Configure custom domain with SSL #p1
 - [ ] Review Terms of Service against FSA terms #p1 @tom
 - [ ] Review Privacy Policy for donor data coverage #p1 @tom
 - [ ] Verify all POCACITO references are accurate #p1
 
+### Track D: Partnerships & Outreach (@tom)
+
+Partner ecosystem and messaging strategy.
+
+#### Partner MoUs
+- [x] Draft Partner MoU template (Feb 2026)
+- [ ] EcoAction Ukraine MoU — finalize and sign #p1
+- [ ] Additional Ukrainian NGO partners — identify and outreach #p2
+- [ ] US municipal partnership outreach (sister city programs) #p3
+
+#### Messaging & Storytelling
+- [ ] Core messaging framework (value prop, donor personas, key messages) #p1
+- [ ] Project storytelling template (before/after, impact metrics) #p1
+- [ ] Launch announcement draft (press release, social media) #p2
+- [ ] Donor testimonial collection process #p2
+- [ ] Case study: first successful project funding #p3
+
 ### Launch Gate
 
-All three tracks must be complete. Then:
+Tracks A (security) complete. Tracks B, C, D in progress. Then:
 
+- [ ] FSA signed and bank details in hand
 - [ ] Remove site password (or convert to soft-launch invite list)
-- [ ] Test donation flow on production URL
+- [ ] Test donation flow on production URL with real bank details
 - [ ] Confirm admin and nonprofit manager access
+- [ ] Launch messaging ready (announcement, social)
 - [ ] **GO LIVE**
+
+> **Current status:** Security done, FSA going to POCACITO Feb 20. Once signed, launch is ~1 week away.
 
 ---
 
@@ -164,7 +188,7 @@ All three tracks must be complete. Then:
 ### Platform Hardening
 - [ ] CSRF protection on all mutation endpoints #p2
 - [ ] Redis-based rate limiting (replace in-memory) #p2
-- [ ] Sentry error monitoring #p2
+- [x] Sentry error monitoring (configured, production-only due to Next.js 16 compat)
 - [ ] E2E tests for critical donation flow #p2
 - [ ] Legacy auth path deprecation #p2
 
@@ -224,7 +248,7 @@ All three tracks must be complete. Then:
 - [ ] Multi-project management for larger hromadas
 
 ### Infrastructure
-- [ ] CI/CD pipeline with GitHub Actions
+- [x] CI/CD pipeline with GitHub Actions
 - [ ] Staging environment on Vercel
 - [ ] Database backup automation
 - [ ] Uptime monitoring
@@ -241,16 +265,16 @@ All three tracks must be complete. Then:
 
 ## Timeline Summary
 
-| Phase | Focus | Target | Depends On |
-|-------|-------|--------|------------|
-| **Phase 0** | Foundation (code) | Feb 2026 | — |
-| **Phase 1** | Launch readiness | Mar–Apr 2026 | Phase 0 + FSA |
-| **LAUNCH** | First real donation | Apr 2026 (est.) | Phase 1 |
-| **Phase 2** | Automation | May–Jun 2026 | Launch |
-| **Phase 3** | Growth | Jul–Oct 2026 | Traction |
-| **Phase 4** | Scale | Nov 2026+ | Growth |
+| Phase | Focus | Target | Status |
+|-------|-------|--------|--------|
+| **Phase 0** | Foundation (code) | Feb 2026 | ✅ ~95% complete |
+| **Phase 1** | Launch readiness | Mar 2026 | 🔄 ~70% — awaiting FSA |
+| **LAUNCH** | First real donation | Mar 2026 (est.) | ⏳ Blocked by FSA signing |
+| **Phase 2** | Automation | Apr–May 2026 | Sentry done |
+| **Phase 3** | Growth | Jun–Sep 2026 | Not started |
+| **Phase 4** | Scale | Oct 2026+ | Not started |
 
-> **The critical path is the FSA.** All technical work can proceed in parallel with the legal process. The moment the FSA is signed and bank details are in hand, launch is days away — not weeks.
+> **The critical path is the FSA.** Security hardening is complete. FSA is attorney-reviewed and going to POCACITO Feb 20. The moment the FSA is signed and bank details are in hand, launch is days away — not weeks.
 
 ---
 

@@ -1,37 +1,50 @@
 # Current Sprint
 
 **Sprint:** 2026-02-10 → 2026-02-24
-**Focus:** FSA drafting + payment processing v2 + security hardening
+**Focus:** FSA finalization + launch readiness
 
 ---
 
 ## In Progress
 
-- [/] Payment processing integration — real bank details, Plaid/Wise APIs #p0 @sloan
-- [/] Municipal Partnership Program — landing page and inquiry flow #p1 @tom
-- [/] FSA drafting — research templates, draft agreement for POCACITO review #p0 @sloan @tom
+- [/] FSA submission to POCACITO — attorney-reviewed, sending Feb 20 #p0 @tom
+- [/] Partner MoU with EcoAction — template done, finalizing #p1 @tom
+- [/] Messaging framework — donor personas, key messages #p1 @tom
 
 ## To Do
 
-### FSA / Legal (Critical Path)
-- [ ] Research FSA models, templates, and standard legal language #p0 @sloan
-- [ ] Draft Fiscal Sponsorship Agreement (first draft for POCACITO + attorney review) #p0 @sloan @tom
-- [ ] Review FSA draft with POCACITO board #p0 @tom
-- [ ] Attorney review and finalization of FSA #p0 @tom
+### FSA / Legal (Critical Path) — NEARLY DONE
+- [x] Research FSA models, templates, and standard legal language #p0 @sloan
+- [x] Draft Fiscal Sponsorship Agreement #p0 @sloan @tom
+- [x] Attorney review and finalization of FSA #p0 @tom ← Feb 19
+- [ ] Send FSA to POCACITO board for review #p0 @tom ← **Feb 20**
+- [ ] POCACITO board approval and signing #p0 @tom
 - [ ] Obtain real bank details from POCACITO post-signing #p0 @sloan
+- [ ] Replace placeholder bank details in SupportProjectCard #p0 @sloan
 
-### Payment / Security
-- [ ] Replace placeholder bank details with real POCACITO account info (blocked by FSA) #p0 @sloan
+### Partnerships & Outreach
+- [x] Draft Partner MoU template #p1 @tom
+- [ ] EcoAction Ukraine MoU — finalize and sign #p1 @tom
+- [ ] Launch messaging framework (value prop, donor personas) #p1 @tom
+- [ ] Launch announcement draft (press release, social) #p2 @tom
+
+### Technical (Blocked by FSA)
+- [ ] Connect nonprofit dashboard to real APIs (currently mock data) #p1 @sloan
+- [ ] Test full donation flow end-to-end with real bank details #p1 @sloan
+- [ ] Set production environment variables in Amplify #p1 @sloan
+- [ ] Receipt generation for completed donations #p2 @sloan
+
+### Security ✅ COMPLETE
 - [x] Fix session token vulnerability — JWT (jose/HS256) with SESSION_SECRET #p0 @sloan
 - [x] Remove default password fallback in `/api/admin/verify` #p0 @sloan
-- [x] Rate limiting on all public endpoints (upload, login, contact, newsletter, etc.) #p1 @sloan
+- [x] Move site password to SITE_PASSWORD env var #p0 @sloan
+- [x] Set httpOnly: true on site access cookie #p0 @sloan
+- [x] Rate limiting on all public endpoints #p1 @sloan
 - [x] CSRF protection — Origin header verification in middleware #p2 @sloan
 - [x] Content Security Policy + security headers #p2 @sloan
 - [x] Zod validation on all public API routes #p2 @sloan
-- [x] Sentry error monitoring (client + server + global error boundary) #p2 @sloan
-- [ ] Connect nonprofit dashboard to real APIs (currently mock data) #p1 @sloan
-- [x] Donor password reset flow #p2
-- [ ] Receipt generation for completed donations #p2
+- [x] Sentry error monitoring (production-only) #p2 @sloan
+- [x] Input sanitization in email templates #p1 @sloan
 
 ## Done
 
@@ -67,9 +80,19 @@
 
 ## Sprint Notes
 
-- Payment processing is the primary deliverable — all other work is secondary
-- Tom landed the Municipal Partnership Program (page, form, API, DB model) — needs review
-- Security fixes (#p0) must be done before any public launch
-- Photo migration to Supabase Storage is complete (381b98c)
-- Nonprofit dashboard exists but uses mock data — needs real API connections
-- Placeholder bank details still in SupportProjectCard — needs real POCACITO info before launch
+- **FSA is the only blocker to launch** — all security work is complete
+- FSA was attorney-reviewed Feb 19, sending to POCACITO Feb 20
+- Partner MoU template is ready, EcoAction agreement in progress
+- Security hardening complete: JWT auth, rate limiting, sanitization, Sentry
+- Transparency page with TI Ukraine pre-screening criteria added
+- Mobile map view now working (was previously "coming soon")
+- Nonprofit dashboard exists but uses mock data — needs real API connections post-FSA
+- Placeholder bank details still in SupportProjectCard — needs real POCACITO info
+
+## Blockers
+
+| Blocker | Owner | Status |
+|---------|-------|--------|
+| FSA signing | @tom | Attorney reviewed, sending to POCACITO Feb 20 |
+| Real bank details | @sloan | Blocked by FSA |
+| EcoAction MoU | @tom | Template ready, finalizing |

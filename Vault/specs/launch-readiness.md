@@ -64,22 +64,23 @@ Nonprofit Dashboard (operational)
 
 ### Legal / FSA
 
-- [ ] FSA drafted and reviewed by POCACITO board #p0 @tom
-- [ ] FSA reviewed and approved by attorney #p0 @tom
+- [x] FSA drafted @sloan @tom
+- [x] FSA reviewed and approved by attorney @tom ← Feb 19, 2026
+- [ ] FSA sent to POCACITO board for review @tom ← **Feb 20, 2026**
 - [ ] FSA signed by both parties #p0 @tom
 - [ ] Real bank details obtained from POCACITO (routing, account, SWIFT) #p0 @sloan
 - [ ] Bank details replaced in `SupportProjectCard.tsx` #p0 @sloan
 - [ ] Tax-deductibility language in donor dashboard verified against FSA #p1 @sloan
 
-### Security (Critical + High from Audit)
+### Security (Critical + High from Audit) ✅ COMPLETE
 
-- [ ] Fix session token vulnerability — `crypto.randomBytes` instead of base64 #p0 @sloan
-- [ ] Remove default password fallback (`'admin'`) in `/api/admin/verify` #p0 @sloan
-- [ ] Set `httpOnly: true` on site access cookie #p0 @sloan
-- [ ] Move hardcoded site password to `SITE_PASSWORD` env var #p0 @sloan
-- [ ] Add rate limiting to `/api/upload/public` #p0 @sloan
-- [ ] Update Next.js to patched version (fixes DoS CVE) #p1 @sloan
-- [ ] Sanitize user input in email templates (prevent HTML injection) #p1 @sloan
+- [x] Fix session token vulnerability — now using JWT with jose (not base64) @sloan
+- [x] Remove default password fallback — ADMIN_PASSWORD env var required @sloan
+- [x] Set `httpOnly: true` on site access cookie @sloan
+- [x] Move hardcoded site password to `SITE_PASSWORD` env var @sloan
+- [x] Add rate limiting to `/api/upload/public` @sloan
+- [x] Update Next.js to 16.1.6 (latest, patched) @sloan
+- [x] Sanitize user input in email templates (sanitizeInput from security lib) @sloan
 
 ### Operational
 
@@ -101,11 +102,11 @@ Nonprofit Dashboard (operational)
 
 These improve the launch experience but don't block it:
 
-- [ ] CSRF protection on state-changing endpoints #p2
+- [x] CSRF protection on state-changing endpoints (Origin header verification)
 - [ ] Redis-based rate limiting (in-memory is OK for initial low traffic) #p2
-- [ ] Donor password reset flow #p2
+- [x] Donor password reset flow
 - [ ] Receipt/tax documentation PDF generation #p2
-- [ ] Sentry error monitoring #p2
+- [x] Sentry error monitoring (configured, production-only)
 - [ ] E2E tests for critical donation flow #p2
 
 ---

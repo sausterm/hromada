@@ -5,6 +5,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['pg', '@prisma/adapter-pg', '@prisma/client'],
   images: {
     remotePatterns: [
       {

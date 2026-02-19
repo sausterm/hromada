@@ -1,8 +1,8 @@
 # Session Context — Hromada
 
-**Date**: 2026-02-18
+**Date**: 2026-02-19
 **Branch**: `v2-payment-processing`
-**Status**: Payment processing complete, i18n complete (DeepL), document system built, homepage case study live, FSA drafted, RLS enabled
+**Status**: Security hardened, audit trail built, Amplify deploy fixing in progress, trust center controls written
 
 ---
 
@@ -58,9 +58,29 @@ Donor receives "Funds Delivered" update
 
 ## Key Systems Built
 
+### Security (v2-cyber-security merge, 2026-02-18)
+- **JWT sessions** (`src/lib/auth.ts`) — jose/HS256, httpOnly cookies, DB session validation, session versioning
+- **Rate limiting** (`src/lib/rate-limit.ts`) — in-memory, per-IP, 50K entry cap, per-endpoint limits
+- **CSRF protection** (`src/middleware.ts`) — Origin header verification on state-changing requests
+- **Security headers** (`src/lib/security-headers.ts`) — CSP, X-Frame-Options, HSTS, X-Content-Type-Options
+- **Input validation** (`src/lib/validations.ts`) — Zod schemas on all public API routes with `parseBody()` helper
+- **Magic bytes validation** (`src/app/api/upload/public/route.ts`) — validates file content matches declared MIME type
+- **HMAC site access cookies** — replaces raw password storage in cookies
+- **Geoblocking** — middleware blocks requests from RU/BY
+- **Sentry error monitoring** — client + server, `@sentry/nextjs` v10
+
+### Financial Audit Trail (2026-02-18)
+- **TransactionEvent model** (`prisma/schema.prisma`) — append-only table for financial audit logging
+  - Fields: transactionType, transactionId, action, previousStatus, newStatus, amount, currency, paymentMethod, referenceNumber, actorId, actorRole, ipAddress, metadata (Json)
+  - Indexes on transactionType+transactionId, action, actorId, createdAt
+- **logTransactionEvent()** (`src/lib/audit.ts`) — fire-and-forget audit logging
+- **buildTransactionEventCreate()** (`src/lib/audit.ts`) — returns Prisma operation for use inside `$transaction` (atomic with status changes)
+- **TransactionAction constants** — DONATION_CREATED, DONATION_STATUS_CHANGED, WIRE_CREATED, etc.
+- **Wired into** `src/app/api/donations/confirm/route.ts` — structured logging replaces old text-based `logAuditEvent()`
+
 ### Payment & Donations
 - **SupportProjectCard** (`src/components/projects/SupportProjectCard.tsx`) — fully internationalized, 3 payment methods with copy buttons and confirmation form
-- **Donation confirmation API** (`src/app/api/donations/confirm/route.ts`) — validates input, creates donor accounts, sends welcome emails
+- **Donation confirmation API** (`src/app/api/donations/confirm/route.ts`) — validates input, creates donor accounts, sends welcome emails, logs audit event
 - **Donor dashboard** (`src/app/[locale]/(public)/donor/page.tsx`) — stats, donation list, status timeline
 - **Nonprofit dashboard** (`src/app/[locale]/(public)/nonprofit/page.tsx`) — pending actions, mark received, wire transfer tracking
 
@@ -92,6 +112,7 @@ Donor receives "Funds Delivered" update
 - **OFAC compliance policy page** (`/ofac-policy`)
 - **Supabase Storage** — project photos migrated from local to CDN
 - **RLS enabled** on all 14 tables (no policies = deny all via PostgREST, Prisma bypasses)
+- **Site access show/hide password toggle** — added eye icon button to site-access page
 
 ---
 
@@ -113,9 +134,11 @@ Donor receives "Funds Delivered" update
 RESEND_API_KEY=re_...        # Sending emails
 ADMIN_EMAIL=admin@...        # Receives donation notifications
 DEEPL_API_KEY=...            # Translation (DeepL free tier, 500K chars/month)
+SITE_PASSWORD=hromadav2!2026 # Site access gate
 
 # Production (AWS Amplify)
-# Same vars must be added in Amplify console → Environment variables
+# All vars configured in Amplify console including:
+# NEXT_PUBLIC_SENTRY_DSN, DATABASE_URL, DIRECT_URL, SESSION_SECRET, etc.
 
 # Needed before launch
 # Real POCACITO Network bank details (currently placeholders in SupportProjectCard)
@@ -136,12 +159,13 @@ WISE_API_KEY=...             # Outbound transfer tracking
 - **Outbound Transfers**: Wise (cheaper for most amounts) or Bank Wire (very large)
 - **Target Donors**: Wealthy individuals, corporations, foundations
 - **Credit cards/Stripe**: Intentionally excluded — 3% fee too high for large donations
+- **Sprinto Trust Center**: Free plan (Trust Center only, no API access). 8 controls written and ready to paste.
 
 ---
 
 ## Team
 
-- Thomas Protzmann (Director)
+- Thomas Protzman (Director)
 - Kostiantyn Krynytskyi (Director - Ukraine, handles municipal bank details)
 - Sloan Austermann (Director - Technology & Operations)
 
@@ -167,7 +191,7 @@ Two variants in `public/partners/`: `Logo.png` (cream bg) and `Logo-white.png` (
 ## Git Branch State
 
 - **main**: Mobile bug fixes, about page, login password toggle
-- **v2-payment-processing**: All of main + payment processing, MPP, homepage redesign, i18n, document system, DeepL migration, case study
+- **v2-payment-processing**: All of main + payment processing, MPP, homepage redesign, i18n, document system, DeepL migration, case study, security hardening, audit trail
 - When merging v2 into main, expect conflicts in: `globals.css`, `Header.tsx`, locale files, homepage
 
 ---
@@ -183,11 +207,97 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 
 ---
 
+## Amplify Deploy Status
+
+- **App ID**: `d3lasyv0tebbph`
+- **Last successful deploy**: #67 (`eaa4eaf` — security hardening, 2026-02-18)
+- **Deploys #68-78 failed**: Two issues:
+  1. `package-lock.json` out of sync (Next.js 16.1.4→16.1.6, missing `@swc/helpers@0.5.18`) — **FIXED** in commit `d45252b`
+  2. Build output exceeds 230MB Amplify limit (Sentry adds ~90MB of source maps) — **IN PROGRESS**, need to disable source maps via `next.config.ts`
+- **AWS CLI available**: `aws amplify list-jobs --app-id d3lasyv0tebbph --branch-name v2-payment-processing`
+
+---
+
+## Cybersecurity Rating: 7.5/10
+
+### What's done
+- JWT sessions, bcrypt(12), httpOnly cookies
+- Rate limiting on all public endpoints
+- CSRF protection (Origin header)
+- CSP + security headers
+- Zod validation on all API routes
+- Magic bytes file validation
+- Sentry error monitoring
+- Geoblocking (RU/BY)
+- HMAC site access cookies
+- Financial audit trail (TransactionEvent)
+
+### What's needed for Plaid/Wise
+1. Webhook signature verification (Plaid/Wise send HMAC signatures)
+2. Idempotency keys (prevent duplicate processing)
+3. Secrets management (currently env vars, need rotation plan)
+4. Audit trail — DONE
+
+### Remaining security items
+- Account lockout notification emails (#p3, low priority)
+- Bank details page blocked on FSA signing
+
+---
+
 ## Technical Notes
 
 - **Resend emails**: Currently using `onboarding@resend.dev` (test). Need to verify `hromadaproject.org` domain in Resend for production sends.
 - **Placeholder bank details**: Still in SupportProjectCard — blocked on FSA signing and real POCACITO account info.
-- **Site password**: `hromada!2026`
+- **Site password**: `hromadav2!2026`
 - **Admin login**: Use `HROMADA_ADMIN_SECRET` from `.env.local`
 - **Hosting**: AWS Amplify (NOT Vercel). Push to branch triggers build automatically.
 - **DNS**: Managed through Cloudflare for `hromadaproject.org`
+- **Prisma**: Using `db push` (not `migrate dev`) due to migration drift. Schema applied directly to Supabase.
+- **Tests**: 80 suites, 1463 passing, 0 failures, 5 skipped. All test failures from Zod migration fixed.
+- **Source maps**: Need to disable in production build to stay under Amplify's 230MB artifact limit. Sentry's `withSentryConfig` adds ~90MB.
+
+---
+
+## Sprinto Trust Center Controls (ready to paste)
+
+8 controls written for Hromada's trust center:
+- **Product Security**: Role Based Access Controls
+- **Data Security**: Audit Logging, Encrypting Data At Rest, Production Database Access Restriction
+- **Network Security**: Transmission Confidentiality, Limit Network Connections, Centralized Collection of Security Event Logs
+- **App Security**: Secure System Modification, Approval of Changes
+
+MOU template for NGO partners discussed — lightweight 2-3 page memorandum preferred over formal contract (enforcement jurisdiction issue in Ukraine).
+
+---
+
+## Partner MoU (drafted 2026-02-19)
+
+`Partner_MoU_Template.md` / `Partner_MoU_Template.docx` committed to repo. Covers:
+- Project verification (municipality legitimacy, official identity, scope/cost accuracy, conflict-of-interest disclosure)
+- Fund-use monitoring (partner must monitor that funds go to stated project, report misuse immediately)
+- Reporting (monthly progress updates with photos, completion photos, structured closure report, 14-day response SLA)
+- OFAC sanctions cooperation ("not knowingly" standard — Hromada owns the screening, partners cooperate and report)
+- Anti-corruption and anti-diversion (no bribes, no military diversion, no unauthorized fees, maintain expenditure records)
+- Brand use restrictions
+- Indemnification for sanctions/corruption breaches
+- 1-year term, 30-day termination notice, surviving obligations for in-progress projects
+- Not enforceable against Ukrainian NGOs in practice — functions as behavioral framework, due diligence artifact, and basis for terminating partnerships
+
+---
+
+## Next Task: Set Up Sentry API Access
+
+Sentry is installed and reporting errors (`@sentry/nextjs` v10), but there's no API auth token for querying issues, events, or releases from the CLI.
+
+**What's needed from Tom:**
+1. Go to `https://sentry.io/settings/auth-tokens/`
+2. Create new token with scopes: `project:read`, `org:read`, `event:read`, `issue:admin`
+3. Copy the token (starts with `sntrys_`, shown only once)
+4. Provide the org slug and project slug (visible in Sentry dashboard URL)
+
+**Once provided, Claude will:**
+- Add `SENTRY_AUTH_TOKEN` to `.env.local`
+- Add `SENTRY_ORG` and `SENTRY_PROJECT` to `.env.local`
+- Add Sentry API section to `CLAUDE.md` for persistent access across sessions
+- Test API access (list recent issues, check error rates)
+- Optionally wire auth token into Amplify for release tracking and source map uploads

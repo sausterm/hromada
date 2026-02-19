@@ -44,12 +44,19 @@ export function getPrisma(): PrismaClient {
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   })
 
-  if (process.env.NODE_ENV !== 'production') {
-    globalForPrisma.prisma = client
-    globalForPrisma.pool = pool
-  }
+  // Cache in all environments — in Lambda/SSR, the global persists
+  // across requests within the same instance
+  globalForPrisma.prisma = client
+  globalForPrisma.pool = pool
 
   return client
 }
 
-export const prisma = getPrisma()
+// Lazy proxy: defers getPrisma() until first property access,
+// so env vars from .env.production are loaded by then
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getPrisma()
+    return (client as any)[prop]
+  },
+})

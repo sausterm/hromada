@@ -25,6 +25,7 @@ frontend:
     build:
       commands:
         - npm run build
+        - find .next -name '*.map' -delete
   artifacts:
     baseDirectory: .next
     files:

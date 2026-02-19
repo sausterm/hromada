@@ -18,9 +18,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  productionBrowserSourceMaps: false,
 };
 
 export default withSentryConfig(withNextIntl(nextConfig), {
   silent: true,
-  disableLogger: true,
+  sourcemaps: {
+    disable: true,
+  },
 });

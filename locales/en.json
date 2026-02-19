@@ -969,6 +969,81 @@
     "createWireTransfer": "Create Wire Transfer",
     "recentTransfers": "Recent Wire Transfers"
   },
+  "prescreening": {
+    "title": "Municipal Pre-Screening Criteria",
+    "subtitle": "How we vet Ukrainian municipalities before listing their projects on hromada",
+    "tiPartnership": "Powered by Transparency International Ukraine Data",
+    "tiPartnershipDesc": "We use the Transparent Cities ranking from Transparency International Ukraine to pre-screen municipalities. This annual assessment evaluates 100 Ukrainian cities across 70 indicators in 7 key areas of governance.",
+    "visitTransparentCities": "Visit Transparent Cities →",
+    "criteriaTitle": "Transparency Thresholds",
+    "thresholds": {
+      "transparent": "Transparent",
+      "transparentDesc": "Meets TI Ukraine standards",
+      "partial": "Partially Transparent",
+      "partialDesc": "Enhanced review required",
+      "nonTransparent": "Non-Transparent",
+      "nonTransparentDesc": "Not eligible without NGO partnership"
+    },
+    "ourPolicyTitle": "Our Pre-Screening Policy",
+    "policy1": "Municipalities scoring 75+ points are eligible for direct listing",
+    "policy2": "Municipalities scoring 50-74 points undergo enhanced due diligence",
+    "policy3": "All projects require verification by a trusted NGO partner",
+    "policy4": "Municipalities scoring below 50 may be eligible through established NGO partnerships with documented track records",
+    "areasTitle": "7 Assessment Areas",
+    "areasSubtitle": "TI Ukraine evaluates municipalities across 70 indicators in these areas",
+    "areas": {
+      "openness": {
+        "title": "Openness",
+        "desc": "Publication of city council decisions, meeting protocols, and regulatory documents"
+      },
+      "budget": {
+        "title": "Budget & Procurement",
+        "desc": "Transparency of budget execution, procurement processes, and financial reporting"
+      },
+      "property": {
+        "title": "Municipal Property",
+        "desc": "Public registries of municipal property, land allocation, and asset management"
+      },
+      "publicRelations": {
+        "title": "Public Relations",
+        "desc": "Citizen engagement, public hearings, and feedback mechanisms"
+      },
+      "personnel": {
+        "title": "Personnel & Integrity",
+        "desc": "Anti-corruption policies, staff declarations, and integrity standards"
+      },
+      "services": {
+        "title": "Services to Citizens",
+        "desc": "Availability of e-services, administrative transparency, and service quality"
+      },
+      "warResponse": {
+        "title": "War Response",
+        "desc": "Adaptation to wartime conditions, aid distribution, and emergency transparency"
+      }
+    },
+    "topCitiesTitle": "2024 Transparency Leaders",
+    "topCitiesSubtitle": "Top 10 cities from TI Ukraine's Transparency Ranking 2024",
+    "tableRank": "Rank",
+    "tableCity": "City",
+    "tableScore": "Score",
+    "tableStatus": "Status",
+    "statusTransparent": "Transparent",
+    "statusPartial": "Partially Transparent",
+    "dataSource": "Source: Transparency International Ukraine — Transparent Cities Ranking 2024",
+    "additionalDDTitle": "Additional Due Diligence",
+    "ngoPartnerTitle": "NGO Partner Verification",
+    "ngoPartnerDesc": "Every project is submitted or verified by a trusted NGO partner with established presence in Ukraine. Partners include Ecoaction, Ecoclub, and RePower Ukraine.",
+    "documentationTitle": "Project Documentation",
+    "documentationDesc": "We require cost estimates, engineering assessments, and municipal authorizations before listing projects.",
+    "bankingTitle": "Banking Verification",
+    "bankingDesc": "Municipalities must provide verified banking details for direct wire transfers. All transfers are tracked and confirmed.",
+    "ofacTitle": "OFAC Compliance",
+    "ofacDesc": "All municipalities and individuals are screened against OFAC sanctions lists before any funds are transferred.",
+    "ctaText": "Browse verified projects from transparent Ukrainian municipalities.",
+    "learnAboutUs": "Learn About Us",
+    "policiesTitle": "Legal & Policies",
+    "sanctionsPolicy": "Sanctions Policy"
+  },
   "partnership": {
     "hero": {
       "title": "Municipal Partnership Program",

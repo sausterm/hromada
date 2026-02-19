@@ -419,8 +419,8 @@ export default function ProjectsPage() {
       <Header />
 
       {/* Filter Bar */}
-      <div ref={filterBarRef} className="px-4 lg:px-6 py-2 bg-[var(--cream-100)] border-t border-b border-[var(--cream-200)] overflow-x-auto">
-          <div className="flex items-center gap-2 flex-nowrap">
+      <div ref={filterBarRef} className="py-2 bg-[var(--cream-100)] border-t border-b border-[var(--cream-200)] overflow-x-auto">
+          <div className="flex items-center gap-2 flex-nowrap pl-4 lg:pl-6">
             {/* Price Range Dropdown */}
             <div className="relative shrink-0">
               <button
@@ -787,6 +787,9 @@ export default function ProjectsPage() {
                 </span>
               </button>
             )}
+
+            {/* Spacer for right padding when scrolling on mobile */}
+            <div className="shrink-0 w-4 lg:w-6" aria-hidden="true" />
           </div>
       </div>
 

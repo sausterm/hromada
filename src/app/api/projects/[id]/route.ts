@@ -37,7 +37,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       photos: project.photos.map((img: { url: string }) => img.url),
     }
 
-    return NextResponse.json({ project: transformedProject })
+    const response = NextResponse.json({ project: transformedProject })
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
+    return response
   } catch (error) {
     console.error('Error fetching project:', error)
     return NextResponse.json(

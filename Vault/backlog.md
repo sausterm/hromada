@@ -52,7 +52,7 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 
 ## Performance #p1
 
-- [ ] Add `Cache-Control` headers to public API routes (`/api/projects`, etc.) #p1
+- [x] Add `Cache-Control` headers to public API routes (`/api/projects`, etc.) #p1
 - [ ] Replace native `<img>` with Next.js `<Image>` component (multiple files) #p1
 - [ ] Viewport-based map loading — currently loads ALL projects, won't scale past ~100 #p1
 - [ ] Hybrid SSR/CSR for homepage — improve SEO and initial load #p2

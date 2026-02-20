@@ -20,7 +20,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       orderBy: { createdAt: 'asc' },
     })
 
-    return NextResponse.json({ documents })
+    const response = NextResponse.json({ documents })
+    response.headers.set('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600')
+    return response
   } catch (error) {
     console.error('Error fetching documents:', error)
     return NextResponse.json({ error: 'Failed to fetch documents' }, { status: 500 })

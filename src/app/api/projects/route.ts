@@ -67,7 +67,9 @@ export async function GET(request: NextRequest) {
         photos: project.photos.map((img: { url: string }) => img.url),
       }))
       const featuredProjectIds = featuredRows.map((f) => f.projectId)
-      return NextResponse.json({ projects: transformedProjects, total: projects.length, featuredProjectIds })
+      const response = NextResponse.json({ projects: transformedProjects, total: projects.length, featuredProjectIds })
+      response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
+      return response
     }
 
     // Get total count for pagination info
@@ -103,7 +105,7 @@ export async function GET(request: NextRequest) {
       photos: project.photos.map((img: { url: string }) => img.url),
     }))
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       projects: transformedItems,
       pagination: {
         total,
@@ -112,6 +114,8 @@ export async function GET(request: NextRequest) {
         nextCursor,
       },
     })
+    response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
+    return response
   } catch (error) {
     console.error('Error fetching projects:', error)
     return NextResponse.json(

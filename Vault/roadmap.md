@@ -87,8 +87,8 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 
 ### What Remains in Phase 0
 - [ ] Connect nonprofit dashboard to real donation/wire-transfer APIs (currently mock data) #p1 @sloan
-- [ ] Decompose 754-line homepage into components #p2 @sloan
-- [ ] Add `Cache-Control` headers to public API routes #p2
+- [x] Decompose 754-line homepage into components #p2 @sloan
+- [x] Add `Cache-Control` headers to public API routes #p2
 
 ---
 
@@ -178,6 +178,7 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 - [ ] Wise API integration — track outbound transfers to Ukraine #p1 @sloan
 - [ ] Remove manual "I've Sent My Contribution" step (Plaid replaces it) #p1
 - [ ] Auto-update donation status when Wise confirms delivery #p1
+- [ ] Add `Cache-Control: private, no-store` to Plaid/Wise webhook and authenticated API routes #p2
 
 ### Donor Quality of Life
 - [ ] Donor password reset flow #p2 @sloan

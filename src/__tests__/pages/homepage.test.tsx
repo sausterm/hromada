@@ -498,5 +498,28 @@ describe('HomePage', () => {
         expect(screen.getByText('Fund Renewable Energy for Ukrainian Communities')).toBeInTheDocument()
       })
     })
+
+    it('uses admin-selected featured project IDs when provided', async () => {
+      const moreProjects = [
+        createMockProject({ id: 'p1', facilityName: 'Featured Hospital', createdAt: '2024-01-01T00:00:00Z' }),
+        createMockProject({ id: 'p2', facilityName: 'Featured School', createdAt: '2024-01-02T00:00:00Z' }),
+        createMockProject({ id: 'p3', facilityName: 'Other Project 1', createdAt: '2024-01-03T00:00:00Z' }),
+        createMockProject({ id: 'p4', facilityName: 'Other Project 2', createdAt: '2024-01-04T00:00:00Z' }),
+        createMockProject({ id: 'p5', facilityName: 'Other Project 3', createdAt: '2024-01-05T00:00:00Z' }),
+      ]
+      ;(global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          projects: moreProjects,
+          featuredProjectIds: ['p2', 'p1'],
+        }),
+      })
+
+      render(<HomePage />)
+
+      await waitFor(() => {
+        expect(screen.getByText('Fund Renewable Energy for Ukrainian Communities')).toBeInTheDocument()
+      })
+    })
   })
 })

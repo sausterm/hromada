@@ -418,17 +418,136 @@ describe('Header - Authenticated User', () => {
   })
 
   it('shows dashboard link when admin is authenticated', async () => {
-    // We need to re-mock useAuth to return authenticated state
-    // This test verifies the structure is correct for authenticated users
     render(<Header />)
 
     const menuButton = screen.getByRole('button', { name: 'Menu' })
     fireEvent.mouseEnter(menuButton.parentElement!)
 
-    // The dropdown should be visible
     await waitFor(() => {
       const links = screen.getAllByRole('link')
       expect(links.length).toBeGreaterThan(0)
     })
+  })
+})
+
+describe('Header - Transparent Mode', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('renders with transparent styling when transparent prop is true', () => {
+    render(<Header transparent />)
+    const header = screen.getByRole('banner')
+    // Transparent mode uses dynamic rgba styles
+    expect(header.style.backgroundColor).toContain('rgba')
+  })
+
+  it('has scroll-based opacity when transparent', () => {
+    render(<Header transparent />)
+    const header = screen.getByRole('banner')
+    // At scroll 0, opacity should be 0 (fully transparent)
+    expect(header.style.backgroundColor).toContain('0')
+  })
+
+  it('updates opacity on scroll when transparent', () => {
+    render(<Header transparent />)
+
+    Object.defineProperty(window, 'scrollY', { value: 300, writable: true })
+    fireEvent.scroll(window)
+
+    const header = screen.getByRole('banner')
+    // After scrolling 300px, should be fully opaque (jsdom may convert rgba(r,g,b,1) to rgb)
+    expect(header.style.backgroundColor).toBeTruthy()
+  })
+
+  it('cleans up scroll listener on unmount when transparent', () => {
+    const removeEventSpy = jest.spyOn(window, 'removeEventListener')
+    const { unmount } = render(<Header transparent />)
+    unmount()
+
+    expect(removeEventSpy).toHaveBeenCalledWith('scroll', expect.any(Function))
+    removeEventSpy.mockRestore()
+  })
+
+  it('applies transparent text color class when scrolled to top', () => {
+    render(<Header transparent />)
+    const menuButton = screen.getByRole('button', { name: 'Menu' })
+    // At scroll 0, transparent mode should have white text
+    expect(menuButton.className).toContain('text-white')
+  })
+})
+
+describe('Header - Mobile Language Switching', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('primes language on first tap on touch device', () => {
+    // Override matchMedia to simulate touch device
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation((query: string) => ({
+        matches: query === '(hover: none)',
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    })
+
+    render(<Header />)
+    const langButton = screen.getByRole('button', { name: /language/i })
+
+    // First tap should prime (not switch)
+    fireEvent.click(langButton)
+    expect(mockReplace).not.toHaveBeenCalled()
+  })
+
+  it('switches language on second tap on touch device', () => {
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: jest.fn().mockImplementation((query: string) => ({
+        matches: query === '(hover: none)',
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    })
+
+    render(<Header />)
+    const langButton = screen.getByRole('button', { name: /language/i })
+
+    // First tap primes
+    fireEvent.click(langButton)
+    // Second tap confirms
+    fireEvent.click(langButton)
+
+    expect(mockReplace).toHaveBeenCalledWith('/', { locale: 'uk' })
+  })
+})
+
+describe('Header - Non-homepage navigation', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    // Mock pathname to non-homepage
+    const navModule = require('@/i18n/navigation')
+    jest.spyOn(navModule, 'usePathname').mockReturnValue('/about')
+  })
+
+  it('navigates to homepage when clicking logo from non-homepage', async () => {
+    const user = userEvent.setup()
+    render(<Header />)
+
+    const hromadaButton = screen.getByRole('button', { name: 'hromada' })
+    await user.click(hromadaButton)
+
+    expect(mockPush).toHaveBeenCalledWith('/', { locale: 'en' })
   })
 })

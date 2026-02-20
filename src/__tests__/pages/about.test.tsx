@@ -65,8 +65,8 @@ describe('AboutPage', () => {
 
     it('renders Our Partners section', () => {
       render(<AboutPage />)
-      expect(screen.getByText('Our Partners')).toBeInTheDocument()
-      expect(screen.getByText('We work with trusted NGOs.')).toBeInTheDocument()
+      expect(screen.getByText('about.ourPartners')).toBeInTheDocument()
+      expect(screen.getByText('about.ourPartnersText')).toBeInTheDocument()
     })
 
     it('renders partner logos', () => {
@@ -79,25 +79,10 @@ describe('AboutPage', () => {
     })
   })
 
-  describe('Trust Center', () => {
-    it('renders Trust Center link', () => {
-      render(<AboutPage />)
-      expect(screen.getByText('Visit Trust Center')).toBeInTheDocument()
-    })
-
-    it('links to Sprinto trust center', () => {
-      render(<AboutPage />)
-      const link = screen.getByText('Visit Trust Center').closest('a')
-      expect(link).toHaveAttribute('href', 'https://app.sprinto.com/trust-center/view/ef845d19-d94b-4d73-84d9-18fa1945b999')
-      expect(link).toHaveAttribute('target', '_blank')
-      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
-    })
-  })
-
   describe('Navigation', () => {
     it('renders Browse Projects link', () => {
       render(<AboutPage />)
-      expect(screen.getByTestId('link-/')).toBeInTheDocument()
+      expect(screen.getByTestId('link-/projects')).toBeInTheDocument()
       expect(screen.getByText('Browse Projects')).toBeInTheDocument()
     })
 

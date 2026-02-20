@@ -1,4 +1,4 @@
-import { sendContactNotification, sendDonorWelcomeEmail, sendDonationNotificationToAdmin } from '@/lib/email'
+import { sendContactNotification, sendDonorWelcomeEmail, sendDonationNotificationToAdmin, sendPasswordResetEmail, sendNewsletterWelcomeEmail, sendPartnershipInquiryNotification } from '@/lib/email'
 
 // Mock security module to avoid Prisma dependency chain (security → prisma → @prisma/client)
 // which causes TextEncoder issues during jest.resetModules() re-imports
@@ -345,6 +345,158 @@ describe('email module', () => {
       })
 
       expect(result.success).toBeDefined()
+    })
+  })
+
+  describe('sendPasswordResetEmail', () => {
+    it('returns success when RESEND_API_KEY is not configured', async () => {
+      delete process.env.RESEND_API_KEY
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+      const logSpy = jest.spyOn(console, 'log').mockImplementation()
+
+      jest.resetModules()
+      const { sendPasswordResetEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend({ name: 'John', email: 'john@test.com', code: '123456' })
+
+      expect(result).toEqual({ success: true })
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('123456'))
+
+      consoleSpy.mockRestore()
+      logSpy.mockRestore()
+    })
+
+    it('sends password reset email', async () => {
+      jest.resetModules()
+      const { sendPasswordResetEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend({ name: 'John', email: 'john@test.com', code: '123456' })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('returns error on send failure', async () => {
+      const mockSend = jest.fn().mockRejectedValue(new Error('Send failed'))
+      jest.doMock('resend', () => ({
+        Resend: jest.fn().mockImplementation(() => ({
+          emails: { send: mockSend },
+        })),
+      }))
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      jest.resetModules()
+      const { sendPasswordResetEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend({ name: 'John', email: 'john@test.com', code: '123456' })
+
+      expect(result).toEqual({ success: false, error: 'Send failed' })
+      consoleSpy.mockRestore()
+    })
+  })
+
+  describe('sendNewsletterWelcomeEmail', () => {
+    it('returns success when RESEND_API_KEY is not configured', async () => {
+      delete process.env.RESEND_API_KEY
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+
+      jest.resetModules()
+      const { sendNewsletterWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend('sub@test.com')
+
+      expect(result).toEqual({ success: true })
+      consoleSpy.mockRestore()
+    })
+
+    it('sends newsletter welcome email', async () => {
+      jest.resetModules()
+      const { sendNewsletterWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend('sub@test.com')
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('returns error on failure', async () => {
+      const mockSend = jest.fn().mockRejectedValue(new Error('Failed'))
+      jest.doMock('resend', () => ({
+        Resend: jest.fn().mockImplementation(() => ({
+          emails: { send: mockSend },
+        })),
+      }))
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      jest.resetModules()
+      const { sendNewsletterWelcomeEmail: freshSend } = await import('@/lib/email')
+      const result = await freshSend('sub@test.com')
+
+      expect(result).toEqual({ success: false, error: 'Failed' })
+      consoleSpy.mockRestore()
+    })
+  })
+
+  describe('sendPartnershipInquiryNotification', () => {
+    const partnerParams = {
+      communityName: 'Portland Rotary',
+      contactName: 'John',
+      contactEmail: 'john@test.com',
+      communityType: 'rotary',
+    }
+
+    it('returns success when ADMIN_EMAIL is not configured', async () => {
+      delete process.env.ADMIN_EMAIL
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+
+      jest.resetModules()
+      const { sendPartnershipInquiryNotification: freshSend } = await import('@/lib/email')
+      const result = await freshSend(partnerParams)
+
+      expect(result).toEqual({ success: true })
+      consoleSpy.mockRestore()
+    })
+
+    it('returns success when RESEND_API_KEY is not configured', async () => {
+      delete process.env.RESEND_API_KEY
+      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
+
+      jest.resetModules()
+      const { sendPartnershipInquiryNotification: freshSend } = await import('@/lib/email')
+      const result = await freshSend(partnerParams)
+
+      expect(result).toEqual({ success: true })
+      consoleSpy.mockRestore()
+    })
+
+    it('sends notification with optional fields', async () => {
+      jest.resetModules()
+      const { sendPartnershipInquiryNotification: freshSend } = await import('@/lib/email')
+      const result = await freshSend({
+        ...partnerParams,
+        approximateSize: '50',
+        message: 'Interested in partnering',
+      })
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('sends notification without optional fields', async () => {
+      jest.resetModules()
+      const { sendPartnershipInquiryNotification: freshSend } = await import('@/lib/email')
+      const result = await freshSend(partnerParams)
+
+      expect(result.success).toBeDefined()
+    })
+
+    it('returns error on failure', async () => {
+      const mockSend = jest.fn().mockRejectedValue(new Error('Failed'))
+      jest.doMock('resend', () => ({
+        Resend: jest.fn().mockImplementation(() => ({
+          emails: { send: mockSend },
+        })),
+      }))
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+
+      jest.resetModules()
+      const { sendPartnershipInquiryNotification: freshSend } = await import('@/lib/email')
+      const result = await freshSend(partnerParams)
+
+      expect(result).toEqual({ success: false, error: 'Failed' })
+      consoleSpy.mockRestore()
     })
   })
 })

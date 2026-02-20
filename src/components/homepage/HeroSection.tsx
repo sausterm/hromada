@@ -44,7 +44,7 @@ export function HeroSection({ totalStats }: HeroSectionProps) {
         <div
           className="hero-photo-animate absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: 'url(/photos/hero-navy.jpeg)',
+            backgroundImage: 'url(https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466071929.jpeg)',
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-900)]/80 via-[var(--navy-900)]/60 to-transparent" />

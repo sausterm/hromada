@@ -1,41 +1,58 @@
 'use client'
 
-import { type ReactNode } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { Users, SearchCheck, Megaphone, Heart, Send, Wrench, SolarPanel, type LucideIcon } from 'lucide-react'
 
-const STEPS: { number: number; titleKey: string; descKey: string; hexColor: string; icon: ReactNode }[] = [
+const STEPS: { number: number; titleKey: string; descKey: string; hexColor: string; Icon: LucideIcon }[] = [
   {
     number: 1,
     titleKey: 'homepage.howItWorks.step1Title',
     descKey: 'homepage.howItWorks.step1Desc',
     hexColor: '#5B8FA8',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 21h18M9 8h10M9 12h10M9 16h10M5 8h.01M5 12h.01M5 16h.01"/>
-      </svg>
-    ),
+    Icon: Users,
   },
   {
     number: 2,
     titleKey: 'homepage.howItWorks.step2Title',
     descKey: 'homepage.howItWorks.step2Desc',
     hexColor: '#7B9E6B',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-      </svg>
-    ),
+    Icon: SearchCheck,
   },
   {
     number: 3,
     titleKey: 'homepage.howItWorks.step3Title',
     descKey: 'homepage.howItWorks.step3Desc',
+    hexColor: '#8B7355',
+    Icon: Megaphone,
+  },
+  {
+    number: 4,
+    titleKey: 'homepage.howItWorks.step4Title',
+    descKey: 'homepage.howItWorks.step4Desc',
     hexColor: '#D4954A',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-      </svg>
-    ),
+    Icon: Heart,
+  },
+  {
+    number: 5,
+    titleKey: 'homepage.howItWorks.step5Title',
+    descKey: 'homepage.howItWorks.step5Desc',
+    hexColor: '#C75B39',
+    Icon: Send,
+  },
+  {
+    number: 6,
+    titleKey: 'homepage.howItWorks.step6Title',
+    descKey: 'homepage.howItWorks.step6Desc',
+    hexColor: '#6B8E9E',
+    Icon: Wrench,
+  },
+  {
+    number: 7,
+    titleKey: 'homepage.howItWorks.step7Title',
+    descKey: 'homepage.howItWorks.step7Desc',
+    hexColor: '#4A7C59',
+    Icon: SolarPanel,
   },
 ]
 
@@ -82,37 +99,75 @@ const CATEGORIES = [
 
 export function HowItWorksSection() {
   const t = useTranslations()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [revealed, setRevealed] = useState(false)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setRevealed(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <section id="how-it-works" className="fade-in-section pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
       <div className="max-w-3xl mx-auto px-4 lg:px-8">
-        <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-10 text-center">
+        <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-12 text-center">
           {t('homepage.howItWorks.title')}
         </h2>
 
-        <div className="space-y-0">
+        <div ref={containerRef}>
           {STEPS.map((step, index) => (
-            <div key={step.number} className="flex items-start gap-5">
-              <div className="flex flex-col items-center">
+            <div
+              key={step.number}
+              className="flex gap-5"
+              style={{
+                opacity: revealed ? 1 : 0,
+                transform: revealed ? 'translateY(0)' : 'translateY(20px)',
+                transition: `opacity 0.6s ease ${index * 0.18}s, transform 0.6s ease ${index * 0.18}s`,
+              }}
+            >
+              {/* Left column: icon + connector */}
+              <div className="flex flex-col items-center flex-shrink-0">
                 <div
-                  className="w-12 h-12 rounded-xl text-white flex items-center justify-center shadow-md flex-shrink-0"
+                  className="w-11 h-11 rounded-xl text-white flex items-center justify-center shadow-md"
                   style={{ backgroundColor: step.hexColor }}
                 >
-                  {step.icon}
+                  <step.Icon className="w-5 h-5" strokeWidth={1.75} />
                 </div>
                 {index < STEPS.length - 1 && (
-                  <div className="w-0.5 h-8 bg-[var(--cream-300)] my-1" />
+                  <div className="w-0.5 bg-[var(--cream-300)] flex-1 min-h-[16px] my-1.5" />
                 )}
               </div>
-              <div className={`pt-1 ${index < STEPS.length - 1 ? 'pb-4' : ''}`}>
-                <h3 className="font-semibold text-[var(--navy-700)] text-base">{t(step.titleKey)}</h3>
+
+              {/* Right column: title top-aligned with icon, desc below */}
+              <div className={index < STEPS.length - 1 ? 'pb-6' : ''}>
+                <h3 className="font-semibold text-[var(--navy-700)] text-base leading-tight -mt-px">{t(step.titleKey)}</h3>
                 <p className="text-[var(--navy-500)] text-sm mt-0.5 leading-relaxed">{t(step.descKey)}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div
+          className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
+          style={{
+            opacity: revealed ? 1 : 0,
+            transform: revealed ? 'translateY(0)' : 'translateY(20px)',
+            transition: `opacity 0.6s ease ${STEPS.length * 0.18 + 0.1}s, transform 0.6s ease ${STEPS.length * 0.18 + 0.1}s`,
+          }}
+        >
           <div className="inline-flex items-center gap-3 bg-white px-8 py-4 rounded-2xl border border-[var(--cream-200)] shadow-lg">
             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
               <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

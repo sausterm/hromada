@@ -2,7 +2,9 @@
 
 ## Project
 
-Hromada is a Next.js platform connecting American donors with Ukrainian municipalities for infrastructure rebuilding. Fiscal sponsor: POCACITO Network.
+Hromada is a Next.js platform connecting American donors with Ukrainian municipalities for infrastructure rebuilding.
+
+**Fiscal Sponsor:** POCACITO Network (501(c)(3), EIN 99-0392258), based in Virginia.
 
 ## Planning Vault
 
@@ -46,6 +48,15 @@ Projects with stronger documentation should be prioritized in the browse/feature
 - **Donor trust comes from evidence, not claims.** Show what NGO partners have already built — completed projects with photos, partner attribution, and cost documentation. The Kharkiv case study on the homepage is the model.
 - **OFAC compliance policy** should be published and accessible (footer legal section or about/trust page) but not prominently featured. It's for institutional donors and due diligence, not the average individual donor.
 - **Legal pages** (`/terms`, `/privacy`) are currently placeholders and need completion.
+
+## Messaging Rules
+
+- **No destruction language.** Never use "destroy," "destroyed," "destruction," or similar on the site. Hromada builds resilience — the framing is always forward-looking, never about what war has taken.
+- **Community agency is central.** Ukrainians are agents, not victims. They identify, they request, they rebuild. Hromada is infrastructure, not the originator.
+- **Donors respond to a request, not save anyone.** Frame contributions as responding to a community's plan, not rescuing.
+- **Never say** "we identified," "we selected," "beneficiaries," "recipients," "victims," "saving," "war-torn," or "charity."
+- **Always use** "communities," "municipalities," "requesting," "rebuilding," "partners," "resilience," "energy independence."
+- See `Hromada_Messaging_Framework.md.pdf` for full framework.
 
 ## Communication Style
 

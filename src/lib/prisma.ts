@@ -4,10 +4,9 @@ import { Pool } from 'pg'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
-  pool: Pool | undefined
 }
 
-export function getPrisma(): PrismaClient {
+function createPrisma(): PrismaClient {
   if (globalForPrisma.prisma) {
     return globalForPrisma.prisma
   }
@@ -18,7 +17,6 @@ export function getPrisma(): PrismaClient {
   let poolConfig: any
 
   if (process.env.DB_HOST) {
-    // Use explicit parameters (avoids URL-encoding issues with special chars in password)
     poolConfig = {
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT || '5432'),
@@ -42,18 +40,15 @@ export function getPrisma(): PrismaClient {
     log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   })
 
-  // Cache — in Lambda/SSR, globals persist across requests
   globalForPrisma.prisma = client
-  globalForPrisma.pool = pool
-
   return client
 }
 
-// Lazy proxy: defers getPrisma() until first property access,
-// so env vars from .env.production are loaded by then
+// Lazy proxy: defers createPrisma() until first property access,
+// ensuring env vars from .env.production are loaded
 export const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
-    const client = getPrisma()
+    const client = createPrisma()
     return (client as any)[prop]
   },
 })

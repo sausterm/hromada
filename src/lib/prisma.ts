@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
-import { Pool } from 'pg'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -11,13 +10,11 @@ function createPrisma(): PrismaClient {
     return globalForPrisma.prisma
   }
 
-  const connectionString = process.env.DATABASE_URL || ''
-  const isRemoteDb = connectionString.includes('supabase')
-
-  let poolConfig: any
+  let adapterConfig: Record<string, unknown>
 
   if (process.env.DB_HOST) {
-    poolConfig = {
+    // Use explicit parameters (avoids URL-encoding issues with special chars)
+    adapterConfig = {
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT || '5432'),
       database: process.env.DB_NAME || 'postgres',
@@ -26,14 +23,15 @@ function createPrisma(): PrismaClient {
       ssl: { rejectUnauthorized: false },
     }
   } else {
-    poolConfig = { connectionString }
-    if (isRemoteDb) {
-      poolConfig.ssl = { rejectUnauthorized: false }
+    adapterConfig = {
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.DATABASE_URL?.includes('supabase')
+        ? { rejectUnauthorized: false }
+        : undefined,
     }
   }
 
-  const pool = new Pool(poolConfig)
-  const adapter = new PrismaPg(pool)
+  const adapter = new PrismaPg(adapterConfig)
 
   const client = new PrismaClient({
     adapter,
@@ -45,7 +43,7 @@ function createPrisma(): PrismaClient {
 }
 
 // Lazy proxy: defers createPrisma() until first property access,
-// ensuring env vars from .env.production are loaded
+// so env vars from .env.production are loaded by then
 export const prisma = new Proxy({} as PrismaClient, {
   get(_target, prop) {
     const client = createPrisma()

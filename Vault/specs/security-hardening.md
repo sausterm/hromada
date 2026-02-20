@@ -166,7 +166,7 @@ Replace custom auth with Google/GitHub OAuth for donors, keep password auth for 
 Move audit logs to an append-only external service (prevents tampering).
 
 ### 4.4 Secrets Management
-Integrate with a secrets manager (Vercel env vars are fine for now, but consider Vault or AWS Secrets Manager for rotation).
+Integrate with a secrets manager (Amplify env vars are fine for now, but consider AWS Secrets Manager for rotation).
 
 ### 4.5 Penetration Testing
 Commission an external pentest before scaling to significant donor volume.

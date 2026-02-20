@@ -181,7 +181,7 @@ This checklist is specific to the Hromada tech stack (Next.js 16, Prisma, Postgr
 
 ## Production Deployment Checklist
 
-### Vercel/Hosting Configuration
+### Amplify/Hosting Configuration
 
 - [ ] **Enable HTTPS redirect**
   - Verify HSTS is active
@@ -366,7 +366,7 @@ npx prisma studio
 
 - **Security Issues:** security@hromada.org (recommended to set up)
 - **Platform Admin:** [ADMIN_EMAIL from env]
-- **Hosting Provider:** Vercel support
+- **Hosting Provider:** AWS Amplify support
 
 ---
 

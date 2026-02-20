@@ -129,7 +129,7 @@ Can start after Track A, before FSA is signed.
 - [ ] Connect nonprofit dashboard to real APIs #p1
 - [ ] Test full donation flow end-to-end #p1
 - [ ] Verify email delivery in production #p1
-- [ ] Set production environment variables in Vercel/Amplify #p1
+- [ ] Set production environment variables in Amplify #p1
 - [ ] Configure custom domain with SSL #p1
 - [ ] Review Terms of Service against FSA terms #p1 @tom
 - [ ] Review Privacy Policy for donor data coverage #p1 @tom
@@ -250,7 +250,7 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 
 ### Infrastructure
 - [x] CI/CD pipeline with GitHub Actions
-- [ ] Staging environment on Vercel
+- [ ] Staging environment on Amplify
 - [ ] Database backup automation
 - [ ] Uptime monitoring
 - [ ] Log aggregation

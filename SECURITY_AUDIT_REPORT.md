@@ -429,7 +429,7 @@ const safeHtml = `
 
 ### Low Priority Issues
 1. No API documentation (OpenAPI/Swagger)
-2. Geo-blocking only works on Vercel
+2. Geo-blocking requires edge runtime geo data (platform-dependent)
 3. Inconsistent input validation patterns
 4. Missing 2FA support for admin accounts
 5. No secrets management system

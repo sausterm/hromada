@@ -29,7 +29,7 @@ This spec defines what "launch" means for Hromada, the conditions that must be m
 - ACH or credit card payments — wire/DAF/check covers our donor profile
 - Mobile map view — "coming soon" is acceptable
 - 100% test coverage — ~70% is sufficient
-- CI/CD pipeline — manual deploys via Vercel are fine for launch
+- CI/CD pipeline — manual deploys via Amplify are fine for launch
 - Municipal Partnership matching system — the landing page + inquiry form is enough
 
 ---
@@ -87,7 +87,7 @@ Nonprofit Dashboard (operational)
 - [ ] Connect nonprofit dashboard to real donation/wire-transfer APIs #p1 @sloan
 - [ ] Test full donation flow end-to-end (project → confirm → email → dashboard) #p1 @sloan
 - [ ] Verify Resend email delivery in production (not just dev) #p1 @sloan
-- [ ] Set all production environment variables in Vercel #p1 @sloan
+- [ ] Set all production environment variables in Amplify #p1 @sloan
 - [ ] Configure custom domain with SSL #p1 @sloan
 
 ### Content / Legal Pages
@@ -128,7 +128,7 @@ Immediately after launch, focus shifts to:
 ### Before flipping the switch:
 
 - [ ] All launch blockers above are marked done
-- [ ] Production environment variables confirmed in Vercel
+- [ ] Production environment variables confirmed in Amplify
 - [ ] Database migrated with production schema
 - [ ] Test donation flow on production URL
 - [ ] Admin can log in and access dashboard

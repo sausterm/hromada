@@ -6,7 +6,7 @@
 
 ## Context
 
-Project photos were originally stored locally in the `public/` directory. This doesn't work for production deployment on Vercel (ephemeral filesystem) and creates large git diffs when photos are added/removed.
+Project photos were originally stored locally in the `public/` directory. This doesn't work for production deployment on Amplify (ephemeral filesystem) and creates large git diffs when photos are added/removed.
 
 ## Decision
 

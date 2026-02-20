@@ -185,19 +185,11 @@ See `.env.example` for all required environment variables.
 
 ## Deployment
 
-### Vercel (Recommended)
+### AWS Amplify (Recommended)
 
-1. Connect your GitHub repository to Vercel
-2. Add environment variables in Vercel dashboard
-3. Deploy
-
-### Other Platforms
-
-The app can be deployed to any platform that supports Next.js:
-- AWS Amplify
-- Netlify
-- Railway
-- Render
+1. Connect your GitHub repository to AWS Amplify
+2. Add environment variables in the Amplify console
+3. Pushing to a branch triggers a build automatically
 
 ## License
 

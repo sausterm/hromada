@@ -227,7 +227,7 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 - [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2
 - [/] Increase test coverage to 85% (currently at ~75%, up from ~63%) #p2
 - [ ] Add E2E tests for browse projects, admin CRUD #p2
-- [ ] Fix remaining TypeScript errors (3) #p3
+- [x] Fix remaining TypeScript errors (0 errors, `tsc --noEmit` clean) #p3
 
 ---
 
@@ -238,7 +238,7 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 
 ### Trust & Verification
 - [ ] Third-party verification system for municipalities
-- [ ] Candid/GuideStar integration (already Platinum seal)
+- [x] Candid/GuideStar integration (Platinum seal linked in footer, about page, and homepage)
 - [ ] Analytics and impact metrics dashboard
 - [ ] Budget tracking and transparency reports per project
 

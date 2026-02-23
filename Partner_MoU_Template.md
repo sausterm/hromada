@@ -28,7 +28,7 @@ a. **Project Identification.** Identifying and proposing civilian infrastructure
 
 b. **Verification.** Verifying the identity, legitimacy, and needs of recipient municipalities and the accuracy of project details prior to publication on the Hromada platform.
 
-c. **Implementation Support.** Facilitating or directly managing the procurement, construction, or installation of project infrastructure.
+c. **Implementation Support.** Facilitating or directly managing the procurement, construction, or installation of project infrastructure. This includes advising municipalities on contractor selection, procurement procedures, and compliance with applicable Ukrainian public procurement law.
 
 d. **Monitoring and Reporting.** Providing ongoing monitoring of funded projects and reporting progress, completion, and outcomes to Hromada.
 
@@ -100,7 +100,17 @@ c. Not charge unauthorized fees, commissions, or mark-ups to municipalities or c
 
 d. Maintain accurate records of all expenditures, contractor engagements, and procurement activities related to Hromada-funded projects, and make such records available to Hromada upon reasonable request.
 
-### 4.6 Use of Hromada Name and Brand
+### 4.6 Procurement Transparency
+
+The Partner agrees to:
+
+a. Assist municipalities in posting project-related procurement on the Prozorro public procurement platform (prozorro.gov.ua), including below-threshold contracts where legally permissible under applicable Ukrainian law.
+
+b. Confirm in monthly progress reports (Section 4.3(a)) and the project closure report (Section 4.3(c)) whether relevant procurement has been posted on Prozorro, including the tender or contract reference number where available.
+
+c. Notify Hromada promptly in writing if a municipality is unable or unwilling to post procurement on Prozorro, including a written explanation of the reason.
+
+### 4.7 Use of Hromada Name and Brand
 
 The Partner agrees to:
 
@@ -130,6 +140,16 @@ e. Not publicly misrepresent the Partner's role, capabilities, or endorsement.
 
 This MoU does not create any financial obligation between the parties. The Partner is not entitled to compensation from Hromada for activities under this MoU unless a separate written agreement governs such compensation. Hromada does not guarantee any minimum volume of projects, funding, or referrals to the Partner.
 
+**Co-Financing Commitments.** Notwithstanding the foregoing, where the Partner has provided a written co-financing commitment for a specific project prior to that project being published on the Hromada platform, the following shall apply:
+
+a. Such written co-financing commitment shall constitute a firm obligation upon which Hromada will rely in soliciting donor funds for that project and presenting the project's financing structure to donors.
+
+b. If the Partner determines that it cannot fulfill a co-financing commitment **before** the project is published on the Hromada platform and before donor funds have been solicited in reliance on that commitment, the Partner shall notify Hromada in writing immediately. In such case, Hromada shall have discretion to pause the project, seek alternative co-financing arrangements, or terminate this MoU, depending on the circumstances and the impact on project viability.
+
+c. If the Partner withdraws, repudiates, or fails to fulfill a co-financing commitment **after** the project has been published on the Hromada platform and donor funds have been solicited in reliance on that commitment, the following consequences shall apply automatically and without discretion, regardless of the stated reason for withdrawal — including force majeure: (i) this MoU shall terminate immediately; and (ii) Hromada shall refund all affected donors whose contributions were solicited in reliance on the Partner's co-financing commitment.
+
+d. The distinction between paragraphs (b) and (c) above exists to protect donor trust. Donors who contribute to a project do so in reliance on the financing structure presented to them, including any stated co-financing from the Partner. Withdrawal of a co-financing commitment after donors have contributed in reliance on it is a breach of that reliance regardless of the reason. The automatic termination and refund provision in paragraph (c) is designed to prevent the use of force majeure or other claims as a mechanism to avoid co-financing obligations after donor funds have been committed.
+
 ---
 
 ## 7. Confidentiality
@@ -148,7 +168,7 @@ The Partner agrees to handle any personal data received from Hromada (including 
 
 a. Each party shall be responsible for its own acts and omissions in connection with this MoU. Neither party assumes liability for the acts, omissions, or obligations of the other.
 
-b. The Partner agrees to indemnify and hold harmless Hromada and POCACITO Network from any claims, damages, losses, or expenses arising out of the Partner's breach of this MoU, including but not limited to any violation of Sections 4.4 (Sanctions Compliance) or 4.5 (Anti-Corruption).
+b. The Partner agrees to indemnify and hold harmless Hromada and POCACITO Network from any claims, damages, losses, or expenses arising out of the Partner's breach of this MoU, including but not limited to any violation of Sections 4.4 (Sanctions Compliance), 4.5 (Anti-Corruption), or 6 (Co-Financing Commitments).
 
 ---
 
@@ -160,13 +180,13 @@ b. Either party may terminate this MoU at any time by providing thirty (30) days
 
 c. Termination shall not affect obligations related to projects already in progress at the time of termination. The Partner's monitoring and reporting obligations under Section 4.3 shall survive termination with respect to any incomplete projects.
 
-d. Sections 4.4 (Sanctions Compliance), 4.5 (Anti-Corruption), 7 (Confidentiality), and 9 (Liability and Indemnification) shall survive termination of this MoU.
+d. Sections 4.4 (Sanctions Compliance), 4.5 (Anti-Corruption), 6 (Co-Financing Commitments), 7 (Confidentiality), and 9 (Liability and Indemnification) shall survive termination of this MoU.
 
 ---
 
 ## 11. Dispute Resolution
 
-Any dispute arising under this MoU shall be resolved first through good-faith negotiation between the parties. If the dispute cannot be resolved within thirty (30) days, either party may refer the matter to mediation. This MoU shall be governed by the laws of the State of [State], United States.
+Any dispute arising under this MoU shall be resolved first through good-faith negotiation between the parties. If the dispute cannot be resolved within thirty (30) days, either party may refer the matter to mediation. This MoU shall be governed by the laws of the Commonwealth of Virginia, United States.
 
 ---
 

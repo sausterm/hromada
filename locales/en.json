@@ -4,7 +4,7 @@
   },
   "blocked": {
     "title": "Access Restricted",
-    "message": "Access to hromada is not available from your location.",
+    "message": "Access to Hromada is not available from your location.",
     "reasonTitle": "Why am I seeing this?",
     "reason": "To protect Ukrainian infrastructure data and prevent potential security threats, access from certain regions is restricted. This platform contains information about critical infrastructure projects in Ukraine.",
     "vpnTitle": "Using a VPN or Proxy?",
@@ -440,14 +440,14 @@
     }
   },
   "footer": {
-    "aboutUs": "About hromada",
+    "aboutUs": "About Hromada",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "contact": "Contact",
     "builtFor": "Built to support renewable infrastructure recovery",
     "geoRestrictions": "Service restricted in certain regions for security",
     "mpp": "Municipal Partnership",
-    "fiscalSponsor": "hromada is a project of",
+    "fiscalSponsor": "Hromada is a project of",
     "candidSeal": "Candid Platinum Seal of Transparency",
     "copyright": "© {year} Thomas D. Protzman. All rights reserved."
   },
@@ -465,7 +465,7 @@
     "teamTitle": "Our Team",
     "teamTomName": "Thomas Protzman",
     "teamTomRole": "Founder & Project Director",
-    "teamTomBio": "Thomas holds a Master of International Affairs from the Hertie School in Berlin, where his research focused on transatlantic relations, climate policy, and democratic governance. He built Hromada to channel US philanthropic capital toward Ukraine's municipal renewable energy transition.",
+    "teamTomBio": "Thomas built Hromada to channel US philanthropic capital toward Ukraine's municipal renewable energy transition. He holds a Master of International Affairs from the Hertie School in Berlin and writes on climate change, transatlantic affairs, and European politics.",
     "teamSloanName": "Sloan Austermann",
     "teamSloanRole": "Co-Founder & Alternate Project Director",
     "teamSloanBio": "Sloan is an AI Engineer at Accenture Federal Services, where he designs, builds, and deploys cloud-native systems supporting critical federal operations. He holds multiple professional AWS certifications and dual degrees in International Economics and Mathematics from the University of Notre Dame.",
@@ -514,7 +514,7 @@
   },
   "contact": {
     "title": "Contact Us",
-    "description": "Have questions about the hromada platform? We're here to help.",
+    "description": "Have questions about the Hromada platform? We're here to help.",
     "responseTime": "We typically respond within 48 hours.",
     "generalInquiries": "General Inquiries",
     "generalInquiriesText": "For general questions about the platform, partnership opportunities, or other inquiries:",
@@ -528,7 +528,7 @@
     "forDonorsAction": "Browse Projects",
     "forPartners": "For NGO Partners",
     "forPartnersIcon": "handshake",
-    "forPartnersText": "Interested in becoming a verification partner? hromada works with trusted NGOs on the ground in Ukraine who verify and facilitate projects.",
+    "forPartnersText": "Interested in becoming a verification partner? Hromada works with trusted NGOs on the ground in Ukraine who verify and facilitate projects.",
     "forPartnersAction": "Partner Inquiry",
     "forMedia": "Media & Press",
     "forMediaIcon": "newspaper",
@@ -537,9 +537,9 @@
   },
   "transparency": {
     "title": "Transparency",
-    "intro": "We take trust seriously. Every project on hromada goes through a verification process to ensure authenticity and protect both donors and municipalities.",
+    "intro": "We take trust seriously. Every project on Hromada goes through a verification process to ensure authenticity and protect both donors and municipalities.",
     "civilianOnlyTitle": "Civilian Infrastructure Only",
-    "civilianOnlyText": "hromada exclusively supports civilian infrastructure projects — hospitals, schools, water utilities, and renewable energy systems. We do not fund, facilitate, or support any military equipment, dual-use technology, or defense-related projects. Ukrainian communities are using this platform to maintain essential services and build sustainable energy independence.",
+    "civilianOnlyText": "Hromada exclusively supports civilian infrastructure projects — hospitals, schools, water utilities, and renewable energy systems. We do not fund, facilitate, or support any military equipment, dual-use technology, or defense-related projects. Ukrainian communities are using this platform to maintain essential services and build sustainable energy independence.",
     "verificationTitle": "Project Verification",
     "verificationText": "Each project submission is reviewed before publication. Municipality identity is confirmed, project details are verified, and information is checked for accuracy.",
     "directConnectionTitle": "Direct Connection",
@@ -560,15 +560,15 @@
     "processStep5Text": "Direct transfer to municipality",
     "faqTitle": "Frequently Asked Questions",
     "faq1Question": "Where does my money go?",
-    "faq1Answer": "100% of your donation goes directly to the municipality for the specified project. hromada does not take any transaction fees or overhead from donations. We are funded separately through grants and institutional support.",
+    "faq1Answer": "100% of your donation goes directly to the municipality for the specified project. Hromada does not take any transaction fees or overhead from donations. We are funded separately through grants and institutional support.",
     "faq2Question": "How do I know projects are real?",
     "faq2Answer": "Every project goes through a multi-step verification process. Trusted NGO partners on the ground in Ukraine verify municipality identities, project details, and needs. Documentation is reviewed and due diligence is conducted before any project is published.",
     "faq3Question": "Can I visit or see updates on my funded project?",
     "faq3Answer": "Yes! After funding is complete, municipalities provide updates and photos of project implementation. For larger donations, we can arrange virtual meetings with the municipality or, when safe, coordinate site visits.",
     "faq4Question": "Why only renewable energy projects?",
     "faq4Answer": "Ukraine's energy infrastructure has been systematically targeted. Communities are requesting solar, battery storage, and heat pumps to build decentralized, resilient energy systems that can't be taken out by a single attack. Every installation strengthens long-term energy independence.",
-    "faq5Question": "How is hromada funded?",
-    "faq5Answer": "hromada operates through grants and institutional support from foundations committed to Ukrainian recovery. This allows us to pass 100% of individual donations directly to projects without administrative fees."
+    "faq5Question": "How is Hromada funded?",
+    "faq5Answer": "Hromada operates through grants and institutional support from foundations committed to Ukrainian recovery. This allows us to pass 100% of individual donations directly to projects without administrative fees."
   },
   "login": {
     "title": "Sign In",
@@ -1007,7 +1007,7 @@
   },
   "prescreening": {
     "title": "Municipal Pre-Screening Criteria",
-    "subtitle": "How we vet Ukrainian municipalities before listing their projects on hromada",
+    "subtitle": "How we vet Ukrainian municipalities before listing their projects on Hromada",
     "tiPartnership": "Powered by Transparency International Ukraine Data",
     "tiPartnershipDesc": "We use the Transparent Cities ranking from Transparency International Ukraine to pre-screen municipalities. This annual assessment evaluates 100 Ukrainian cities across 70 indicators in 7 key areas of governance.",
     "visitTransparentCities": "Visit Transparent Cities →",

@@ -302,7 +302,7 @@ export function PhotoDocumentaryGallery() {
           </h2>
           <p className="text-white/60 max-w-2xl mx-auto">
             These aren't renderings or stock photos. Every image is from an actual installation
-            funded through hromada and completed by our Ukrainian partners.
+            funded through Hromada and completed by our Ukrainian partners.
           </p>
         </div>
 

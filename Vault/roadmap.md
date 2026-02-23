@@ -30,8 +30,8 @@ A trusted, transparent platform where donors can discover Ukrainian community pr
 ```
 Phase 0: Foundation        █████████████████████  ~95% ← nearly complete
 Phase 1: Launch Readiness  ██████████████░░░░░░░  ~70% ← blocked by FSA signing only
-Phase 2: Automation        ██░░░░░░░░░░░░░░░░░░░  ~10% ← Sentry done
-Phase 3: Growth            ░░░░░░░░░░░░░░░░░░░░░   0% ← post-traction
+Phase 2: Automation        ███░░░░░░░░░░░░░░░░░░  ~15% ← Sentry, CSRF, password reset done
+Phase 3: Growth            ████░░░░░░░░░░░░░░░░░  ~20% ← some items done early
 Phase 4: Scale             ░░░░░░░░░░░░░░░░░░░░░   0% ← future
 ```
 
@@ -68,7 +68,7 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 - [x] Contact form with email notifications (Resend)
 - [x] Transparency page with TI Ukraine pre-screening criteria
 - [x] Privacy policy, terms of service, OFAC sanctions policy pages
-- [x] ~70% test coverage (Jest + React Testing Library)
+- [x] ~75% test coverage (Jest + React Testing Library)
 - [x] Earth-tone humanitarian design system (cream/navy/ukraine-blue palette)
 - [x] Donation database model (PENDING → RECEIVED → ALLOCATED → FORWARDED → COMPLETED)
 - [x] Support Project Card with payment instructions (Wire, DAF, Check)
@@ -181,13 +181,13 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 - [ ] Add `Cache-Control: private, no-store` to Plaid/Wise webhook and authenticated API routes #p2
 
 ### Donor Quality of Life
-- [ ] Donor password reset flow #p2 @sloan
+- [x] Donor password reset flow #p2 @sloan
 - [ ] Receipt/tax documentation generation (PDF) #p2 @sloan
 - [ ] Email notifications on donation status changes #p2
 - [ ] ACH payment method support (lower-cost for smaller donations) #p3
 
 ### Platform Hardening
-- [ ] CSRF protection on all mutation endpoints #p2
+- [x] CSRF protection on all mutation endpoints (origin verification in edge middleware) #p2
 - [ ] Redis-based rate limiting (replace in-memory) #p2
 - [x] Sentry error monitoring (configured, production-only due to Next.js 16 compat)
 - [ ] E2E tests for critical donation flow #p2
@@ -205,10 +205,10 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 - [ ] Partner onboarding workflow #p2
 - [ ] Joint project creation between partner communities #p3
 - [ ] Partnership progress tracking and reporting #p3
-- [ ] Case studies and success stories page #p3
+- [/] Case studies and success stories page (Kharkiv case study on homepage; dedicated page not yet built) #p3
 
 ### Donor Experience
-- [ ] Donor profiles with giving history and impact summary #p2
+- [x] Donor profiles with giving history and impact summary #p2
 - [ ] Project update notifications (email + in-app) #p3
 - [ ] Impact reporting with progress photos and before/after #p3
 - [ ] Social sharing for projects #p3
@@ -217,15 +217,15 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 
 ### Performance & Accessibility
 - [ ] Viewport-based map loading (won't scale past ~100 projects) #p1
-- [ ] Mobile map view (currently shows "coming soon") #p1
+- [x] Mobile map view (dual-map pattern with list/map toggle) #p1
 - [ ] Skip-to-content navigation links #p2
-- [ ] ARIA labels on all form elements #p2
+- [/] ARIA labels on all form elements (semantic label associations in place, sparse aria-label attributes) #p2
 - [ ] Keyboard navigation for Leaflet map #p2
 - [ ] Color contrast audit against WCAG 2.1 AA #p3
 
 ### Code Quality
 - [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2
-- [ ] Increase test coverage from ~70% to 85% #p2
+- [/] Increase test coverage to 85% (currently at ~75%, up from ~63%) #p2
 - [ ] Add E2E tests for browse projects, admin CRUD #p2
 - [ ] Fix remaining TypeScript errors (3) #p3
 
@@ -271,8 +271,8 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 | **Phase 0** | Foundation (code) | Feb 2026 | ✅ ~95% complete |
 | **Phase 1** | Launch readiness | Mar 2026 | 🔄 ~70% — awaiting FSA |
 | **LAUNCH** | First real donation | Mar 2026 (est.) | ⏳ Blocked by FSA signing |
-| **Phase 2** | Automation | Apr–May 2026 | Sentry done |
-| **Phase 3** | Growth | Jun–Sep 2026 | Not started |
+| **Phase 2** | Automation | Apr–May 2026 | ~15% — Sentry, CSRF, password reset |
+| **Phase 3** | Growth | Jun–Sep 2026 | ~20% — mobile map, donor dashboard, test coverage |
 | **Phase 4** | Scale | Oct 2026+ | Not started |
 
 > **The critical path is the FSA.** Security hardening is complete. FSA is attorney-reviewed and going to POCACITO Feb 20. The moment the FSA is signed and bank details are in hand, launch is days away — not weeks.

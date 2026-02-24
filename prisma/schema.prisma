@@ -385,12 +385,144 @@ model PartnershipInquiry {
 }
 
 model NewsletterSubscriber {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  subscribedAt DateTime @default(now())
-  unsubscribed Boolean  @default(false)
+  id               String   @id @default(cuid())
+  email            String   @unique
+  subscribedAt     DateTime @default(now())
+  unsubscribed     Boolean  @default(false)
+  unsubscribeToken String   @unique @default(cuid())
 
   @@index([subscribedAt])
+}
+
+// ── Email Campaign System ──────────────────────────────────────────
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  COMPLETED
+  CANCELLED
+}
+
+/// Newsletter campaigns sent to subscribers
+model EmailCampaign {
+  id          String         @id @default(cuid())
+  subject     String         @db.VarChar(255)
+  htmlContent String         @db.Text
+  status      CampaignStatus @default(DRAFT)
+  scheduledAt DateTime?
+
+  // Audience targeting (null = all active subscribers)
+  audienceFilter Json?       // e.g. { "subscribedBefore": "2026-01-01" }
+
+  // Send stats
+  totalRecipients Int        @default(0)
+  sentCount       Int        @default(0)
+  failedCount     Int        @default(0)
+
+  sentAt      DateTime?
+  completedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  sends       EmailSend[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum EmailSendStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  BOUNCED
+  COMPLAINED
+  FAILED
+}
+
+/// Per-recipient tracking for campaign sends
+model EmailSend {
+  id          String          @id @default(cuid())
+  campaignId  String
+  recipientEmail String
+  status      EmailSendStatus @default(QUEUED)
+  sesMessageId String?
+  errorMessage String?        @db.VarChar(500)
+  sentAt      DateTime?
+  createdAt   DateTime        @default(now())
+
+  campaign    EmailCampaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([recipientEmail])
+  @@index([status])
+}
+
+// ── Drip Sequence System ───────────────────────────────────────────
+
+enum DripTrigger {
+  NEW_DONOR
+  NEW_SUBSCRIBER
+  DONATION_COMPLETED
+  INACTIVE_30
+  INACTIVE_90
+}
+
+/// Automated email sequences triggered by user actions
+model DripSequence {
+  id        String      @id @default(cuid())
+  name      String      @db.VarChar(255)
+  trigger   DripTrigger
+  active    Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  steps       DripStep[]
+  enrollments DripEnrollment[]
+
+  @@index([trigger])
+  @@index([active])
+}
+
+/// Individual steps within a drip sequence
+model DripStep {
+  id         String       @id @default(cuid())
+  sequenceId String
+  stepOrder  Int          // 1, 2, 3...
+  delayDays  Int          // Days after enrollment (or previous step)
+  subject    String       @db.VarChar(255)
+  htmlContent String      @db.Text
+  createdAt  DateTime     @default(now())
+
+  sequence   DripSequence @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+
+  @@unique([sequenceId, stepOrder])
+  @@index([sequenceId])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+/// Tracks a user's progress through a drip sequence
+model DripEnrollment {
+  id           String           @id @default(cuid())
+  sequenceId   String
+  email        String
+  currentStep  Int              @default(0) // 0 = enrolled but no steps sent yet
+  status       EnrollmentStatus @default(ACTIVE)
+  nextSendAt   DateTime?
+  enrolledAt   DateTime         @default(now())
+  completedAt  DateTime?
+  cancelledAt  DateTime?
+
+  sequence     DripSequence     @relation(fields: [sequenceId], references: [id], onDelete: Cascade)
+
+  @@unique([sequenceId, email])
+  @@index([status, nextSendAt])
+  @@index([email])
 }
 
 enum DocumentType {

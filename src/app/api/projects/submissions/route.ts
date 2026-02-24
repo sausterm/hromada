@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { Resend } from 'resend'
 import { verifyAdminAuth } from '@/lib/auth'
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { parseBody, projectSubmissionSchema } from '@/lib/validations'
-import { sanitizeInput, detectSuspiciousInput, logAuditEvent, AuditAction, getClientIp, getUserAgent } from '@/lib/security'
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL
+import { detectSuspiciousInput, logAuditEvent, AuditAction, getClientIp, getUserAgent } from '@/lib/security'
+import { sendSubmissionAdminNotification, sendSubmissionConfirmationEmail } from '@/lib/email'
 
 // GET - List all submissions (admin only)
 export async function GET(request: NextRequest) {
@@ -89,86 +86,27 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send email notification to admin — sanitize all user-provided values
-    if (resend && ADMIN_EMAIL) {
-      try {
-        await resend.emails.send({
-          from: 'Hromada <noreply@hromada.org>',
-          to: ADMIN_EMAIL,
-          subject: `New Project Submission: ${sanitizeInput(data.facilityName)}`,
-          html: `
-            <h2>New Project Submission</h2>
-            <p>A new project has been submitted for review.</p>
+    // Send email notifications (non-blocking)
+    sendSubmissionAdminNotification({
+      facilityName: data.facilityName,
+      municipalityName: data.municipalityName,
+      municipalityEmail: data.municipalityEmail,
+      region: data.region,
+      category: data.category,
+      projectType: data.projectType,
+      urgency: data.urgency || 'MEDIUM',
+      briefDescription: data.briefDescription,
+      contactName: data.contactName,
+      contactEmail: data.contactEmail,
+      contactPhone: data.contactPhone,
+      photoCount: data.photos?.length || 0,
+    }).catch((err) => console.error('Failed to send admin notification email:', err))
 
-            <h3>Municipality Information</h3>
-            <ul>
-              <li><strong>Municipality:</strong> ${sanitizeInput(data.municipalityName)}</li>
-              <li><strong>Email:</strong> ${sanitizeInput(data.municipalityEmail)}</li>
-              ${data.region ? `<li><strong>Region:</strong> ${sanitizeInput(data.region)}</li>` : ''}
-            </ul>
-
-            <h3>Project Details</h3>
-            <ul>
-              <li><strong>Facility:</strong> ${sanitizeInput(data.facilityName)}</li>
-              <li><strong>Category:</strong> ${sanitizeInput(data.category)}</li>
-              <li><strong>Type:</strong> ${sanitizeInput(data.projectType)}</li>
-              <li><strong>Urgency:</strong> ${sanitizeInput(data.urgency || 'MEDIUM')}</li>
-            </ul>
-
-            <h3>Brief Description</h3>
-            <p>${sanitizeInput(data.briefDescription)}</p>
-
-            ${data.photos && data.photos.length > 0 ? `
-            <h3>Photos</h3>
-            <p>${data.photos.length} photo(s) uploaded</p>
-            ` : ''}
-
-            <h3>Contact Information</h3>
-            <ul>
-              <li><strong>Name:</strong> ${sanitizeInput(data.contactName)}</li>
-              <li><strong>Email:</strong> ${sanitizeInput(data.contactEmail)}</li>
-              ${data.contactPhone ? `<li><strong>Phone:</strong> ${sanitizeInput(data.contactPhone)}</li>` : ''}
-            </ul>
-
-            <p><a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin">Review in Admin Dashboard</a></p>
-          `,
-        })
-      } catch (emailError) {
-        console.error('Failed to send admin notification email:', emailError)
-      }
-    }
-
-    // Send confirmation email to submitter
-    if (resend) {
-      try {
-        await resend.emails.send({
-          from: 'Hromada <noreply@hromada.org>',
-          to: data.contactEmail.trim().toLowerCase(),
-          subject: 'Project Submission Received - Hromada',
-          html: `
-            <h2>Thank You for Your Submission</h2>
-            <p>Dear ${sanitizeInput(data.contactName)},</p>
-
-            <p>We have received your project submission for <strong>${sanitizeInput(data.facilityName)}</strong>.</p>
-
-            <h3>What Happens Next?</h3>
-            <ul>
-              <li>Our team will review your submission within 3-5 business days.</li>
-              <li>We may contact you if we need additional information.</li>
-              <li>Once approved, your project will be visible to potential donors on our platform.</li>
-            </ul>
-
-            <p>If you have any questions, please contact us at support@hromada.org</p>
-
-            <p>Thank you for working to rebuild Ukraine's communities.</p>
-
-            <p>Best regards,<br>The Hromada Team</p>
-          `,
-        })
-      } catch (emailError) {
-        console.error('Failed to send confirmation email:', emailError)
-      }
-    }
+    sendSubmissionConfirmationEmail(
+      data.contactName,
+      data.contactEmail.trim().toLowerCase(),
+      data.facilityName,
+    ).catch((err) => console.error('Failed to send confirmation email:', err))
 
     return NextResponse.json({
       success: true,

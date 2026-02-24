@@ -39,13 +39,11 @@ jest.mock('@/lib/rate-limit', () => ({
   },
 }))
 
-// Mock Resend
-jest.mock('resend', () => ({
-  Resend: jest.fn().mockImplementation(() => ({
-    emails: {
-      send: jest.fn().mockResolvedValue({ id: 'email-id' }),
-    },
-  })),
+// Mock email module
+jest.mock('@/lib/email', () => ({
+  sendSubmissionAdminNotification: jest.fn().mockResolvedValue({ success: true }),
+  sendSubmissionConfirmationEmail: jest.fn().mockResolvedValue({ success: true }),
+  sendSubmissionDecisionEmail: jest.fn().mockResolvedValue({ success: true }),
 }))
 
 import { prisma } from '@/lib/prisma'
@@ -120,7 +118,6 @@ describe('POST /api/projects/submissions', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.RESEND_API_KEY = 'test-key'
     process.env.ADMIN_EMAIL = 'admin@test.com'
   })
 
@@ -320,7 +317,6 @@ describe('POST /api/projects/submissions', () => {
   })
 
   it('handles missing email configuration gracefully', async () => {
-    delete process.env.RESEND_API_KEY
     delete process.env.ADMIN_EMAIL
 
     const createdSubmission = { id: '1', ...validSubmission }
@@ -464,7 +460,7 @@ describe('PATCH /api/projects/submissions/[id]', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.RESEND_API_KEY = 'test-key'
+    // env setup
   })
 
   it('approves submission and creates project', async () => {

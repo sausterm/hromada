@@ -95,6 +95,39 @@ export const projectSubmissionSchema = z.object({
   submittedByUserId: z.string().optional(),
 })
 
+// --- Campaign schemas ---
+
+export const campaignCreateSchema = z.object({
+  subject: z.string().min(1, 'Subject is required').max(255),
+  htmlContent: z.string().min(1, 'HTML content is required'),
+})
+
+export const campaignUpdateSchema = z.object({
+  subject: z.string().min(1).max(255).optional(),
+  htmlContent: z.string().min(1).optional(),
+})
+
+// --- Drip sequence schemas ---
+
+export const dripSequenceCreateSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(255),
+  trigger: z.enum([
+    'NEW_DONOR',
+    'NEW_SUBSCRIBER',
+    'DONATION_COMPLETED',
+    'INACTIVE_30',
+    'INACTIVE_90',
+  ]),
+  active: z.boolean().optional(),
+  steps: z.array(
+    z.object({
+      delayDays: z.number().int().min(0),
+      subject: z.string().min(1).max(255),
+      htmlContent: z.string().min(1),
+    })
+  ).min(1, 'At least one step is required'),
+})
+
 /**
  * Parse and validate a request body against a Zod schema.
  * Returns either the parsed data or a 400 error Response.

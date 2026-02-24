@@ -15,6 +15,7 @@ import { Inter, Geist_Mono, Outfit } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import { Footer } from "@/components/layout/Footer";
 import { PartnerCarousel } from "@/components/layout/PartnerCarousel";
+import { ScrollFadeObserver } from "@/components/layout/ScrollFadeObserver";
 import { locales, type Locale } from '@/i18n';
 import type { Metadata } from 'next';
 
@@ -98,6 +99,7 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${geistMono.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}
     >
       <NextIntlClientProvider messages={messages} locale={locale}>
+        <ScrollFadeObserver />
         <ToastProvider>
           <div className="flex-1 flex flex-col">
             {children}

@@ -4,21 +4,21 @@ import { Header } from '@/components/layout/Header'
 
 export default function OFACPolicyPage() {
   return (
-    <div className="min-h-screen bg-[var(--cream-50)] flex flex-col">
+    <div className="min-h-screen bg-[var(--cream-100)] flex flex-col">
       <Header />
 
-      <main className="flex-1 max-w-4xl mx-auto px-4 py-16">
+      <main className="flex-1 max-w-3xl mx-auto px-4 py-16">
         <h1 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-2">
           OFAC Sanctions Compliance Policy
         </h1>
-        <p className="text-sm text-[var(--navy-400)] mb-8">
+        <p className="text-sm text-[var(--navy-400)] mb-10">
           Hromada — A Project of POCACITO Network · Version 1.0
         </p>
 
-        <div className="prose prose-lg max-w-none text-[var(--navy-600)] space-y-8">
+        <div className="space-y-10 text-[var(--navy-600)] text-[15px] leading-relaxed">
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">1. Purpose</h2>
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">1. Purpose</h2>
             <p>
               Hromada (&ldquo;the Project&rdquo;) is committed to full compliance with all United States sanctions
               laws and regulations administered by the Office of Foreign Assets Control (&ldquo;OFAC&rdquo;) of the
@@ -29,9 +29,9 @@ export default function OFACPolicyPage() {
             </p>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">2. Responsible Parties</h2>
-            <ol className="list-[lower-alpha] pl-6 space-y-2">
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">2. Responsible Parties</h2>
+            <ol className="list-[lower-alpha] pl-5 space-y-1.5 mt-2">
               <li>
                 <strong>Project Director — Primary Compliance Officer.</strong> Responsible for conducting
                 all pre-disbursement screening, maintaining compliance records, and reporting any concerns
@@ -49,10 +49,10 @@ export default function OFACPolicyPage() {
             </ol>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">3. Pre-Disbursement Screening</h2>
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">3. Pre-Disbursement Screening</h2>
             <p>Prior to any international disbursement, the Compliance Officer shall:</p>
-            <ol className="list-[lower-alpha] pl-6 space-y-2">
+            <ol className="list-[lower-alpha] pl-5 space-y-1.5 mt-2">
               <li>
                 Screen the recipient municipality name, in both English and Ukrainian transliteration,
                 against the OFAC Consolidated Sanctions List;
@@ -77,10 +77,10 @@ export default function OFACPolicyPage() {
             </ol>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">4. Prohibited Transactions</h2>
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">4. Prohibited Transactions</h2>
             <p>No Project funds shall be disbursed, directly or indirectly, to:</p>
-            <ol className="list-[lower-alpha] pl-6 space-y-2">
+            <ol className="list-[lower-alpha] pl-5 space-y-1.5 mt-2">
               <li>
                 Any individual or entity appearing on the Specially Designated Nationals and Blocked
                 Persons List (SDN List) or any other OFAC sanctions list;
@@ -101,10 +101,10 @@ export default function OFACPolicyPage() {
             </ol>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">5. Name-Match Procedures</h2>
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">5. Name-Match Procedures</h2>
             <p>In the event that sanctions screening returns a potential match:</p>
-            <ol className="list-[lower-alpha] pl-6 space-y-2">
+            <ol className="list-[lower-alpha] pl-5 space-y-1.5 mt-2">
               <li>
                 The Compliance Officer shall immediately halt the disbursement and shall not proceed
                 with the transaction;
@@ -130,9 +130,9 @@ export default function OFACPolicyPage() {
             </ol>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">6. Ongoing Monitoring</h2>
-            <ol className="list-[lower-alpha] pl-6 space-y-2">
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">6. Ongoing Monitoring</h2>
+            <ol className="list-[lower-alpha] pl-5 space-y-1.5 mt-2">
               <li>
                 The Compliance Officer shall re-screen all active recipient municipalities and their
                 current signing officials on a quarterly basis, or more frequently if circumstances warrant;
@@ -150,10 +150,10 @@ export default function OFACPolicyPage() {
             </ol>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">7. Due Diligence on Municipalities</h2>
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">7. Due Diligence on Municipalities</h2>
             <p>Prior to onboarding any new municipality to the Hromada platform, the Compliance Officer shall:</p>
-            <ol className="list-[lower-alpha] pl-6 space-y-2">
+            <ol className="list-[lower-alpha] pl-5 space-y-1.5 mt-2">
               <li>
                 Verify that the municipality is located in territory under the effective control of the
                 Government of Ukraine;
@@ -175,8 +175,8 @@ export default function OFACPolicyPage() {
             </ol>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">8. Record Retention</h2>
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">8. Record Retention</h2>
             <p>
               All compliance records, including but not limited to screening results, due diligence
               documentation, false-positive determinations, disbursement approvals, compliance correspondence,
@@ -186,9 +186,9 @@ export default function OFACPolicyPage() {
             </p>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">9. Training</h2>
-            <ol className="list-[lower-alpha] pl-6 space-y-2">
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">9. Training</h2>
+            <ol className="list-[lower-alpha] pl-5 space-y-1.5 mt-2">
               <li>
                 Any individual with authority to initiate, approve, or process disbursements on behalf of
                 the Project shall review this policy in full prior to assuming such authority;
@@ -203,12 +203,12 @@ export default function OFACPolicyPage() {
             </ol>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">10. Reporting and Voluntary Self-Disclosure</h2>
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">10. Reporting and Voluntary Self-Disclosure</h2>
             <p>
               In the event that the Project becomes aware of any potential sanctions violation or compliance breach:
             </p>
-            <ol className="list-[lower-alpha] pl-6 space-y-2">
+            <ol className="list-[lower-alpha] pl-5 space-y-1.5 mt-2">
               <li>
                 The Compliance Officer shall immediately halt the relevant transaction and take steps to
                 prevent further exposure;
@@ -233,8 +233,8 @@ export default function OFACPolicyPage() {
             </ol>
           </section>
 
-          <section>
-            <h2 className="text-xl font-semibold text-[var(--navy-700)]">11. Policy Review and Amendments</h2>
+          <section className="fade-in-section">
+            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">11. Policy Review and Amendments</h2>
             <p>
               This policy shall be reviewed at least annually by the Project Director and updated as necessary
               to reflect changes in applicable law, OFAC guidance, the Project&rsquo;s operations, or the

@@ -1,0 +1,24 @@
+[2026-02-24T02:14:59Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-self-service
+[2026-02-24T02:15:00Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'self-service' to user 'sloan'
+[2026-02-24T02:15:03Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-amplify
+[2026-02-24T02:15:04Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'amplify' to user 'sloan'
+[2026-02-24T02:15:07Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-ses
+[2026-02-24T02:15:08Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'ses' to user 'sloan'
+[2026-02-24T02:15:11Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-lambda
+[2026-02-24T02:15:12Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'lambda' to user 'sloan'
+[2026-02-24T02:15:14Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-apigateway
+[2026-02-24T02:15:16Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'apigateway' to user 'sloan'
+[2026-02-24T02:15:19Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-s3
+[2026-02-24T02:15:20Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 's3' to user 'sloan'
+[2026-02-24T02:15:23Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-cloudwatch
+[2026-02-24T02:15:24Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'cloudwatch' to user 'sloan'
+[2026-02-24T02:15:27Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-cloudformation
+[2026-02-24T02:15:28Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'cloudformation' to user 'sloan'
+[2026-02-24T02:15:30Z] [arn:aws:iam::582500931967:user/Admin] MIGRATE: Detached monolithic 'HromadaProjectAdmin' from 'sloan'
+[2026-02-24T02:15:30Z] [arn:aws:iam::582500931967:user/Admin] MIGRATE: Completed migration for 'sloan': self-service amplify ses lambda apigateway s3 cloudwatch cloudformation
+[2026-02-24T02:15:41Z] [arn:aws:iam::582500931967:user/Admin] REQUEST: Requested 'dynamodb' — reason: testing the request flow
+[2026-02-24T02:15:50Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-dynamodb
+[2026-02-24T02:15:51Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'dynamodb' to user 'sloan'
+[2026-02-24T02:15:52Z] [arn:aws:iam::582500931967:user/Admin] REVOKE: Revoked 'dynamodb' from user 'sloan'
+[2026-02-24T02:38:27Z] [arn:aws:iam::582500931967:user/Admin] POLICY_CREATED: Created policy Hromada-secretsmanager
+[2026-02-24T02:38:29Z] [arn:aws:iam::582500931967:user/Admin] GRANT: Granted 'secretsmanager' to user 'sloan'

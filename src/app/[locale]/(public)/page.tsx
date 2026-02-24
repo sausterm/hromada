@@ -90,24 +90,6 @@ export default function HomePage() {
       .slice(0, 4)
   }, [allProjects, featuredProjectIds])
 
-  // Scroll-triggered fade-in for sections
-  useEffect(() => {
-    if (isLoading) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible')
-          }
-        })
-      },
-      { threshold: 0.1 }
-    )
-    const sections = document.querySelectorAll('.fade-in-section')
-    sections.forEach((el) => observer.observe(el))
-    return () => observer.disconnect()
-  }, [isLoading])
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--cream-100)]">

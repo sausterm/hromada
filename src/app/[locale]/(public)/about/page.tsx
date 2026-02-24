@@ -37,7 +37,7 @@ export default function AboutPage() {
         </p>
 
         {/* Statement of Purpose */}
-        <section className="mb-16">
+        <section className="fade-in-section mb-16">
           <h2 className="font-logo text-2xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
             {t('about.statementOfPurpose')}
           </h2>
@@ -49,7 +49,7 @@ export default function AboutPage() {
         <hr className="border-[var(--cream-300)] mb-16 w-24 mx-auto" />
 
         {/* Team */}
-        <section className="mb-16">
+        <section className="fade-in-section mb-16">
           <h2 className="font-logo text-2xl font-semibold tracking-tight text-[var(--navy-700)] mb-8 text-center">
             {t('about.teamTitle')}
           </h2>
@@ -82,7 +82,7 @@ export default function AboutPage() {
         <hr className="border-[var(--cream-300)] mb-16 w-24 mx-auto" />
 
         {/* Fiscal Sponsor */}
-        <section className="mb-16">
+        <section className="fade-in-section mb-16">
           <h2 className="font-logo text-2xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
             {t('about.fiscalSponsorTitle')}
           </h2>
@@ -128,7 +128,7 @@ export default function AboutPage() {
         <hr className="border-[var(--cream-300)] mb-16 w-24 mx-auto" />
 
         {/* Partners */}
-        <section className="mb-16">
+        <section className="fade-in-section mb-16">
           <h2 className="font-logo text-2xl font-semibold tracking-tight text-[var(--navy-700)] mb-3 text-center">
             {t('about.ourPartners')}
           </h2>
@@ -159,7 +159,7 @@ export default function AboutPage() {
         </section>
 
         {/* CTA Buttons */}
-        <div className="mt-12 flex justify-center gap-4">
+        <div className="fade-in-section mt-12 flex justify-center gap-4">
           <Link href="/projects">
             <Button variant="primary">
               {t('about.browseProjects')}

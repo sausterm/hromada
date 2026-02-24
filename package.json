@@ -9,9 +9,11 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "iam": "./scripts/aws-permissions.sh"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.996.0",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@sentry/nextjs": "^10.39.0",
@@ -34,7 +36,6 @@
     "react-hook-form": "^7.71.1",
     "react-leaflet": "^5.0.0",
     "react-leaflet-cluster": "^4.0.0",
-    "resend": "^6.9.1",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.3.6"
   },

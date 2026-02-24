@@ -74,7 +74,7 @@ export default function PartnerWithUsPage() {
         <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
         {/* How It Works */}
-        <section className="mb-12">
+        <section className="fade-in-section mb-12">
           <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-8 text-center">
             {t('howItWorks.title')}
           </h2>
@@ -99,7 +99,7 @@ export default function PartnerWithUsPage() {
         <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
         {/* Why It Works */}
-        <section className="mb-12">
+        <section className="fade-in-section mb-12">
           <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-8 text-center">
             {t('whyItWorks.title')}
           </h2>
@@ -121,7 +121,7 @@ export default function PartnerWithUsPage() {
         <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
         {/* Who Participates */}
-        <section className="mb-12 text-center">
+        <section className="fade-in-section mb-12 text-center">
           <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-3 text-center">
             {t('whoParticipates.title')}
           </h2>
@@ -141,7 +141,7 @@ export default function PartnerWithUsPage() {
         <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
         {/* What Gets Funded */}
-        <section className="mb-12 text-center">
+        <section className="fade-in-section mb-12 text-center">
           <h2 className="text-3xl font-medium text-[var(--navy-700)] mb-3 text-center">
             {t('whatGetsFunded.title')}
           </h2>
@@ -179,7 +179,7 @@ export default function PartnerWithUsPage() {
         <hr className="border-[var(--cream-300)] mb-12 w-24 mx-auto" />
 
         {/* Interest Form */}
-        <section id="interest-form" className="mb-12">
+        <section id="interest-form" className="fade-in-section mb-12">
           <h2 className="text-3xl font-medium text-[var(--navy-700)] text-center mb-3">
             {t('form.title')}
           </h2>

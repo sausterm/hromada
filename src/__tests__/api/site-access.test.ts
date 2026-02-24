@@ -16,11 +16,29 @@ describe('POST /api/auth/site-access', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env = { ...originalEnv, SITE_PASSWORD: 'hromadav2!2026' }
+    process.env = { ...originalEnv, SITE_PASSWORD: 'test-site-password' }
   })
 
   afterAll(() => {
     process.env = originalEnv
+  })
+
+  describe('Configuration', () => {
+    it('returns 503 when SITE_PASSWORD is not configured', async () => {
+      delete process.env.SITE_PASSWORD
+
+      const request = new NextRequest('http://localhost/api/auth/site-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: 'anything' }),
+      })
+
+      const response = await POST(request)
+      const data = await response.json()
+
+      expect(response.status).toBe(503)
+      expect(data.error).toBe('Site access is not configured')
+    })
   })
 
   describe('Password validation', () => {
@@ -70,7 +88,7 @@ describe('POST /api/auth/site-access', () => {
       const request = new NextRequest('http://localhost/api/auth/site-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: 'hromadav2!2026' }),
+        body: JSON.stringify({ password: 'test-site-password' }),
       })
 
       const response = await POST(request)
@@ -86,7 +104,7 @@ describe('POST /api/auth/site-access', () => {
       const request = new NextRequest('http://localhost/api/auth/site-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: 'hromadav2!2026' }),
+        body: JSON.stringify({ password: 'test-site-password' }),
       })
 
       const response = await POST(request)
@@ -94,14 +112,14 @@ describe('POST /api/auth/site-access', () => {
       const setCookieHeader = response.headers.get('set-cookie')
       expect(setCookieHeader).toContain('hromada_site_access=')
       // Cookie should NOT contain the raw password (uses HMAC token instead)
-      expect(setCookieHeader).not.toContain('hromadav2!2026')
+      expect(setCookieHeader).not.toContain('test-site-password')
     })
 
     it('sets hromada_site_access cookie on success', async () => {
       const request = new NextRequest('http://localhost/api/auth/site-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: 'hromadav2!2026' }),
+        body: JSON.stringify({ password: 'test-site-password' }),
       })
 
       const response = await POST(request)
@@ -110,7 +128,7 @@ describe('POST /api/auth/site-access', () => {
       expect(cookie).toBeDefined()
       expect(cookie?.value).toBeTruthy()
       // Value should be an HMAC token (hex string), not the raw password
-      expect(cookie?.value).not.toBe('hromadav2!2026')
+      expect(cookie?.value).not.toBe('test-site-password')
     })
   })
 
@@ -169,8 +187,8 @@ describe('POST /api/auth/site-access', () => {
       const response = await POST(request)
       const data = await response.json()
 
-      expect(data.error).not.toContain('hromadav2!2026')
-      expect(JSON.stringify(data)).not.toContain('hromadav2!2026')
+      expect(data.error).not.toContain('test-site-password')
+      expect(JSON.stringify(data)).not.toContain('test-site-password')
     })
 
     it('rejects password that is similar but not exact', async () => {
@@ -191,7 +209,7 @@ describe('POST /api/auth/site-access', () => {
       const request = new NextRequest('http://localhost/api/auth/site-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: ' hromadav2!2026 ' }),
+        body: JSON.stringify({ password: ' test-site-password ' }),
       })
 
       const response = await POST(request)
@@ -205,7 +223,7 @@ describe('POST /api/auth/site-access', () => {
       const request = new NextRequest('http://localhost/api/auth/site-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: 'HROMADA!2026' }),
+        body: JSON.stringify({ password: 'TEST-SITE-PASSWORD' }),
       })
 
       const response = await POST(request)
@@ -221,7 +239,7 @@ describe('POST /api/auth/site-access', () => {
       const request = new NextRequest('http://localhost/api/auth/site-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: 'hromadav2!2026' }),
+        body: JSON.stringify({ password: 'test-site-password' }),
       })
 
       const response = await POST(request)
@@ -245,7 +263,7 @@ describe('POST /api/auth/site-access', () => {
       const request = new NextRequest('http://localhost/api/auth/site-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: 'hromadav2!2026' }),
+        body: JSON.stringify({ password: 'test-site-password' }),
       })
 
       const response = await POST(request)

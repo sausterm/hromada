@@ -10,10 +10,30 @@ jest.mock('next-intl', () => ({
       'about.statementOfPurpose': 'Statement of Purpose',
       'about.statementOfPurposeText': 'We bridge the gap between American donors and Ukrainian municipalities.',
       'about.browseProjects': 'Browse Projects',
+      'about.ourPartners': 'Our Partners',
+      'about.ourPartnersText': 'We work with trusted NGOs.',
+      'about.teamTitle': 'Our Team',
+      'about.teamTomName': 'Tom Protzman',
+      'about.teamTomRole': 'Co-Founder',
+      'about.teamTomBio': 'Bio text.',
+      'about.teamKostiaName': 'Kostia K',
+      'about.teamKostiaRole': 'Co-Founder',
+      'about.teamKostiaBio': 'Bio text.',
+      'about.teamSloanName': 'Sloan A',
+      'about.teamSloanRole': 'Engineer',
+      'about.teamSloanBio': 'Bio text.',
+      'about.fiscalSponsorTitle': 'Fiscal Sponsor',
+      'about.fiscalSponsorIntro': 'POCACITO Network is our fiscal sponsor.',
+      'about.fiscalSponsorEin': 'EIN: 12-3456789',
+      'about.fiscalSponsorZeroFee': 'Zero fee',
+      'about.fiscalSponsorTaxDeductible': 'Tax-deductible',
+      'about.fiscalSponsorCandid': 'Candid Platinum',
+      'about.partnerEcoactionDesc': 'Environmental NGO.',
+      'about.partnerEcoclubDesc': 'Eco club.',
+      'about.partnerRePowerDesc': 'Energy NGO.',
+      'about.partnerGreenpeaceDesc': 'Environmental org.',
+      'about.partnerEnergyActDesc': 'Energy advocacy.',
       'nav.submitProject': 'Submit a Project',
-      'transparency.visitTrustCenter': 'Visit Trust Center',
-      'transparency.partnersTitle': 'Our Partners',
-      'transparency.partnersText': 'We work with trusted NGOs.',
     }
     return translations[key] || key
   },
@@ -65,8 +85,8 @@ describe('AboutPage', () => {
 
     it('renders Our Partners section', () => {
       render(<AboutPage />)
-      expect(screen.getByText('about.ourPartners')).toBeInTheDocument()
-      expect(screen.getByText('about.ourPartnersText')).toBeInTheDocument()
+      expect(screen.getByText('Our Partners')).toBeInTheDocument()
+      expect(screen.getByText('We work with trusted NGOs.')).toBeInTheDocument()
     })
 
     it('renders partner logos', () => {
@@ -76,6 +96,18 @@ describe('AboutPage', () => {
       expect(screen.getByAltText('RePower Ukraine')).toBeInTheDocument()
       expect(screen.getByAltText('Greenpeace')).toBeInTheDocument()
       expect(screen.getByAltText('Energy Act For Ukraine')).toBeInTheDocument()
+    })
+
+    it('renders team section', () => {
+      render(<AboutPage />)
+      expect(screen.getByText('Our Team')).toBeInTheDocument()
+      expect(screen.getByText('Tom Protzman')).toBeInTheDocument()
+    })
+
+    it('renders fiscal sponsor section', () => {
+      render(<AboutPage />)
+      expect(screen.getByText('Fiscal Sponsor')).toBeInTheDocument()
+      expect(screen.getByAltText('POCACITO Network')).toBeInTheDocument()
     })
   })
 

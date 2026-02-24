@@ -1,53 +1,28 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import TransparencyPage from '@/app/[locale]/(public)/transparency/page'
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
-      'prescreening.title': 'Transparency Pre-Screening',
-      'prescreening.subtitle': 'How we verify municipal partners',
-      'prescreening.tiPartnership': 'Transparency International Ukraine',
-      'prescreening.tiPartnershipDesc': 'We use TI Ukraine rankings.',
-      'prescreening.visitTransparentCities': 'Visit Transparent Cities',
-      'prescreening.criteriaTitle': 'Pre-Screening Criteria',
-      'prescreening.thresholds.transparent': 'Transparent',
-      'prescreening.thresholds.transparentDesc': 'Eligible',
-      'prescreening.thresholds.partial': 'Partially Transparent',
-      'prescreening.thresholds.partialDesc': 'Case by case',
-      'prescreening.thresholds.nonTransparent': 'Non-Transparent',
-      'prescreening.thresholds.nonTransparentDesc': 'Not eligible',
-      'prescreening.ourPolicyTitle': 'Our Policy',
-      'prescreening.policy1': 'Score 75+ accepted',
-      'prescreening.policy2': 'Score 50-74 case by case',
-      'prescreening.policy3': 'NGO partner required',
-      'prescreening.policy4': 'Additional review for war zones',
-      'prescreening.areasTitle': 'Assessment Areas',
-      'prescreening.areasSubtitle': 'Seven areas of evaluation',
-      'prescreening.areas.openness.title': 'Openness',
-      'prescreening.areas.openness.desc': 'Public access to information',
-      'prescreening.areas.budget.title': 'Budget',
-      'prescreening.areas.budget.desc': 'Budget transparency',
-      'prescreening.areas.property.title': 'Property',
-      'prescreening.areas.property.desc': 'Property management',
-      'prescreening.areas.publicRelations.title': 'Public Relations',
-      'prescreening.areas.publicRelations.desc': 'Community engagement',
-      'prescreening.areas.personnel.title': 'Personnel',
-      'prescreening.areas.personnel.desc': 'HR practices',
-      'prescreening.areas.services.title': 'Services',
-      'prescreening.areas.services.desc': 'Service delivery',
-      'prescreening.areas.warResponse.title': 'War Response',
-      'prescreening.areas.warResponse.desc': 'Crisis management',
-      'prescreening.topCitiesTitle': 'Top Transparent Cities',
-      'prescreening.topCitiesSubtitle': '2024 ranking data',
-      'prescreening.tableRank': 'Rank',
-      'prescreening.tableCity': 'City',
-      'prescreening.tableScore': 'Score',
-      'prescreening.tableStatus': 'Status',
-      'prescreening.statusTransparent': 'Transparent',
-      'prescreening.statusPartial': 'Partial',
-      'prescreening.dataSource': 'Source: Transparency International Ukraine',
-      'prescreening.additionalDDTitle': 'Additional Due Diligence',
+      'transparency.title': 'Transparency & Verification',
+      'transparency.intro': 'How Hromada ensures every dollar reaches its destination.',
+      'transparency.civilianOnlyTitle': 'Civilian Infrastructure Only',
+      'transparency.civilianOnlyText': 'Hromada funds only civilian infrastructure.',
+      'transparency.processTitle': 'How Projects Reach the Platform',
+      'transparency.processStep1Title': 'Identification',
+      'transparency.processStep1Text': 'NGO partners identify needs.',
+      'transparency.processStep2Title': 'Documentation',
+      'transparency.processStep2Text': 'Cost estimates are gathered.',
+      'transparency.processStep3Title': 'Review',
+      'transparency.processStep3Text': 'Hromada reviews submissions.',
+      'transparency.processStep4Title': 'Publishing',
+      'transparency.processStep4Text': 'Approved projects go live.',
+      'transparency.processStep5Title': 'Funding',
+      'transparency.processStep5Text': 'Donors fund projects directly.',
+      'transparency.verificationTitle': 'Project Verification',
+      'transparency.verificationText': 'Every project undergoes verification.',
       'prescreening.ngoPartnerTitle': 'NGO Partner Verification',
       'prescreening.ngoPartnerDesc': 'We verify through NGO partners.',
       'prescreening.documentationTitle': 'Documentation',
@@ -56,13 +31,26 @@ jest.mock('next-intl', () => ({
       'prescreening.bankingDesc': 'Direct municipal accounts.',
       'prescreening.ofacTitle': 'OFAC Screening',
       'prescreening.ofacDesc': 'All recipients screened.',
+      'transparency.directConnectionTitle': 'Direct Connection',
+      'transparency.directConnectionText': 'Funds go directly to municipalities.',
+      'transparency.governanceDataTitle': 'Municipal Governance Data',
+      'transparency.governanceDataText': 'We reference TI Ukraine rankings.',
+      'prescreening.visitTransparentCities': 'Visit Transparent Cities',
+      'transparency.faqTitle': 'Frequently Asked Questions',
+      'transparency.faq1Question': 'How are projects selected?',
+      'transparency.faq1Answer': 'Projects are submitted by municipalities.',
+      'transparency.faq2Question': 'Where does my money go?',
+      'transparency.faq2Answer': 'Directly to the municipality.',
+      'transparency.faq3Question': 'Is my donation tax-deductible?',
+      'transparency.faq3Answer': 'Yes, through POCACITO Network.',
+      'transparency.faq4Question': 'How do you prevent fraud?',
+      'transparency.faq4Answer': 'Multiple verification layers.',
+      'transparency.faq5Question': 'Can I visit the project?',
+      'transparency.faq5Answer': 'We can facilitate visits.',
       'prescreening.policiesTitle': 'Policies',
       'prescreening.sanctionsPolicy': 'Sanctions Policy',
-      'prescreening.ctaText': 'Browse verified projects',
-      'prescreening.learnAboutUs': 'Learn About Us',
       'footer.terms': 'Terms',
       'footer.privacy': 'Privacy',
-      'about.browseProjects': 'Browse Projects',
     }
     return translations[key] || key
   },
@@ -80,15 +68,10 @@ jest.mock('@/i18n/navigation', () => ({
   ),
 }))
 
-// Mock Button
-jest.mock('@/components/ui/Button', () => ({
-  Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-}))
-
 describe('TransparencyPage', () => {
   it('renders the page title', () => {
     render(<TransparencyPage />)
-    expect(screen.getByText('Transparency Pre-Screening')).toBeInTheDocument()
+    expect(screen.getByText('Transparency & Verification')).toBeInTheDocument()
   })
 
   it('renders header', () => {
@@ -96,34 +79,42 @@ describe('TransparencyPage', () => {
     expect(screen.getByTestId('mock-header')).toBeInTheDocument()
   })
 
-  it('renders TI Ukraine partnership section', () => {
+  it('renders civilian infrastructure section', () => {
     render(<TransparencyPage />)
-    expect(screen.getByText('Transparency International Ukraine')).toBeInTheDocument()
+    expect(screen.getByText('Civilian Infrastructure Only')).toBeInTheDocument()
+    expect(screen.getByText('Hromada funds only civilian infrastructure.')).toBeInTheDocument()
   })
 
-  it('renders pre-screening thresholds', () => {
+  it('renders how projects reach the platform section', () => {
     render(<TransparencyPage />)
-    expect(screen.getByText('75+')).toBeInTheDocument()
-    expect(screen.getByText('50-74')).toBeInTheDocument()
+    expect(screen.getByText('How Projects Reach the Platform')).toBeInTheDocument()
+    expect(screen.getByText(/Identification/)).toBeInTheDocument()
+    expect(screen.getByText(/Cost estimates are gathered/)).toBeInTheDocument()
   })
 
-  it('renders assessment areas', () => {
+  it('renders project verification section', () => {
     render(<TransparencyPage />)
-    expect(screen.getByText('Assessment Areas')).toBeInTheDocument()
-    expect(screen.getByText('Openness')).toBeInTheDocument()
-    expect(screen.getByText('Budget')).toBeInTheDocument()
+    expect(screen.getByText('Project Verification')).toBeInTheDocument()
+    expect(screen.getByText(/NGO Partner Verification/)).toBeInTheDocument()
+    expect(screen.getByText(/OFAC Screening/)).toBeInTheDocument()
+    expect(screen.getByText(/Banking Verification/)).toBeInTheDocument()
   })
 
-  it('renders top transparent cities', () => {
+  it('renders municipal governance data section', () => {
     render(<TransparencyPage />)
-    expect(screen.getByText('Top Transparent Cities')).toBeInTheDocument()
+    expect(screen.getByText('Municipal Governance Data')).toBeInTheDocument()
+    expect(screen.getByText('Visit Transparent Cities')).toBeInTheDocument()
   })
 
-  it('renders additional due diligence section', () => {
+  it('renders FAQ section with expandable items', async () => {
+    const user = userEvent.setup()
     render(<TransparencyPage />)
-    expect(screen.getByText('Additional Due Diligence')).toBeInTheDocument()
-    expect(screen.getByText('NGO Partner Verification')).toBeInTheDocument()
-    expect(screen.getByText('OFAC Screening')).toBeInTheDocument()
+    expect(screen.getByText('Frequently Asked Questions')).toBeInTheDocument()
+    expect(screen.getByText('How are projects selected?')).toBeInTheDocument()
+
+    // Click to expand a FAQ
+    await user.click(screen.getByText('How are projects selected?'))
+    expect(screen.getByText('Projects are submitted by municipalities.')).toBeInTheDocument()
   })
 
   it('renders policy links', () => {
@@ -131,11 +122,5 @@ describe('TransparencyPage', () => {
     expect(screen.getByText('Terms')).toBeInTheDocument()
     expect(screen.getByText('Privacy')).toBeInTheDocument()
     expect(screen.getByText('Sanctions Policy')).toBeInTheDocument()
-  })
-
-  it('renders CTA section', () => {
-    render(<TransparencyPage />)
-    expect(screen.getByText('Browse Projects')).toBeInTheDocument()
-    expect(screen.getByText('Learn About Us')).toBeInTheDocument()
   })
 })

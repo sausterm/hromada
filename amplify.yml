@@ -20,6 +20,9 @@ frontend:
           echo "AWS_SES_REGION=$AWS_SES_REGION" >> .env.production
           echo "AWS_SES_FROM_EMAIL=$AWS_SES_FROM_EMAIL" >> .env.production
           echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> .env.production
+          echo "CRON_SECRET=$CRON_SECRET" >> .env.production
+          echo "CALENDLY_API_TOKEN=$CALENDLY_API_TOKEN" >> .env.production
+          echo "DEEPL_API_KEY=$DEEPL_API_KEY" >> .env.production
           echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> .env.production
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> .env.production
           echo "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" >> .env.production

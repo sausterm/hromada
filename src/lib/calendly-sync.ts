@@ -57,14 +57,11 @@ export async function syncCalendlyInvitees(): Promise<CalendlySyncResult> {
       })
 
       if (existing) {
-        // Re-subscribe if they had unsubscribed, update name if missing
-        if (existing.unsubscribed || !existing.name) {
+        // Fill in name if missing, but never re-subscribe someone who was removed
+        if (!existing.name && invitee.name) {
           await prisma.newsletterSubscriber.update({
             where: { email },
-            data: {
-              ...(existing.unsubscribed && { unsubscribed: false }),
-              ...(!existing.name && invitee.name && { name: invitee.name }),
-            },
+            data: { name: invitee.name },
           })
         }
         skipped++

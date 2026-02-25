@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/ses'
+import { emailLayout } from '@/lib/email-template'
 import type { EmailCampaign, CampaignStatus } from '@prisma/client'
 
 const BATCH_SIZE = 50
@@ -67,15 +68,9 @@ export async function sendCampaign(campaignId: string): Promise<{
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
         const unsubscribeLink = `${appUrl}/unsubscribe?token=${sub.unsubscribeToken}`
 
-        const htmlWithFooter = `
-          ${campaign.htmlContent}
-          <div style="border-top: 1px solid #ddd; margin-top: 32px; padding: 20px; text-align: center;">
-            <p style="margin: 0; font-size: 12px; color: #999;">
-              Hromada is a project of POCACITO Network, a 501(c)(3) nonprofit.
-              <br><a href="${unsubscribeLink}" style="color: #999;">Unsubscribe</a>
-            </p>
-          </div>
-        `
+        const htmlWithFooter = emailLayout(campaign.htmlContent, {
+          unsubscribeUrl: unsubscribeLink,
+        })
 
         const result = await sendEmail({
           to: sub.email,

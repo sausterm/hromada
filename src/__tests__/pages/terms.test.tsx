@@ -53,7 +53,7 @@ describe('TermsPage', () => {
     it('has proper background', () => {
       const { container } = render(<TermsPage />)
       const wrapper = container.firstChild as HTMLElement
-      expect(wrapper).toHaveClass('bg-[var(--cream-50)]')
+      expect(wrapper).toHaveClass('bg-[var(--cream-100)]')
     })
 
     it('has min-height screen', () => {
@@ -65,7 +65,7 @@ describe('TermsPage', () => {
     it('content has max width', () => {
       render(<TermsPage />)
       const main = screen.getByRole('main')
-      expect(main).toHaveClass('max-w-4xl')
+      expect(main).toHaveClass('max-w-3xl')
     })
   })
 })

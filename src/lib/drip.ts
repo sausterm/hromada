@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/ses'
+import { emailLayout } from '@/lib/email-template'
 import type { DripTrigger, EnrollmentStatus } from '@prisma/client'
 
 /**
@@ -102,15 +103,9 @@ export async function processDueSteps(): Promise<{
 
     // Send the email
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-    const htmlWithFooter = `
-      ${step.htmlContent}
-      <div style="border-top: 1px solid #ddd; margin-top: 32px; padding: 20px; text-align: center;">
-        <p style="margin: 0; font-size: 12px; color: #999;">
-          Hromada is a project of POCACITO Network, a 501(c)(3) nonprofit.
-          <br><a href="${appUrl}/unsubscribe" style="color: #999;">Unsubscribe</a>
-        </p>
-      </div>
-    `
+    const htmlWithFooter = emailLayout(step.htmlContent, {
+      unsubscribeUrl: `${appUrl}/unsubscribe`,
+    })
 
     const result = await sendEmail({
       to: enrollment.email,

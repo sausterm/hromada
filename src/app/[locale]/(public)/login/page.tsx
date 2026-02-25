@@ -96,7 +96,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={t('login.passwordPlaceholder')}
-                  error={error}
+                  variant={error ? 'error' : 'default'}
                   autoComplete="current-password"
                 />
                 <button
@@ -117,6 +117,7 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
             </div>
             <Button type="submit" fullWidth isLoading={isSubmitting}>
               {t('login.loginButton')}

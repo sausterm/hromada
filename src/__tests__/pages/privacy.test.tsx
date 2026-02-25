@@ -29,9 +29,10 @@ describe('PrivacyPage', () => {
       expect(screen.getByTestId('mock-header')).toBeInTheDocument()
     })
 
-    it('renders coming soon message', () => {
+    it('renders privacy policy content', () => {
       render(<PrivacyPage />)
-      expect(screen.getByText('Privacy policy details coming soon.')).toBeInTheDocument()
+      // The page has real content now, not a placeholder
+      expect(screen.getByRole('main')).toBeInTheDocument()
     })
   })
 
@@ -53,7 +54,7 @@ describe('PrivacyPage', () => {
     it('has proper background', () => {
       const { container } = render(<PrivacyPage />)
       const wrapper = container.firstChild as HTMLElement
-      expect(wrapper).toHaveClass('bg-[var(--cream-50)]')
+      expect(wrapper).toHaveClass('bg-[var(--cream-100)]')
     })
 
     it('has min-height screen', () => {

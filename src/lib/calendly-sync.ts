@@ -16,7 +16,9 @@ export interface CalendlySyncResult {
 
 export async function syncCalendlyInvitees(): Promise<CalendlySyncResult> {
   // 1. Get the authenticated user's URI
+  console.log('[calendly-sync] Fetching Calendly user...')
   const user = await getCalendlyUser()
+  console.log(`[calendly-sync] User: ${user.name} (${user.email})`)
 
   // 2. Determine poll start time
   const state = await prisma.cronState.findUnique({
@@ -27,27 +29,34 @@ export async function syncCalendlyInvitees(): Promise<CalendlySyncResult> {
   if (state) {
     const parsed = JSON.parse(state.value) as { lastPoll: string }
     minStartTime = parsed.lastPoll
+    console.log(`[calendly-sync] Last poll: ${minStartTime}`)
   } else {
     const lookback = new Date()
     lookback.setDate(lookback.getDate() - DEFAULT_LOOKBACK_DAYS)
     minStartTime = lookback.toISOString()
+    console.log(`[calendly-sync] No previous poll, looking back ${DEFAULT_LOOKBACK_DAYS} days to ${minStartTime}`)
   }
 
   const pollStartedAt = new Date().toISOString()
 
   // 3. Fetch events since last poll
+  console.log(`[calendly-sync] Fetching events since ${minStartTime}...`)
   const events = await getScheduledEvents(user.uri, minStartTime)
+  console.log(`[calendly-sync] Found ${events.length} events`)
 
   let newSubscribers = 0
   let skipped = 0
 
   // 4. For each event, get invitees and upsert
   for (const event of events) {
+    console.log(`[calendly-sync] Processing event: "${event.name}" (${event.startTime})`)
     const invitees = await getEventInvitees(event.uri)
+    console.log(`[calendly-sync]   ${invitees.length} invitee(s)`)
 
     for (const invitee of invitees) {
       const email = invitee.email.toLowerCase().trim()
       if (!email) {
+        console.log('[calendly-sync]   Skipping invitee with no email')
         skipped++
         continue
       }
@@ -63,6 +72,9 @@ export async function syncCalendlyInvitees(): Promise<CalendlySyncResult> {
             where: { email },
             data: { name: invitee.name },
           })
+          console.log(`[calendly-sync]   ${email} — updated name to "${invitee.name}"`)
+        } else {
+          console.log(`[calendly-sync]   ${email} — already exists, skipping`)
         }
         skipped++
       } else {
@@ -73,13 +85,14 @@ export async function syncCalendlyInvitees(): Promise<CalendlySyncResult> {
             source: 'calendly',
           },
         })
+        console.log(`[calendly-sync]   ${email} — ADDED (name: "${invitee.name}", source: calendly)`)
         newSubscribers++
       }
 
-      // Log custom question responses for visibility
+      // Log custom question responses
       if (invitee.questionsAndAnswers.length > 0) {
         console.log(
-          `[calendly-sync] ${email} Q&A:`,
+          `[calendly-sync]   ${email} Q&A:`,
           invitee.questionsAndAnswers.map((qa) => `${qa.question}: ${qa.answer}`).join('; ')
         )
       }
@@ -97,7 +110,7 @@ export async function syncCalendlyInvitees(): Promise<CalendlySyncResult> {
   })
 
   console.log(
-    `[calendly-sync] Done: ${events.length} events, ${newSubscribers} new, ${skipped} skipped`
+    `[calendly-sync] Poll timestamp updated to ${pollStartedAt}`
   )
 
   return {

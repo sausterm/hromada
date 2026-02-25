@@ -32,7 +32,7 @@ Phase 0: Foundation        █████████████████�
 Phase 1: Launch Readiness  ██████████████░░░░░░░  ~70% ← blocked by FSA signing only
 Phase 2: Automation        ███░░░░░░░░░░░░░░░░░░  ~15% ← Sentry, CSRF, password reset done
 Phase 3: Growth            ████░░░░░░░░░░░░░░░░░  ~20% ← some items done early
-Phase 4: Scale             ░░░░░░░░░░░░░░░░░░░░░   0% ← future
+Phase 4: Scale             █░░░░░░░░░░░░░░░░░░░░   ~5% ← CI/CD, Candid done
 ```
 
 ### Dependency Chain
@@ -65,7 +65,7 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 - [x] Project submission workflow (partner submits → admin approves)
 - [x] Photo upload to Supabase Storage
 - [x] Edge middleware: geo-blocking (RU/BY), password protection, security headers
-- [x] Contact form with email notifications (Resend)
+- [x] Contact form with email notifications (AWS SES)
 - [x] Transparency page with TI Ukraine pre-screening criteria
 - [x] Privacy policy, terms of service, OFAC sanctions policy pages
 - [x] ~75% test coverage (Jest + React Testing Library)
@@ -75,7 +75,7 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 - [x] "I've Sent My Contribution" confirmation flow with auto donor account creation
 - [x] Donor dashboard (`/donor`) — donations, status timeline, updates
 - [x] Nonprofit Manager dashboard (`/nonprofit`) — mark received, manage wire transfers
-- [x] Welcome email to new donors via Resend
+- [x] Welcome email to new donors via AWS SES
 - [x] WireTransfer model for outbound transfers to Ukraine
 - [x] Fee comparison display (Wise vs Bank Wire)
 - [x] POCACITO Network fiscal sponsor branding throughout
@@ -95,7 +95,7 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 ## Phase 1: Launch Readiness (Active — Target: March/April 2026)
 
 **Goal:** Everything needed to accept the first real donation.
-**Blocked by:** FSA signing (legal) + security fixes (technical)
+**Blocked by:** FSA signing (legal only — security fixes complete)
 **See:** [[specs/launch-readiness]], [[specs/security-hardening]], [[specs/fiscal-sponsorship]]
 
 ### Track A: Security Hardening (Technical — @sloan) ✅ COMPLETE
@@ -273,7 +273,7 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 | **LAUNCH** | First real donation | Mar 2026 (est.) | ⏳ Blocked by FSA signing |
 | **Phase 2** | Automation | Apr–May 2026 | ~15% — Sentry, CSRF, password reset |
 | **Phase 3** | Growth | Jun–Sep 2026 | ~20% — mobile map, donor dashboard, test coverage |
-| **Phase 4** | Scale | Oct 2026+ | Not started |
+| **Phase 4** | Scale | Oct 2026+ | ~5% — CI/CD, Candid done |
 
 > **The critical path is the FSA.** Security hardening is complete. FSA is attorney-reviewed and going to POCACITO Feb 20. The moment the FSA is signed and bank details are in hand, launch is days away — not weeks.
 
@@ -293,5 +293,5 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 |------|--------|
 | [[specs/payment-processing]] | In Progress |
 | [[specs/fiscal-sponsorship]] | In Progress |
-| [[specs/security-hardening]] | In Progress |
+| [[specs/security-hardening]] | Complete |
 | [[specs/launch-readiness]] | In Progress |

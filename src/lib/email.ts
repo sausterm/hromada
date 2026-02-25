@@ -1,8 +1,41 @@
-import { sendEmail } from '@/lib/ses'
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
 import { sanitizeInput } from '@/lib/security'
+
+// Only create SES client if region is configured
+// On AWS Amplify, credentials come from the IAM role automatically
+const ses = process.env.AWS_SES_REGION
+  ? new SESClient({ region: process.env.AWS_SES_REGION })
+  : null
+
+const FROM_EMAIL = process.env.AWS_SES_FROM_EMAIL || 'noreply@hromadaproject.org'
 
 // Helper to sanitize values before HTML interpolation
 const s = sanitizeInput
+
+async function sendEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string
+  subject: string
+  html: string
+}): Promise<void> {
+  if (!ses) {
+    throw new Error('SES not configured')
+  }
+
+  await ses.send(
+    new SendEmailCommand({
+      Source: `Hromada <${FROM_EMAIL}>`,
+      Destination: { ToAddresses: [to] },
+      Message: {
+        Subject: { Data: subject, Charset: 'UTF-8' },
+        Body: { Html: { Data: html, Charset: 'UTF-8' } },
+      },
+    })
+  )
+}
 
 interface PasswordResetEmailParams {
   name: string
@@ -15,8 +48,14 @@ export async function sendPasswordResetEmail({
   email,
   code,
 }: PasswordResetEmailParams): Promise<{ success: boolean; error?: string }> {
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping password reset email')
+    console.log(`[DEV] Password reset code for ${email}: ${code}`)
+    return { success: true }
+  }
+
   try {
-    const result = await sendEmail({
+    await sendEmail({
       to: email,
       subject: 'Your Hromada password reset code',
       html: `
@@ -42,10 +81,7 @@ export async function sendPasswordResetEmail({
       `,
     })
 
-    if (!result.success) {
-      console.error('Failed to send password reset email:', result.error)
-    }
-    return result
+    return { success: true }
   } catch (error) {
     console.error('Failed to send password reset email:', error)
     return {
@@ -82,8 +118,13 @@ export async function sendContactNotification({
     return { success: true }
   }
 
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping email notification')
+    return { success: true }
+  }
+
   try {
-    const result = await sendEmail({
+    await sendEmail({
       to: adminEmail,
       subject: `New Donor Interest: ${s(projectName)}`,
       html: `
@@ -122,15 +163,12 @@ export async function sendContactNotification({
       `,
     })
 
-    if (!result.success) {
-      console.error('Failed to send email notification:', result.error)
-    }
-    return result
+    return { success: true }
   } catch (error) {
     console.error('Failed to send email notification:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
+      error: error instanceof Error ? error.message : 'Failed to send email'
     }
   }
 }
@@ -154,6 +192,11 @@ export async function sendDonorWelcomeEmail({
 }: DonorWelcomeParams): Promise<{ success: boolean; error?: string }> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping donor welcome email')
+    return { success: true }
+  }
+
   const paymentMethodLabels: Record<string, string> = {
     wire: 'wire transfer',
     daf: 'DAF grant',
@@ -162,7 +205,7 @@ export async function sendDonorWelcomeEmail({
   }
 
   try {
-    const result = await sendEmail({
+    await sendEmail({
       to: donorEmail,
       subject: `Thank you for supporting ${s(projectName)}`,
       html: `
@@ -215,15 +258,12 @@ export async function sendDonorWelcomeEmail({
       `,
     })
 
-    if (!result.success) {
-      console.error('Failed to send donor welcome email:', result.error)
-    }
-    return result
+    return { success: true }
   } catch (error) {
     console.error('Failed to send donor welcome email:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
+      error: error instanceof Error ? error.message : 'Failed to send email'
     }
   }
 }
@@ -259,6 +299,11 @@ export async function sendDonationNotificationToAdmin({
     return { success: true }
   }
 
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping admin notification')
+    return { success: true }
+  }
+
   const paymentMethodLabels: Record<string, string> = {
     wire: 'Wire Transfer',
     daf: 'DAF Grant',
@@ -267,7 +312,7 @@ export async function sendDonationNotificationToAdmin({
   }
 
   try {
-    const result = await sendEmail({
+    await sendEmail({
       to: adminEmail,
       subject: `New Donation: ${amount ? `$${amount.toLocaleString()}` : 'Amount TBD'} for ${s(projectName)}`,
       html: `
@@ -307,15 +352,12 @@ export async function sendDonationNotificationToAdmin({
       `,
     })
 
-    if (!result.success) {
-      console.error('Failed to send admin notification:', result.error)
-    }
-    return result
+    return { success: true }
   } catch (error) {
     console.error('Failed to send admin notification:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
+      error: error instanceof Error ? error.message : 'Failed to send email'
     }
   }
 }
@@ -325,8 +367,13 @@ export async function sendNewsletterWelcomeEmail(
 ): Promise<{ success: boolean; error?: string }> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping newsletter welcome email')
+    return { success: true }
+  }
+
   try {
-    const result = await sendEmail({
+    await sendEmail({
       to: email,
       subject: "You're on the list — welcome to Hromada",
       html: `
@@ -371,10 +418,7 @@ export async function sendNewsletterWelcomeEmail(
       `,
     })
 
-    if (!result.success) {
-      console.error('Failed to send newsletter welcome email:', result.error)
-    }
-    return result
+    return { success: true }
   } catch (error) {
     console.error('Failed to send newsletter welcome email:', error)
     return {
@@ -419,8 +463,13 @@ export async function sendPartnershipInquiryNotification({
     return { success: true }
   }
 
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping email notification')
+    return { success: true }
+  }
+
   try {
-    const result = await sendEmail({
+    await sendEmail({
       to: adminEmail,
       subject: `New MPP Inquiry: ${s(communityName)}`,
       html: `
@@ -460,305 +509,12 @@ export async function sendPartnershipInquiryNotification({
       `,
     })
 
-    if (!result.success) {
-      console.error('Failed to send partnership inquiry notification:', result.error)
-    }
-    return result
+    return { success: true }
   } catch (error) {
     console.error('Failed to send partnership inquiry notification:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
-    }
-  }
-}
-
-// ── Submission Email Functions (centralized from route files) ──────
-
-interface SubmissionAdminNotificationParams {
-  facilityName: string
-  municipalityName: string
-  municipalityEmail: string
-  region?: string | null
-  category: string
-  projectType: string
-  urgency: string
-  briefDescription: string
-  contactName: string
-  contactEmail: string
-  contactPhone?: string | null
-  photoCount: number
-}
-
-export async function sendSubmissionAdminNotification(
-  params: SubmissionAdminNotificationParams
-): Promise<{ success: boolean; error?: string }> {
-  const adminEmail = process.env.ADMIN_EMAIL
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-
-  if (!adminEmail) {
-    console.warn('ADMIN_EMAIL not configured, skipping submission admin notification')
-    return { success: true }
-  }
-
-  try {
-    const result = await sendEmail({
-      to: adminEmail,
-      subject: `New Project Submission: ${s(params.facilityName)}`,
-      html: `
-        <h2>New Project Submission</h2>
-        <p>A new project has been submitted for review.</p>
-
-        <h3>Municipality Information</h3>
-        <ul>
-          <li><strong>Municipality:</strong> ${s(params.municipalityName)}</li>
-          <li><strong>Email:</strong> ${s(params.municipalityEmail)}</li>
-          ${params.region ? `<li><strong>Region:</strong> ${s(params.region)}</li>` : ''}
-        </ul>
-
-        <h3>Project Details</h3>
-        <ul>
-          <li><strong>Facility:</strong> ${s(params.facilityName)}</li>
-          <li><strong>Category:</strong> ${s(params.category)}</li>
-          <li><strong>Type:</strong> ${s(params.projectType)}</li>
-          <li><strong>Urgency:</strong> ${s(params.urgency)}</li>
-        </ul>
-
-        <h3>Brief Description</h3>
-        <p>${s(params.briefDescription)}</p>
-
-        ${params.photoCount > 0 ? `
-        <h3>Photos</h3>
-        <p>${params.photoCount} photo(s) uploaded</p>
-        ` : ''}
-
-        <h3>Contact Information</h3>
-        <ul>
-          <li><strong>Name:</strong> ${s(params.contactName)}</li>
-          <li><strong>Email:</strong> ${s(params.contactEmail)}</li>
-          ${params.contactPhone ? `<li><strong>Phone:</strong> ${s(params.contactPhone)}</li>` : ''}
-        </ul>
-
-        <p><a href="${appUrl}/admin">Review in Admin Dashboard</a></p>
-      `,
-    })
-
-    if (!result.success) {
-      console.error('Failed to send submission admin notification:', result.error)
-    }
-    return result
-  } catch (error) {
-    console.error('Failed to send submission admin notification:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
-    }
-  }
-}
-
-export async function sendSubmissionConfirmationEmail(
-  contactName: string,
-  contactEmail: string,
-  facilityName: string
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    const result = await sendEmail({
-      to: contactEmail,
-      subject: 'Project Submission Received - Hromada',
-      html: `
-        <h2>Thank You for Your Submission</h2>
-        <p>Dear ${s(contactName)},</p>
-
-        <p>We have received your project submission for <strong>${s(facilityName)}</strong>.</p>
-
-        <h3>What Happens Next?</h3>
-        <ul>
-          <li>Our team will review your submission within 3-5 business days.</li>
-          <li>We may contact you if we need additional information.</li>
-          <li>Once approved, your project will be visible to potential donors on our platform.</li>
-        </ul>
-
-        <p>If you have any questions, please contact us at support@hromada.org</p>
-
-        <p>Thank you for working to rebuild Ukraine's communities.</p>
-
-        <p>Best regards,<br>The Hromada Team</p>
-      `,
-    })
-
-    if (!result.success) {
-      console.error('Failed to send submission confirmation email:', result.error)
-    }
-    return result
-  } catch (error) {
-    console.error('Failed to send submission confirmation email:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
-    }
-  }
-}
-
-interface SubmissionDecisionParams {
-  contactName: string
-  contactEmail: string
-  facilityName: string
-  approved: boolean
-  projectId?: string
-  rejectionReason?: string
-}
-
-export async function sendSubmissionDecisionEmail({
-  contactName,
-  contactEmail,
-  facilityName,
-  approved,
-  projectId,
-  rejectionReason,
-}: SubmissionDecisionParams): Promise<{ success: boolean; error?: string }> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-
-  const html = approved
-    ? `
-      <h2>Great News!</h2>
-      <p>Dear ${s(contactName)},</p>
-
-      <p>Your project <strong>${s(facilityName)}</strong> has been approved and is now live on the Hromada platform!</p>
-
-      <p>Potential donors can now see your project and express interest in supporting it.</p>
-
-      <p><a href="${appUrl}/projects/${s(projectId || '')}">View Your Project</a></p>
-
-      <p>We encourage you to share this link with your network to increase visibility.</p>
-
-      <p>Thank you for working to rebuild Ukraine's communities.</p>
-
-      <p>Best regards,<br>The Hromada Team</p>
-    `
-    : `
-      <h2>Project Submission Update</h2>
-      <p>Dear ${s(contactName)},</p>
-
-      <p>Thank you for submitting your project <strong>${s(facilityName)}</strong> to Hromada.</p>
-
-      <p>After review, we were unable to approve your submission at this time for the following reason:</p>
-
-      <blockquote style="padding: 10px 20px; background: #f5f5f5; border-left: 3px solid #ccc; margin: 20px 0;">
-        ${s(rejectionReason || '')}
-      </blockquote>
-
-      <p>You are welcome to address these concerns and submit a new application. If you have questions, please contact us at support@hromada.org</p>
-
-      <p>Best regards,<br>The Hromada Team</p>
-    `
-
-  try {
-    const result = await sendEmail({
-      to: contactEmail,
-      subject: approved
-        ? 'Your Project is Now Live - Hromada'
-        : 'Project Submission Update - Hromada',
-      html,
-    })
-
-    if (!result.success) {
-      console.error('Failed to send submission decision email:', result.error)
-    }
-    return result
-  } catch (error) {
-    console.error('Failed to send submission decision email:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
-    }
-  }
-}
-
-// ── Donation Lifecycle Emails ─────────────────────────────────────
-
-interface DonationStatusEmailParams {
-  donorName: string
-  donorEmail: string
-  projectName: string
-  newStatus: string
-  previousStatus?: string
-}
-
-const donationStatusMessages: Record<string, { heading: string; body: string }> = {
-  RECEIVED: {
-    heading: 'Your donation has been confirmed',
-    body: 'We have confirmed receipt of your contribution. It is now being prepared for transfer to the community in Ukraine.',
-  },
-  ALLOCATED: {
-    heading: 'Your donation is being prepared for transfer',
-    body: 'Your contribution has been allocated to an outbound wire transfer. It will be on its way to Ukraine shortly.',
-  },
-  FORWARDED: {
-    heading: 'Your donation is on its way to Ukraine',
-    body: 'The wire transfer carrying your contribution has been sent. It is now in transit to the municipality in Ukraine.',
-  },
-  COMPLETED: {
-    heading: 'Your donation has arrived',
-    body: 'The municipality has confirmed receipt of funds. Thank you for making a direct impact on rebuilding Ukrainian infrastructure.',
-  },
-}
-
-export async function sendDonationStatusEmail({
-  donorName,
-  donorEmail,
-  projectName,
-  newStatus,
-}: DonationStatusEmailParams): Promise<{ success: boolean; error?: string }> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  const statusInfo = donationStatusMessages[newStatus]
-
-  if (!statusInfo) {
-    // Don't send emails for statuses without messaging (e.g. FAILED, REFUNDED, PENDING_CONFIRMATION)
-    return { success: true }
-  }
-
-  try {
-    const result = await sendEmail({
-      to: donorEmail,
-      subject: `${statusInfo.heading} — ${s(projectName)}`,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="text-align: center; padding: 20px 0;">
-            <h1 style="color: #0057B8; margin: 0;">hromada</h1>
-          </div>
-
-          <h2 style="color: #333;">${statusInfo.heading}</h2>
-
-          <p>Hi ${s(donorName)},</p>
-
-          <p>${statusInfo.body}</p>
-
-          <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 0; font-size: 16px;"><strong>Project:</strong> ${s(projectName)}</p>
-          </div>
-
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${appUrl}/dashboard" style="background: #0057B8; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
-              View Your Dashboard
-            </a>
-          </div>
-
-          <p style="color: #666; font-size: 12px; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
-            Hromada is a project of POCACITO Network, a 501(c)(3) nonprofit.
-          </p>
-        </div>
-      `,
-    })
-
-    if (!result.success) {
-      console.error('Failed to send donation status email:', result.error)
-    }
-    return result
-  } catch (error) {
-    console.error('Failed to send donation status email:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
+      error: error instanceof Error ? error.message : 'Failed to send email'
     }
   }
 }

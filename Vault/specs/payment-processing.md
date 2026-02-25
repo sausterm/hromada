@@ -45,7 +45,7 @@ Tracks status in /donor dashboard
 - Donor dashboard (`/donor`) — stats, donation list, status timeline
 - Nonprofit Manager dashboard (`/nonprofit`) — mark received, manage wire transfers, fee comparison
 - Auto donor account creation on confirmation
-- Welcome email via Resend
+- Welcome email via AWS SES
 
 ### Known Gaps
 - Bank details are **placeholder values** — need real POCACITO account info

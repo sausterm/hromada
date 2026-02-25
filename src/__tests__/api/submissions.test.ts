@@ -39,11 +39,12 @@ jest.mock('@/lib/rate-limit', () => ({
   },
 }))
 
-// Mock email module
-jest.mock('@/lib/email', () => ({
-  sendSubmissionAdminNotification: jest.fn().mockResolvedValue({ success: true }),
-  sendSubmissionConfirmationEmail: jest.fn().mockResolvedValue({ success: true }),
-  sendSubmissionDecisionEmail: jest.fn().mockResolvedValue({ success: true }),
+// Mock AWS SES
+jest.mock('@aws-sdk/client-ses', () => ({
+  SESClient: jest.fn().mockImplementation(() => ({
+    send: jest.fn().mockResolvedValue({}),
+  })),
+  SendEmailCommand: jest.fn().mockImplementation((params: unknown) => params),
 }))
 
 import { prisma } from '@/lib/prisma'
@@ -118,6 +119,7 @@ describe('POST /api/projects/submissions', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    process.env.AWS_SES_REGION = 'us-east-1'
     process.env.ADMIN_EMAIL = 'admin@test.com'
   })
 
@@ -317,6 +319,7 @@ describe('POST /api/projects/submissions', () => {
   })
 
   it('handles missing email configuration gracefully', async () => {
+    delete process.env.AWS_SES_REGION
     delete process.env.ADMIN_EMAIL
 
     const createdSubmission = { id: '1', ...validSubmission }
@@ -460,7 +463,7 @@ describe('PATCH /api/projects/submissions/[id]', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    // env setup
+    process.env.AWS_SES_REGION = 'us-east-1'
   })
 
   it('approves submission and creates project', async () => {

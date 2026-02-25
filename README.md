@@ -53,7 +53,7 @@ A platform connecting American donors directly with Ukrainian municipalities tha
 - **Styling**: Tailwind CSS
 - **Database**: PostgreSQL via Prisma
 - **Maps**: Leaflet + OpenStreetMap
-- **Email**: Resend
+- **Email**: Amazon SES
 - **Testing**: Jest + React Testing Library
 
 ## Getting Started
@@ -115,7 +115,7 @@ src/
 │   └── admin/              # Admin-specific components
 ├── lib/
 │   ├── prisma.ts           # Database client
-│   ├── email.ts            # Email service (Resend)
+│   ├── email.ts            # Email service (AWS SES)
 │   └── utils/              # Helper functions
 ├── hooks/                  # Custom React hooks
 ├── types/                  # TypeScript definitions
@@ -154,7 +154,8 @@ See `.env.example` for all required environment variables.
 | `DATABASE_URL` | Yes | PostgreSQL connection string (with pgbouncer) |
 | `DIRECT_URL` | Yes | Direct database URL (for migrations) |
 | `HROMADA_ADMIN_SECRET` | Yes | Admin authentication password |
-| `RESEND_API_KEY` | Yes | Resend API key for email notifications |
+| `AWS_SES_REGION` | Yes | AWS SES region (e.g. us-east-1) |
+| `AWS_SES_FROM_EMAIL` | Yes | Verified SES sender email |
 | `ADMIN_EMAIL` | Yes | Email address to receive contact notifications |
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL (for image storage) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anon/public key |

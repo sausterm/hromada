@@ -66,7 +66,7 @@ The Partner agrees to:
 
 a. Provide progress updates to Hromada at least once per month during active project implementation, including written status reports and photographic documentation of work in progress. Hromada and the Partner may agree to a different reporting frequency on a per-project basis.
 
-b. Provide photographic documentation of the completed project, including images sufficient to confirm that the described infrastructure has been constructed or installed as specified.
+b. Provide photographic documentation of the completed project, including images sufficient to confirm that the described infrastructure has been constructed or installed as specified. Where possible, provide short video clips (10–30 seconds) of active construction, installation, or completed infrastructure to support donor storytelling and platform content.
 
 c. Provide a project closure report upon completion, confirming: (i) whether the project was executed as described; (ii) whether the deliverables are materially consistent with the original project scope; (iii) whether the completed infrastructure is delivering its intended utility; and (iv) whether there are any unresolved issues.
 

@@ -2,7 +2,7 @@
 
 **Date**: 2026-02-19
 **Branch**: `v2-payment-processing`
-**Status**: Security hardened, audit trail built, Amplify deploy fixing in progress, trust center controls written
+**Status**: Amplify deploys working, Partner MoU drafted, FSA lawyer meeting done, Sentry API setup pending
 
 ---
 
@@ -103,7 +103,7 @@ Donor receives "Funds Delivered" update
 - **Featured projects** — admin-managed 4-slot system with fallback to newest projects
 - **Photo strip** — scrolling completed project photos
 - **FAQ** — 5 expandable questions
-- **Email capture** — newsletter signup with Resend welcome email
+- **Email capture** — newsletter signup with AWS SES welcome email
 - **Hero** — full-viewport with parallax, entrance animations, promise badge
 
 ### Other
@@ -131,7 +131,8 @@ Donor receives "Funds Delivered" update
 
 ```bash
 # Configured
-RESEND_API_KEY=re_...        # Sending emails
+AWS_SES_REGION=us-east-1     # SES region
+AWS_SES_FROM_EMAIL=noreply@hromadaproject.org  # Verified sender
 ADMIN_EMAIL=admin@...        # Receives donation notifications
 DEEPL_API_KEY=...            # Translation (DeepL free tier, 500K chars/month)
 SITE_PASSWORD=hromadav2!2026 # Site access gate
@@ -205,16 +206,20 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 - OFAC/sanctions compliance required before first international disbursement
 - Governing law: Virginia
 
+**Lawyer meeting (2026-02-19):** Met with lawyers about FSA. They were skeptical/dismissive ("interesting and uphill battle"). Tom plans to form a personal LLC to absorb liability during the fiscal sponsorship transition period before getting own 501(c)(3). Will rely on POCACITO's lawyers for the FSA itself — interests are mostly aligned given 0% fee and friendly relationship. Key remaining question: donor data ownership on exit from POCACITO.
+
 ---
 
 ## Amplify Deploy Status
 
 - **App ID**: `d3lasyv0tebbph`
-- **Last successful deploy**: #67 (`eaa4eaf` — security hardening, 2026-02-18)
-- **Deploys #68-78 failed**: Two issues:
-  1. `package-lock.json` out of sync (Next.js 16.1.4→16.1.6, missing `@swc/helpers@0.5.18`) — **FIXED** in commit `d45252b`
-  2. Build output exceeds 230MB Amplify limit (Sentry adds ~90MB of source maps) — **IN PROGRESS**, need to disable source maps via `next.config.ts`
+- **Deploys #81-84 succeeding** — build issues resolved
+- **Deploys #68-80 failed** (package-lock sync + source map size) — both fixed
+- **Deploy #84**: Triggered 2026-02-19 to pick up env var fixes
+- **Env vars restored**: All env vars from `.env.local` are now in Amplify (DATABASE_URL, DIRECT_URL, DEEPL_API_KEY, SITE_PASSWORD, SESSION_SECRET, HROMADA_ADMIN_SECRET, NEXT_PUBLIC_* vars). Previously only a subset was configured.
+- **SITE_PASSWORD**: Was missing from Amplify, causing "Site access is not configured" on hromadaproject.org. Now set.
 - **AWS CLI available**: `aws amplify list-jobs --app-id d3lasyv0tebbph --branch-name v2-payment-processing`
+- **Warning**: `aws amplify update-app --environment-variables` REPLACES all env vars, not just the ones specified. Always include all vars when updating. Use `--cli-input-json file://` with a JSON file to avoid shell escaping issues with special characters (!, @, etc.).
 
 ---
 
@@ -246,7 +251,7 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 
 ## Technical Notes
 
-- **Resend emails**: Currently using `onboarding@resend.dev` (test). Need to verify `hromadaproject.org` domain in Resend for production sends.
+- **AWS SES emails**: Need to verify `hromadaproject.org` domain in SES and move out of sandbox for production sends. IAM role on Amplify needs `ses:SendEmail` permission.
 - **Placeholder bank details**: Still in SupportProjectCard — blocked on FSA signing and real POCACITO account info.
 - **Site password**: `hromadav2!2026`
 - **Admin login**: Use `HROMADA_ADMIN_SECRET` from `.env.local`
@@ -254,7 +259,7 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 - **DNS**: Managed through Cloudflare for `hromadaproject.org`
 - **Prisma**: Using `db push` (not `migrate dev`) due to migration drift. Schema applied directly to Supabase.
 - **Tests**: 80 suites, 1463 passing, 0 failures, 5 skipped. All test failures from Zod migration fixed.
-- **Source maps**: Need to disable in production build to stay under Amplify's 230MB artifact limit. Sentry's `withSentryConfig` adds ~90MB.
+- **Source maps**: Disabled in production build (`sourcemaps.disable: true` in `next.config.ts`). Source map files deleted post-build in `amplify.yml`.
 
 ---
 
@@ -266,7 +271,7 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 - **Network Security**: Transmission Confidentiality, Limit Network Connections, Centralized Collection of Security Event Logs
 - **App Security**: Secure System Modification, Approval of Changes
 
-MOU template for NGO partners discussed — lightweight 2-3 page memorandum preferred over formal contract (enforcement jurisdiction issue in Ukraine).
+MOU template for NGO partners drafted and committed — see Partner MoU section below.
 
 ---
 
@@ -282,6 +287,88 @@ MOU template for NGO partners discussed — lightweight 2-3 page memorandum pref
 - Indemnification for sanctions/corruption breaches
 - 1-year term, 30-day termination notice, surviving obligations for in-progress projects
 - Not enforceable against Ukrainian NGOs in practice — functions as behavioral framework, due diligence artifact, and basis for terminating partnerships
+
+---
+
+## Workflow Orchestration
+
+### 1. Plan Mode Default
+- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
+- If something goes sideways, STOP and re-plan immediately — don't keep pushing
+- Use plan mode for verification steps, not just building
+- Write detailed specs upfront to reduce ambiguity
+
+### 2. Subagent Strategy
+- Use subagents liberally to keep main context window clean
+- Offload research, exploration, and parallel analysis to subagents
+- For complex problems, throw more compute at it via subagents
+- One task per subagent for focused execution
+
+### 3. Self-Improvement Loop
+- After ANY correction from the user: update `tasks/lessons.md` with the pattern
+- Write rules for yourself that prevent the same mistake
+- Ruthlessly iterate on these lessons until mistake rate drops
+- Review lessons at session start for relevant project
+
+### 4. Verification Before Done
+- Never mark a task complete without proving it works
+- Diff behavior between main and your changes when relevant
+- Ask yourself: "Would a staff engineer approve this?"
+- Run tests, check logs, demonstrate correctness
+
+### 5. Demand Elegance (Balanced)
+- For non-trivial changes: pause and ask "is there a more elegant way?"
+- If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"
+- Skip this for simple, obvious fixes — don't over-engineer
+- Challenge your own work before presenting it
+
+### 6. Autonomous Bug Fixing
+- When given a bug report: just fix it. Don't ask for hand-holding
+- Point at logs, errors, failing tests — then resolve them
+- Zero context switching required from the user
+- Go fix failing CI tests without being told how
+
+## Task Management
+
+1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
+2. **Verify Plan**: Check in before starting implementation
+3. **Track Progress**: Mark items complete as you go
+4. **Explain Changes**: High-level summary at each step
+5. **Document Results**: Add review section to `tasks/todo.md`
+6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
+
+## Core Principles
+
+- **Simplicity First**: Make every change as simple as possible. Impact minimal code.
+- **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
+- **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
+
+---
+
+## Figma MCP Server (Code to Canvas)
+
+**Status:** Installed and authenticated (2026-02-24).
+
+**Setup:** `claude mcp add --transport http figma https://mcp.figma.com/mcp --scope user`
+Config in `/Users/thomasprotzmann/.claude.json`.
+
+**What it does:** "Code to Canvas" — sends browser-rendered UI (local or production) to Figma as editable layers with preserved structure. Requires Claude Code restart to load the MCP tools into a session.
+
+**Use case — PDF documents:** The 2-page donor leave-behind and 6-page institutional deep-dive should be built as HTML/CSS files with proper typography (Inter/Outfit from Google Fonts, CSS Grid, print stylesheets). Then pushed to Figma via the MCP for final editing and PDF export. This produces far better results than reportlab.
+
+**Files:**
+- `docs/hromada_2pager.html` — 2-page leave-behind (to be created)
+- `docs/hromada_6pager.html` — 6-page deep-dive (to be created)
+- `docs/fonts/` — Inter and Outfit TTF files already downloaded
+- `scripts/generate_pdfs.py` — old reportlab version (superseded by HTML approach)
+- Plan spec: `.claude/plans/noble-bouncing-knuth.md`
+
+**Brand assets for PDFs:**
+- Partner logos: `public/partners/` — use `-white.png` variants on white/light backgrounds
+- Hromada logo: `src/app/icon.png`
+- POCACITO logo: `public/partners/pocacitologo-white.png`
+- Candid seal: `public/partners/candidseal.png`
+- Colors, fonts, content spec: see plan file above
 
 ---
 

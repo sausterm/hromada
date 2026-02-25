@@ -11,7 +11,7 @@ jest.mock('next-intl', () => ({
     const translations: Record<string, string> = {
       'nav.admin': 'Admin',
       'nav.aboutUs': 'About Us',
-      'nav.projects': 'Projects',
+      'nav.projects': 'Project Map',
       'nav.submitProject': 'Submit a Project',
       'nav.home': 'Home',
       'nav.menu': 'Menu',
@@ -156,7 +156,7 @@ describe('Header', () => {
       fireEvent.mouseEnter(menuButton.parentElement!)
 
       await waitFor(() => {
-        expect(screen.getByText('Projects')).toBeInTheDocument()
+        expect(screen.getByText('Project Map')).toBeInTheDocument()
         expect(screen.getByText('About Us')).toBeInTheDocument()
         expect(screen.getByText('Contact')).toBeInTheDocument()
         expect(screen.getByText('Partner With Us')).toBeInTheDocument()

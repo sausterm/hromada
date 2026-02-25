@@ -86,7 +86,7 @@ Nonprofit Dashboard (operational)
 
 - [ ] Connect nonprofit dashboard to real donation/wire-transfer APIs #p1 @sloan
 - [ ] Test full donation flow end-to-end (project → confirm → email → dashboard) #p1 @sloan
-- [ ] Verify Resend email delivery in production (not just dev) #p1 @sloan
+- [ ] Verify AWS SES email delivery in production (not just dev) #p1 @sloan
 - [ ] Set all production environment variables in Amplify #p1 @sloan
 - [ ] Configure custom domain with SSL #p1 @sloan
 

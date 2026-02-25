@@ -53,7 +53,7 @@
     "contact": "Contact",
     "aboutUs": "About",
     "home": "Home",
-    "projects": "Projects",
+    "projects": "Project Map",
     "howItWorks": "How It Works",
     "mpp": "Municipal Partnership",
     "language": "Language",
@@ -150,12 +150,12 @@
     "caseStudy": {
       "label": "PARTNER TRACK RECORD",
       "title": "See It Happen",
-      "subtitle": "Our NGO partners have years of experience delivering infrastructure projects across Ukraine. Here's one example — built by NGO Ecoaction.",
+      "subtitle": "Our NGO partners have years of experience delivering infrastructure projects across Ukraine. Here's one example — implemented by NGO Ecoaction.",
       "photoCaption1": "167 solar panels installed on the school roof — powering classrooms through grid outages",
       "badge": "School",
       "projectName": "School #7, Novohrodivka",
       "projectDesc": "90kW solar PV installation — 167 panels powering a school in Donetsk Oblast",
-      "partnerLabel": "Built by",
+      "partnerLabel": "Partner",
       "partnerName": "NGO Ecoaction",
       "timeline1Date": "June 2025",
       "timeline1Title": "Site assessment completed",
@@ -568,7 +568,9 @@
     "faq4Question": "Why only renewable energy projects?",
     "faq4Answer": "Ukraine's energy infrastructure has been systematically targeted. Communities are requesting solar, battery storage, and heat pumps to build decentralized, resilient energy systems that can't be taken out by a single attack. Every installation strengthens long-term energy independence.",
     "faq5Question": "How is Hromada funded?",
-    "faq5Answer": "Hromada operates through grants and institutional support from foundations committed to Ukrainian recovery. This allows us to pass 100% of individual donations directly to projects without administrative fees."
+    "faq5Answer": "Hromada operates through grants and institutional support from foundations committed to Ukrainian recovery. This allows us to pass 100% of individual donations directly to projects without administrative fees.",
+    "governanceDataTitle": "Municipal Governance Data",
+    "governanceDataText": "As part of our verification process, Hromada references publicly available governance data, including Transparency International Ukraine's annual Transparent Cities ranking. This ranking evaluates Ukrainian cities across indicators like budget transparency, public engagement, and service delivery. We use it as one input among several — alongside NGO partner assessments, project documentation, and OFAC screening — rather than as a gating mechanism. Many municipalities, particularly smaller communities, are not included in the ranking, and their absence does not reflect on their legitimacy or need."
   },
   "login": {
     "title": "Sign In",

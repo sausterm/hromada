@@ -22,7 +22,8 @@ This checklist is specific to the Hromada tech stack (Next.js 16, Prisma, Postgr
   SESSION_SECRET=<32+ character random string>
   HROMADA_ADMIN_SECRET=<strong-random-password>
   ADMIN_EMAIL=
-  RESEND_API_KEY=
+  AWS_SES_REGION=
+  AWS_SES_FROM_EMAIL=
   NEXT_PUBLIC_SUPABASE_URL=
   NEXT_PUBLIC_SUPABASE_ANON_KEY=
   ```

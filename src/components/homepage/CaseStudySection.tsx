@@ -34,7 +34,7 @@ export function CaseStudySection() {
           <div>
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-3">
-                <span className="inline-block bg-[var(--ukraine-blue)] text-white text-xs px-2 py-1 rounded-full">
+                <span className="inline-block bg-[#7B9E6B] text-white text-xs px-2 py-1 rounded-full">
                   {t('homepage.caseStudy.badge')}
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs text-[var(--navy-500)]">

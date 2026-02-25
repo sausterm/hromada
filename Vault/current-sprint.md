@@ -68,7 +68,7 @@
 - [x] Donation confirmation flow with auto donor account creation #p0 @sloan
 - [x] Donor dashboard with status timeline #p1 @sloan
 - [x] Nonprofit Manager dashboard with wire transfer management #p1 @sloan
-- [x] Welcome email integration via Resend #p2 @sloan
+- [x] Welcome email integration via AWS SES #p2 @sloan
 - [x] Migrate photos from local to Supabase Storage #p1 @sloan
 - [x] Correct Candid seal level to Platinum #p2 @sloan
 - [x] Replace CSBE with POCACITO Network as fiscal sponsor #p1 @sloan

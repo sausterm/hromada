@@ -17,7 +17,8 @@ frontend:
           echo "SESSION_SECRET=$SESSION_SECRET" >> .env.production
           echo "SITE_PASSWORD=$SITE_PASSWORD" >> .env.production
           echo "HROMADA_ADMIN_SECRET=$HROMADA_ADMIN_SECRET" >> .env.production
-          echo "RESEND_API_KEY=$RESEND_API_KEY" >> .env.production
+          echo "AWS_SES_REGION=$AWS_SES_REGION" >> .env.production
+          echo "AWS_SES_FROM_EMAIL=$AWS_SES_FROM_EMAIL" >> .env.production
           echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> .env.production
           echo "NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL" >> .env.production
           echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY" >> .env.production

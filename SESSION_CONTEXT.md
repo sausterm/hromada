@@ -1,8 +1,8 @@
 # Session Context — Hromada
 
-**Date**: 2026-02-19
+**Date**: 2026-02-25
 **Branch**: `v2-payment-processing`
-**Status**: Amplify deploys working, Partner MoU drafted, FSA lawyer meeting done, Sentry API setup pending
+**Status**: Tax receipt PDF infrastructure built, donation lifecycle wired end-to-end, email formats next
 
 ---
 
@@ -80,9 +80,12 @@ Donor receives "Funds Delivered" update
 
 ### Payment & Donations
 - **SupportProjectCard** (`src/components/projects/SupportProjectCard.tsx`) — fully internationalized, 3 payment methods with copy buttons and confirmation form
-- **Donation confirmation API** (`src/app/api/donations/confirm/route.ts`) — validates input, creates donor accounts, sends welcome emails, logs audit event
+- **Donation confirmation API** (`src/app/api/donations/confirm/route.ts`) — validates input, creates donor accounts, sends lightweight confirmation email, logs audit event
+- **Donation status API** (`src/app/api/donations/[id]/status/route.ts`) — PATCH endpoint for status transitions (PENDING→RECEIVED→FORWARDED→COMPLETED). FORWARDED triggers tax receipt PDF generation, Supabase upload, and receipt email with PDF attachment.
+- **Tax receipt PDF** (`src/lib/tax-receipt.ts`) — `@react-pdf/renderer`, POCACITO branding, IRS compliance language, Inter/Outfit fonts
 - **Donor dashboard** (`src/app/[locale]/(public)/donor/page.tsx`) — stats, donation list, status timeline
-- **Nonprofit dashboard** (`src/app/[locale]/(public)/nonprofit/page.tsx`) — pending actions, mark received, wire transfer tracking
+- **Nonprofit dashboard** (`src/app/[locale]/(public)/nonprofit/page.tsx`) — real API calls, pending actions with Mark Received/Mark Forwarded buttons, wire transfer tracking
+- **Donation lifecycle**: PENDING_CONFIRMATION → RECEIVED → FORWARDED (triggers receipt + email) → COMPLETED. ALLOCATED step removed (no batching needed).
 
 ### Translation & i18n
 - **DeepL API** (`src/lib/translate.ts`) — migrated from Google Cloud Translation, better Ukrainian quality
@@ -258,7 +261,7 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 - **Hosting**: AWS Amplify (NOT Vercel). Push to branch triggers build automatically.
 - **DNS**: Managed through Cloudflare for `hromadaproject.org`
 - **Prisma**: Using `db push` (not `migrate dev`) due to migration drift. Schema applied directly to Supabase.
-- **Tests**: 80 suites, 1463 passing, 0 failures, 5 skipped. All test failures from Zod migration fixed.
+- **Tests**: 107 suites, 1792 passing, 5 skipped. Login page tests have 4 pre-existing failures (unrelated to donation flow).
 - **Source maps**: Disabled in production build (`sourcemaps.disable: true` in `next.config.ts`). Source map files deleted post-build in `amplify.yml`.
 
 ---
@@ -372,7 +375,73 @@ Config in `/Users/thomasprotzmann/.claude.json`.
 
 ---
 
-## Next Task: Set Up Sentry API Access
+## Next Task: Calendly + Plaid API Integrations
+
+### Priority 1: Calendly Free-Tier Integration
+
+**Goal:** Automatically capture donor name + email when they book a Calendly call, and add them to the admin dashboard mailing list.
+
+**Constraint:** We're on the **Calendly free plan** — NO webhooks. Free plan gives read access to most API endpoints (GET scheduled events, invitees, event types). Webhooks require a paid plan ($10+/mo) which we don't want.
+
+**Solution:** Build a polling cron that checks Calendly for new invitees periodically and upserts them into the newsletter/mailing list.
+
+**What to build:**
+1. **API route: `/api/cron/calendly-sync`** — polls Calendly API v2 for recent invitees, compares against last poll timestamp, upserts new ones into the mailing list
+2. **Store last poll timestamp** — either in DB or a simple key-value (check if there's a Settings model in Prisma, or add one)
+3. **Calendly API v2 docs:** https://developer.calendly.com/api-docs (v1 deprecated Aug 2025)
+4. **Auth:** Personal Access Token stored in `CALENDLY_API_TOKEN` env var — ask Tom for this
+5. **Mailing list:** Check `src/lib/ses.ts` for the existing subscriber/campaign system. Check Prisma schema for `NewsletterSubscriber` or `Subscriber` model.
+6. **Cron trigger:** For now, expose as an API route that can be called by an external cron service (e.g., cron-job.org) or eventually AWS EventBridge. Protect with a shared secret in the `Authorization` header.
+7. **Custom questions:** Calendly lets you add custom questions to booking forms. Suggest Tom adds "Which project are you interested in?" so we can capture project intent alongside name/email.
+
+**Calendly API flow:**
+```
+GET /scheduled_events?organization={org_uri}&min_start_time={last_poll}&status=active
+→ for each event: GET /scheduled_events/{event_id}/invitees
+→ extract invitee.name, invitee.email, invitee.questions_and_answers
+→ upsert into mailing list
+→ update last_poll timestamp
+```
+
+### Priority 2: Plaid Bank Monitoring
+
+**Goal:** Monitor POCACITO's Bank of America account for incoming wire transfers. When a wire lands, push a notification to the admin dashboard so Tom/Sloan know a donation arrived without manually checking the bank.
+
+**Key facts:**
+- Plaid "Transactions" product monitors linked bank accounts and sends webhooks on new transactions
+- Free tier: 200 API calls (sufficient for current volume)
+- Someone with POCACITO bank access (Sloan or board member) needs to authorize the Plaid Link one-time
+- Match incoming wires to pending donations by **amount + reference number**
+- This automates the "Confirmation" step (step 1 in the donor welcome email's "What Happens Next" flow)
+
+**What to build:**
+1. **Plaid Link page** — admin-only page to connect bank account (one-time setup). Uses Plaid Link SDK.
+2. **Store Plaid access token** — encrypted in DB or env var. This is sensitive — treat like a password.
+3. **Webhook endpoint: `/api/webhooks/plaid`** — receives `TRANSACTIONS: DEFAULT_UPDATE` webhooks
+4. **Matching logic** — when a wire deposit arrives, compare amount + reference number against pending donations in the database
+5. **Admin notification** — show "Wire received" notification in admin dashboard, optionally send email to ADMIN_EMAIL
+6. **Env vars needed:** `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` (sandbox → production)
+7. **Plaid docs:** https://plaid.com/docs/
+
+**Important:** Start with Plaid Sandbox for development. Don't connect real bank accounts until Tom/Sloan are ready.
+
+### Existing infrastructure to build on
+- **Email system:** `src/lib/email.ts` (transactional), `src/lib/ses.ts` (campaigns/subscribers), `src/lib/email-template.ts` (branded templates), `src/lib/drip.ts` (drip sequences), `src/lib/campaign-sender.ts`
+- **Audit trail:** `src/lib/audit.ts` — use `logTransactionEvent()` for Plaid transaction events
+- **Webhook security:** Plaid sends webhook verification headers. Validate them. See `src/lib/security.ts` for existing patterns.
+- **Admin dashboard:** `src/app/[locale]/(dashboard)/admin/` — add notification UI here
+- **Donation model:** Check Prisma schema — donations tracked with status, amount, paymentMethod, referenceNumber
+
+### Files to read first
+1. `prisma/schema.prisma` — all database models
+2. `src/lib/ses.ts` — campaign/subscriber system
+3. `src/lib/audit.ts` — audit trail pattern
+4. `src/app/api/` — existing API route patterns
+5. `CLAUDE.md` — project conventions (READ THIS FIRST)
+
+---
+
+## Also: Set Up Sentry API Access
 
 Sentry is installed and reporting errors (`@sentry/nextjs` v10), but there's no API auth token for querying issues, events, or releases from the CLI.
 

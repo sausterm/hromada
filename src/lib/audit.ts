@@ -9,6 +9,7 @@ export const TransactionAction = {
   DONATION_STATUS_CHANGED: 'DONATION_STATUS_CHANGED',
   DONATION_AMOUNT_UPDATED: 'DONATION_AMOUNT_UPDATED',
   DONATION_ALLOCATED: 'DONATION_ALLOCATED',       // Assigned to wire transfer batch
+  DONATION_FORWARDED: 'DONATION_FORWARDED',       // Wire sent to Ukraine, receipt generated
   DONATION_NOTE_ADDED: 'DONATION_NOTE_ADDED',
 
   // Wire transfer lifecycle

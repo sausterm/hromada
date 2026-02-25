@@ -258,6 +258,10 @@ model Donation {
   receivedAt         DateTime?                        // When we confirmed receipt
   allocatedAt        DateTime?                        // When allocated to wire transfer
 
+  // Tax receipt
+  taxReceiptUrl      String?        // Storage path to generated PDF in tax-receipts bucket
+  forwardedAt        DateTime?      // When wire was sent to Ukraine
+
   // Wire transfer link
   wireTransferId     String?
 
@@ -387,6 +391,8 @@ model PartnershipInquiry {
 model NewsletterSubscriber {
   id               String   @id @default(cuid())
   email            String   @unique
+  name             String?
+  source           String?  // "website", "calendly", "admin"
   subscribedAt     DateTime @default(now())
   unsubscribed     Boolean  @default(false)
   unsubscribeToken String   @unique @default(cuid())
@@ -598,4 +604,13 @@ model TransactionEvent {
   @@index([action])
   @@index([actorId])
   @@index([createdAt])
+}
+
+// ── Cron Job State ──────────────────────────────────────────────────
+
+/// Key-value state for cron jobs (e.g. last poll timestamp)
+model CronState {
+  id        String   @id // e.g. "calendly-sync"
+  value     String   // JSON string
+  updatedAt DateTime @updatedAt
 }

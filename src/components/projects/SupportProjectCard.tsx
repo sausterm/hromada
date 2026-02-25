@@ -197,7 +197,7 @@ export function SupportProjectCard({
               {t('scheduleCallDescription')}
             </p>
             <a
-              href="https://calendly.com/hromada/donor-call"
+              href={`https://calendly.com/hromada/donor-call?a1=${encodeURIComponent(projectName)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 bg-[var(--ukraine-blue)] hover:opacity-90 text-white font-medium py-3 px-4 rounded-lg transition-opacity"

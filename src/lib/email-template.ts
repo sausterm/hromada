@@ -82,11 +82,11 @@ export function emailLayout(content: string, options?: EmailLayoutOptions): stri
               <!-- Bilingual logo: hromada [icon] громада -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
                 <tr>
-                  <td style="font-family:${FONT_BRAND};font-size:24px;font-weight:600;color:${C.cream};letter-spacing:-0.025em;padding-right:10px;" valign="middle">hromada</td>
-                  <td valign="middle" style="padding:0 2px;">
-                    <img src="${appUrl}/icon.png" alt="" width="28" height="28" style="width:28px;height:28px;display:block;" />
+                  <td style="font-family:${FONT_BRAND};font-size:32px;font-weight:600;color:${C.cream};letter-spacing:-0.025em;padding-right:4px;" valign="middle">hromada</td>
+                  <td valign="middle" style="padding:0 4px;">
+                    <img src="${appUrl}/icon-email.png" alt="" width="48" height="48" style="width:48px;height:48px;display:block;" />
                   </td>
-                  <td style="font-family:${FONT_BRAND};font-size:24px;font-weight:600;color:${C.cream};letter-spacing:-0.025em;padding-left:10px;" valign="middle">громада</td>
+                  <td style="font-family:${FONT_BRAND};font-size:32px;font-weight:600;color:${C.cream};letter-spacing:-0.025em;padding-left:4px;" valign="middle">громада</td>
                 </tr>
               </table>
               <!-- Blue accent line -->
@@ -258,7 +258,9 @@ export function emailProjectCard(opts: ProjectCardOptions): string {
   const photoBlock = opts.photoUrl
     ? `<tr>
         <td style="padding:0;">
-          <img src="${opts.photoUrl}" alt="${opts.projectName}" width="520" style="width:100%;max-width:520px;height:auto;display:block;border-radius:8px 8px 0 0;" />
+          <div style="max-height:200px;overflow:hidden;border-radius:8px 8px 0 0;">
+            <img src="${opts.photoUrl}" alt="${opts.projectName}" width="520" style="width:100%;max-width:520px;height:auto;display:block;object-fit:cover;" />
+          </div>
         </td>
       </tr>`
     : ''

@@ -16,3 +16,4 @@ export const supabase = supabaseClient as SupabaseClient
 export const isSupabaseConfigured = !!supabaseClient
 
 export const STORAGE_BUCKET = 'project-images'
+export const TAX_RECEIPTS_BUCKET = 'tax-receipts'

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
 import { hashPassword, getUserByEmail } from '@/lib/auth'
-import { sendDonorWelcomeEmail, sendDonationNotificationToAdmin } from '@/lib/email'
+import { sendDonationConfirmationEmail, sendDonationNotificationToAdmin } from '@/lib/email'
 import { logAuditEvent, AuditAction, getClientIp, getUserAgent, detectSuspiciousInput } from '@/lib/security'
 import { logTransactionEvent, TransactionAction } from '@/lib/audit'
 import { parseBody, donationConfirmSchema } from '@/lib/validations'
@@ -132,22 +132,16 @@ export async function POST(request: NextRequest) {
     })
 
     // Send emails (non-blocking)
-    const emailPromises: Promise<any>[] = []
+    // Lightweight confirmation to donor — credentials + receipt come later at FORWARDED
+    const emailPromises: Promise<unknown>[] = [
+      sendDonationConfirmationEmail({
+        donorName: donorName.trim(),
+        donorEmail: normalizedEmail,
+        projectName: projectName || 'General Fund',
+        amount: amount ? parseFloat(String(amount)) : undefined,
+        paymentMethod: normalizedMethod,
+      }).catch(err => console.error('Failed to send donation confirmation email:', err)),
 
-    if (isNewDonor && temporaryPassword) {
-      emailPromises.push(
-        sendDonorWelcomeEmail({
-          donorName: donorName.trim(),
-          donorEmail: normalizedEmail,
-          temporaryPassword,
-          projectName: projectName || 'General Fund',
-          amount: amount ? parseFloat(String(amount)) : undefined,
-          paymentMethod: normalizedMethod,
-        }).catch(err => console.error('Failed to send donor welcome email:', err))
-      )
-    }
-
-    emailPromises.push(
       sendDonationNotificationToAdmin({
         donorName: donorName.trim(),
         donorEmail: normalizedEmail,
@@ -158,8 +152,8 @@ export async function POST(request: NextRequest) {
         paymentMethod: normalizedMethod,
         referenceNumber: referenceNumber?.trim(),
         isNewDonor,
-      }).catch(err => console.error('Failed to send admin notification:', err))
-    )
+      }).catch(err => console.error('Failed to send admin notification:', err)),
+    ]
 
     Promise.all(emailPromises)
 

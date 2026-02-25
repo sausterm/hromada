@@ -1,4 +1,4 @@
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
+import { SESClient, SendEmailCommand, SendRawEmailCommand } from '@aws-sdk/client-ses'
 import { sanitizeInput } from '@/lib/security'
 import {
   emailLayout,
@@ -244,9 +244,9 @@ export async function sendDonorWelcomeEmail({
 
   try {
     const body = `
-      ${emailHeading(`Thank you, ${s(donorName)}`)}
+      ${emailHeading(`You're powering ${s(projectName)}`)}
 
-      <p>We&rsquo;ve received your notification of a${amountText} ${s(methodLabel)} contribution for:</p>
+      <p>${s(donorName)}, your${amountText} contribution is going to make a real difference. This project was requested by the community and verified by our NGO partner on the ground in Ukraine.</p>
 
       ${emailProjectCard({
         projectName: s(projectName),
@@ -256,41 +256,45 @@ export async function sendDonorWelcomeEmail({
         partnerLogoUrl,
       })}
 
-      <p>We&rsquo;ve created a donor account so you can track your contribution as it makes its way to Ukraine.</p>
+      ${emailProcessFlow('Your Project\u2019s Journey', [
+        {
+          number: 1,
+          title: 'Payment Confirmed',
+          description: `We confirm receipt of your ${s(methodLabel)} (1\u20133 business days).`,
+        },
+        {
+          number: 2,
+          title: 'Funds Sent to Ukraine',
+          description: 'Your donation is wired directly to the municipality\u2019s bank account.',
+        },
+        {
+          number: 3,
+          title: 'Construction Begins',
+          description: 'The municipality procures materials and work begins on your project.',
+        },
+        {
+          number: 4,
+          title: 'Progress Updates',
+          description: 'You\u2019ll receive photos as construction moves forward.',
+        },
+        {
+          number: 5,
+          title: 'Project Complete',
+          description: 'Final photos and documentation delivered to your donor dashboard.',
+        },
+      ])}
+
+      ${emailDivider()}
+
+      <p>We\u2019ve created a donor account so you can follow along. Here are your login credentials:</p>
 
       ${emailHighlightBox(`
-        ${emailSubheading('Your Login Credentials')}
         ${emailField('Email', s(donorEmail))}
         ${emailField('Temporary Password', `<code style="background:#F5F1E8;padding:3px 8px;border-radius:4px;font-family:'Geist Mono','SF Mono','Courier New',monospace;font-size:13px;">${s(temporaryPassword)}</code>`)}
         ${emailMuted('We recommend changing your password after your first login.')}
       `)}
 
       ${emailButton('View Your Donor Dashboard', `${appUrl}/login`)}
-
-      ${emailProcessFlow('What Happens Next', [
-        {
-          number: 1,
-          title: 'Confirmation',
-          description: `We verify receipt of your ${s(methodLabel)} (usually 1\u20133 business days).`,
-        },
-        {
-          number: 2,
-          title: 'Procurement',
-          description: 'The municipality procures materials through Prozorro, Ukraine\u2019s transparent e-procurement system.',
-          logoUrl: `${appUrl}/partners/prozorrologo.png`,
-          logoAlt: 'Prozorro',
-        },
-        {
-          number: 3,
-          title: 'Transfer',
-          description: 'Funds are wired directly to the municipality in Ukraine.',
-        },
-        {
-          number: 4,
-          title: 'Updates',
-          description: 'You\u2019ll receive progress photos and updates as your project is completed.',
-        },
-      ])}
 
       ${emailInfoBox(`
         <p style="margin:0;font-size:13px;color:#666;">
@@ -299,13 +303,16 @@ export async function sendDonorWelcomeEmail({
         </p>
       `)}
 
-      ${emailMuted('Questions? Reply to this email or contact us at <a href="mailto:donations@pocacito.org" style="color:#999;">donations@pocacito.org</a>')}
+      <p style="margin-top:24px;">Thank you for standing with this community. If you have any questions, just reply to this email.</p>
+
+      <p style="color:#1a2744;font-weight:600;">Tom &amp; Sloan<br>
+      <span style="font-weight:400;color:#666;">Hromada</span></p>
     `
 
     await sendEmail({
       to: donorEmail,
-      subject: `Thank you for supporting ${s(projectName)}`,
-      html: emailLayout(body, { preheader: `Your contribution to ${projectName} has been recorded.` }),
+      subject: `You're powering ${s(projectName)}`,
+      html: emailLayout(body, { preheader: `Your contribution is on its way to Ukraine.` }),
     })
 
     return { success: true }
@@ -539,6 +546,248 @@ export async function sendPartnershipInquiryNotification({
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to send email'
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 7. Donation Forwarded Email (receipt + credentials)
+// ---------------------------------------------------------------------------
+
+interface DonationForwardedParams {
+  donorName: string
+  donorEmail: string
+  temporaryPassword?: string
+  projectName: string
+  amount: number
+  paymentMethod: string
+  referenceNumber?: string
+  projectPhotoUrl?: string
+  municipality?: string
+  partnerName?: string
+  partnerLogoUrl?: string
+  receiptUrl: string
+  receiptPdfBuffer: Buffer
+  receiptNumber: string
+}
+
+/**
+ * Send the donation forwarded email with tax receipt PDF attached.
+ * Uses SendRawEmailCommand to support MIME attachments.
+ */
+export async function sendDonationForwardedEmail({
+  donorName,
+  donorEmail,
+  temporaryPassword,
+  projectName,
+  amount,
+  paymentMethod,
+  referenceNumber,
+  projectPhotoUrl,
+  municipality,
+  partnerName,
+  partnerLogoUrl,
+  receiptUrl,
+  receiptPdfBuffer,
+  receiptNumber,
+}: DonationForwardedParams): Promise<{ success: boolean; error?: string }> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping donation forwarded email')
+    return { success: true }
+  }
+
+  const methodLabel = PAYMENT_LABELS[paymentMethod.toLowerCase()] || paymentMethod
+  const amountText = ` <strong>$${amount.toLocaleString()}</strong>`
+
+  try {
+    // Build credentials section
+    const credentialsBlock = temporaryPassword
+      ? `
+        ${emailDivider()}
+        <p>We\u2019ve created a donor account so you can follow along. Here are your login credentials:</p>
+        ${emailHighlightBox(`
+          ${emailField('Email', s(donorEmail))}
+          ${emailField('Temporary Password', `<code style="background:#F5F1E8;padding:3px 8px;border-radius:4px;font-family:'Geist Mono','SF Mono','Courier New',monospace;font-size:13px;">${s(temporaryPassword)}</code>`)}
+          ${emailMuted('We recommend changing your password after your first login.')}
+        `)}
+        ${emailButton('View Your Donor Dashboard', `${appUrl}/login`)}
+      `
+      : ''
+
+    const body = `
+      ${emailHeading(`Your donation is on its way to Ukraine`)}
+
+      <p>${s(donorName)}, your${amountText} contribution has been forwarded to the community. This project was requested by the municipality and verified by our NGO partner on the ground.</p>
+
+      ${emailProjectCard({
+        projectName: s(projectName),
+        photoUrl: projectPhotoUrl,
+        municipality: municipality ? s(municipality) : undefined,
+        partnerName: partnerName ? s(partnerName) : undefined,
+        partnerLogoUrl,
+      })}
+
+      ${emailProcessFlow('Your Project\u2019s Journey', [
+        {
+          number: 1,
+          title: 'Payment Confirmed',
+          description: `Your ${s(methodLabel)} was confirmed.`,
+        },
+        {
+          number: 2,
+          title: 'Funds Sent to Ukraine',
+          description: 'Your donation has been wired to the municipality\u2019s bank account.',
+        },
+        {
+          number: 3,
+          title: 'Construction Begins',
+          description: 'The municipality procures materials and work begins on your project.',
+        },
+        {
+          number: 4,
+          title: 'Progress Updates',
+          description: 'You\u2019ll receive photos as construction moves forward.',
+        },
+        {
+          number: 5,
+          title: 'Project Complete',
+          description: 'Final photos and documentation delivered to your donor dashboard.',
+        },
+      ])}
+
+      ${credentialsBlock}
+
+      ${emailDivider()}
+
+      ${emailInfoBox(`
+        <p style="margin:0 0 8px;font-weight:600;color:#1a2744;">Your Tax Receipt</p>
+        <p style="margin:0 0 12px;font-size:13px;color:#555;">
+          Your tax receipt (${s(receiptNumber)}) is attached to this email and available for download below.
+        </p>
+        ${emailButton('Download Tax Receipt', receiptUrl)}
+        <p style="margin:12px 0 0;font-size:12px;color:#999;">
+          Your donation is tax-deductible through POCACITO Network, a registered 501(c)(3) nonprofit (EIN&nbsp;99-0392258).${referenceNumber ? ` Reference: ${s(referenceNumber)}` : ''}
+        </p>
+      `)}
+
+      <p style="margin-top:24px;">Thank you for standing with this community. If you have any questions, just reply to this email.</p>
+
+      <p style="color:#1a2744;font-weight:600;">Tom &amp; Sloan<br>
+      <span style="font-weight:400;color:#666;">Hromada</span></p>
+    `
+
+    const subject = `Your donation is on its way to Ukraine \u2014 ${s(projectName)}`
+    const htmlContent = emailLayout(body, { preheader: 'Your tax receipt is attached.' })
+
+    // Build raw MIME email with PDF attachment
+    const boundary = `----=_Part_${Date.now()}_${Math.random().toString(36).slice(2)}`
+    const pdfBase64 = receiptPdfBuffer.toString('base64')
+
+    const rawEmail = [
+      `From: Hromada <${FROM_EMAIL}>`,
+      `To: ${donorEmail}`,
+      `Subject: ${subject}`,
+      'MIME-Version: 1.0',
+      `Content-Type: multipart/mixed; boundary="${boundary}"`,
+      '',
+      `--${boundary}`,
+      'Content-Type: text/html; charset=UTF-8',
+      'Content-Transfer-Encoding: 7bit',
+      '',
+      htmlContent,
+      '',
+      `--${boundary}`,
+      `Content-Type: application/pdf; name="Hromada_Tax_Receipt_${receiptNumber}.pdf"`,
+      'Content-Transfer-Encoding: base64',
+      `Content-Disposition: attachment; filename="Hromada_Tax_Receipt_${receiptNumber}.pdf"`,
+      '',
+      pdfBase64,
+      '',
+      `--${boundary}--`,
+    ].join('\r\n')
+
+    await ses.send(
+      new SendRawEmailCommand({
+        RawMessage: { Data: new TextEncoder().encode(rawEmail) },
+      })
+    )
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send donation forwarded email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 8. Lightweight Donation Confirmation (no credentials, no receipt)
+// ---------------------------------------------------------------------------
+
+interface DonationConfirmationParams {
+  donorName: string
+  donorEmail: string
+  projectName: string
+  amount?: number
+  paymentMethod: string
+}
+
+/**
+ * Lightweight email confirming we received the donor's submission.
+ * No login credentials or tax receipt — those come later at FORWARDED.
+ */
+export async function sendDonationConfirmationEmail({
+  donorName,
+  donorEmail,
+  projectName,
+  amount,
+  paymentMethod,
+}: DonationConfirmationParams): Promise<{ success: boolean; error?: string }> {
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping donation confirmation email')
+    return { success: true }
+  }
+
+  const methodLabel = PAYMENT_LABELS[paymentMethod.toLowerCase()] || paymentMethod
+  const amountText = amount ? ` of <strong>$${amount.toLocaleString()}</strong>` : ''
+
+  try {
+    const body = `
+      ${emailHeading('We received your donation details')}
+
+      <p>Hi ${s(donorName)},</p>
+
+      <p>Thank you for your ${s(methodLabel)} contribution${amountText} toward <strong>${s(projectName)}</strong>. We\u2019re verifying receipt with our bank now.</p>
+
+      ${emailInfoBox(`
+        <p style="margin:0 0 6px;font-weight:600;color:#1a2744;">What happens next</p>
+        <p style="margin:0;font-size:14px;color:#555;">
+          We\u2019ll confirm your payment within 1\u20133 business days. Once your funds are forwarded to Ukraine, you\u2019ll receive your tax receipt and login credentials for your donor dashboard.
+        </p>
+      `)}
+
+      ${emailMuted('If you have any questions in the meantime, just reply to this email.')}
+
+      <p style="margin-top:20px;color:#1a2744;font-weight:600;">Tom &amp; Sloan<br>
+      <span style="font-weight:400;color:#666;">Hromada</span></p>
+    `
+
+    await sendEmail({
+      to: donorEmail,
+      subject: `We received your donation details \u2014 ${s(projectName)}`,
+      html: emailLayout(body, { preheader: `We're verifying your ${methodLabel} now.` }),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send donation confirmation email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
     }
   }
 }

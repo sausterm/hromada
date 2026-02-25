@@ -207,6 +207,9 @@ export function SupportProjectCard({
               </svg>
               {t('scheduleCall')}
             </a>
+            <p className="text-xs text-gray-400 mt-2 text-center">
+              {t('scheduleCallConsent')}
+            </p>
           </div>
 
           {/* Divider */}

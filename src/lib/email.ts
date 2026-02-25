@@ -463,7 +463,83 @@ export async function sendNewsletterWelcomeEmail(
 }
 
 // ---------------------------------------------------------------------------
-// 6. Partnership Inquiry Notification (admin)
+// 6. Calendly Booking Welcome Email
+// ---------------------------------------------------------------------------
+
+export async function sendCalendlyWelcomeEmail(
+  email: string,
+  name: string | null,
+  unsubscribeToken: string,
+  projectName?: string,
+): Promise<{ success: boolean; error?: string }> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping Calendly welcome email')
+    return { success: true }
+  }
+
+  const firstName = name ? s(name.split(' ')[0]) : null
+  const greeting = firstName ? `${firstName}, welcome` : 'Welcome'
+  const unsubscribeUrl = `${appUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`
+
+  try {
+    const body = `
+      ${emailHeading(`${greeting} to the Hromada`)}
+
+      <p><em>Hromada</em> (громада) means <em>community</em> in Ukrainian. By scheduling a call, you&rsquo;ve become part of ours.</p>
+
+      ${projectName ? `
+        ${emailInfoBox(`
+          <p style="margin:0 0 6px;font-weight:600;color:#1a2744;">Your interest</p>
+          <p style="margin:0;font-size:14px;color:#555;">
+            ${s(projectName)}
+          </p>
+        `)}
+      ` : ''}
+
+      <p>Here&rsquo;s what to know:</p>
+
+      ${emailHighlightBox(`
+        <p style="margin:0 0 8px;font-weight:600;color:#1a2744;">Your future donor dashboard</p>
+        <p style="margin:0;font-size:14px;color:#555;">
+          Should you decide to contribute, <strong>${s(email)}</strong> will be your login email for tracking your donation from confirmation through delivery to Ukraine.
+        </p>
+      `)}
+
+      ${emailInfoBox(`
+        <p style="margin:0 0 6px;font-weight:600;color:#1a2744;">You&rsquo;re on our mailing list</p>
+        <p style="margin:0;font-size:14px;color:#555;">
+          We&rsquo;ll send occasional updates on funded projects and communities being rebuilt. No spam &mdash; just progress.
+        </p>
+      `)}
+
+      ${emailButton('Browse Projects', `${appUrl}/projects`)}
+
+      ${emailMuted(`You're receiving this because you scheduled a call via hromadaproject.org. <a href="${unsubscribeUrl}" style="color:#999;text-decoration:underline;">Unsubscribe</a>`)}
+    `
+
+    await sendEmail({
+      to: email,
+      subject: `${greeting} to the Hromada`,
+      html: emailLayout(body, {
+        preheader: 'Thanks for scheduling a call. You\'re part of the community now.',
+        unsubscribeUrl,
+      }),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send Calendly welcome email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 7. Partnership Inquiry Notification (admin)
 // ---------------------------------------------------------------------------
 
 interface PartnershipInquiryNotificationParams {

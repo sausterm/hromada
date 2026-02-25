@@ -4,6 +4,7 @@ import {
   getScheduledEvents,
   getEventInvitees,
 } from '@/lib/calendly'
+import { sendCalendlyWelcomeEmail } from '@/lib/email'
 
 const CRON_STATE_KEY = 'calendly-sync'
 const DEFAULT_LOOKBACK_DAYS = 7
@@ -78,7 +79,7 @@ export async function syncCalendlyInvitees(): Promise<CalendlySyncResult> {
         }
         skipped++
       } else {
-        await prisma.newsletterSubscriber.create({
+        const subscriber = await prisma.newsletterSubscriber.create({
           data: {
             email,
             name: invitee.name || null,
@@ -87,6 +88,22 @@ export async function syncCalendlyInvitees(): Promise<CalendlySyncResult> {
         })
         console.log(`[calendly-sync]   ${email} — ADDED (name: "${invitee.name}", source: calendly)`)
         newSubscribers++
+
+        // Extract project name from custom Q&A (first answer = project interest)
+        const projectName = invitee.questionsAndAnswers[0]?.answer
+
+        // Send branded welcome email
+        const emailResult = await sendCalendlyWelcomeEmail(
+          email,
+          invitee.name,
+          subscriber.unsubscribeToken,
+          projectName,
+        )
+        if (emailResult.success) {
+          console.log(`[calendly-sync]   ${email} — welcome email sent`)
+        } else {
+          console.error(`[calendly-sync]   ${email} — welcome email failed: ${emailResult.error}`)
+        }
       }
 
       // Log custom question responses

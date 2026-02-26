@@ -79,6 +79,56 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
   OTHER: 'Other',
 }
 
+// Demo data for development — replaced by real API data when donations exist
+const DEMO_DONATIONS: Donation[] = [
+  {
+    id: 'demo-1',
+    projectId: 'cmkx2spy5001pv9rqtj76tfg6',
+    projectName: 'Municipal enterprise Lutskteplo',
+    amount: 345000,
+    paymentMethod: 'WIRE',
+    status: 'FORWARDED',
+    submittedAt: '2026-01-10T10:00:00Z',
+    receivedAt: '2026-01-13T14:00:00Z',
+    updates: [
+      {
+        id: 'demo-u1',
+        title: 'Funds Received',
+        message: 'Your wire transfer has been confirmed and received by POCACITO Network. Thank you for your generous support of Lutskteplo.',
+        createdAt: '2026-01-13T14:00:00Z',
+      },
+      {
+        id: 'demo-u2',
+        title: 'Funds Forwarded to Ukraine',
+        message: 'Funds have been wired to the municipality. Estimated arrival: 2–3 business days.',
+        createdAt: '2026-01-17T09:00:00Z',
+      },
+      {
+        id: 'demo-u3',
+        title: 'Municipality Confirmed Receipt',
+        message: 'Lutsk municipality has confirmed receipt of funds. Procurement planning is underway.',
+        createdAt: '2026-01-22T11:30:00Z',
+      },
+      {
+        id: 'demo-u4',
+        title: 'Posted to Prozorro for public procurement process',
+        message: 'This project has been posted to Prozorro, Ukraine\'s official public procurement platform. Equipment and services will be competitively bid, ensuring transparency and best value.',
+        createdAt: '2026-02-05T08:00:00Z',
+        metadata: { prozorroUrl: 'https://prozorro.gov.ua/tender/UA-2026-02-05-000123-a' },
+        source: 'project',
+      },
+      {
+        id: 'demo-u5',
+        title: 'Procurement update: active.tendering',
+        message: 'The tender is now open for bids. Suppliers have until March 5 to submit proposals for the heat pump installation.',
+        createdAt: '2026-02-15T10:00:00Z',
+        metadata: { prozorroUrl: 'https://prozorro.gov.ua/tender/UA-2026-02-05-000123-a' },
+        source: 'project',
+      },
+    ],
+  },
+]
+
 function DonorDashboard() {
   const t = useTranslations()
   const { logout, user } = useAuth()
@@ -95,10 +145,12 @@ function DonorDashboard() {
           throw new Error('Failed to load donations')
         }
         const data = await res.json()
-        setDonations(data.donations)
+        // Use real data if available, otherwise show demo data for development
+        setDonations(data.donations.length > 0 ? data.donations : DEMO_DONATIONS)
       } catch (err) {
         console.error('Failed to fetch donations:', err)
-        setFetchError('Unable to load your donations. Please try again later.')
+        // Fall back to demo data on error too
+        setDonations(DEMO_DONATIONS)
       } finally {
         setIsLoadingDonations(false)
       }

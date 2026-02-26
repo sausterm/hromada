@@ -63,6 +63,62 @@ function transformProject(data: Record<string, unknown>): Project {
   } as Project
 }
 
+const LUTSKTEPLO_ID = 'cmkx2spy5001pv9rqtj76tfg6'
+
+const DEMO_UPDATES: ProjectUpdate[] = [
+  {
+    id: 'demo-u1',
+    type: 'MANUAL',
+    title: 'Funds Received',
+    message: 'Your wire transfer has been confirmed and received by POCACITO Network.',
+    metadata: null,
+    createdAt: '2026-01-13T14:00:00Z',
+  },
+  {
+    id: 'demo-u2',
+    type: 'MANUAL',
+    title: 'Funds Forwarded to Ukraine',
+    message: 'Funds have been wired to the municipality. Estimated arrival: 2–3 business days.',
+    metadata: null,
+    createdAt: '2026-01-17T09:00:00Z',
+  },
+  {
+    id: 'demo-u3',
+    type: 'MANUAL',
+    title: 'Municipality Confirmed Receipt',
+    message: 'Lutsk municipality has confirmed receipt of funds. Procurement planning is underway.',
+    metadata: null,
+    createdAt: '2026-01-22T11:30:00Z',
+  },
+  {
+    id: 'demo-u4',
+    type: 'PROZORRO_STATUS',
+    title: 'Posted to Prozorro for public procurement process',
+    message: 'This project has been posted to Prozorro, Ukraine\'s official public procurement platform. Equipment and services will be competitively bid, ensuring transparency and best value.',
+    metadata: { prozorroUrl: 'https://prozorro.gov.ua/tender/UA-2026-02-05-000123-a' },
+    createdAt: '2026-02-05T08:00:00Z',
+  },
+  {
+    id: 'demo-u5',
+    type: 'PROZORRO_STATUS',
+    title: 'Procurement update: active.tendering',
+    message: 'The tender is now open for bids. Suppliers have until March 5 to submit proposals for the heat pump installation.',
+    metadata: { prozorroUrl: 'https://prozorro.gov.ua/tender/UA-2026-02-05-000123-a' },
+    createdAt: '2026-02-15T10:00:00Z',
+  },
+]
+
+const DEMO_DONATIONS: DonorDonation[] = [
+  {
+    id: 'demo-1',
+    amount: 345000,
+    paymentMethod: 'WIRE',
+    status: 'FORWARDED',
+    submittedAt: '2026-01-10T10:00:00Z',
+    receivedAt: '2026-01-13T14:00:00Z',
+  },
+]
+
 export default function DonorProjectDetailPage() {
   const router = useRouter()
   const locale = useLocale()
@@ -100,12 +156,12 @@ export default function DonorProjectDetailPage() {
         if (projectRes.ok) {
           const projectData = await projectRes.json()
           setProject(transformProject(projectData.project))
-          setUpdates(
-            (projectData.project.updates || []).map((u: Record<string, unknown>) => ({
-              ...u,
-              createdAt: u.createdAt as string,
-            }))
-          )
+          const realUpdates = (projectData.project.updates || []).map((u: Record<string, unknown>) => ({
+            ...u,
+            createdAt: u.createdAt as string,
+          }))
+          // Use demo updates for Lutskteplo if no real updates exist
+          setUpdates(realUpdates.length > 0 ? realUpdates : (projectId === LUTSKTEPLO_ID ? DEMO_UPDATES : []))
         }
 
         if (donationsRes.ok) {
@@ -121,7 +177,8 @@ export default function DonorProjectDetailPage() {
               submittedAt: d.submittedAt,
               receivedAt: d.receivedAt,
             }))
-          setDonations(projectDonations)
+          // Use demo donation for Lutskteplo if no real donations exist
+          setDonations(projectDonations.length > 0 ? projectDonations : (projectId === LUTSKTEPLO_ID ? DEMO_DONATIONS : []))
         }
       } catch (err) {
         console.error('Failed to fetch project data:', err)

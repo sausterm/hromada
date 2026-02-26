@@ -73,6 +73,12 @@ export interface Project {
   cofinancingAvailable?: CofinancingStatus
   cofinancingDetails?: string
   partnerOrganization?: string
+  // Prozorro procurement tracking
+  edrpou?: string
+  prozorroTenderId?: string
+  prozorroTenderUuid?: string
+  prozorroStatus?: string
+  prozorroLastSync?: Date
   // Ukrainian translations (auto-generated)
   municipalityNameUk?: string
   facilityNameUk?: string

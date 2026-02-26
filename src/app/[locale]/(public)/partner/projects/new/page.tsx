@@ -39,6 +39,7 @@ interface FormData {
   contactEmail: string
   contactPhone: string
   partnerOrganization: string
+  edrpou: string
   projectSubtype: string
   additionalNotes: string
   photos: string[]
@@ -65,6 +66,7 @@ const initialFormData: FormData = {
   contactName: '',
   contactEmail: '',
   contactPhone: '',
+  edrpou: '',
   partnerOrganization: '',
   projectSubtype: '',
   additionalNotes: '',
@@ -329,15 +331,31 @@ export default function PartnerNewProjectPage() {
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('submitProject.fields.region')}
-                </label>
-                <Input
-                  value={formData.region}
-                  onChange={handleChange('region')}
-                  placeholder={t('submitProject.fields.regionPlaceholder')}
-                />
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('submitProject.fields.region')}
+                  </label>
+                  <Input
+                    value={formData.region}
+                    onChange={handleChange('region')}
+                    placeholder={t('submitProject.fields.regionPlaceholder')}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    EDRPOU (ЄДРПОУ)
+                  </label>
+                  <Input
+                    value={formData.edrpou}
+                    onChange={handleChange('edrpou')}
+                    placeholder="e.g. 04054866"
+                    maxLength={8}
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    8-digit municipality registry code. Found on official documents. If unknown, leave blank and contact us.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

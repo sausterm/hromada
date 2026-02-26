@@ -53,6 +53,10 @@ export interface ProjectFormData {
   cofinancingAvailable: CofinancingStatus | ''
   cofinancingDetails: string
   partnerOrganization: string
+  // Prozorro tracking
+  edrpou: string
+  prozorroTenderId: string
+  prozorroTenderUuid: string
 }
 
 const initialFormData: ProjectFormData = {
@@ -79,6 +83,10 @@ const initialFormData: ProjectFormData = {
   cofinancingAvailable: '',
   cofinancingDetails: '',
   partnerOrganization: '',
+  // Prozorro tracking
+  edrpou: '',
+  prozorroTenderId: '',
+  prozorroTenderUuid: '',
 }
 
 export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }: ProjectFormProps) {
@@ -114,6 +122,10 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
         cofinancingAvailable: project.cofinancingAvailable || '',
         cofinancingDetails: project.cofinancingDetails || '',
         partnerOrganization: project.partnerOrganization || '',
+        // Prozorro tracking
+        edrpou: project.edrpou || '',
+        prozorroTenderId: project.prozorroTenderId || '',
+        prozorroTenderUuid: project.prozorroTenderUuid || '',
       })
     }
   }, [project])
@@ -581,6 +593,65 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
             <div className="space-y-4">
               <h3 className="font-medium text-gray-900 border-b pb-2">Partner Documents</h3>
               <DocumentUpload projectId={project.id} />
+            </div>
+          )}
+
+          {/* Prozorro Tracking */}
+          {isEditing && (
+            <div className="space-y-4">
+              <h3 className="font-medium text-gray-900 border-b pb-2">Prozorro Tracking</h3>
+              <p className="text-sm text-gray-500">
+                Link a Prozorro procurement tender to this project. The daily sync will track status changes and notify donors.
+              </p>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  EDRPOU (ЄДРПОУ)
+                </label>
+                <Input
+                  value={formData.edrpou}
+                  onChange={handleChange('edrpou')}
+                  placeholder="e.g. 04054866"
+                  maxLength={8}
+                />
+                <p className="mt-1 text-xs text-gray-500">8-digit municipality registry code</p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Prozorro Tender ID
+                  </label>
+                  <Input
+                    value={formData.prozorroTenderId}
+                    onChange={handleChange('prozorroTenderId')}
+                    placeholder="e.g. UA-2026-03-15-000581-a"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Prozorro Tender UUID
+                  </label>
+                  <Input
+                    value={formData.prozorroTenderUuid}
+                    onChange={handleChange('prozorroTenderUuid')}
+                    placeholder="Internal API UUID"
+                  />
+                </div>
+              </div>
+
+              {project?.prozorroStatus && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+                  <p className="text-blue-900">
+                    <strong>Current status:</strong> {project.prozorroStatus}
+                  </p>
+                  {project.prozorroLastSync && (
+                    <p className="text-blue-700 mt-1">
+                      Last synced: {new Date(project.prozorroLastSync).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

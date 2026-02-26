@@ -206,7 +206,7 @@ export function SupportProjectCard({
               <img
                 src="/calendly-logo-white.png"
                 alt="Calendly"
-                className="h-[18px] w-auto"
+                className="h-[18px] w-auto relative top-[1px]"
               />
             </a>
           </div>

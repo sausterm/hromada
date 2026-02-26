@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses'
 import { translateProjectToUkrainian, detectLanguage } from '@/lib/translate'
 import { verifyAdminAuth } from '@/lib/auth'
-
-const ses = process.env.AWS_SES_REGION
-  ? new SESClient({ region: process.env.AWS_SES_REGION })
-  : null
-const FROM_EMAIL = process.env.AWS_SES_FROM_EMAIL || 'noreply@hromadaproject.org'
+import { sendProjectApprovalEmail, sendProjectRejectionEmail } from '@/lib/email'
 
 // GET - Get single submission
 export async function GET(
@@ -119,6 +114,7 @@ export async function PATCH(
           cofinancingAvailable: submission.cofinancingAvailable as any || null,
           cofinancingDetails: submission.cofinancingDetails,
           partnerOrganization: submission.partnerOrganization,
+          edrpou: submission.edrpou,
           // Ukrainian translations
           municipalityNameUk: ukrainianTranslations.municipalityNameUk,
           facilityNameUk: ukrainianTranslations.facilityNameUk,
@@ -138,43 +134,13 @@ export async function PATCH(
         },
       })
 
-      // Send approval email
-      if (ses) {
-        try {
-          await ses.send(
-            new SendEmailCommand({
-              Source: `Hromada <${FROM_EMAIL}>`,
-              Destination: { ToAddresses: [submission.contactEmail] },
-              Message: {
-                Subject: { Data: 'Your Project is Now Live - Hromada', Charset: 'UTF-8' },
-                Body: {
-                  Html: {
-                    Charset: 'UTF-8',
-                    Data: `
-              <h2>Great News!</h2>
-              <p>Dear ${submission.contactName},</p>
-
-              <p>Your project <strong>${submission.facilityName}</strong> has been approved and is now live on the Hromada platform!</p>
-
-              <p>Potential donors can now see your project and express interest in supporting it.</p>
-
-              <p><a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/projects/${project.id}">View Your Project</a></p>
-
-              <p>We encourage you to share this link with your network to increase visibility.</p>
-
-              <p>Thank you for working to rebuild Ukraine's communities.</p>
-
-              <p>Best regards,<br>The Hromada Team</p>
-            `,
-                  },
-                },
-              },
-            })
-          )
-        } catch (emailError) {
-          console.error('Failed to send approval email:', emailError)
-        }
-      }
+      // Send branded approval email
+      await sendProjectApprovalEmail({
+        contactName: submission.contactName,
+        contactEmail: submission.contactEmail,
+        facilityName: submission.facilityName,
+        projectId: project.id,
+      }).catch((e) => console.error('Failed to send approval email:', e))
 
       return NextResponse.json({
         success: true,
@@ -197,43 +163,13 @@ export async function PATCH(
         },
       })
 
-      // Send rejection email
-      if (ses) {
-        try {
-          await ses.send(
-            new SendEmailCommand({
-              Source: `Hromada <${FROM_EMAIL}>`,
-              Destination: { ToAddresses: [submission.contactEmail] },
-              Message: {
-                Subject: { Data: 'Project Submission Update - Hromada', Charset: 'UTF-8' },
-                Body: {
-                  Html: {
-                    Charset: 'UTF-8',
-                    Data: `
-              <h2>Project Submission Update</h2>
-              <p>Dear ${submission.contactName},</p>
-
-              <p>Thank you for submitting your project <strong>${submission.facilityName}</strong> to Hromada.</p>
-
-              <p>After review, we were unable to approve your submission at this time for the following reason:</p>
-
-              <blockquote style="padding: 10px 20px; background: #f5f5f5; border-left: 3px solid #ccc; margin: 20px 0;">
-                ${rejectionReason}
-              </blockquote>
-
-              <p>You are welcome to address these concerns and submit a new application. If you have questions, please contact us at support@hromada.org</p>
-
-              <p>Best regards,<br>The Hromada Team</p>
-            `,
-                  },
-                },
-              },
-            })
-          )
-        } catch (emailError) {
-          console.error('Failed to send rejection email:', emailError)
-        }
-      }
+      // Send branded rejection email
+      await sendProjectRejectionEmail({
+        contactName: submission.contactName,
+        contactEmail: submission.contactEmail,
+        facilityName: submission.facilityName,
+        rejectionReason: rejectionReason.trim(),
+      }).catch((e) => console.error('Failed to send rejection email:', e))
 
       return NextResponse.json({
         success: true,

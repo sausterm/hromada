@@ -79,16 +79,7 @@ export function emailLayout(content: string, options?: EmailLayoutOptions): stri
           <!-- ============ HEADER ============ -->
           <tr>
             <td style="background:${C.navy};padding:32px 40px;text-align:center;">
-              <!-- Bilingual logo: hromada [icon] громада -->
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
-                <tr>
-                  <td style="font-family:${FONT_BRAND};font-size:32px;font-weight:600;color:${C.cream};letter-spacing:-0.025em;padding-right:4px;" valign="middle">hromada</td>
-                  <td valign="middle" style="padding:0 4px;">
-                    <img src="${appUrl}/icon-email.png" alt="" width="48" height="48" style="width:48px;height:48px;display:block;" />
-                  </td>
-                  <td style="font-family:${FONT_BRAND};font-size:32px;font-weight:600;color:${C.cream};letter-spacing:-0.025em;padding-left:4px;" valign="middle">громада</td>
-                </tr>
-              </table>
+              <img src="${appUrl}/email-logo.png" alt="hromada — громада" width="453" height="52" style="width:453px;max-width:100%;height:auto;display:block;margin:0 auto;" />
               <!-- Blue accent line -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top:14px;">
                 <tr>
@@ -147,8 +138,8 @@ export function emailLayout(content: string, options?: EmailLayoutOptions): stri
 export function emailButton(text: string, href: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:28px auto;">
   <tr>
-    <td align="center" style="background:${C.navy};border-radius:8px;">
-      <a href="${href}" target="_blank" style="display:inline-block;padding:14px 36px;color:${C.cream};text-decoration:none;font-weight:600;font-size:14px;font-family:${FONT_BODY};letter-spacing:0.3px;">
+    <td align="center" style="background:#34495e;border-radius:8px;">
+      <a href="${href}" target="_blank" style="display:inline-block;padding:14px 36px;color:${C.white};text-decoration:none;font-weight:600;font-size:14px;font-family:${FONT_BODY};letter-spacing:0.3px;">
         ${text}
       </a>
     </td>

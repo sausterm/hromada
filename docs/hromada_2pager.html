@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hromada — Partner & Donor Leave-Behind</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy-700: #2C3E50;
+    --navy-600: #34495e;
+    --navy-500: #3d5a80;
+    --navy-400: #567498;
+    --navy-300: #7d96b5;
+    --navy-200: #adbdd2;
+    --navy-100: #d5dde8;
+    --navy-50: #eef2f7;
+    --cream-50: #FDFCFA;
+    --cream-100: #F5F1E8;
+    --cream-200: #EDE6D8;
+    --cream-300: #DFD5C3;
+    --cream-400: #CFC1A8;
+    --charcoal-900: #3A3633;
+    --charcoal-700: #524b44;
+    --charcoal-500: #797065;
+    --charcoal-400: #948c82;
+    --charcoal-300: #b5afa7;
+    --warm-500: #D4754E;
+    --warm-600: #c45f35;
+    --warm-300: #ecbfad;
+    --warm-100: #f9ede8;
+    --gold-400: #E6A855;
+    --gold-500: #d49231;
+    --ukraine-blue: #005BBB;
+    --category-hospital: #C75B39;
+    --category-school: #7CB518;
+    --category-water: #3B8EA5;
+    --category-energy: #E6A855;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--charcoal-900);
+    background: #d6d3cc;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 816px;
+    min-height: 1056px;
+    max-height: 1056px;
+    background: var(--cream-100);
+    margin: 40px auto;
+    padding: 48px 56px 44px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--cream-300);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  .header-logo { width: 36px; height: 36px; border-radius: 7px; }
+  .header-wordmark {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--navy-700);
+  }
+  .header-sub {
+    font-size: 10px;
+    font-style: italic;
+    color: var(--navy-500);
+    margin-left: -4px;
+  }
+  .header-right {
+    margin-left: auto;
+    text-align: right;
+  }
+  .header-tagline {
+    font-size: 10.5px;
+    color: var(--charcoal-500);
+    letter-spacing: 0.01em;
+  }
+
+  /* ========== FOOTER ========== */
+  .footer {
+    position: absolute;
+    bottom: 20px;
+    left: 56px;
+    right: 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8.5px;
+    color: var(--charcoal-400);
+    letter-spacing: 0.02em;
+    border-top: 1px solid var(--cream-300);
+    padding-top: 8px;
+  }
+
+  /* ========== TYPOGRAPHY ========== */
+  h2 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--navy-700);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  h3 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--navy-700);
+    margin-bottom: 4px;
+  }
+  p, li { font-size: 12.5px; line-height: 1.55; color: var(--charcoal-900); }
+  .body-sm { font-size: 12px; line-height: 1.5; }
+  .caption { font-size: 10px; color: var(--charcoal-500); line-height: 1.4; }
+
+  /* ========== HERO PHOTO ========== */
+  .hero-photo {
+    width: calc(100% + 112px);
+    margin-left: -56px;
+    margin-top: -8px;
+    height: 240px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .hero-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+  }
+  .hero-photo-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(44,62,80,0.92) 0%, rgba(44,62,80,0.6) 60%, transparent 100%);
+    padding: 28px 56px 20px;
+  }
+  .hero-headline {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #ffffff;
+    line-height: 1.25;
+    margin-bottom: 4px;
+  }
+  .hero-subline {
+    font-size: 12px;
+    color: var(--cream-200);
+    line-height: 1.4;
+  }
+  .hero-photo-caption {
+    position: absolute;
+    top: 10px; right: 66px;
+    font-size: 7.5px;
+    color: rgba(255,255,255,0.7);
+    background: rgba(0,0,0,0.35);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* ========== CASE STUDY ========== */
+  .case-study {
+    background: white;
+    border-radius: 12px;
+    border: 2px solid var(--cream-300);
+    overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .case-study-inner {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+  }
+  .case-study-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .case-study-content {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .case-study-label {
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ukraine-blue);
+    margin-bottom: 6px;
+  }
+  .case-study-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--navy-700);
+    margin-bottom: 2px;
+  }
+  .case-study-desc {
+    font-size: 11px;
+    color: var(--charcoal-700);
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .case-study-stats {
+    display: flex;
+    gap: 16px;
+  }
+  .case-study-stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ukraine-blue);
+    line-height: 1;
+  }
+  .case-study-stat-label {
+    font-size: 8px;
+    color: var(--charcoal-500);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+  }
+
+  /* ========== SECTION ========== */
+  .section { margin-bottom: 22px; }
+  .section-divider {
+    width: 44px;
+    height: 3px;
+    background: var(--ukraine-blue);
+    margin-bottom: 10px;
+    border-radius: 1px;
+  }
+
+  /* ========== STAT ROW ========== */
+  .stat-row {
+    display: flex;
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .stat-item {
+    flex: 1;
+    text-align: center;
+    background: white;
+    border-radius: 12px;
+    padding: 16px 10px;
+    border: 1px solid var(--cream-200);
+  }
+  .stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    color: var(--ukraine-blue);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 9.5px;
+    color: var(--charcoal-500);
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+
+  /* ========== PROJECT CARDS ========== */
+  .project-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .project-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    border: 2px solid var(--cream-300);
+  }
+  .category-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 8.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 10px;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+  .category-tag svg { width: 11px; height: 11px; stroke: #ffffff; stroke-width: 2.5; fill: none; }
+  .tag-hospital { background: var(--category-hospital); }
+  .tag-school { background: var(--category-school); }
+  .tag-water { background: var(--category-water); }
+  .tag-energy { background: var(--category-energy); }
+  .tag-other { background: var(--warm-500); }
+  .project-name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--navy-700);
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+  .project-location { font-size: 10px; color: var(--charcoal-500); margin-bottom: 5px; }
+  .project-amount {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--ukraine-blue);
+  }
+  .project-desc { font-size: 10px; color: var(--charcoal-700); line-height: 1.4; margin-top: 3px; }
+
+  /* ========== HOW IT WORKS (horizontal flow) ========== */
+  .steps-flow {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+    gap: 0;
+  }
+  .step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+    position: relative;
+  }
+  .step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    position: relative;
+    z-index: 1;
+  }
+  .step-icon svg { width: 20px; height: 20px; stroke: #ffffff; stroke-width: 2; fill: none; }
+  .step-connector {
+    position: absolute;
+    top: 20px;
+    left: calc(50% + 20px);
+    right: calc(-50% + 20px);
+    height: 2px;
+    background: var(--cream-300);
+    z-index: 0;
+  }
+  .step-item:last-child .step-connector { display: none; }
+  .step-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 9.5px;
+    color: var(--navy-700);
+    line-height: 1.25;
+    margin-top: 8px;
+    max-width: 84px;
+  }
+
+  /* ========== FEE TABLE ========== */
+  .fee-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 10px;
+  }
+  .fee-table th {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 2px solid var(--navy-700);
+    color: var(--navy-700);
+    background: white;
+  }
+  .fee-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--cream-300);
+    background: white;
+  }
+  .fee-table tr:last-child td { border-bottom: 2px solid var(--navy-700); }
+  .col-amount { font-weight: 600; color: var(--navy-700); }
+  .col-hromada { color: var(--ukraine-blue); font-weight: 700; }
+  .col-gg { color: var(--category-hospital); font-weight: 600; }
+
+  .col-pct { font-size: 8.5px; color: var(--charcoal-500); }
+
+  /* ========== TEAM WITH PHOTOS ========== */
+  .team-row {
+    display: flex;
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .team-member {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1;
+  }
+  .team-photo {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--cream-300);
+  }
+  .team-name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--navy-700);
+    line-height: 1.2;
+  }
+  .team-title {
+    font-size: 9.5px;
+    color: var(--ukraine-blue);
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .team-bio { font-size: 9.5px; color: var(--charcoal-500); line-height: 1.35; }
+
+  /* ========== FISCAL SPONSOR ========== */
+  .fiscal-box {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-top: 10px;
+    border: 1px solid var(--cream-200);
+  }
+  .fiscal-label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--navy-700);
+    margin-bottom: 3px;
+  }
+  .fiscal-text { font-size: 11px; line-height: 1.45; color: var(--charcoal-700); }
+  .fiscal-logos {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  .fiscal-logos img { height: 28px; object-fit: contain; }
+
+  /* ========== PARTNER LOGOS ========== */
+  .partner-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 0;
+    margin-top: 6px;
+  }
+  .partner-strip img {
+    height: 54px;
+    object-fit: contain;
+  }
+  .partner-strip-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--charcoal-400);
+    font-weight: 500;
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  /* ========== CTA ========== */
+  .cta-bar {
+    background: var(--navy-700);
+    color: #ffffff;
+    padding: 20px 28px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    margin-bottom: 18px;
+  }
+  .cta-text {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: #ffffff;
+  }
+  .cta-sub { font-size: 11.5px; color: var(--cream-200); margin-top: 3px; }
+  .cta-url { font-size: 15px; color: var(--gold-400); font-weight: 600; }
+
+  /* ========== SCREENSHOTS ========== */
+  .screenshot-frame {
+    border-radius: 10px;
+    border: 2px solid var(--cream-300);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .screenshot-frame img {
+    width: 100%;
+    display: block;
+  }
+  .screenshot-caption {
+    font-size: 8px;
+    color: var(--charcoal-400);
+    text-align: center;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ========== TWO-COL ========== */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  @media print {
+    body { background: none; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+  }
+</style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- PAGE 1 — THE PITCH -->
+<!-- ============================================================ -->
+<div class="page" id="page1">
+
+  <div class="header">
+    <img src="../src/app/icon.png" alt="Hromada" class="header-logo">
+    <span class="header-wordmark">hromada</span>
+    <span class="header-sub">From Ukrainian communities to American donors</span>
+    <div class="header-right">
+      <span class="header-tagline">hromadaproject.org</span>
+    </div>
+  </div>
+
+  <!-- HERO PHOTO WITH OVERLAY -->
+  <div class="hero-photo">
+    <img src="../public/photos/1748586680892.jpeg" alt="Solar panels installed on a Ukrainian municipal building by NGO Ecoaction">
+    <div class="hero-photo-caption">Installed by NGO Ecoaction</div>
+    <div class="hero-photo-overlay">
+      <div class="hero-headline">You pick the project. We wire the funds. You see the result.</div>
+      <div class="hero-subline">Zero platform fees. 100% of your donation reaches the community. Tax-deductible.</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stat-row">
+    <div class="stat-item">
+      <div class="stat-value">66</div>
+      <div class="stat-label">Verified projects</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">$6.8M</div>
+      <div class="stat-label">Total pipeline</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">44</div>
+      <div class="stat-label">Under $50K</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">0%</div>
+      <div class="stat-label">Platform fee</div>
+    </div>
+  </div>
+
+  <!-- FEE TABLE — the killer differentiator, front and center -->
+  <div class="section">
+    <div class="section-divider"></div>
+    <h2>What Your Donation Actually Costs</h2>
+    <table class="fee-table">
+      <thead>
+        <tr>
+          <th>Donation</th>
+          <th>Via Hromada</th>
+          <th>Via GlobalGiving</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-amount">$10,000</td>
+          <td class="col-hromada">&lt;1% <span class="col-pct">(~$70–95)</span></td>
+          <td class="col-gg">8–15% <span class="col-pct">($800–1,500)</span></td>
+        </tr>
+        <tr>
+          <td class="col-amount">$25,000</td>
+          <td class="col-hromada">&lt;0.4% <span class="col-pct">(~$70–95)</span></td>
+          <td class="col-gg">8–15% <span class="col-pct">($2,000–3,750)</span></td>
+        </tr>
+        <tr>
+          <td class="col-amount">$50,000</td>
+          <td class="col-hromada">&lt;0.2% <span class="col-pct">(~$70–95)</span></td>
+          <td class="col-gg">8–15% <span class="col-pct">($4,000–7,500)</span></td>
+        </tr>
+        <tr>
+          <td class="col-amount">$100,000</td>
+          <td class="col-hromada">&lt;0.1% <span class="col-pct">(~$70–95)</span></td>
+          <td class="col-gg">8–15% <span class="col-pct">($8,000–15,000)</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="caption" style="margin-top: 5px;">Hromada: wire fees only. GlobalGiving: 5–12% platform + 3% processing.</p>
+  </div>
+
+  <!-- CASE STUDY — proof it works -->
+  <div class="case-study">
+    <div class="case-study-inner">
+      <img src="../public/photos/1748344588928.jpeg" alt="Solar installation on Ukrainian school" class="case-study-photo">
+      <div class="case-study-content">
+        <div class="case-study-label">Partner Track Record &nbsp;·&nbsp; Completed Project</div>
+        <div class="case-study-title">School #7, Novohrodivka</div>
+        <div class="case-study-desc">90kW solar PV installation — 167 panels powering a school in Donetsk Oblast. Implemented by NGO Ecoaction. School running on solar through grid instability.</div>
+        <div class="case-study-stats">
+          <div>
+            <div class="case-study-stat-value">90 kW</div>
+            <div class="case-study-stat-label">Capacity</div>
+          </div>
+          <div>
+            <div class="case-study-stat-value">167</div>
+            <div class="case-study-stat-label">Panels</div>
+          </div>
+          <div>
+            <div class="case-study-stat-value">$45K</div>
+            <div class="case-study-stat-label">Total cost</div>
+          </div>
+          <div>
+            <div class="case-study-stat-value">500+</div>
+            <div class="case-study-stat-label">Students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARTNER LOGOS -->
+  <div class="partner-strip-label">Trusted by Ukraine's leading environmental organizations</div>
+  <div class="partner-strip">
+    <img src="../public/partners/EcoactionLogo.png" alt="Ecoaction">
+    <img src="../public/partners/EcoclubLogo.png" alt="Ecoclub">
+    <img src="../public/partners/RePowerUkraineLogo.png" alt="RePower Ukraine">
+    <img src="../public/partners/greenpeacelogo.png" alt="Greenpeace">
+    <img src="../public/partners/energyactukrainelogo.png" alt="Energy Act for Ukraine">
+  </div>
+
+  <div class="footer">
+    <span>hromadaproject.org &nbsp;|&nbsp; contact@hromadaproject.org</span>
+    <span>Page 1 of 2</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 2 — THE DETAIL -->
+<!-- ============================================================ -->
+<div class="page" id="page2">
+
+  <div class="header">
+    <img src="../src/app/icon.png" alt="Hromada" class="header-logo">
+    <span class="header-wordmark">hromada</span>
+    <span class="header-sub">From Ukrainian communities to American donors</span>
+    <div class="header-right">
+      <span class="header-tagline">hromadaproject.org</span>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS — horizontal flow -->
+  <div class="section">
+    <div class="section-divider"></div>
+    <h2>How It Works</h2>
+    <div class="steps-flow">
+      <div class="step-item">
+        <div class="step-icon" style="background: #5B8FA8;"><i data-lucide="users"></i></div>
+        <div class="step-connector"></div>
+        <div class="step-title">Communities bring the need</div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon" style="background: #7B9E6B;"><i data-lucide="search-check"></i></div>
+        <div class="step-connector"></div>
+        <div class="step-title">Partners verify on the ground</div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon" style="background: #8B7355;"><i data-lucide="megaphone"></i></div>
+        <div class="step-connector"></div>
+        <div class="step-title">We publish their request</div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon" style="background: #D4954A;"><i data-lucide="heart"></i></div>
+        <div class="step-connector"></div>
+        <div class="step-title">You fund their plan</div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon" style="background: #C75B39;"><i data-lucide="send"></i></div>
+        <div class="step-connector"></div>
+        <div class="step-title">We forward to municipality</div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon" style="background: #6B8E9E;"><i data-lucide="wrench"></i></div>
+        <div class="step-connector"></div>
+        <div class="step-title">Partners provide updates</div>
+      </div>
+      <div class="step-item">
+        <div class="step-icon" style="background: #4A7C59;"><i data-lucide="sun"></i></div>
+        <div class="step-title">Sustainable Resilience is built</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURED PROJECTS — the live pipeline -->
+  <div class="section">
+    <div class="section-divider"></div>
+    <h2>Featured Projects</h2>
+    <div class="project-cards">
+      <div class="project-card">
+        <span class="category-tag tag-hospital"><i data-lucide="heart-pulse"></i> Hospital / Medical</span>
+        <div class="project-name">Nizhyn Maternity Hospital</div>
+        <div class="project-location">Nizhyn, Chernihiv Oblast</div>
+        <div class="project-amount">$60,000</div>
+        <div class="project-desc">Solar PV for a maternity hospital serving the Nizhyn community</div>
+      </div>
+      <div class="project-card">
+        <span class="category-tag tag-school"><i data-lucide="graduation-cap"></i> School / Education</span>
+        <div class="project-name">Prylymanskyi Lyceum</div>
+        <div class="project-location">Odesa Oblast</div>
+        <div class="project-amount">$18,000</div>
+        <div class="project-desc">36kW solar PV to maintain power during grid disruptions</div>
+      </div>
+      <div class="project-card">
+        <span class="category-tag tag-energy"><i data-lucide="zap"></i> Energy Infrastructure</span>
+        <div class="project-name">Lutskteplo</div>
+        <div class="project-location">Lutsk, Volyn Oblast</div>
+        <div class="project-amount">$345,000</div>
+        <div class="project-desc">210kW heat pump for municipal district heating system</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT DONORS RECEIVE -->
+  <div class="section" style="margin-bottom: 14px;">
+    <div class="section-divider"></div>
+    <h2>What Donors Receive</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;">
+      <div style="text-align: center; background: white; border-radius: 10px; padding: 12px 8px; border: 1px solid var(--cream-200);">
+        <div style="margin-bottom: 6px;"><i data-lucide="receipt" style="width: 22px; height: 22px; stroke: var(--ukraine-blue); stroke-width: 1.75;"></i></div>
+        <div style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 10px; color: var(--navy-700);">Tax Receipt</div>
+        <div style="font-size: 8.5px; color: var(--charcoal-500); margin-top: 2px;">501(c)(3) deductible</div>
+      </div>
+      <div style="text-align: center; background: white; border-radius: 10px; padding: 12px 8px; border: 1px solid var(--cream-200);">
+        <div style="margin-bottom: 6px;"><i data-lucide="layout-dashboard" style="width: 22px; height: 22px; stroke: var(--ukraine-blue); stroke-width: 1.75;"></i></div>
+        <div style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 10px; color: var(--navy-700);">Donor Dashboard</div>
+        <div style="font-size: 8.5px; color: var(--charcoal-500); margin-top: 2px;">Track your project</div>
+      </div>
+      <div style="text-align: center; background: white; border-radius: 10px; padding: 12px 8px; border: 1px solid var(--cream-200);">
+        <div style="margin-bottom: 6px;"><i data-lucide="camera" style="width: 22px; height: 22px; stroke: var(--ukraine-blue); stroke-width: 1.75;"></i></div>
+        <div style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 10px; color: var(--navy-700);">Progress Photos</div>
+        <div style="font-size: 8.5px; color: var(--charcoal-500); margin-top: 2px;">From the NGO partner</div>
+      </div>
+      <div style="text-align: center; background: white; border-radius: 10px; padding: 12px 8px; border: 1px solid var(--cream-200);">
+        <div style="margin-bottom: 6px;"><i data-lucide="file-check" style="width: 22px; height: 22px; stroke: var(--ukraine-blue); stroke-width: 1.75;"></i></div>
+        <div style="font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 10px; color: var(--navy-700);">Completion Report</div>
+        <div style="font-size: 8.5px; color: var(--charcoal-500); margin-top: 2px;">Full accountability</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM + FISCAL SPONSOR -->
+  <div class="two-col" style="margin-top: 0;">
+    <div>
+      <div class="section" style="margin-bottom: 10px;">
+        <div class="section-divider"></div>
+        <h2>Team</h2>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="team-member">
+            <img src="../public/team/tom-navy.jpeg" alt="Thomas Protzman" class="team-photo">
+            <div>
+              <div class="team-name">Thomas Protzman</div>
+              <div class="team-title">Founder & Project Director</div>
+              <div class="team-bio">MIA, Hertie School Berlin. Writer on climate and transatlantic affairs.</div>
+            </div>
+          </div>
+          <div class="team-member">
+            <img src="../public/team/kostia-navy.jpeg" alt="Kostiantyn Krynytskyi" class="team-photo">
+            <div>
+              <div class="team-name">Kostiantyn Krynytskyi</div>
+              <div class="team-title">Co-Founder & Director, Ukraine</div>
+              <div class="team-bio">Head of Energy, NGO Ecoaction. Lawyer. Former analyst, Public Integrity Council.</div>
+            </div>
+          </div>
+          <div class="team-member">
+            <img src="../public/team/sloan-navy.jpeg" alt="Sloan Austermann" class="team-photo">
+            <div>
+              <div class="team-name">Sloan Austermann</div>
+              <div class="team-title">Co-Founder & Alternate Director</div>
+              <div class="team-bio">AI Engineer, Accenture Federal Services. AWS certified. Notre Dame.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="section" style="margin-bottom: 10px;">
+        <div class="section-divider"></div>
+        <h2>Fiscal Sponsor</h2>
+        <div class="fiscal-box">
+          <div class="fiscal-logos">
+            <img src="../public/partners/pocacitologo.png" alt="Pocacito Network" style="height: 28px;">
+            <img src="../public/partners/candidseal.png" alt="Candid Platinum Seal" style="height: 32px;">
+          </div>
+          <div style="margin-top: 8px;">
+            <div class="fiscal-label">Pocacito Network</div>
+            <div class="fiscal-text">US 501(c)(3) nonprofit &nbsp;|&nbsp; EIN 99-0392258</div>
+            <div class="fiscal-text" style="margin-top: 4px;">All donations to Hromada are tax-deductible and processed through POCACITO Network. POCACITO reviews every disbursement before funds are released.</div>
+          </div>
+          <div style="margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+            <div style="font-size: 9px; color: var(--ukraine-blue); font-weight: 600;">Candid Platinum Transparency Seal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-bar">
+    <div>
+      <div class="cta-text">Browse projects. Choose a community. Fund their plan.</div>
+      <div class="cta-sub">Book a consultation: contact@hromadaproject.org</div>
+    </div>
+    <div class="cta-url">hromadaproject.org</div>
+  </div>
+
+  <div class="footer">
+    <span>hromadaproject.org &nbsp;|&nbsp; contact@hromadaproject.org</span>
+    <span>Page 2 of 2</span>
+  </div>
+</div>
+
+</body>
+</html>

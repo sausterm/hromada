@@ -274,11 +274,11 @@ export function formatRelativeTime(date: Date, t: TranslationFunction): string {
     return t('time.weeksAgo', { count: diffInWeeks })
   }
 
-  const diffInMonths = Math.floor(diffInDays / 30)
+  const diffInMonths = Math.max(1, Math.floor(diffInDays / 30))
   if (diffInMonths < 12) {
     return t('time.monthsAgo', { count: diffInMonths })
   }
 
-  const diffInYears = Math.floor(diffInDays / 365)
+  const diffInYears = Math.max(1, Math.floor(diffInDays / 365))
   return t('time.yearsAgo', { count: diffInYears })
 }

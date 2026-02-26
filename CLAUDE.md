@@ -85,6 +85,11 @@ When giving instructions to the user (especially for browser/tooling tasks), be 
 ### Partner Logos
 - **Background matching**: Partner logos in `public/partners/` come in two variants: `Logo.png` (cream/beige background) and `Logo-white.png` (white background). Always use the variant that matches the section's background color — use the cream variant on `var(--cream-100)` sections, the white variant on white or dark sections. The goal is seamless blending with no visible logo bounding box.
 
+### Rendering Site Elements as Images
+- **Use Playwright, not Pillow.** When you need to reproduce a site element (logo, header, component) as a static image (e.g. for emails), don't hand-render it with Python image libraries. Use Playwright to render the actual CSS/HTML/SVG in a real browser and screenshot it. This guarantees pixel-perfect results — correct fonts, correct proportions, correct spacing. Hand-rendering fonts with Pillow leads to mismatched weights, missing Cyrillic glyphs, wrong proportions, and hours of wasted iteration.
+- Playwright is installed (`npm install --no-save playwright` + `npx playwright install chromium`). Use `deviceScaleFactor: 2` for retina output, `omitBackground: true` for transparency.
+- The email header logo (`public/email-logo.png`) was generated this way — any updates to the site header should regenerate it.
+
 ### Mobile
 - Always add `onClick` handlers (not just hover). Use `touchstart` for outside-click listeners.
 - **Turbopack cache**: `rm -rf .next` if dev server crashes or serves stale code.

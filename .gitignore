@@ -62,3 +62,23 @@ Vault/.obsidian/plugins/
 Vault/.obsidian/hotkeys.json
 Vault/.obsidian/appearance.json
 Vault/.obsidian/core-plugins-migration.json
+
+# Claude Code local state
+.claude/
+
+# Word temp lock files
+~$*.docx
+
+# Loose source images in repo root (originals — processed versions go in public/)
+/*.png
+/*.jpg
+/*.jpeg
+
+# Raw photos (uploaded to Supabase, not needed in repo)
+/photos/
+
+# R history
+.Rhistory
+
+# Backup files
+*.bak

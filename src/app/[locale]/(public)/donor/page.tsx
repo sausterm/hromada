@@ -393,7 +393,7 @@ function DonorDashboard() {
                     </div>
 
                     {selectedDonation.updates.length > 0 ? (() => {
-                      const recentUpdates = selectedDonation.updates.slice(-3)
+                      const recentUpdates = selectedDonation.updates.slice(-3).reverse()
                       const hasMore = selectedDonation.updates.length > 3
                       return (
                         <>

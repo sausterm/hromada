@@ -160,23 +160,17 @@ export async function sendContactNotification({
       ${emailHeading('New Donor Contact')}
       <p>A donor has submitted an inquiry about a project on the platform.</p>
 
-      ${emailInfoBox(`
-        ${emailSubheading('Project')}
-        ${emailField('Project', s(projectName))}
-        ${emailField('Municipality', s(municipalityName))}
-        ${emailField('Municipality Contact', `<a href="mailto:${s(municipalityEmail)}" style="color:#0057B8;">${s(municipalityEmail)}</a>`)}
-      `)}
+      ${emailSubheading('Project')}
+      ${emailField('Project', s(projectName))}
+      ${emailField('Municipality', s(municipalityName))}
+      ${emailField('Municipality Contact', `<a href="mailto:${s(municipalityEmail)}" style="color:#0057B8;">${s(municipalityEmail)}</a>`)}
 
-      ${emailInfoBox(`
-        ${emailSubheading('Donor')}
-        ${emailField('Name', s(donorName))}
-        ${emailField('Email', `<a href="mailto:${s(donorEmail)}" style="color:#0057B8;">${s(donorEmail)}</a>`)}
-      `)}
+      ${emailSubheading('Donor')}
+      ${emailField('Name', s(donorName))}
+      ${emailField('Email', `<a href="mailto:${s(donorEmail)}" style="color:#0057B8;">${s(donorEmail)}</a>`)}
 
-      ${emailInfoBox(`
-        ${emailSubheading('Message')}
-        <p style="white-space:pre-wrap;margin:8px 0 0;">${s(message)}</p>
-      `)}
+      ${emailSubheading('Message')}
+      <p style="white-space:pre-wrap;margin:8px 0 0;">${s(message)}</p>
 
       ${emailButton('View in Admin Dashboard', `${appUrl}/admin`)}
 
@@ -296,14 +290,9 @@ export async function sendDonorWelcomeEmail({
 
       ${emailButton('View Your Donor Dashboard', `${appUrl}/login`)}
 
-      ${emailInfoBox(`
-        <p style="margin:0;font-size:13px;color:#666;">
-          <strong style="color:#1a2744;">Tax Information</strong><br>
-          Your donation is tax-deductible through POCACITO Network, a registered 501(c)(3) nonprofit organization (EIN&nbsp;99-0392258). A tax receipt will be sent once your payment is confirmed.
-        </p>
-      `)}
+      <p style="margin-top:24px;">Your donation is tax-deductible through POCACITO Network, a registered 501(c)(3) nonprofit (EIN&nbsp;99-0392258). A tax receipt will be sent once your payment is confirmed.</p>
 
-      <p style="margin-top:24px;">Thank you for standing with this community. If you have any questions, just reply to this email.</p>
+      <p>Thank you for standing with this community. If you have any questions, just reply to this email.</p>
 
       <p style="color:#1a2744;font-weight:600;">Tom &amp; Sloan<br>
       <span style="font-weight:400;color:#666;">Hromada</span></p>
@@ -377,21 +366,17 @@ export async function sendDonationNotificationToAdmin({
         <p style="margin:4px 0 0;font-size:14px;color:#666;">via ${s(methodLabel)}</p>
       `)}
 
-      ${emailInfoBox(`
-        ${emailSubheading('Donor')}
-        <p style="margin:6px 0;">
-          <strong style="color:#1a2744;">Name:</strong> ${s(donorName)}
-          ${isNewDonor ? '&nbsp;&nbsp;' + emailBadge('NEW DONOR') : ''}
-        </p>
-        ${emailField('Email', `<a href="mailto:${s(donorEmail)}" style="color:#0057B8;">${s(donorEmail)}</a>`)}
-        ${donorOrganization ? emailField('Organization', s(donorOrganization)) : ''}
-        ${referenceNumber ? emailField('Reference #', `<code style="background:#F5F1E8;padding:2px 6px;border-radius:3px;font-size:13px;">${s(referenceNumber)}</code>`) : ''}
-      `)}
+      ${emailSubheading('Donor')}
+      <p style="margin:6px 0;">
+        <strong style="color:#1a2744;">Name:</strong> ${s(donorName)}
+        ${isNewDonor ? '&nbsp;&nbsp;' + emailBadge('NEW DONOR') : ''}
+      </p>
+      ${emailField('Email', `<a href="mailto:${s(donorEmail)}" style="color:#0057B8;">${s(donorEmail)}</a>`)}
+      ${donorOrganization ? emailField('Organization', s(donorOrganization)) : ''}
+      ${referenceNumber ? emailField('Reference #', `<code style="background:#F5F1E8;padding:2px 6px;border-radius:3px;font-size:13px;">${s(referenceNumber)}</code>`) : ''}
 
-      ${emailInfoBox(`
-        ${emailSubheading('Project')}
-        <p style="margin:6px 0;font-size:16px;font-weight:600;color:#1a2744;">${s(projectName)}</p>
-      `)}
+      ${emailSubheading('Project')}
+      <p style="margin:6px 0;font-size:16px;font-weight:600;color:#1a2744;">${s(projectName)}</p>
 
       ${emailButton('View in Dashboard', `${appUrl}/nonprofit`)}
 
@@ -434,12 +419,7 @@ export async function sendNewsletterWelcomeEmail(
 
       <p>Thanks for signing up. We&rsquo;ll send occasional updates on projects being funded, communities being powered, and how your support makes a difference.</p>
 
-      ${emailInfoBox(`
-        <p style="margin:0 0 6px;font-weight:600;color:#1a2744;">What we&rsquo;re building</p>
-        <p style="margin:0;font-size:14px;color:#555;">
-          Hromada connects donors directly with Ukrainian municipalities rebuilding civilian infrastructure &mdash; schools, hospitals, water systems, energy. Every project is verified by our NGO partners. No overhead fees.
-        </p>
-      `)}
+      <p>Hromada connects donors directly with Ukrainian municipalities rebuilding civilian infrastructure &mdash; schools, hospitals, water systems, energy. Every project is verified by our NGO partners. No overhead fees.</p>
 
       ${emailButton('Browse Projects', `${appUrl}/projects`)}
 
@@ -466,67 +446,66 @@ export async function sendNewsletterWelcomeEmail(
 // 6. Calendly Booking Welcome Email
 // ---------------------------------------------------------------------------
 
+export function buildCalendlyWelcomeEmailHtml(
+  email: string,
+  name: string | null,
+  unsubscribeToken: string,
+  projectName?: string,
+): { subject: string; html: string } {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const firstName = name ? s(name.split(' ')[0]) : null
+  const subject = firstName
+    ? `${firstName}, welcome to our hromada`
+    : 'Welcome to our hromada'
+  const unsubscribeUrl = `${appUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`
+
+  const body = `
+    ${emailHeading(subject)}
+
+    <p><em>Hromada</em> (громада) means <em>community</em> in Ukrainian. Thanks for your interest in what these communities are building.</p>
+
+    ${projectName ? `
+      <p>You were looking at <strong>${s(projectName)}</strong> &mdash; a project identified and requested by the municipality it serves. Every project on our platform came directly from a Ukrainian community that knows what it needs and is asking for support.</p>
+    ` : `
+      <p>Every project on our platform was identified and requested by the Ukrainian community it serves. They know what they need &mdash; Hromada is the infrastructure that carries their request to you.</p>
+    `}
+
+    <p>We&rsquo;ll have a chance to talk through all of this on our call. In the meantime, feel free to explore.</p>
+
+    ${emailButton('Browse Projects', `${appUrl}/projects`)}
+
+    <p style="font-size:13px;color:#666;margin-top:24px;">You&rsquo;ll get occasional updates from us on projects funded and communities being rebuilt. No spam &mdash; just progress.</p>
+
+    ${emailMuted(`You're receiving this because you signed up via hromadaproject.org. <a href="${unsubscribeUrl}" style="color:#999;text-decoration:underline;">Unsubscribe</a>`)}
+  `
+
+  const html = emailLayout(body, {
+    preheader: projectName
+      ? `Thanks for your interest in ${projectName}.`
+      : 'Thanks for your interest. Welcome to our community.',
+    unsubscribeUrl,
+  })
+
+  return { subject, html }
+}
+
 export async function sendCalendlyWelcomeEmail(
   email: string,
   name: string | null,
   unsubscribeToken: string,
   projectName?: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-
   if (!ses) {
     console.warn('AWS SES not configured, skipping Calendly welcome email')
     return { success: true }
   }
 
-  const firstName = name ? s(name.split(' ')[0]) : null
-  const greeting = firstName ? `${firstName}, welcome` : 'Welcome'
-  const unsubscribeUrl = `${appUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`
-
   try {
-    const body = `
-      ${emailHeading(`${greeting} to the Hromada`)}
+    const { subject, html } = buildCalendlyWelcomeEmailHtml(
+      email, name, unsubscribeToken, projectName,
+    )
 
-      <p><em>Hromada</em> (громада) means <em>community</em> in Ukrainian. By scheduling a call, you&rsquo;ve become part of ours.</p>
-
-      ${projectName ? `
-        ${emailInfoBox(`
-          <p style="margin:0 0 6px;font-weight:600;color:#1a2744;">Your interest</p>
-          <p style="margin:0;font-size:14px;color:#555;">
-            ${s(projectName)}
-          </p>
-        `)}
-      ` : ''}
-
-      <p>Here&rsquo;s what to know:</p>
-
-      ${emailHighlightBox(`
-        <p style="margin:0 0 8px;font-weight:600;color:#1a2744;">Your future donor dashboard</p>
-        <p style="margin:0;font-size:14px;color:#555;">
-          Should you decide to contribute, <strong>${s(email)}</strong> will be your login email for tracking your donation from confirmation through delivery to Ukraine.
-        </p>
-      `)}
-
-      ${emailInfoBox(`
-        <p style="margin:0 0 6px;font-weight:600;color:#1a2744;">You&rsquo;re on our mailing list</p>
-        <p style="margin:0;font-size:14px;color:#555;">
-          We&rsquo;ll send occasional updates on funded projects and communities being rebuilt. No spam &mdash; just progress.
-        </p>
-      `)}
-
-      ${emailButton('Browse Projects', `${appUrl}/projects`)}
-
-      ${emailMuted(`You're receiving this because you scheduled a call via hromadaproject.org. <a href="${unsubscribeUrl}" style="color:#999;text-decoration:underline;">Unsubscribe</a>`)}
-    `
-
-    await sendEmail({
-      to: email,
-      subject: `${greeting} to the Hromada`,
-      html: emailLayout(body, {
-        preheader: 'Thanks for scheduling a call. You\'re part of the community now.',
-        unsubscribeUrl,
-      }),
-    })
+    await sendEmail({ to: email, subject, html })
 
     return { success: true }
   } catch (error) {
@@ -587,23 +566,19 @@ export async function sendPartnershipInquiryNotification({
       ${emailHeading('New Partnership Inquiry')}
       <p>A community has submitted an inquiry through the Municipal Partnership Program page.</p>
 
-      ${emailInfoBox(`
-        ${emailSubheading('Community')}
-        ${emailField('Name', s(communityName))}
-        ${emailField('Type', s(communityTypeLabels[communityType] || communityType))}
-        ${approximateSize ? emailField('Approximate Size', s(approximateSize)) : ''}
-      `)}
+      ${emailSubheading('Community')}
+      ${emailField('Name', s(communityName))}
+      ${emailField('Type', s(communityTypeLabels[communityType] || communityType))}
+      ${approximateSize ? emailField('Approximate Size', s(approximateSize)) : ''}
 
-      ${emailInfoBox(`
-        ${emailSubheading('Contact')}
-        ${emailField('Name', s(contactName))}
-        ${emailField('Email', `<a href="mailto:${s(contactEmail)}" style="color:#0057B8;">${s(contactEmail)}</a>`)}
-      `)}
+      ${emailSubheading('Contact')}
+      ${emailField('Name', s(contactName))}
+      ${emailField('Email', `<a href="mailto:${s(contactEmail)}" style="color:#0057B8;">${s(contactEmail)}</a>`)}
 
-      ${message ? emailInfoBox(`
+      ${message ? `
         ${emailSubheading('Message')}
         <p style="white-space:pre-wrap;margin:8px 0 0;">${s(message)}</p>
-      `) : ''}
+      ` : ''}
 
       ${emailButton('View in Admin Dashboard', `${appUrl}/admin`)}
 
@@ -737,16 +712,10 @@ export async function sendDonationForwardedEmail({
 
       ${emailDivider()}
 
-      ${emailInfoBox(`
-        <p style="margin:0 0 8px;font-weight:600;color:#1a2744;">Your Tax Receipt</p>
-        <p style="margin:0 0 12px;font-size:13px;color:#555;">
-          Your tax receipt (${s(receiptNumber)}) is attached to this email and available for download below.
-        </p>
-        ${emailButton('Download Tax Receipt', receiptUrl)}
-        <p style="margin:12px 0 0;font-size:12px;color:#999;">
-          Your donation is tax-deductible through POCACITO Network, a registered 501(c)(3) nonprofit (EIN&nbsp;99-0392258).${referenceNumber ? ` Reference: ${s(referenceNumber)}` : ''}
-        </p>
-      `)}
+      <p><strong style="color:#1a2744;">Your Tax Receipt</strong></p>
+      <p>Your tax receipt (${s(receiptNumber)}) is attached to this email and available for download below.</p>
+      ${emailButton('Download Tax Receipt', receiptUrl)}
+      <p style="font-size:13px;color:#666;">Your donation is tax-deductible through POCACITO Network, a registered 501(c)(3) nonprofit (EIN&nbsp;99-0392258).${referenceNumber ? ` Reference: ${s(referenceNumber)}` : ''}</p>
 
       <p style="margin-top:24px;">Thank you for standing with this community. If you have any questions, just reply to this email.</p>
 
@@ -839,12 +808,8 @@ export async function sendDonationConfirmationEmail({
 
       <p>Thank you for your ${s(methodLabel)} contribution${amountText} toward <strong>${s(projectName)}</strong>. We\u2019re verifying receipt with our bank now.</p>
 
-      ${emailInfoBox(`
-        <p style="margin:0 0 6px;font-weight:600;color:#1a2744;">What happens next</p>
-        <p style="margin:0;font-size:14px;color:#555;">
-          We\u2019ll confirm your payment within 1\u20133 business days. Once your funds are forwarded to Ukraine, you\u2019ll receive your tax receipt and login credentials for your donor dashboard.
-        </p>
-      `)}
+      ${emailSubheading('What happens next')}
+      <p>We\u2019ll confirm your payment within 1\u20133 business days. Once your funds are forwarded to Ukraine, you\u2019ll receive your tax receipt and login credentials for your donor dashboard.</p>
 
       ${emailMuted('If you have any questions in the meantime, just reply to this email.')}
 
@@ -861,6 +826,413 @@ export async function sendDonationConfirmationEmail({
     return { success: true }
   } catch (error) {
     console.error('Failed to send donation confirmation email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 9. Project Submission Notification (admin)
+// ---------------------------------------------------------------------------
+
+interface ProjectSubmissionNotificationParams {
+  facilityName: string
+  municipalityName: string
+  municipalityEmail: string
+  region?: string | null
+  category: string
+  projectType: string
+  urgency: string
+  briefDescription: string
+  contactName: string
+  contactEmail: string
+  contactPhone?: string | null
+  photoCount: number
+  edrpou?: string
+}
+
+export async function sendProjectSubmissionNotification({
+  facilityName,
+  municipalityName,
+  municipalityEmail,
+  region,
+  category,
+  projectType,
+  urgency,
+  briefDescription,
+  contactName,
+  contactEmail,
+  contactPhone,
+  photoCount,
+  edrpou,
+}: ProjectSubmissionNotificationParams): Promise<{ success: boolean; error?: string }> {
+  const adminEmail = process.env.ADMIN_EMAIL
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  if (!adminEmail || !ses) {
+    console.warn('ADMIN_EMAIL or SES not configured, skipping submission notification')
+    return { success: true }
+  }
+
+  try {
+    // EDRPOU status block for admin
+    const edrpouBlock = edrpou
+      ? emailField('EDRPOU', `<code style="background:#e8f5e9;padding:2px 6px;border-radius:3px;font-size:13px;">${s(edrpou)}</code>`)
+      : `<div style="background:#fff3e0;border-left:3px solid #ff9800;padding:10px 14px;margin:8px 0;border-radius:4px;">
+          <p style="margin:0;color:#e65100;font-weight:600;">EDRPOU not provided</p>
+          <p style="margin:4px 0 0;color:#666;font-size:13px;">The partner did not enter an EDRPOU. Enter it manually after approval to enable Prozorro procurement tracking.</p>
+        </div>`
+
+    const body = `
+      ${emailHeading('New Project Submission')}
+      <p>A new project has been submitted for review.</p>
+
+      ${emailSubheading('Municipality')}
+      ${emailField('Municipality', s(municipalityName))}
+      ${emailField('Email', `<a href="mailto:${s(municipalityEmail)}" style="color:#0057B8;">${s(municipalityEmail)}</a>`)}
+      ${region ? emailField('Region', s(region)) : ''}
+      ${edrpouBlock}
+
+      ${emailSubheading('Project Details')}
+      ${emailField('Facility', s(facilityName))}
+      ${emailField('Category', s(category))}
+      ${emailField('Type', s(projectType))}
+      ${emailField('Urgency', s(urgency))}
+
+      ${emailSubheading('Description')}
+      <p>${s(briefDescription)}</p>
+
+      ${photoCount > 0 ? `<p>${photoCount} photo(s) uploaded</p>` : ''}
+
+      ${emailSubheading('Contact')}
+      ${emailField('Name', s(contactName))}
+      ${emailField('Email', `<a href="mailto:${s(contactEmail)}" style="color:#0057B8;">${s(contactEmail)}</a>`)}
+      ${contactPhone ? emailField('Phone', s(contactPhone)) : ''}
+
+      ${emailButton('Review in Admin Dashboard', `${appUrl}/admin`)}
+    `
+
+    await sendEmail({
+      to: adminEmail,
+      subject: `New Project Submission: ${s(facilityName)}`,
+      html: emailLayout(body),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send submission notification:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 10. Project Submission Confirmation (to submitter)
+// ---------------------------------------------------------------------------
+
+interface ProjectSubmissionConfirmationParams {
+  contactName: string
+  contactEmail: string
+  facilityName: string
+}
+
+export async function sendProjectSubmissionConfirmation({
+  contactName,
+  contactEmail,
+  facilityName,
+}: ProjectSubmissionConfirmationParams): Promise<{ success: boolean; error?: string }> {
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping submission confirmation email')
+    return { success: true }
+  }
+
+  try {
+    const body = `
+      ${emailHeading('Thank You for Your Submission')}
+
+      <p>Dear ${s(contactName)},</p>
+
+      <p>We have received your project submission for <strong>${s(facilityName)}</strong>.</p>
+
+      ${emailSubheading('What happens next')}
+      <p>Our team will review your submission within 3\u20135 business days. We may contact you if we need additional information. Once approved, your project will be visible to donors on our platform.</p>
+
+      <p>If you have any questions, just reply to this email.</p>
+
+      <p>Thank you for working to rebuild Ukraine\u2019s communities.</p>
+
+      <p style="color:#1a2744;font-weight:600;">Tom &amp; Sloan<br>
+      <span style="font-weight:400;color:#666;">Hromada</span></p>
+    `
+
+    await sendEmail({
+      to: contactEmail,
+      subject: `Project Submission Received \u2014 ${s(facilityName)}`,
+      html: emailLayout(body, { preheader: `We received your submission for ${facilityName}.` }),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send submission confirmation email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 11. Project Approval Email (to submitter)
+// ---------------------------------------------------------------------------
+
+interface ProjectApprovalParams {
+  contactName: string
+  contactEmail: string
+  facilityName: string
+  projectId: string
+}
+
+export async function sendProjectApprovalEmail({
+  contactName,
+  contactEmail,
+  facilityName,
+  projectId,
+}: ProjectApprovalParams): Promise<{ success: boolean; error?: string }> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping project approval email')
+    return { success: true }
+  }
+
+  try {
+    const body = `
+      ${emailHeading('Your Project is Now Live')}
+
+      <p>Dear ${s(contactName)},</p>
+
+      <p>Your project <strong>${s(facilityName)}</strong> has been approved and is now live on the Hromada platform. Donors can see your project and express interest in supporting it.</p>
+
+      ${emailButton('View Your Project', `${appUrl}/projects/${s(projectId)}`)}
+
+      <p>We encourage you to share this link with your network to increase visibility.</p>
+
+      <p>Thank you for working to rebuild Ukraine\u2019s communities.</p>
+
+      <p style="color:#1a2744;font-weight:600;">Tom &amp; Sloan<br>
+      <span style="font-weight:400;color:#666;">Hromada</span></p>
+    `
+
+    await sendEmail({
+      to: contactEmail,
+      subject: `Your Project is Now Live \u2014 ${s(facilityName)}`,
+      html: emailLayout(body, { preheader: `${facilityName} is now on the Hromada platform.` }),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send project approval email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 12. Project Rejection Email (to submitter)
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// 12b. Project Update Email (Prozorro status change → donor)
+// ---------------------------------------------------------------------------
+
+interface ProjectUpdateEmailParams {
+  donorName: string
+  donorEmail: string
+  projectName: string
+  updateTitle: string
+  updateMessage: string
+  tenderID: string
+}
+
+export async function sendProjectUpdateEmail({
+  donorName,
+  donorEmail,
+  projectName,
+  updateTitle,
+  updateMessage,
+  tenderID,
+}: ProjectUpdateEmailParams): Promise<{ success: boolean; error?: string }> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping project update email')
+    return { success: true }
+  }
+
+  const prozorroUrl = `https://prozorro.gov.ua/tender/${tenderID}`
+
+  try {
+    const body = `
+      ${emailHeading(`Update: ${s(projectName)}`)}
+
+      <p>Hi ${s(donorName)},</p>
+
+      <p>There\u2019s a new update on <strong>${s(projectName)}</strong>, a project you\u2019ve funded through Hromada.</p>
+
+      ${emailInfoBox(`
+        <p style="margin:0 0 8px;font-weight:600;color:#1a2744;">${s(updateTitle)}</p>
+        <p style="margin:0;color:#444;">${s(updateMessage)}</p>
+      `)}
+
+      ${emailButton('View on Prozorro', prozorroUrl)}
+
+      <p style="font-size:13px;color:#666;">Prozorro is Ukraine\u2019s official public procurement platform. All municipal purchases above a minimum threshold are posted there for transparency.</p>
+
+      ${emailDivider()}
+
+      ${emailButton('View Donor Dashboard', `${appUrl}/donor`)}
+
+      <p style="margin-top:20px;color:#1a2744;font-weight:600;">Tom &amp; Sloan<br>
+      <span style="font-weight:400;color:#666;">Hromada</span></p>
+    `
+
+    await sendEmail({
+      to: donorEmail,
+      subject: `Project update: ${s(projectName)}`,
+      html: emailLayout(body, { preheader: s(updateTitle) }),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send project update email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 13. Prozorro Match Notification (to admin)
+// ---------------------------------------------------------------------------
+
+interface ProzorroMatchEmailParams {
+  facilityName: string
+  edrpou: string
+  tenderID: string
+  entityName: string
+  tenderStatus: string
+  prozorroUrl: string
+}
+
+export async function sendProzorroMatchEmail({
+  facilityName,
+  edrpou,
+  tenderID,
+  entityName,
+  tenderStatus,
+  prozorroUrl,
+}: ProzorroMatchEmailParams): Promise<{ success: boolean; error?: string }> {
+  const adminEmail = process.env.ADMIN_EMAIL
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+  if (!adminEmail || !ses) {
+    console.warn('ADMIN_EMAIL or SES not configured, skipping Prozorro match notification')
+    return { success: true }
+  }
+
+  try {
+    const body = `
+      ${emailHeading('Prozorro Match Found')}
+      <p>A new tender on Prozorro may be related to a Hromada project. Please review and link it manually if it matches.</p>
+
+      ${emailSubheading('Hromada Project')}
+      ${emailField('Project', s(facilityName))}
+      ${emailField('EDRPOU', `<code style="background:#e8f5e9;padding:2px 6px;border-radius:3px;font-size:13px;">${s(edrpou)}</code>`)}
+
+      ${emailSubheading('Prozorro Tender')}
+      ${emailField('Tender ID', s(tenderID))}
+      ${emailField('Procuring Entity', s(entityName))}
+      ${emailField('Status', s(tenderStatus))}
+
+      ${emailButton('View on Prozorro', prozorroUrl)}
+
+      <p style="font-size:13px;color:#666;">If this tender is related to the project above, link it via the admin dashboard by entering the Tender ID and UUID in the project&rsquo;s Prozorro Tracking section.</p>
+
+      ${emailButton('Open Admin Dashboard', `${appUrl}/admin`)}
+    `
+
+    await sendEmail({
+      to: adminEmail,
+      subject: `Prozorro match: ${s(facilityName)}`,
+      html: emailLayout(body),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send Prozorro match notification:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 14. Project Rejection Email (to submitter)
+// ---------------------------------------------------------------------------
+
+interface ProjectRejectionParams {
+  contactName: string
+  contactEmail: string
+  facilityName: string
+  rejectionReason: string
+}
+
+export async function sendProjectRejectionEmail({
+  contactName,
+  contactEmail,
+  facilityName,
+  rejectionReason,
+}: ProjectRejectionParams): Promise<{ success: boolean; error?: string }> {
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping project rejection email')
+    return { success: true }
+  }
+
+  try {
+    const body = `
+      ${emailHeading('Project Submission Update')}
+
+      <p>Dear ${s(contactName)},</p>
+
+      <p>Thank you for submitting your project <strong>${s(facilityName)}</strong> to Hromada.</p>
+
+      <p>After review, we were unable to approve your submission at this time:</p>
+
+      ${emailAccentBox(`<p style="margin:0;">${s(rejectionReason)}</p>`, '#999999')}
+
+      <p>You are welcome to address these concerns and submit a new application. If you have questions, just reply to this email.</p>
+
+      <p style="color:#1a2744;font-weight:600;">Tom &amp; Sloan<br>
+      <span style="font-weight:400;color:#666;">Hromada</span></p>
+    `
+
+    await sendEmail({
+      to: contactEmail,
+      subject: `Project Submission Update \u2014 ${s(facilityName)}`,
+      html: emailLayout(body, { preheader: `Update on your submission for ${facilityName}.` }),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send project rejection email:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to send email',

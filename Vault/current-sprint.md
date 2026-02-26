@@ -33,6 +33,11 @@
 - [ ] Test full donation flow end-to-end with real bank details #p1 @sloan
 - [ ] Set production environment variables in Amplify #p1 @sloan
 - [ ] Receipt generation for completed donations #p2 @sloan
+- [x] Prozorro procurement tracking — schema, API client, sync, cron, email, form #p1 @sloan
+- [x] Donor dashboard wired to real API (replaced mock data) #p1 @sloan
+- [x] Donor project progress page (`/donor/projects/[id]`) #p1 @sloan
+- [x] Prozorro tender link creates ProjectUpdate + emails donors #p1 @sloan
+- [x] GET /api/donor/donations endpoint #p1 @sloan
 
 ### Security ✅ COMPLETE
 - [x] Fix session token vulnerability — JWT (jose/HS256) with SESSION_SECRET #p0 @sloan

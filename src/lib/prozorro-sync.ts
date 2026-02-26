@@ -303,11 +303,12 @@ export async function pollLinkedTenders(): Promise<PollResult> {
           },
         })
 
-        // Create project update
+        // Create project update (explicitly public — donors see status changes)
         await prisma.projectUpdate.create({
           data: {
             projectId: project.id,
             type: 'PROZORRO_STATUS',
+            isPublic: true,
             title: `Procurement update: ${newStatus}`,
             message: getStatusMessage(newStatus),
             metadata: {

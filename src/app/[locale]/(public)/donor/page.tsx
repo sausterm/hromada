@@ -17,6 +17,8 @@ interface DonationUpdate {
   title: string
   message: string
   createdAt: string
+  metadata?: Record<string, unknown> | null
+  source?: 'donation' | 'project'
 }
 
 interface Donation {
@@ -30,69 +32,6 @@ interface Donation {
   receivedAt: string | null
   updates: DonationUpdate[]
 }
-
-// Mock data for development
-const MOCK_DONATIONS: Donation[] = [
-  {
-    id: '1',
-    projectId: 'proj-1',
-    projectName: 'Kharkiv Regional Hospital - Solar Installation',
-    amount: 150000,
-    paymentMethod: 'WIRE',
-    status: 'FORWARDED',
-    submittedAt: '2026-01-15T10:30:00Z',
-    receivedAt: '2026-01-17T14:00:00Z',
-    updates: [
-      {
-        id: 'u1',
-        title: 'Funds Received',
-        message: 'Your wire transfer has been confirmed and received in our account. Thank you for your generous support!',
-        createdAt: '2026-01-17T14:00:00Z',
-      },
-      {
-        id: 'u2',
-        title: 'Transfer Initiated',
-        message: 'We have initiated the wire transfer to Kharkiv Regional Hospital. Estimated arrival: 2-3 business days.',
-        createdAt: '2026-01-20T09:00:00Z',
-      },
-      {
-        id: 'u3',
-        title: 'Funds Delivered',
-        message: 'The municipality has confirmed receipt of the funds. Installation of solar panels will begin next week.',
-        createdAt: '2026-01-23T11:30:00Z',
-      },
-    ],
-  },
-  {
-    id: '2',
-    projectId: 'proj-2',
-    projectName: 'Odesa School #5 - Battery Storage',
-    amount: 75000,
-    paymentMethod: 'DAF',
-    status: 'RECEIVED',
-    submittedAt: '2026-02-01T14:20:00Z',
-    receivedAt: '2026-02-03T10:00:00Z',
-    updates: [
-      {
-        id: 'u4',
-        title: 'Grant Received',
-        message: 'Your DAF grant from Fidelity Charitable has been received. We will process the transfer to Ukraine shortly.',
-        createdAt: '2026-02-03T10:00:00Z',
-      },
-    ],
-  },
-  {
-    id: '3',
-    projectId: 'proj-3',
-    projectName: 'Lviv Community Center - Heat Pump',
-    amount: 50000,
-    paymentMethod: 'WIRE',
-    status: 'PENDING_CONFIRMATION',
-    submittedAt: '2026-02-05T16:45:00Z',
-    receivedAt: null,
-    updates: [],
-  },
-]
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; description: string }> = {
   PENDING_CONFIRMATION: {
@@ -143,9 +82,29 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
 function DonorDashboard() {
   const t = useTranslations()
   const { logout, user } = useAuth()
-  const [donations, setDonations] = useState<Donation[]>(MOCK_DONATIONS)
+  const [donations, setDonations] = useState<Donation[]>([])
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingDonations, setIsLoadingDonations] = useState(true)
+  const [fetchError, setFetchError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchDonations() {
+      try {
+        const res = await fetch('/api/donor/donations')
+        if (!res.ok) {
+          throw new Error('Failed to load donations')
+        }
+        const data = await res.json()
+        setDonations(data.donations)
+      } catch (err) {
+        console.error('Failed to fetch donations:', err)
+        setFetchError('Unable to load your donations. Please try again later.')
+      } finally {
+        setIsLoadingDonations(false)
+      }
+    }
+    fetchDonations()
+  }, [])
 
   // Calculate stats
   const totalDonated = donations.reduce((sum, d) => sum + (d.amount || 0), 0)
@@ -230,166 +189,193 @@ function DonorDashboard() {
           </Card>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Donations List */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Donations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {donations.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-gray-400 mb-4">
-                      <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No donations yet</h3>
-                    <p className="text-gray-600 mb-4">
-                      Browse our projects and make your first contribution to support Ukrainian communities.
-                    </p>
-                    <Link href="/">
-                      <Button>Browse Projects</Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {donations.map((donation) => {
-                      const statusConfig = STATUS_CONFIG[donation.status] || STATUS_CONFIG.PENDING_CONFIRMATION
-                      const isSelected = selectedDonation?.id === donation.id
-
-                      return (
-                        <button
-                          key={donation.id}
-                          onClick={() => setSelectedDonation(isSelected ? null : donation)}
-                          className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                            isSelected
-                              ? 'border-[var(--navy-600)] bg-[var(--navy-50)]'
-                              : 'border-gray-200 hover:border-gray-300 bg-white'
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-gray-900 truncate">
-                                {donation.projectName}
-                              </div>
-                              <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
-                                <span>{PAYMENT_METHOD_LABELS[donation.paymentMethod]}</span>
-                                <span>•</span>
-                                <span>{formatDate(donation.submittedAt)}</span>
-                              </div>
-                            </div>
-                            <div className="text-right flex-shrink-0">
-                              <div className="font-bold text-gray-900">
-                                {donation.amount ? formatCurrency(donation.amount, { compact: true }) : 'Amount TBD'}
-                              </div>
-                              <Badge className={`mt-1 ${statusConfig.color}`}>
-                                {statusConfig.label}
-                              </Badge>
-                            </div>
-                          </div>
-
-                          {/* Status description */}
-                          <div className="mt-3 text-sm text-gray-600">
-                            {statusConfig.description}
-                          </div>
-
-                          {/* Updates indicator */}
-                          {donation.updates.length > 0 && (
-                            <div className="mt-3 flex items-center gap-2 text-sm text-[var(--navy-600)]">
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                              </svg>
-                              {donation.updates.length} update{donation.updates.length !== 1 ? 's' : ''}
-                              <svg className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                              </svg>
-                            </div>
-                          )}
-                        </button>
-                      )
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+        {isLoadingDonations ? (
+          <div className="flex justify-center py-12">
+            <LoadingSpinner size="lg" />
           </div>
-
-          {/* Donation Details / Updates */}
-          <div className="lg:col-span-1">
-            {selectedDonation ? (
-              <Card className="sticky top-24">
+        ) : fetchError ? (
+          <Card>
+            <CardContent className="py-12">
+              <div className="text-center text-gray-500">
+                <p>{fetchError}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid lg:grid-cols-3 gap-6">
+            {/* Donations List */}
+            <div className="lg:col-span-2">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Donation Updates</CardTitle>
+                  <CardTitle>Your Donations</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="mb-4 pb-4 border-b">
-                    <div className="font-medium text-gray-900">{selectedDonation.projectName}</div>
-                    <div className="text-sm text-gray-500 mt-1">
-                      {selectedDonation.amount ? formatCurrency(selectedDonation.amount) : 'Amount TBD'} via {PAYMENT_METHOD_LABELS[selectedDonation.paymentMethod]}
-                    </div>
-                  </div>
-
-                  {selectedDonation.updates.length > 0 ? (
-                    <div className="space-y-4">
-                      {selectedDonation.updates.map((update, index) => (
-                        <div key={update.id} className="relative pl-6">
-                          {/* Timeline line */}
-                          {index < selectedDonation.updates.length - 1 && (
-                            <div className="absolute left-[7px] top-6 bottom-0 w-0.5 bg-gray-200" />
-                          )}
-                          {/* Timeline dot */}
-                          <div className="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full bg-[var(--navy-600)] border-2 border-white shadow" />
-
-                          <div>
-                            <div className="font-medium text-gray-900">{update.title}</div>
-                            <div className="text-xs text-gray-500 mt-0.5">
-                              {formatDateTime(update.createdAt)}
-                            </div>
-                            <p className="text-sm text-gray-600 mt-2">
-                              {update.message}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <p className="text-sm">No updates yet</p>
-                      <p className="text-xs mt-1">We'll notify you when there's news about your donation.</p>
-                    </div>
-                  )}
-
-                  {/* View Project Link */}
-                  {selectedDonation.projectId && (
-                    <div className="mt-6 pt-4 border-t">
-                      <Link href={`/projects/${selectedDonation.projectId}`}>
-                        <Button variant="outline" fullWidth>
-                          View Project Details →
-                        </Button>
+                  {donations.length === 0 ? (
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 mb-4">
+                        <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No donations yet</h3>
+                      <p className="text-gray-600 mb-4">
+                        Browse our projects and make your first contribution to support Ukrainian communities.
+                      </p>
+                      <Link href="/">
+                        <Button>Browse Projects</Button>
                       </Link>
                     </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {donations.map((donation) => {
+                        const statusConfig = STATUS_CONFIG[donation.status] || STATUS_CONFIG.PENDING_CONFIRMATION
+                        const isSelected = selectedDonation?.id === donation.id
+
+                        return (
+                          <button
+                            key={donation.id}
+                            onClick={() => setSelectedDonation(isSelected ? null : donation)}
+                            className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                              isSelected
+                                ? 'border-[var(--navy-600)] bg-[var(--navy-50)]'
+                                : 'border-gray-200 hover:border-gray-300 bg-white'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium text-gray-900 truncate">
+                                  {donation.projectName}
+                                </div>
+                                <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                                  <span>{PAYMENT_METHOD_LABELS[donation.paymentMethod]}</span>
+                                  <span>•</span>
+                                  <span>{formatDate(donation.submittedAt)}</span>
+                                </div>
+                              </div>
+                              <div className="text-right flex-shrink-0">
+                                <div className="font-bold text-gray-900">
+                                  {donation.amount ? formatCurrency(donation.amount, { compact: true }) : 'Amount TBD'}
+                                </div>
+                                <Badge className={`mt-1 ${statusConfig.color}`}>
+                                  {statusConfig.label}
+                                </Badge>
+                              </div>
+                            </div>
+
+                            {/* Status description */}
+                            <div className="mt-3 text-sm text-gray-600">
+                              {statusConfig.description}
+                            </div>
+
+                            {/* Updates indicator */}
+                            {donation.updates.length > 0 && (
+                              <div className="mt-3 flex items-center gap-2 text-sm text-[var(--navy-600)]">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                {donation.updates.length} update{donation.updates.length !== 1 ? 's' : ''}
+                                <svg className={`w-4 h-4 transition-transform ${isSelected ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </div>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
                   )}
                 </CardContent>
               </Card>
-            ) : (
-              <Card className="sticky top-24">
-                <CardContent className="py-12">
-                  <div className="text-center text-gray-500">
-                    <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                    </svg>
-                    <p className="text-sm">Select a donation to view updates</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            </div>
+
+            {/* Donation Details / Updates */}
+            <div className="lg:col-span-1">
+              {selectedDonation ? (
+                <Card className="sticky top-24">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Project Updates</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-4 pb-4 border-b">
+                      <div className="font-medium text-gray-900">{selectedDonation.projectName}</div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        {selectedDonation.amount ? formatCurrency(selectedDonation.amount) : 'Amount TBD'} via {PAYMENT_METHOD_LABELS[selectedDonation.paymentMethod]}
+                      </div>
+                    </div>
+
+                    {selectedDonation.updates.length > 0 ? (
+                      <div className="space-y-4">
+                        {selectedDonation.updates.map((update, index) => (
+                          <div key={update.id} className="relative pl-6">
+                            {/* Timeline line */}
+                            {index < selectedDonation.updates.length - 1 && (
+                              <div className="absolute left-[7px] top-6 bottom-0 w-0.5 bg-gray-200" />
+                            )}
+                            {/* Timeline dot */}
+                            <div className="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full bg-[var(--navy-600)] border-2 border-white shadow" />
+
+                            <div>
+                              <div className="font-medium text-gray-900">{update.title}</div>
+                              <div className="text-xs text-gray-500 mt-0.5">
+                                {formatDateTime(update.createdAt)}
+                              </div>
+                              <p className="text-sm text-gray-600 mt-2">
+                                {update.message}
+                              </p>
+                              {typeof update.metadata?.prozorroUrl === 'string' && (
+                                <a
+                                  href={update.metadata.prozorroUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-sm text-[var(--ukraine-blue)] hover:underline mt-2"
+                                >
+                                  View on Prozorro
+                                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                  </svg>
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500">
+                        <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-sm">No updates yet</p>
+                        <p className="text-xs mt-1">We&apos;ll notify you when there&apos;s news about your donation.</p>
+                      </div>
+                    )}
+
+                    {/* View Project Link */}
+                    {selectedDonation.projectId && (
+                      <div className="mt-6 pt-4 border-t">
+                        <Link href={`/donor/projects/${selectedDonation.projectId}`}>
+                          <Button variant="outline" fullWidth>
+                            View Project Progress →
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="sticky top-24">
+                  <CardContent className="py-12">
+                    <div className="text-center text-gray-500">
+                      <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                      </svg>
+                      <p className="text-sm">Select a donation to view updates</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tax Information */}
         <Card className="mt-8">

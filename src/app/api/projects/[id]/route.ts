@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAdminAuth } from '@/lib/auth'
 import { translateProjectToUkrainian } from '@/lib/translate'
+import { getProzorroTender, getProzorroUrl } from '@/lib/prozorro'
+import { notifyDonors } from '@/lib/prozorro-sync'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -20,6 +22,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         },
         documents: {
           orderBy: { createdAt: 'asc' },
+        },
+        updates: {
+          where: { isPublic: true },
+          orderBy: { createdAt: 'desc' },
         },
       },
     })
@@ -102,8 +108,73 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         ...(body.partnerOrganization !== undefined && {
           partnerOrganization: body.partnerOrganization || null,
         }),
+        ...(body.edrpou !== undefined && {
+          edrpou: body.edrpou || null,
+        }),
       },
     })
+
+    // If Prozorro tender fields were provided, fetch current status and link
+    if (body.prozorroTenderId && body.prozorroTenderUuid) {
+      // Check if this is the first time linking a tender
+      const isFirstLink = !project.prozorroTenderId
+
+      let prozorroStatus: string | null = null
+      try {
+        const tender = await getProzorroTender(body.prozorroTenderUuid)
+        prozorroStatus = tender.status
+      } catch (err) {
+        console.warn(`[projects] Could not fetch Prozorro tender status: ${err}`)
+      }
+
+      await prisma.project.update({
+        where: { id },
+        data: {
+          prozorroTenderId: body.prozorroTenderId,
+          prozorroTenderUuid: body.prozorroTenderUuid,
+          prozorroStatus,
+          prozorroLastSync: new Date(),
+        },
+      })
+
+      // On first tender link: create public update + email donors
+      if (isFirstLink) {
+        const prozorroUrl = getProzorroUrl(body.prozorroTenderId)
+
+        await prisma.projectUpdate.create({
+          data: {
+            projectId: id,
+            type: 'PROZORRO_STATUS',
+            isPublic: true,
+            title: 'Posted to Prozorro for public procurement process',
+            message: 'This project has been posted to Prozorro, Ukraine\'s official public procurement platform. This means equipment and services will be competitively bid, ensuring transparency and best value.',
+            metadata: {
+              tenderID: body.prozorroTenderId,
+              prozorroUrl,
+              status: prozorroStatus,
+            },
+          },
+        })
+
+        // Fire-and-forget: notify donors
+        notifyDonors(id, project.facilityName, {
+          title: 'Posted to Prozorro for public procurement process',
+          message: 'This project has been posted to Prozorro, Ukraine\'s official public procurement platform. This means equipment and services will be competitively bid, ensuring transparency and best value.',
+          tenderID: body.prozorroTenderId,
+        }).catch(err => console.error('[projects] Failed to notify donors:', err))
+      }
+    } else if (body.prozorroTenderId === '' && body.prozorroTenderUuid === '') {
+      // Clear Prozorro link
+      await prisma.project.update({
+        where: { id },
+        data: {
+          prozorroTenderId: null,
+          prozorroTenderUuid: null,
+          prozorroStatus: null,
+          prozorroLastSync: null,
+        },
+      })
+    }
 
     // Fire-and-forget: re-translate to Ukrainian if English content changed
     const englishChanged = body.fullDescription || body.briefDescription || body.facilityName || body.municipalityName

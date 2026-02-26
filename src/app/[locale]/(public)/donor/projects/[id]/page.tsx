@@ -106,6 +106,14 @@ const DEMO_UPDATES: ProjectUpdate[] = [
     metadata: { prozorroUrl: 'https://prozorro.gov.ua/tender/UA-2026-02-05-000123-a' },
     createdAt: '2026-02-15T10:00:00Z',
   },
+  {
+    id: 'demo-u6-photo',
+    type: 'PHOTO_ADDED',
+    title: 'Photo update from partner',
+    message: 'EcoAction partner shared new photos from the Lutskteplo facility showing the installation site being prepared for the heat pump system.',
+    metadata: { photoUrl: 'https://gkjgondqaohpkfdshjgi.supabase.co/storage/v1/object/public/project-photos/cmkx2spy5001pv9rqtj76tfg6/1.webp' },
+    createdAt: '2026-02-22T14:30:00Z',
+  },
 ]
 
 const DEMO_DONATIONS: DonorDonation[] = [
@@ -335,6 +343,15 @@ export default function DonorProjectDetailPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                               </svg>
                             </a>
+                          )}
+                          {typeof update.metadata?.photoUrl === 'string' && (
+                            <div className="mt-3 rounded-lg overflow-hidden">
+                              <img
+                                src={update.metadata.photoUrl}
+                                alt={update.title}
+                                className="w-full max-h-64 object-cover rounded-lg"
+                              />
+                            </div>
                           )}
                         </div>
                       </div>

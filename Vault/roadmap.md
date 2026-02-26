@@ -210,6 +210,7 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 ### Donor Experience
 - [x] Donor profiles with giving history and impact summary #p2
 - [x] Project update notifications (email + in-app) #p3
+- [/] Donor project timeline page — post-donation progress tracking #p2
 - [ ] Impact reporting with progress photos and before/after #p3
 - [ ] Social sharing for projects #p3
 - [ ] Recurring donation support #p3

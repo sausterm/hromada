@@ -111,7 +111,7 @@ const DEMO_UPDATES: ProjectUpdate[] = [
     type: 'PHOTO_ADDED',
     title: 'Photo update from partner',
     message: 'EcoAction partner shared new photos from the Lutskteplo facility showing the installation site being prepared for the heat pump system.',
-    metadata: { photoUrl: 'https://gkjgondqaohpkfdshjgi.supabase.co/storage/v1/object/public/project-photos/cmkx2spy5001pv9rqtj76tfg6/1.webp' },
+    metadata: { photoUrl: 'https://images.unsplash.com/photo-1595437193398-f24279553f4f?w=1200&q=80' },
     createdAt: '2026-02-22T14:30:00Z',
   },
 ]

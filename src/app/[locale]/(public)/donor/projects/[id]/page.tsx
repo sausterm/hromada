@@ -366,21 +366,6 @@ export default function DonorProjectDetailPage() {
               </div>
             )}
 
-            {/* Project Summary */}
-            <Card>
-              <CardContent className="p-5">
-                <h3 className="font-semibold text-[var(--navy-700)] mb-3">About This Project</h3>
-                <p className="text-sm text-[var(--navy-600)] leading-relaxed line-clamp-6">
-                  {localized.briefDescription || localized.fullDescription}
-                </p>
-                <Link href={`/projects/${projectId}`} className="block mt-4">
-                  <Button variant="outline" fullWidth>
-                    View Full Project Page →
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
             {/* Tax Info */}
             <Card>
               <CardContent className="p-5">

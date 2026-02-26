@@ -293,6 +293,9 @@ export default function ProjectDetailPage() {
               <div className="flex items-center gap-3 mb-6">
                 <p className="text-lg text-[var(--navy-500)]">
                   {localized.municipalityName}
+                  {project.region && !localized.municipalityName.toLowerCase().includes(project.region.replace(' Oblast', '').toLowerCase())
+                    ? `, ${project.region}`
+                    : ''}
                 </p>
                 <span className="text-sm text-[var(--navy-400)]" suppressHydrationWarning>
                   {t('projectDetail.postedTime', { time: formatRelativeTime(project.createdAt, t) })}

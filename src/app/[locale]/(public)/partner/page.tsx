@@ -232,11 +232,18 @@ export default function PartnerDashboardPage() {
                           <td className="p-4 text-center">
                             <div className="flex gap-2 justify-center">
                               {submission.status === 'APPROVED' && submission.approvedProjectId ? (
-                                <Link href={`/projects/${submission.approvedProjectId}`}>
-                                  <Button variant="ghost" size="sm">
-                                    {t('partner.projects.viewDetails')}
-                                  </Button>
-                                </Link>
+                                <>
+                                  <Link href={`/projects/${submission.approvedProjectId}`}>
+                                    <Button variant="ghost" size="sm">
+                                      {t('partner.projects.viewDetails')}
+                                    </Button>
+                                  </Link>
+                                  <Link href={`/partner/projects/${submission.approvedProjectId}/update`}>
+                                    <Button variant="outline" size="sm">
+                                      Post Update
+                                    </Button>
+                                  </Link>
+                                </>
                               ) : submission.status === 'PENDING' ? (
                                 <Link href={`/partner/projects/${submission.id}`}>
                                   <Button variant="ghost" size="sm">

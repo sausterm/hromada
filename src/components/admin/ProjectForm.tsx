@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { ImageUpload } from './ImageUpload'
 import { DocumentUpload } from './DocumentUpload'
+import { PublicImageUpload } from '@/components/forms/PublicImageUpload'
 import {
   type Project,
   type Category,
@@ -93,6 +94,16 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
   const [formData, setFormData] = useState<ProjectFormData>(initialFormData)
   const [errors, setErrors] = useState<Partial<Record<keyof ProjectFormData, string>>>({})
   const [isGeocoding, setIsGeocoding] = useState(false)
+
+  // Post Update state (edit mode only)
+  const [updateOpen, setUpdateOpen] = useState(false)
+  const [updateTitle, setUpdateTitle] = useState('')
+  const [updateMessage, setUpdateMessage] = useState('')
+  const [updateType, setUpdateType] = useState<'MANUAL' | 'PHOTO_ADDED'>('MANUAL')
+  const [updatePhotos, setUpdatePhotos] = useState<string[]>([])
+  const [isPostingUpdate, setIsPostingUpdate] = useState(false)
+  const [updateSuccess, setUpdateSuccess] = useState(false)
+  const [updateError, setUpdateError] = useState<string | null>(null)
 
   const isEditing = !!project
 
@@ -237,6 +248,44 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
     e.preventDefault()
     if (!validate()) return
     await onSubmit(formData)
+  }
+
+  const handlePostUpdate = async () => {
+    if (!project || !updateTitle.trim() || !updateMessage.trim()) {
+      setUpdateError('Title and message are required.')
+      return
+    }
+    setIsPostingUpdate(true)
+    setUpdateError(null)
+    setUpdateSuccess(false)
+    try {
+      const body: Record<string, string> = {
+        title: updateTitle,
+        message: updateMessage,
+        type: updateType,
+      }
+      if (updateType === 'PHOTO_ADDED' && updatePhotos[0]) {
+        body.photoUrl = updatePhotos[0]
+      }
+      const res = await fetch(`/api/projects/${project.id}/updates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to post update')
+      }
+      setUpdateSuccess(true)
+      setUpdateTitle('')
+      setUpdateMessage('')
+      setUpdateType('MANUAL')
+      setUpdatePhotos([])
+    } catch (err) {
+      setUpdateError(err instanceof Error ? err.message : 'Something went wrong')
+    } finally {
+      setIsPostingUpdate(false)
+    }
   }
 
   return (
@@ -650,6 +699,101 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
                       Last synced: {new Date(project.prozorroLastSync).toLocaleString()}
                     </p>
                   )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Post Update (edit mode only) */}
+          {isEditing && project && (
+            <div className="space-y-4">
+              <button
+                type="button"
+                onClick={() => setUpdateOpen(!updateOpen)}
+                className="flex items-center gap-2 font-medium text-gray-900 border-b pb-2 w-full text-left"
+              >
+                <svg
+                  className={`w-4 h-4 transition-transform ${updateOpen ? 'rotate-90' : ''}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                Post Update
+              </button>
+
+              {updateOpen && (
+                <div className="space-y-4 pl-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Update Type</label>
+                    <select
+                      value={updateType}
+                      onChange={(e) => setUpdateType(e.target.value as 'MANUAL' | 'PHOTO_ADDED')}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-200)] focus:border-[var(--ukraine-500)]"
+                    >
+                      <option value="MANUAL">Status Update</option>
+                      <option value="PHOTO_ADDED">Photo Update</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Title * <span className="text-gray-400 font-normal">({updateTitle.length}/200)</span>
+                    </label>
+                    <Input
+                      value={updateTitle}
+                      onChange={(e) => setUpdateTitle(e.target.value)}
+                      placeholder="e.g., Procurement complete"
+                      maxLength={200}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Message * <span className="text-gray-400 font-normal">({updateMessage.length}/2000)</span>
+                    </label>
+                    <Textarea
+                      value={updateMessage}
+                      onChange={(e) => setUpdateMessage(e.target.value)}
+                      placeholder="Describe the update for donors..."
+                      rows={4}
+                      maxLength={2000}
+                    />
+                  </div>
+
+                  {updateType === 'PHOTO_ADDED' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                      <PublicImageUpload
+                        images={updatePhotos}
+                        onChange={setUpdatePhotos}
+                        maxImages={1}
+                      />
+                    </div>
+                  )}
+
+                  {updateError && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                      {updateError}
+                    </div>
+                  )}
+
+                  {updateSuccess && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
+                      Update posted successfully.
+                    </div>
+                  )}
+
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handlePostUpdate}
+                    isLoading={isPostingUpdate}
+                    loadingText="Posting..."
+                  >
+                    Post Update
+                  </Button>
                 </div>
               )}
             </div>

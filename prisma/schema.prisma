@@ -205,6 +205,7 @@ model User {
   auditLogs           AuditLog[]
   donations           Donation[]
   passwordResetTokens PasswordResetToken[]
+  projectUpdates      ProjectUpdate[]
 
   @@index([email])
   @@index([role])
@@ -577,15 +578,19 @@ enum ProjectUpdateType {
 /// Project-level activity feed (procurement updates, photo additions, manual notes).
 /// Distinct from DonationUpdate, which is scoped to individual donations.
 model ProjectUpdate {
-  id        String            @id @default(cuid())
-  projectId String
-  type      ProjectUpdateType
-  title     String            @db.VarChar(200)
-  message   String            @db.VarChar(2000)
-  metadata  Json?             // Prozorro-specific data (tender URL, old/new status, etc.)
-  isPublic  Boolean           @default(true)
-  createdAt DateTime          @default(now())
-  project   Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id            String            @id @default(cuid())
+  projectId     String
+  type          ProjectUpdateType
+  title         String            @db.VarChar(200)
+  message       String            @db.VarChar(2000)
+  metadata      Json?             // Prozorro-specific data (tender URL, old/new status, etc.)
+  isPublic      Boolean           @default(true)
+  createdAt     DateTime          @default(now())
+  createdById   String?
+  createdByName String?           @db.VarChar(100) // "Thomas", "EcoAction"
+  createdByRole String?           @db.VarChar(30)  // "Admin", "Partner"
+  project       Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy     User?             @relation(fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([createdAt])

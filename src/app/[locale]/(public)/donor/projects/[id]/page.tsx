@@ -19,6 +19,8 @@ interface ProjectUpdate {
   message: string
   metadata: Record<string, unknown> | null
   createdAt: string
+  createdByName?: string
+  createdByRole?: string
 }
 
 interface DonorDonation {
@@ -113,6 +115,8 @@ const DEMO_UPDATES: ProjectUpdate[] = [
     message: 'EcoAction partner shared new photos from the Lutskteplo facility showing the installation site being prepared for the heat pump system.',
     metadata: { photoUrl: 'https://images.unsplash.com/photo-1595437193398-f24279553f4f?w=1200&q=80' },
     createdAt: '2026-02-22T14:30:00Z',
+    createdByName: 'EcoAction',
+    createdByRole: 'Partner',
   },
 ]
 
@@ -327,6 +331,11 @@ export default function DonorProjectDetailPage() {
                           <div className="font-medium text-[var(--navy-700)]">{update.title}</div>
                           <div className="text-xs text-[var(--navy-400)] mt-0.5">
                             {formatDateTime(update.createdAt)}
+                            {update.createdByName && (
+                              <span className="ml-2 text-[var(--navy-500)]">
+                                — {update.createdByName} ({update.createdByRole})
+                              </span>
+                            )}
                           </div>
                           <p className="text-sm text-[var(--navy-600)] mt-2 leading-relaxed">
                             {update.message}

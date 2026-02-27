@@ -27,9 +27,17 @@ export function FAQSection() {
           </FAQItem>
           <FAQItem question={t('homepage.faq.q2')}>
             {t('homepage.faq.a2')}
+            <div className="mt-4">
+              <a href="https://prozorro.gov.ua" target="_blank" rel="noopener noreferrer" className="opacity-70 hover:opacity-100 transition-opacity inline-block">
+                <img src="/partners/prozorrologo.png" alt="Prozorro" className="h-7" />
+              </a>
+            </div>
           </FAQItem>
           <FAQItem question={t('homepage.faq.q3')}>
             {t('homepage.faq.a3')}
+          </FAQItem>
+          <FAQItem question={t('homepage.faq.q4')}>
+            {t('homepage.faq.a4')}
             <div className="flex flex-wrap items-center gap-6 mt-4">
               {PARTNERS.map((p) => (
                 <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" title={p.name} className="opacity-70 hover:opacity-100 transition-opacity">
@@ -38,11 +46,11 @@ export function FAQSection() {
               ))}
             </div>
           </FAQItem>
-          <FAQItem question={t('homepage.faq.q4')}>
-            {t('homepage.faq.a4')}
-          </FAQItem>
           <FAQItem question={t('homepage.faq.q5')}>
             {t('homepage.faq.a5')}
+          </FAQItem>
+          <FAQItem question={t('homepage.faq.q6')}>
+            {t('homepage.faq.a6')}
           </FAQItem>
         </div>
       </div>

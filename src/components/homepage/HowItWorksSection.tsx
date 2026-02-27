@@ -4,7 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Users, SearchCheck, Megaphone, Heart, Send, Wrench, SolarPanel, type LucideIcon } from 'lucide-react'
 
-const STEPS: { number: number; titleKey: string; descKey: string; hexColor: string; Icon: LucideIcon }[] = [
+interface Step {
+  number: number
+  titleKey: string
+  descKey: string
+  hexColor: string
+  Icon?: LucideIcon
+  logoSrc?: string
+}
+
+const STEPS: Step[] = [
   {
     number: 1,
     titleKey: 'homepage.howItWorks.step1Title',
@@ -44,13 +53,20 @@ const STEPS: { number: number; titleKey: string; descKey: string; hexColor: stri
     number: 6,
     titleKey: 'homepage.howItWorks.step6Title',
     descKey: 'homepage.howItWorks.step6Desc',
-    hexColor: '#6B8E9E',
-    Icon: Wrench,
+    hexColor: '#FFFFFF',
+    logoSrc: '/partners/prozorrologo.png',
   },
   {
     number: 7,
     titleKey: 'homepage.howItWorks.step7Title',
     descKey: 'homepage.howItWorks.step7Desc',
+    hexColor: '#6B8E9E',
+    Icon: Wrench,
+  },
+  {
+    number: 8,
+    titleKey: 'homepage.howItWorks.step8Title',
+    descKey: 'homepage.howItWorks.step8Desc',
     hexColor: '#4A7C59',
     Icon: SolarPanel,
   },
@@ -141,10 +157,14 @@ export function HowItWorksSection() {
               {/* Left column: icon + connector */}
               <div className="flex flex-col items-center flex-shrink-0">
                 <div
-                  className="w-11 h-11 rounded-xl text-white flex items-center justify-center shadow-md"
+                  className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-md ${step.logoSrc ? 'border border-[var(--cream-300)] p-1.5' : 'text-white'}`}
                   style={{ backgroundColor: step.hexColor }}
                 >
-                  <step.Icon className="w-5 h-5" strokeWidth={1.75} />
+                  {step.logoSrc ? (
+                    <img src={step.logoSrc} alt="" className="w-full h-full object-contain" />
+                  ) : step.Icon ? (
+                    <step.Icon className="w-5 h-5" strokeWidth={1.75} />
+                  ) : null}
                 </div>
                 {index < STEPS.length - 1 && (
                   <div className="w-0.5 bg-[var(--cream-300)] flex-1 min-h-[16px] my-1.5" />

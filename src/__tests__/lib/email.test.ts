@@ -38,8 +38,8 @@ describe('email module', () => {
     // Default to having SES configured
     process.env = {
       ...originalEnv,
-      AWS_SES_REGION: 'us-east-1',
-      AWS_SES_FROM_EMAIL: 'noreply@hromadaproject.org',
+      SES_REGION: 'us-east-1',
+      SES_FROM_EMAIL: 'noreply@hromadaproject.org',
       ADMIN_EMAIL: 'admin@example.com',
       NEXT_PUBLIC_APP_URL: 'https://hromada.org',
     }
@@ -67,7 +67,7 @@ describe('email module', () => {
     })
 
     it('returns success true when AWS SES is not configured', async () => {
-      delete process.env.AWS_SES_REGION
+      delete process.env.SES_REGION
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       // Need to reimport with fresh env
@@ -166,7 +166,7 @@ describe('email module', () => {
     }
 
     it('returns success true when AWS SES is not configured', async () => {
-      delete process.env.AWS_SES_REGION
+      delete process.env.SES_REGION
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       jest.resetModules()
@@ -274,7 +274,7 @@ describe('email module', () => {
     })
 
     it('returns success when AWS SES is not configured', async () => {
-      delete process.env.AWS_SES_REGION
+      delete process.env.SES_REGION
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       jest.resetModules()
@@ -352,7 +352,7 @@ describe('email module', () => {
 
   describe('sendPasswordResetEmail', () => {
     it('returns success when AWS SES is not configured', async () => {
-      delete process.env.AWS_SES_REGION
+      delete process.env.SES_REGION
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
       const logSpy = jest.spyOn(console, 'log').mockImplementation()
 
@@ -396,7 +396,7 @@ describe('email module', () => {
 
   describe('sendNewsletterWelcomeEmail', () => {
     it('returns success when AWS SES is not configured', async () => {
-      delete process.env.AWS_SES_REGION
+      delete process.env.SES_REGION
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       jest.resetModules()
@@ -455,7 +455,7 @@ describe('email module', () => {
     })
 
     it('returns success when AWS SES is not configured', async () => {
-      delete process.env.AWS_SES_REGION
+      delete process.env.SES_REGION
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       jest.resetModules()

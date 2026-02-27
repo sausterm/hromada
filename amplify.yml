@@ -17,8 +17,8 @@ frontend:
           echo "SESSION_SECRET=$SESSION_SECRET" >> .env.production
           echo "SITE_PASSWORD=$SITE_PASSWORD" >> .env.production
           echo "HROMADA_ADMIN_SECRET=$HROMADA_ADMIN_SECRET" >> .env.production
-          echo "AWS_SES_REGION=$AWS_SES_REGION" >> .env.production
-          echo "AWS_SES_FROM_EMAIL=$AWS_SES_FROM_EMAIL" >> .env.production
+          echo "SES_REGION=$SES_REGION" >> .env.production
+          echo "SES_FROM_EMAIL=$SES_FROM_EMAIL" >> .env.production
           echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> .env.production
           echo "CRON_SECRET=$CRON_SECRET" >> .env.production
           echo "CALENDLY_API_TOKEN=$CALENDLY_API_TOKEN" >> .env.production

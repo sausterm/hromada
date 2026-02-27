@@ -19,11 +19,11 @@ import {
 
 // Only create SES client if region is configured
 // On AWS Amplify, credentials come from the IAM role automatically
-const ses = process.env.AWS_SES_REGION
-  ? new SESClient({ region: process.env.AWS_SES_REGION })
+const ses = process.env.SES_REGION
+  ? new SESClient({ region: process.env.SES_REGION })
   : null
 
-const FROM_EMAIL = process.env.AWS_SES_FROM_EMAIL || 'noreply@hromadaproject.org'
+const FROM_EMAIL = process.env.SES_FROM_EMAIL || 'noreply@hromadaproject.org'
 
 // Helper to sanitize values before HTML interpolation
 const s = sanitizeInput

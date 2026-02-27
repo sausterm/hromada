@@ -5,7 +5,7 @@ import {
   type BulkEmailEntry,
 } from '@aws-sdk/client-sesv2'
 
-const SES_REGION = process.env.AWS_SES_REGION || 'us-east-1'
+const SES_REGION = process.env.SES_REGION || 'us-east-1'
 const FROM_ADDRESS = 'Hromada <noreply@hromadaproject.org>'
 
 let client: SESv2Client | null = null

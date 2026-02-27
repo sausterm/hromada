@@ -119,7 +119,7 @@ describe('POST /api/projects/submissions', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.AWS_SES_REGION = 'us-east-1'
+    process.env.SES_REGION = 'us-east-1'
     process.env.ADMIN_EMAIL = 'admin@test.com'
   })
 
@@ -319,7 +319,7 @@ describe('POST /api/projects/submissions', () => {
   })
 
   it('handles missing email configuration gracefully', async () => {
-    delete process.env.AWS_SES_REGION
+    delete process.env.SES_REGION
     delete process.env.ADMIN_EMAIL
 
     const createdSubmission = { id: '1', ...validSubmission }
@@ -463,7 +463,7 @@ describe('PATCH /api/projects/submissions/[id]', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.AWS_SES_REGION = 'us-east-1'
+    process.env.SES_REGION = 'us-east-1'
   })
 
   it('approves submission and creates project', async () => {

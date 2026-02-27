@@ -39,7 +39,7 @@ const STEPS: Step[] = [
     number: 4,
     titleKey: 'homepage.howItWorks.step4Title',
     descKey: 'homepage.howItWorks.step4Desc',
-    hexColor: '#D4954A',
+    hexColor: '#B5654A',
     Icon: Heart,
   },
   {
@@ -53,14 +53,14 @@ const STEPS: Step[] = [
     number: 6,
     titleKey: 'homepage.howItWorks.step6Title',
     descKey: 'homepage.howItWorks.step6Desc',
-    hexColor: '#6B8E9E',
+    hexColor: '#D4954A',
     Icon: Wrench,
   },
   {
     number: 7,
     titleKey: 'homepage.howItWorks.step7Title',
     descKey: 'homepage.howItWorks.step7Desc',
-    hexColor: '#4A7C59',
+    hexColor: '#6B7C5E',
     Icon: SolarPanel,
   },
 ]

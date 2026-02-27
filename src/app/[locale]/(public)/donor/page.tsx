@@ -19,6 +19,8 @@ interface DonationUpdate {
   createdAt: string
   metadata?: Record<string, unknown> | null
   source?: 'donation' | 'project'
+  createdByName?: string
+  createdByRole?: string
 }
 
 interface Donation {
@@ -132,6 +134,8 @@ const DEMO_DONATIONS: Donation[] = [
         createdAt: '2026-02-22T14:30:00Z',
         metadata: { type: 'PHOTO_ADDED', photoUrl: 'https://images.unsplash.com/photo-1595437193398-f24279553f4f?w=1200&q=80' },
         source: 'project',
+        createdByName: 'EcoAction',
+        createdByRole: 'Partner',
       },
     ],
   },
@@ -411,6 +415,11 @@ function DonorDashboard() {
                                   <div className="font-medium text-gray-900">{update.title}</div>
                                   <div className="text-xs text-gray-500 mt-0.5">
                                     {formatDateTime(update.createdAt)}
+                                    {update.createdByName && (
+                                      <span className="ml-1.5 text-gray-600">
+                                        — {update.createdByName} ({update.createdByRole})
+                                      </span>
+                                    )}
                                   </div>
                                   <p className="text-sm text-gray-600 mt-2">
                                     {update.message}

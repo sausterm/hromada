@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Users, SearchCheck, Megaphone, Heart, Send, Wrench, SolarPanel, type LucideIcon } from 'lucide-react'
+import { Users, SearchCheck, Megaphone, Heart, Wrench, SolarPanel, type LucideIcon } from 'lucide-react'
 
 interface Step {
   number: number
@@ -46,27 +46,20 @@ const STEPS: Step[] = [
     number: 5,
     titleKey: 'homepage.howItWorks.step5Title',
     descKey: 'homepage.howItWorks.step5Desc',
-    hexColor: '#C75B39',
-    Icon: Send,
+    hexColor: '#FFFFFF',
+    logoSrc: '/partners/prozorrologo.png',
   },
   {
     number: 6,
     titleKey: 'homepage.howItWorks.step6Title',
     descKey: 'homepage.howItWorks.step6Desc',
-    hexColor: '#FFFFFF',
-    logoSrc: '/partners/prozorrologo.png',
+    hexColor: '#6B8E9E',
+    Icon: Wrench,
   },
   {
     number: 7,
     titleKey: 'homepage.howItWorks.step7Title',
     descKey: 'homepage.howItWorks.step7Desc',
-    hexColor: '#6B8E9E',
-    Icon: Wrench,
-  },
-  {
-    number: 8,
-    titleKey: 'homepage.howItWorks.step8Title',
-    descKey: 'homepage.howItWorks.step8Desc',
     hexColor: '#4A7C59',
     Icon: SolarPanel,
   },

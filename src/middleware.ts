@@ -143,10 +143,9 @@ export default async function middleware(request: NextRequestWithGeo) {
   // --- Site password gate ---
   const sitePassword = process.env.SITE_PASSWORD;
   if (!sitePassword) {
-    // If SITE_PASSWORD is not set, block with 503
-    return applyHeaders(
-      new NextResponse('Site access is not configured', { status: 503 })
-    );
+    // If SITE_PASSWORD is not set, allow open access
+    const response = intlMiddleware(request);
+    return applyHeaders(response);
   }
 
   const siteAccessCookie = request.cookies.get(AUTH_COOKIE_NAME);

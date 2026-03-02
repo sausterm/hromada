@@ -37,16 +37,16 @@ const PARTNER_CONFIG: Record<string, { logo: string; url: string; name: string }
     url: 'https://ecoclubrivne.org/en/',
     name: 'NGO Ecoclub',
   },
-  'energy act': {
-    logo: '/partners/energyactukrainelogo.png',
-    url: 'https://www.energyactua.com/',
-    name: 'Energy Act For Ukraine',
-  },
-  'repower': {
-    logo: '/partners/RePowerUkraineLogo.png',
-    url: 'https://repowerua.org/',
-    name: 'RePower Ukraine',
-  },
+  // 'energy act': {
+  //   logo: '/partners/energyactukrainelogo.png',
+  //   url: 'https://www.energyactua.com/',
+  //   name: 'Energy Act For Ukraine',
+  // },
+  // 'repower': {
+  //   logo: '/partners/RePowerUkraineLogo.png',
+  //   url: 'https://repowerua.org/',
+  //   name: 'RePower Ukraine',
+  // },
   'greenpeace': {
     logo: '/partners/greenpeacelogo.png',
     url: 'https://www.greenpeace.org/ukraine/en/',

@@ -15,9 +15,9 @@ const team = [
 const partners = [
   { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/', descKey: 'about.partnerEcoactionDesc' },
   { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/', descKey: 'about.partnerEcoclubDesc' },
-  { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/', descKey: 'about.partnerRePowerDesc' },
+  // { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/', descKey: 'about.partnerRePowerDesc' },
   { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/', descKey: 'about.partnerGreenpeaceDesc' },
-  { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/', descKey: 'about.partnerEnergyActDesc' },
+  // { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/', descKey: 'about.partnerEnergyActDesc' },
 ]
 
 export default function AboutPage() {

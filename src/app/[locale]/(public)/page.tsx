@@ -108,8 +108,8 @@ export default function HomePage() {
       <HowItWorksSection />
       <PartnerCarousel variant="section" />
       <CaseStudySection />
-      <PressCarousel />
       <PhotoStripSection />
+      <PressCarousel />
       <FAQSection />
       <CTASection />
     </div>

@@ -8,10 +8,10 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 
 ## Fiscal Sponsorship / Legal #p0
 
-- [ ] Research FSA models (Model A vs Model C), templates, and standard language #p0 @sloan
-- [ ] Draft Fiscal Sponsorship Agreement — first draft for POCACITO + attorney review #p0 @sloan @tom
-- [ ] Review FSA draft with POCACITO board #p0 @tom
-- [ ] Attorney review and finalization of FSA #p0 @tom
+- [x] Research FSA models (Model A vs Model C), templates, and standard language #p0 @sloan
+- [x] Draft Fiscal Sponsorship Agreement — first draft for POCACITO + attorney review #p0 @sloan @tom
+- [/] Review FSA draft with POCACITO board #p0 @tom
+- [x] Attorney review and finalization of FSA #p0 @tom
 - [ ] Sign FSA with POCACITO Network #p0
 - [ ] Obtain real bank details from POCACITO (routing, account, SWIFT) #p0 @sloan
 - [ ] Verify tax-deductibility language for donor receipts matches FSA terms #p1
@@ -42,6 +42,29 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 - [ ] ACH payment method support #p3
 - [ ] Donation matching campaigns #p3
 
+## Communications & Outreach #p1
+
+**Policy:** Hromada is not a content-producing organization. Strictly mission-focused.
+
+Emails:
+- [ ] Design donor lifecycle emails (confirmation, forwarded/receipt, project update, completion) #p1
+- [ ] Occasional member newsletter template #p2
+- [ ] Project update email (triggered by partner status updates) #p2
+
+Press releases (only):
+- Project funded announcement
+- Project constructed / connected to grid announcement
+
+Social media (only):
+- New project posted
+- Success story / project completion
+- Partner featured in press
+
+Materials:
+- [/] 2-pager explainer handout (Figma) — visual overview for in-person meetings #p1 @tom
+- [/] 6-pager detailed explainer (Figma) — deeper dive for donors/partners #p1 @tom
+- [ ] Director's letter template (as-needed basis) #p3 @tom
+
 ## Municipal Partnerships #p1
 
 - [ ] Partnership matching system (US city ↔ Ukrainian hromada) #p2
@@ -71,6 +94,7 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 ## Code Quality #p2
 
 - [x] Decompose homepage (`src/app/[locale]/(public)/page.tsx` — 754 lines) #p2
+- [x] Calendly integration — scheduling with auto-mailing-list enrollment #p1 @tom
 - [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2
 - [x] Fix remaining TypeScript errors (3) #p3
 - [ ] Add missing type definitions for Leaflet marker clustering #p3

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { usePathname } from '@/i18n/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 const partners = [
   { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/' },
@@ -18,67 +18,56 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
   const pathname = usePathname()
   const trackRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
   const positionRef = useRef(0)
   const singleSetWidthRef = useRef(0)
-  // Use refs instead of state to avoid closure issues in animation loop
   const isPausedRef = useRef(false)
   const isDraggingRef = useRef(false)
   const dragStartRef = useRef(0)
   const dragStartPosRef = useRef(0)
   const hasDraggedRef = useRef(false)
+  const animationIdRef = useRef<number>(0)
+  const initializedRef = useRef(false)
 
-  // Show on production site, demo site, v2 site, and localhost
-  useEffect(() => {
-    const hostname = window.location.hostname
-    const showCarousel = hostname === 'localhost' ||
-                         hostname === '127.0.0.1' ||
-                         hostname === 'hromadaproject.org' ||
-                         hostname === 'www.hromadaproject.org' ||
-                         hostname === 'demo.hromadaproject.org' ||
-                         hostname === 'v2.hromadaproject.org'
-    setIsVisible(showCarousel)
-  }, [])
-
-  // Triplicate for seamless loop (extra buffer prevents edge glitches)
   const duplicatedPartners = [...partners, ...partners, ...partners]
 
+  const isHomepage = hideOnHomepage && pathname === '/'
+
+  // Single effect that initializes when DOM is available
   useEffect(() => {
-    if (!isVisible) return
+    if (isHomepage) {
+      // Tear down if navigating back to homepage
+      if (initializedRef.current) {
+        cancelAnimationFrame(animationIdRef.current)
+        initializedRef.current = false
+        singleSetWidthRef.current = 0
+        positionRef.current = 0
+      }
+      return
+    }
 
     const track = trackRef.current
     const container = containerRef.current
     if (!track || !container) return
 
-    // Calculate width of one set of partners
+    // Already running — don't double-initialize
+    if (initializedRef.current) return
+
     const calculateWidth = () => {
-      const children = track.children
-      let width = 0
-      for (let i = 0; i < partners.length; i++) {
-        const child = children[i] as HTMLElement
-        if (child) {
-          width += child.offsetWidth + 64 // 64px = mx-8 (32px each side)
-        }
+      const first = track.children[0] as HTMLElement | undefined
+      const boundary = track.children[partners.length] as HTMLElement | undefined
+      if (first && boundary) {
+        singleSetWidthRef.current = boundary.offsetLeft - first.offsetLeft
       }
-      singleSetWidthRef.current = width
     }
 
-    calculateWidth()
-    window.addEventListener('resize', calculateWidth)
-
-    // Wrap position helper
     const wrapPosition = () => {
-      if (singleSetWidthRef.current > 0) {
-        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
-          positionRef.current = positionRef.current % singleSetWidthRef.current
-        }
-        if (positionRef.current > 0) {
-          positionRef.current = positionRef.current - singleSetWidthRef.current
-        }
+      const w = singleSetWidthRef.current
+      if (w > 0) {
+        while (positionRef.current <= -w) positionRef.current += w
+        while (positionRef.current > 0) positionRef.current -= w
       }
     }
 
-    // Handle manual horizontal scroll when paused (vertical scrolls pass through)
     const handleWheel = (e: WheelEvent) => {
       if (isPausedRef.current && singleSetWidthRef.current > 0 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
         e.preventDefault()
@@ -88,7 +77,6 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       }
     }
 
-    // Handle drag start (mouse)
     const handleMouseDown = (e: MouseEvent) => {
       isDraggingRef.current = true
       dragStartRef.current = e.clientX
@@ -96,25 +84,18 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       hasDraggedRef.current = false
     }
 
-    // Handle drag move (mouse)
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDraggingRef.current) return
       e.preventDefault()
       const delta = e.clientX - dragStartRef.current
-      if (Math.abs(delta) > 5) {
-        hasDraggedRef.current = true
-      }
+      if (Math.abs(delta) > 5) hasDraggedRef.current = true
       positionRef.current = dragStartPosRef.current + delta
       wrapPosition()
       track.style.transform = `translateX(${positionRef.current}px)`
     }
 
-    // Handle drag end (mouse)
-    const handleMouseUp = () => {
-      isDraggingRef.current = false
-    }
+    const handleMouseUp = () => { isDraggingRef.current = false }
 
-    // Handle drag start (touch)
     const handleTouchStart = (e: TouchEvent) => {
       isDraggingRef.current = true
       dragStartRef.current = e.touches[0].clientX
@@ -122,23 +103,30 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       hasDraggedRef.current = false
     }
 
-    // Handle drag move (touch)
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDraggingRef.current) return
       const delta = e.touches[0].clientX - dragStartRef.current
-      if (Math.abs(delta) > 5) {
-        hasDraggedRef.current = true
-      }
+      if (Math.abs(delta) > 5) hasDraggedRef.current = true
       positionRef.current = dragStartPosRef.current + delta
       wrapPosition()
       track.style.transform = `translateX(${positionRef.current}px)`
     }
 
-    // Handle drag end (touch)
-    const handleTouchEnd = () => {
-      isDraggingRef.current = false
-    }
+    const handleTouchEnd = () => { isDraggingRef.current = false }
 
+    // Wait for layout to settle, then measure and start
+    requestAnimationFrame(() => {
+      calculateWidth()
+
+      // If width still 0, retry once more after another frame
+      if (singleSetWidthRef.current === 0) {
+        requestAnimationFrame(() => {
+          calculateWidth()
+        })
+      }
+    })
+
+    window.addEventListener('resize', calculateWidth)
     container.addEventListener('wheel', handleWheel, { passive: false })
     container.addEventListener('mousedown', handleMouseDown)
     document.addEventListener('mousemove', handleMouseMove)
@@ -147,23 +135,21 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
     container.addEventListener('touchmove', handleTouchMove, { passive: true })
     container.addEventListener('touchend', handleTouchEnd)
 
-    let animationId: number
-    const speed = 0.5 // pixels per frame
-
+    const speed = 0.5
     const animate = () => {
-      // Use refs so we always read the latest values
       if (!isPausedRef.current && !isDraggingRef.current && singleSetWidthRef.current > 0) {
         positionRef.current -= speed
         wrapPosition()
         track.style.transform = `translateX(${positionRef.current}px)`
       }
-      animationId = requestAnimationFrame(animate)
+      animationIdRef.current = requestAnimationFrame(animate)
     }
-
-    animationId = requestAnimationFrame(animate)
+    animationIdRef.current = requestAnimationFrame(animate)
+    initializedRef.current = true
 
     return () => {
-      cancelAnimationFrame(animationId)
+      cancelAnimationFrame(animationIdRef.current)
+      initializedRef.current = false
       window.removeEventListener('resize', calculateWidth)
       container.removeEventListener('wheel', handleWheel)
       container.removeEventListener('mousedown', handleMouseDown)
@@ -173,10 +159,9 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       container.removeEventListener('touchmove', handleTouchMove)
       container.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [isVisible])
+  }, [isHomepage])
 
-  if (!isVisible) return null
-  if (hideOnHomepage && pathname === '/') return null
+  if (isHomepage) return null
 
   const isSection = variant === 'section'
 
@@ -188,18 +173,15 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
         </h2>
       </div>
 
-      {/* Carousel container */}
       <div
         ref={containerRef}
         className="relative cursor-grab active:cursor-grabbing"
         onMouseEnter={() => { isPausedRef.current = true }}
         onMouseLeave={() => { isPausedRef.current = false }}
       >
-        {/* Gradient masks for smooth edges */}
         <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />
 
-        {/* Scrolling track */}
         <div
           ref={trackRef}
           className="flex items-center will-change-transform"
@@ -213,9 +195,7 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
               className="flex-shrink-0 mx-8 flex items-center justify-center hover:opacity-70 transition-opacity select-none"
               style={{ minWidth: '180px' }}
               onClick={(e) => {
-                if (hasDraggedRef.current) {
-                  e.preventDefault()
-                }
+                if (hasDraggedRef.current) e.preventDefault()
               }}
               draggable={false}
             >

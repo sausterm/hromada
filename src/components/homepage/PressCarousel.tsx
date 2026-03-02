@@ -35,6 +35,11 @@ const mediaItems = [
     logo: '/press/motherjones.jpeg',
     url: 'https://www.motherjones.com/politics/2026/02/putin-tried-to-freeze-ukraine-instead-he-sparked-an-energy-revolution/',
   },
+  {
+    name: 'Heinrich Böll Stiftung',
+    logo: '/press/boell.png',
+    url: 'https://us.boell.org/en/2024/11/01/investors-once-again-asked-buy-ukrainian-renewable-energy',
+  },
 ]
 
 const duplicatedItems = [...mediaItems, ...mediaItems, ...mediaItems]

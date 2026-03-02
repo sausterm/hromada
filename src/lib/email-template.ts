@@ -259,13 +259,16 @@ export function emailProjectCard(opts: ProjectCardOptions): string {
   const partnerBlock = opts.partnerName
     ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:8px;">
         <tr>
+          <td valign="middle" style="font-size:13px;color:${C.textLight};font-family:${FONT_BODY};padding-right:8px;white-space:nowrap;">
+            Partner:
+          </td>
           ${opts.partnerLogoUrl
             ? `<td valign="middle" style="padding-right:8px;">
                 <img src="${opts.partnerLogoUrl}" alt="${opts.partnerName}" height="20" style="height:20px;display:block;" />
               </td>`
             : ''}
-          <td valign="middle" style="font-size:13px;color:${C.textLight};font-family:${FONT_BODY};">
-            Partner: <strong style="color:${C.navy};">${opts.partnerName}</strong>
+          <td valign="middle" style="font-size:13px;font-family:${FONT_BODY};">
+            <strong style="color:${C.navy};">${opts.partnerName}</strong>
           </td>
         </tr>
       </table>`
@@ -322,22 +325,12 @@ export function emailProcessFlow(title: string, steps: ProcessStep[]): string {
       : ''
 
     return `<tr>
-      <td width="40" valign="top" style="padding:0;">
-        <!-- Number circle -->
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-          <tr>
-            <td style="width:32px;height:32px;background:${C.blue};border-radius:50%;text-align:center;vertical-align:middle;font-family:${FONT_BRAND};font-size:14px;font-weight:600;color:${C.white};">
-              ${step.number}
-            </td>
-          </tr>
-          ${!isLast ? `<tr>
-            <td align="center" style="padding:0;">
-              <div style="width:2px;height:24px;background:${C.creamDark};margin:0 auto;">&nbsp;</div>
-            </td>
-          </tr>` : ''}
-        </table>
+      <td width="40" valign="top" style="padding:0 0 ${isLast ? '0' : '20'}px 0;border-left:2px solid ${isLast ? 'transparent' : C.creamDark};background:transparent;">
+        <div style="width:32px;height:32px;background:${C.blue};border-radius:50%;text-align:center;line-height:32px;font-family:${FONT_BRAND};font-size:14px;font-weight:600;color:${C.white};margin-left:-17px;">
+          ${step.number}
+        </div>
       </td>
-      <td valign="top" style="padding:2px 0 ${isLast ? '0' : '16'}px 16px;">
+      <td valign="top" style="padding:4px 0 ${isLast ? '0' : '20'}px 16px;">
         <p style="margin:0;font-size:15px;font-weight:600;letter-spacing:-0.025em;color:${C.navy};font-family:${FONT_BRAND};">${step.title}</p>
         <p style="margin:4px 0 0;font-size:13px;color:${C.textLight};line-height:1.5;font-family:${FONT_BODY};">${step.description}</p>
         ${logoBlock}

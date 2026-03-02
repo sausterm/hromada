@@ -67,6 +67,7 @@ Materials:
 
 ## Municipal Partnerships #p1
 
+- [ ] Admin dashboard: partnership inquiry management (list, status, respond) #p1
 - [ ] Partnership matching system (US city ↔ Ukrainian hromada) #p2
 - [ ] Partner onboarding workflow #p2
 - [ ] Joint project creation between partner communities #p3

@@ -37,6 +37,7 @@ export const contactSchema = z.object({
 
 export const newsletterSchema = z.object({
   email: emailField,
+  name: z.string().min(1).max(100).optional(),
 })
 
 export const partnershipInquirySchema = z.object({

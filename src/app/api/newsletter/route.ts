@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const normalized = parsed.data.email.toLowerCase().trim()
+    const name = parsed.data.name?.trim() || null
 
     // Check if already subscribed (don't re-send welcome email)
     const existing = await prisma.newsletterSubscriber.findUnique({
@@ -20,15 +21,15 @@ export async function POST(request: NextRequest) {
     })
 
     // Upsert — if they unsubscribed before, re-subscribe them
-    await prisma.newsletterSubscriber.upsert({
+    const subscriber = await prisma.newsletterSubscriber.upsert({
       where: { email: normalized },
-      update: { unsubscribed: false },
-      create: { email: normalized },
+      update: { unsubscribed: false, ...(name ? { name } : {}) },
+      create: { email: normalized, name, source: 'website' },
     })
 
     // Send welcome email only for new subscribers
     if (!existing || existing.unsubscribed) {
-      await sendNewsletterWelcomeEmail(normalized)
+      await sendNewsletterWelcomeEmail(normalized, subscriber.unsubscribeToken, name)
     }
 
     return NextResponse.json({ success: true })

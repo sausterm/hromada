@@ -5,22 +5,24 @@ import { useTranslations } from 'next-intl'
 
 export function EmailCaptureForm() {
   const t = useTranslations()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email.trim()) return
+    if (!email.trim() || !name.trim()) return
 
     setStatus('loading')
     try {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), name: name.trim() }),
       })
       if (res.ok) {
         setStatus('success')
+        setName('')
         setEmail('')
       } else {
         setStatus('error')
@@ -43,6 +45,14 @@ export function EmailCaptureForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
+      <input
+        type="text"
+        required
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder={t('homepage.cta.namePlaceholder')}
+        className="sm:w-36 px-4 py-2.5 rounded-lg border border-[var(--cream-300)] bg-white text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+      />
       <input
         type="email"
         required

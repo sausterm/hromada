@@ -5,11 +5,6 @@ import { useTranslations } from 'next-intl'
 
 const mediaItems = [
   {
-    name: 'The Washington Post',
-    logo: '/press/wapologo.png',
-    url: 'https://www.washingtonpost.com/climate-solutions/2023/05/20/ukraine-solar-hospitals-attack-russia/',
-  },
-  {
     name: 'Politico',
     logo: '/press/politico.png',
     url: 'https://www.politico.eu/article/ukraine-support-green-recovery-solar-wind-power/',
@@ -39,6 +34,16 @@ const mediaItems = [
     name: 'Heinrich Böll Stiftung',
     logo: '/press/boell.png',
     url: 'https://us.boell.org/en/2024/11/01/investors-once-again-asked-buy-ukrainian-renewable-energy',
+  },
+  {
+    name: 'The Washington Post',
+    logo: '/press/wapologo.png',
+    url: 'https://www.washingtonpost.com/climate-solutions/2023/05/20/ukraine-solar-hospitals-attack-russia/',
+  },
+  {
+    name: 'Euromaidan Press',
+    logo: '/press/euromaidanpress.png',
+    url: 'https://euromaidanpress.com/2022/04/28/russian-fossil-fuel-exports-to-eu-finances-war-with-ukraine/',
   },
 ]
 

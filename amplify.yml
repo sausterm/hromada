@@ -5,6 +5,8 @@ frontend:
       commands:
         - npm ci
         - npx prisma generate
+        # Clear stale ISR/fetch data cache to prevent serving old prerendered pages
+        - rm -rf .next/cache/fetch-cache .next/cache/images
         # Create .env.production for runtime environment variables
         - |
           echo "DATABASE_URL=$DATABASE_URL" >> .env.production

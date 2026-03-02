@@ -1,8 +1,8 @@
 # Session Context — Hromada
 
-**Date**: 2026-02-25
+**Date**: 2026-03-02
 **Branch**: `v2-payment-processing`
-**Status**: Tax receipt PDF infrastructure built, donation lifecycle wired end-to-end, email formats next
+**Status**: Project updates system built, Horenka case study live, homepage redesigned, donor/partner/admin dashboards functional
 
 ---
 
@@ -101,11 +101,20 @@ Donor receives "Funds Delivered" update
 - **Public display** — DocumentCard on project detail page: download original PDF link + expandable translated text inline
 - **PDF extraction** (`src/lib/pdf-extract.ts`) — pdf-parse library, chunked translation for long documents
 
+### Project Updates System (2026-02-27)
+- **ProjectUpdate author fields** — `createdById`, `createdByName`, `createdByRole` added to schema
+- **POST /api/projects/[id]/updates** — Zod-validated endpoint, role-based auth (ADMIN always, PARTNER/NONPROFIT_MANAGER must own project via submission)
+- **Partner dashboard** — "Post Update" button on approved projects, dedicated form page at `/partner/projects/[id]/update`
+- **Admin ProjectForm** — collapsible "Post Update" section in edit mode
+- **Donor timelines** — author attribution shown on manual updates (e.g. "— EcoAction (Partner)")
+
 ### Homepage
-- **"See It Happen" case study** — School #7, Novohrodivka (NGO Ecoaction partner showcase). 5-step timeline, partner attribution badge, impact stats card. Uses real project from database as example of partner track record.
+- **Case studies** — Horenka kindergarten (primary) and School #7 Novohrodivka (secondary). Partner attribution, impact stats, photo evidence.
+- **Media carousel** — NBC News, Euronews, Heinrich Böll Stiftung
 - **Featured projects** — admin-managed 4-slot system with fallback to newest projects
 - **Photo strip** — scrolling completed project photos
-- **FAQ** — 5 expandable questions
+- **How It Works** — 6-step visual flow including Prozorro procurement
+- **FAQ** — expandable questions
 - **Email capture** — newsletter signup with AWS SES welcome email
 - **Hero** — full-viewport with parallax, entrance animations, promise badge
 
@@ -216,9 +225,8 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 ## Amplify Deploy Status
 
 - **App ID**: `d3lasyv0tebbph`
-- **Deploys #81-84 succeeding** — build issues resolved
-- **Deploys #68-80 failed** (package-lock sync + source map size) — both fixed
-- **Deploy #84**: Triggered 2026-02-19 to pick up env var fixes
+- **Deploys succeeding** — build issues resolved, ISR cache clearing added
+- **On-demand revalidation** — `/api/revalidate` endpoint for clearing ISR cache
 - **Env vars restored**: All env vars from `.env.local` are now in Amplify (DATABASE_URL, DIRECT_URL, DEEPL_API_KEY, SITE_PASSWORD, SESSION_SECRET, HROMADA_ADMIN_SECRET, NEXT_PUBLIC_* vars). Previously only a subset was configured.
 - **SITE_PASSWORD**: Was missing from Amplify, causing "Site access is not configured" on hromadaproject.org. Now set.
 - **AWS CLI available**: `aws amplify list-jobs --app-id d3lasyv0tebbph --branch-name v2-payment-processing`
@@ -261,7 +269,7 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 - **Hosting**: AWS Amplify (NOT Vercel). Push to branch triggers build automatically.
 - **DNS**: Managed through Cloudflare for `hromadaproject.org`
 - **Prisma**: Using `db push` (not `migrate dev`) due to migration drift. Schema applied directly to Supabase.
-- **Tests**: 107 suites, 1792 passing, 5 skipped. Login page tests have 4 pre-existing failures (unrelated to donation flow).
+- **Tests**: 107 suites, 1792 passing, 5 skipped.
 - **Source maps**: Disabled in production build (`sourcemaps.disable: true` in `next.config.ts`). Source map files deleted post-build in `amplify.yml`.
 
 ---
@@ -292,59 +300,6 @@ MOU template for NGO partners drafted and committed — see Partner MoU section 
 - Not enforceable against Ukrainian NGOs in practice — functions as behavioral framework, due diligence artifact, and basis for terminating partnerships
 
 ---
-
-## Workflow Orchestration
-
-### 1. Plan Mode Default
-- Enter plan mode for ANY non-trivial task (3+ steps or architectural decisions)
-- If something goes sideways, STOP and re-plan immediately — don't keep pushing
-- Use plan mode for verification steps, not just building
-- Write detailed specs upfront to reduce ambiguity
-
-### 2. Subagent Strategy
-- Use subagents liberally to keep main context window clean
-- Offload research, exploration, and parallel analysis to subagents
-- For complex problems, throw more compute at it via subagents
-- One task per subagent for focused execution
-
-### 3. Self-Improvement Loop
-- After ANY correction from the user: update `tasks/lessons.md` with the pattern
-- Write rules for yourself that prevent the same mistake
-- Ruthlessly iterate on these lessons until mistake rate drops
-- Review lessons at session start for relevant project
-
-### 4. Verification Before Done
-- Never mark a task complete without proving it works
-- Diff behavior between main and your changes when relevant
-- Ask yourself: "Would a staff engineer approve this?"
-- Run tests, check logs, demonstrate correctness
-
-### 5. Demand Elegance (Balanced)
-- For non-trivial changes: pause and ask "is there a more elegant way?"
-- If a fix feels hacky: "Knowing everything I know now, implement the elegant solution"
-- Skip this for simple, obvious fixes — don't over-engineer
-- Challenge your own work before presenting it
-
-### 6. Autonomous Bug Fixing
-- When given a bug report: just fix it. Don't ask for hand-holding
-- Point at logs, errors, failing tests — then resolve them
-- Zero context switching required from the user
-- Go fix failing CI tests without being told how
-
-## Task Management
-
-1. **Plan First**: Write plan to `tasks/todo.md` with checkable items
-2. **Verify Plan**: Check in before starting implementation
-3. **Track Progress**: Mark items complete as you go
-4. **Explain Changes**: High-level summary at each step
-5. **Document Results**: Add review section to `tasks/todo.md`
-6. **Capture Lessons**: Update `tasks/lessons.md` after corrections
-
-## Core Principles
-
-- **Simplicity First**: Make every change as simple as possible. Impact minimal code.
-- **No Laziness**: Find root causes. No temporary fixes. Senior developer standards.
-- **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 
 ---
 

@@ -33,7 +33,10 @@ frontend:
         - npm run build
         - find .next -name '*.map' -delete
         - cp .env.production .next/.env.production
-        - cp .env.production .next/.env.production
+        - cp .env.production .next/standalone/.env.production 2>/dev/null || true
+        # Copy static assets into standalone for self-contained deployment
+        - cp -r .next/static .next/standalone/.next/static 2>/dev/null || true
+        - cp -r public .next/standalone/public 2>/dev/null || true
   artifacts:
     baseDirectory: .next
     files:

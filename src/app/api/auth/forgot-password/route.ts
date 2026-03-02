@@ -5,6 +5,8 @@ import { sendPasswordResetEmail } from '@/lib/email'
 import { rateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 import { logAuditEvent, AuditAction, getClientIp, getUserAgent } from '@/lib/security'
 
+export const dynamic = 'force-dynamic'
+
 function generateOTP(): string {
   const array = new Uint8Array(4)
   crypto.getRandomValues(array)

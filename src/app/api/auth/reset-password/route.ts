@@ -11,6 +11,8 @@ import {
   revokeAllSessions,
 } from '@/lib/security'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   // Rate limit: 3 per hour
   const rateLimitResponse = rateLimit(request, {

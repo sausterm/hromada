@@ -317,8 +317,9 @@ function FlyToProject({
         const lat = Number(project.latitude ?? project.cityLatitude)
         const lng = Number(project.longitude ?? project.cityLongitude)
 
-        // Guard against missing coordinates
-        if (isNaN(lat) || isNaN(lng)) {
+        // Guard against missing coordinates or zero-size map container
+        const container = map.getContainer()
+        if (isNaN(lat) || isNaN(lng) || !container.offsetWidth || !container.offsetHeight) {
           onComplete?.()
           return
         }

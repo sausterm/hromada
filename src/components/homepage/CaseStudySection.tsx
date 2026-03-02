@@ -8,7 +8,7 @@ export function CaseStudySection() {
   const t = useTranslations()
 
   return (
-    <section className="fade-in-section pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
+    <section className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)]">
       <div className="max-w-4xl mx-auto px-4 lg:px-8">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 text-[var(--ukraine-blue)] text-sm font-medium mb-4">
@@ -24,23 +24,24 @@ export function CaseStudySection() {
         <div className="grid md:grid-cols-2 gap-8 md:gap-12">
           <div>
             <DocumentaryPhoto
-              src="https://images.unsplash.com/photo-1613896527026-f195d5c818ed?w=1200&q=80"
-              alt="Solar panels installed on school rooftop"
+              src="/projects/horenka-solar-install.jpeg"
+              alt="Workers installing solar panels on Horenka hospital roof"
               caption={t('homepage.caseStudy.photoCaption1')}
-              location="Novohrodivka, Donetsk Oblast"
+              location="Horenka, Kyiv Oblast"
             />
           </div>
 
           <div>
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-3">
-                <span className="inline-block bg-[#7B9E6B] text-white text-xs px-2 py-1 rounded-full">
+                <span className="inline-block bg-[#C75B39] text-white text-xs px-2 py-1 rounded-full">
                   {t('homepage.caseStudy.badge')}
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs text-[var(--navy-500)]">
                   {t('homepage.caseStudy.partnerLabel')}:
                   <img src="/partners/EcoactionLogo.png" alt="Ecoaction" className="h-4 w-auto" />
-                  <strong className="text-[var(--navy-700)]">{t('homepage.caseStudy.partnerName')}</strong>
+                  <img src="/partners/EcoclubLogo.png" alt="Ecoclub" className="h-4 w-auto" />
+                  <img src="/partners/greenpeacelogo.png" alt="Greenpeace" className="h-4 w-auto" />
                 </span>
               </div>
               <h3 className="text-2xl font-bold text-[var(--navy-700)] mb-2">
@@ -61,18 +62,13 @@ export function CaseStudySection() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mt-12">
+        <div className="grid md:grid-cols-2 gap-6 mt-12">
           <DocumentaryPhoto
-            src="https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?w=1200&q=80"
-            alt="Solar panels on school rooftop"
+            src="/projects/horenka-roof-array.webp"
+            alt="Full solar array covering the Horenka hospital roof"
             caption={t('homepage.caseStudy.photoCaption2')}
-            location="Novohrodivka"
-          />
-          <DocumentaryPhoto
-            src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80"
-            alt="School interior classroom"
-            caption={t('homepage.caseStudy.photoCaption3')}
-            location="Donetsk Oblast"
+            credit="Oleksandr Popenko / Greenpeace"
+            location="Horenka"
           />
           <div className="flex flex-col justify-center">
             <ImpactCard />
@@ -87,10 +83,10 @@ function ImpactCard() {
   const t = useTranslations()
 
   const stats = [
-    { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />, bgColor: 'bg-yellow-100', textColor: 'text-yellow-600', label: t('homepage.caseStudy.impactPower') },
-    { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />, bgColor: 'bg-blue-100', textColor: 'text-blue-600', label: t('homepage.caseStudy.impactPanels') },
+    { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />, bgColor: 'bg-orange-100', textColor: 'text-orange-600', label: t('homepage.caseStudy.impactHeating') },
+    { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />, bgColor: 'bg-yellow-100', textColor: 'text-yellow-600', label: t('homepage.caseStudy.impactElectricity') },
     { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />, bgColor: 'bg-green-100', textColor: 'text-green-600', label: t('homepage.caseStudy.impactCost') },
-    { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />, bgColor: 'bg-purple-100', textColor: 'text-purple-600', label: t('homepage.caseStudy.impactBeneficiaries') },
+    { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />, bgColor: 'bg-blue-100', textColor: 'text-blue-600', label: t('homepage.caseStudy.impactPayback') },
   ]
 
   return (

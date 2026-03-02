@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect, useId } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslations, useLocale } from 'next-intl'
+import { useRouter } from '@/i18n/navigation'
 import { MapWrapper, type MapBounds } from '@/components/map/MapWrapper'
 import { ProjectCard } from '@/components/projects/ProjectCard'
 import { Header } from '@/components/layout/Header'
@@ -54,6 +55,7 @@ function transformProject(data: any): Project {
 export default function ProjectsPage() {
   const t = useTranslations()
   const locale = useLocale()
+  const router = useRouter()
   const cardRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const listContainerRef = useRef<HTMLDivElement | null>(null)
 
@@ -344,11 +346,15 @@ export default function ProjectsPage() {
     }
   }, [])
 
-  // Handle card click - zoom to project on map (for homepage split view)
+  // Handle card click - on desktop zoom to project on map, on mobile navigate to project page
   const handleCardClick = useCallback((project: Project) => {
+    if (!isMapVisible) {
+      router.push(`/projects/${project.id}`)
+      return
+    }
     setHighlightedProjectId(project.id)
     setFlyToProjectId(project.id)
-  }, [])
+  }, [isMapVisible, router])
 
   // Handle marker hover - highlight corresponding card in list
   const handleMarkerHover = useCallback((project: Project | null) => {

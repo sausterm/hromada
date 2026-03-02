@@ -7,12 +7,14 @@ export function DocumentaryPhoto({
   src,
   alt,
   caption,
-  location
+  location,
+  credit
 }: {
   src: string
   alt: string
   caption: string
   location?: string
+  credit?: string
 }) {
   const [isLoaded, setIsLoaded] = useState(false)
 
@@ -36,7 +38,10 @@ export function DocumentaryPhoto({
           </div>
         )}
       </div>
-      <figcaption className="mt-3 text-sm text-[var(--navy-500)] italic">{caption}</figcaption>
+      <figcaption className="mt-3 text-sm text-[var(--navy-500)] italic">
+        {caption}
+        {credit && <span className="block text-xs text-[var(--navy-400)] mt-0.5 not-italic">© {credit}</span>}
+      </figcaption>
     </figure>
   )
 }

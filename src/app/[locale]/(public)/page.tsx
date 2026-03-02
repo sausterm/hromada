@@ -7,9 +7,11 @@ import { HeroSection } from '@/components/homepage/HeroSection'
 import { FeaturedProjectsSection } from '@/components/homepage/FeaturedProjectsSection'
 import { HowItWorksSection } from '@/components/homepage/HowItWorksSection'
 import { CaseStudySection } from '@/components/homepage/CaseStudySection'
+import { PressCarousel } from '@/components/homepage/PressCarousel'
 import { PhotoStripSection } from '@/components/homepage/PhotoStripSection'
 import { FAQSection } from '@/components/homepage/FAQSection'
 import { CTASection } from '@/components/homepage/CTASection'
+import { PartnerCarousel } from '@/components/layout/PartnerCarousel'
 import { type Project } from '@/types'
 
 // Helper to transform API response to Project type
@@ -104,7 +106,9 @@ export default function HomePage() {
       <HeroSection totalStats={totalStats} />
       <FeaturedProjectsSection projects={featuredProjects} />
       <HowItWorksSection />
+      <PartnerCarousel variant="section" />
       <CaseStudySection />
+      <PressCarousel />
       <PhotoStripSection />
       <FAQSection />
       <CTASection />

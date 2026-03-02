@@ -833,6 +833,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
               </Badge>
             )}
           </Button>
+          {/* Contact submissions tab hidden — form removed from project pages
           <Button
             variant={activeTab === 'contacts' ? 'primary' : 'ghost'}
             onClick={() => setActiveTab('contacts')}
@@ -844,6 +845,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
               </Badge>
             )}
           </Button>
+          */}
           <Button
             variant={activeTab === 'users' ? 'primary' : 'ghost'}
             onClick={() => setActiveTab('users')}

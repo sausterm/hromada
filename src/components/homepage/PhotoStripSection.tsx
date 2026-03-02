@@ -19,7 +19,7 @@ export function PhotoStripSection() {
   const allPhotos = [...PHOTOS, ...PHOTOS.slice(0, 4)]
 
   return (
-    <section className="fade-in-section py-12 bg-[var(--cream-100)] overflow-hidden">
+    <section className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)] overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 lg:px-8 mb-8">
         <h3 className="text-[var(--navy-700)] text-xl font-semibold text-center">{t('homepage.photoStrip.title')}</h3>
       </div>

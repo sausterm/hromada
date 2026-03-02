@@ -1,84 +1,86 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
-import { usePathname } from '@/i18n/navigation'
-import { useEffect, useRef, useState } from 'react'
 
-const partners = [
-  { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/' },
-  { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/' },
-  { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/' },
-  { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/' },
-  { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/', height: 'h-16', sectionHeight: 'h-18' },
-  { name: 'POCACITO', logo: '/partners/pocacitologo.png', url: 'https://www.pocacito.org/' },
+const mediaItems = [
+  {
+    name: 'The Washington Post',
+    logo: '/press/washingtonpost.png',
+    url: 'https://www.washingtonpost.com/climate-solutions/2023/05/20/ukraine-solar-hospitals-attack-russia/',
+  },
+  {
+    name: 'Politico',
+    logo: '/press/politico.png',
+    url: 'https://www.politico.eu/article/ukraine-support-green-recovery-solar-wind-power/',
+    height: 'h-10',
+  },
+  {
+    name: 'NBC News',
+    logo: '/press/nbcnews.svg',
+    url: 'https://www.nbcnews.com/science/environment/energy-grid-fire-ukraine-turn-small-scale-renewables-rcna72903',
+  },
+  {
+    name: 'Euronews',
+    logo: '/press/euronews.svg',
+    url: 'https://www.euronews.com/my-europe/2023/03/23/ngos-push-for-green-reconstruction-of-ukraine-so-infrastructure-can-weather-war-and-climat',
+  },
+  {
+    name: 'Stimson Center',
+    logo: '/press/stimson.png',
+    url: 'https://www.newsecuritybeat.org/2023/03/security-broadcast-ecoactions-kostiantyn-krynytskyi-securing-ukraines-energy-future/',
+  },
+  {
+    name: 'Mother Jones',
+    logo: '/press/motherjones.jpeg',
+    url: 'https://www.motherjones.com/politics/2026/02/putin-tried-to-freeze-ukraine-instead-he-sparked-an-energy-revolution/',
+  },
 ]
 
-export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: { hideOnHomepage?: boolean; variant?: 'footer' | 'section' }) {
+const duplicatedItems = [...mediaItems, ...mediaItems, ...mediaItems]
+
+export function PressCarousel() {
   const t = useTranslations()
-  const pathname = usePathname()
   const trackRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
   const positionRef = useRef(0)
   const singleSetWidthRef = useRef(0)
-  // Use refs instead of state to avoid closure issues in animation loop
   const isPausedRef = useRef(false)
   const isDraggingRef = useRef(false)
   const dragStartRef = useRef(0)
   const dragStartPosRef = useRef(0)
   const hasDraggedRef = useRef(false)
 
-  // Show on production site, demo site, v2 site, and localhost
   useEffect(() => {
-    const hostname = window.location.hostname
-    const showCarousel = hostname === 'localhost' ||
-                         hostname === '127.0.0.1' ||
-                         hostname === 'hromadaproject.org' ||
-                         hostname === 'www.hromadaproject.org' ||
-                         hostname === 'demo.hromadaproject.org' ||
-                         hostname === 'v2.hromadaproject.org'
-    setIsVisible(showCarousel)
-  }, [])
-
-  // Triplicate for seamless loop (extra buffer prevents edge glitches)
-  const duplicatedPartners = [...partners, ...partners, ...partners]
-
-  useEffect(() => {
-    if (!isVisible) return
-
     const track = trackRef.current
     const container = containerRef.current
     if (!track || !container) return
 
-    // Calculate width of one set of partners
     const calculateWidth = () => {
-      const children = track.children
-      let width = 0
-      for (let i = 0; i < partners.length; i++) {
-        const child = children[i] as HTMLElement
-        if (child) {
-          width += child.offsetWidth + 64 // 64px = mx-8 (32px each side)
-        }
+      // Measure from the left edge of the first item to the left edge of item[mediaItems.length]
+      // This gives us the exact pixel width of one full set including all gaps
+      const first = track.children[0] as HTMLElement | undefined
+      const boundary = track.children[mediaItems.length] as HTMLElement | undefined
+      if (first && boundary) {
+        singleSetWidthRef.current = boundary.offsetLeft - first.offsetLeft
       }
-      singleSetWidthRef.current = width
     }
 
-    calculateWidth()
+    // Delay initial measurement to let layout settle
+    requestAnimationFrame(() => {
+      calculateWidth()
+    })
     window.addEventListener('resize', calculateWidth)
 
-    // Wrap position helper
     const wrapPosition = () => {
-      if (singleSetWidthRef.current > 0) {
-        if (Math.abs(positionRef.current) >= singleSetWidthRef.current) {
-          positionRef.current = positionRef.current % singleSetWidthRef.current
-        }
-        if (positionRef.current > 0) {
-          positionRef.current = positionRef.current - singleSetWidthRef.current
-        }
+      const w = singleSetWidthRef.current
+      if (w > 0) {
+        // Keep position in the range [-w, 0) for seamless looping
+        while (positionRef.current <= -w) positionRef.current += w
+        while (positionRef.current > 0) positionRef.current -= w
       }
     }
 
-    // Handle manual horizontal scroll when paused (vertical scrolls pass through)
     const handleWheel = (e: WheelEvent) => {
       if (isPausedRef.current && singleSetWidthRef.current > 0 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
         e.preventDefault()
@@ -88,7 +90,6 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       }
     }
 
-    // Handle drag start (mouse)
     const handleMouseDown = (e: MouseEvent) => {
       isDraggingRef.current = true
       dragStartRef.current = e.clientX
@@ -96,25 +97,18 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       hasDraggedRef.current = false
     }
 
-    // Handle drag move (mouse)
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDraggingRef.current) return
       e.preventDefault()
       const delta = e.clientX - dragStartRef.current
-      if (Math.abs(delta) > 5) {
-        hasDraggedRef.current = true
-      }
+      if (Math.abs(delta) > 5) hasDraggedRef.current = true
       positionRef.current = dragStartPosRef.current + delta
       wrapPosition()
       track.style.transform = `translateX(${positionRef.current}px)`
     }
 
-    // Handle drag end (mouse)
-    const handleMouseUp = () => {
-      isDraggingRef.current = false
-    }
+    const handleMouseUp = () => { isDraggingRef.current = false }
 
-    // Handle drag start (touch)
     const handleTouchStart = (e: TouchEvent) => {
       isDraggingRef.current = true
       dragStartRef.current = e.touches[0].clientX
@@ -122,22 +116,16 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       hasDraggedRef.current = false
     }
 
-    // Handle drag move (touch)
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDraggingRef.current) return
       const delta = e.touches[0].clientX - dragStartRef.current
-      if (Math.abs(delta) > 5) {
-        hasDraggedRef.current = true
-      }
+      if (Math.abs(delta) > 5) hasDraggedRef.current = true
       positionRef.current = dragStartPosRef.current + delta
       wrapPosition()
       track.style.transform = `translateX(${positionRef.current}px)`
     }
 
-    // Handle drag end (touch)
-    const handleTouchEnd = () => {
-      isDraggingRef.current = false
-    }
+    const handleTouchEnd = () => { isDraggingRef.current = false }
 
     container.addEventListener('wheel', handleWheel, { passive: false })
     container.addEventListener('mousedown', handleMouseDown)
@@ -148,10 +136,9 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
     container.addEventListener('touchend', handleTouchEnd)
 
     let animationId: number
-    const speed = 0.5 // pixels per frame
+    const speed = 0.5
 
     const animate = () => {
-      // Use refs so we always read the latest values
       if (!isPausedRef.current && !isDraggingRef.current && singleSetWidthRef.current > 0) {
         positionRef.current -= speed
         wrapPosition()
@@ -173,56 +160,46 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       container.removeEventListener('touchmove', handleTouchMove)
       container.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [isVisible])
-
-  if (!isVisible) return null
-  if (hideOnHomepage && pathname === '/') return null
-
-  const isSection = variant === 'section'
+  }, [])
 
   return (
-    <section className={`bg-[var(--cream-100)] overflow-hidden ${isSection ? 'py-16 md:py-24' : 'py-6 border-t border-[var(--cream-300)]'}`}>
-      <div className={`container mx-auto px-4 ${isSection ? 'mb-8' : 'mb-4'}`}>
-        <h2 className={`text-center font-semibold text-[var(--navy-700)] ${isSection ? 'font-logo text-2xl md:text-3xl tracking-tight' : 'text-lg'}`}>
-          {t('partners.title')}
+    <section className="py-16 md:py-24 bg-[var(--cream-100)] overflow-hidden">
+      <div className="container mx-auto px-4 mb-8">
+        <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] text-center">
+          {t('homepage.press.title')}
         </h2>
       </div>
 
-      {/* Carousel container */}
       <div
         ref={containerRef}
         className="relative cursor-grab active:cursor-grabbing"
         onMouseEnter={() => { isPausedRef.current = true }}
         onMouseLeave={() => { isPausedRef.current = false }}
       >
-        {/* Gradient masks for smooth edges */}
         <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--cream-100)] to-transparent z-10 pointer-events-none" />
 
-        {/* Scrolling track */}
         <div
           ref={trackRef}
           className="flex items-center will-change-transform"
         >
-          {duplicatedPartners.map((partner, index) => (
+          {duplicatedItems.map((item, index) => (
             <a
-              key={`${partner.name}-${index}`}
-              href={partner.url}
+              key={`${item.name}-${index}`}
+              href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 mx-8 flex items-center justify-center hover:opacity-70 transition-opacity select-none"
-              style={{ minWidth: '180px' }}
+              className="flex-shrink-0 mx-8 flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity select-none"
+              style={{ minWidth: '160px' }}
               onClick={(e) => {
-                if (hasDraggedRef.current) {
-                  e.preventDefault()
-                }
+                if (hasDraggedRef.current) e.preventDefault()
               }}
               draggable={false}
             >
               <img
-                src={partner.logo}
-                alt={partner.name}
-                className={`${isSection ? ((partner as any).sectionHeight || partner.height || 'h-14') : (partner.height || 'h-12')} w-auto object-contain pointer-events-none`}
+                src={item.logo}
+                alt={item.name}
+                className={`${(item as any).height || 'h-14'} w-auto object-contain pointer-events-none`}
                 loading="lazy"
                 draggable={false}
               />

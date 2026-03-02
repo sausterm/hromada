@@ -60,7 +60,7 @@ const STEPS: Step[] = [
     number: 7,
     titleKey: 'homepage.howItWorks.step7Title',
     descKey: 'homepage.howItWorks.step7Desc',
-    hexColor: '#6B7C5E',
+    hexColor: '#8B5E6B',
     Icon: SolarPanel,
   },
 ]
@@ -130,7 +130,7 @@ export function HowItWorksSection() {
   }, [])
 
   return (
-    <section id="how-it-works" className="fade-in-section pt-4 pb-16 md:pt-8 md:pb-24 bg-[var(--cream-100)]">
+    <section id="how-it-works" className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)]">
       <div className="max-w-3xl mx-auto px-4 lg:px-8">
         <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-12 text-center">
           {t('homepage.howItWorks.title')}

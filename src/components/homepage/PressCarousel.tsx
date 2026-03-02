@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl'
 const mediaItems = [
   {
     name: 'The Washington Post',
-    logo: '/press/washingtonpost.png',
+    logo: '/press/wapologo.png',
     url: 'https://www.washingtonpost.com/climate-solutions/2023/05/20/ukraine-solar-hospitals-attack-russia/',
   },
   {
@@ -16,9 +16,9 @@ const mediaItems = [
     height: 'h-10',
   },
   {
-    name: 'NBC News',
-    logo: '/press/nbcnews.svg',
-    url: 'https://www.nbcnews.com/science/environment/energy-grid-fire-ukraine-turn-small-scale-renewables-rcna72903',
+    name: 'Mother Jones',
+    logo: '/press/motherjones.jpeg',
+    url: 'https://www.motherjones.com/politics/2026/02/putin-tried-to-freeze-ukraine-instead-he-sparked-an-energy-revolution/',
   },
   {
     name: 'Euronews',
@@ -31,9 +31,9 @@ const mediaItems = [
     url: 'https://www.newsecuritybeat.org/2023/03/security-broadcast-ecoactions-kostiantyn-krynytskyi-securing-ukraines-energy-future/',
   },
   {
-    name: 'Mother Jones',
-    logo: '/press/motherjones.jpeg',
-    url: 'https://www.motherjones.com/politics/2026/02/putin-tried-to-freeze-ukraine-instead-he-sparked-an-energy-revolution/',
+    name: 'NBC News',
+    logo: '/press/nbcnews.svg',
+    url: 'https://www.nbcnews.com/science/environment/energy-grid-fire-ukraine-turn-small-scale-renewables-rcna72903',
   },
   {
     name: 'Heinrich Böll Stiftung',
@@ -62,8 +62,6 @@ export function PressCarousel() {
     if (!track || !container) return
 
     const calculateWidth = () => {
-      // Measure from the left edge of the first item to the left edge of item[mediaItems.length]
-      // This gives us the exact pixel width of one full set including all gaps
       const first = track.children[0] as HTMLElement | undefined
       const boundary = track.children[mediaItems.length] as HTMLElement | undefined
       if (first && boundary) {
@@ -71,10 +69,18 @@ export function PressCarousel() {
       }
     }
 
-    // Delay initial measurement to let layout settle
-    requestAnimationFrame(() => {
-      calculateWidth()
+    // Recalculate whenever images load or layout shifts
+    const images = track.querySelectorAll('img')
+    const onImageLoad = () => calculateWidth()
+    images.forEach((img) => {
+      if (!img.complete) img.addEventListener('load', onImageLoad)
     })
+
+    // ResizeObserver catches layout shifts more reliably than a single rAF
+    const resizeObserver = new ResizeObserver(() => calculateWidth())
+    resizeObserver.observe(track)
+
+    requestAnimationFrame(() => calculateWidth())
     window.addEventListener('resize', calculateWidth)
 
     const wrapPosition = () => {
@@ -156,6 +162,8 @@ export function PressCarousel() {
 
     return () => {
       cancelAnimationFrame(animationId)
+      resizeObserver.disconnect()
+      images.forEach((img) => img.removeEventListener('load', onImageLoad))
       window.removeEventListener('resize', calculateWidth)
       container.removeEventListener('wheel', handleWheel)
       container.removeEventListener('mousedown', handleMouseDown)
@@ -205,7 +213,6 @@ export function PressCarousel() {
                 src={item.logo}
                 alt={item.name}
                 className={`${(item as any).height || 'h-14'} w-auto object-contain pointer-events-none`}
-                loading="lazy"
                 draggable={false}
               />
             </a>

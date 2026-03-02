@@ -142,6 +142,7 @@
       "title": "Browse projects. Choose a community. Fund their plan.",
       "subtitle": "Every project lists the requesting municipality, partner NGO, project scope, and full cost breakdown. No black boxes.",
       "button": "Browse All Projects",
+      "namePlaceholder": "First name",
       "emailPlaceholder": "Your email address",
       "emailButton": "Get Updates",
       "emailSuccess": "You're on the list. We'll send project updates — no spam.",

@@ -4,12 +4,12 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 
 const PHOTOS = [
-  { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613968183.jpeg', location: 'Lviv' },
-  { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748344588928.jpeg', location: 'Vinnytsia Oblast' },
-  { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466070782.jpeg', location: 'Dnipro' },
-  { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748586681372.jpeg', location: 'Chernihiv' },
-  { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748549701944.jpeg', location: 'Kyiv' },
-  { src: 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466072957.jpeg', location: 'Sumy Oblast' },
+  'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613968183.jpeg',
+  'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748344588928.jpeg',
+  'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466070782.jpeg',
+  'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748586681372.jpeg',
+  'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748549701944.jpeg',
+  'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466072957.jpeg',
 ]
 
 export function PhotoStripSection() {
@@ -26,19 +26,15 @@ export function PhotoStripSection() {
 
       <div className="relative overflow-hidden overscroll-x-contain" style={{ touchAction: 'pan-y pinch-zoom' }}>
         <div className="flex gap-4 animate-scroll">
-          {allPhotos.map((photo, i) => (
+          {allPhotos.map((src, i) => (
             <div key={i} className="relative flex-shrink-0 w-72 h-48 rounded-lg overflow-hidden group">
               <Image
-                src={photo.src}
-                alt={`Project in ${photo.location}`}
+                src={src}
+                alt="Completed project"
                 fill
                 sizes="288px"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-3 left-3 text-white text-sm font-medium">
-                {photo.location}
-              </div>
             </div>
           ))}
         </div>

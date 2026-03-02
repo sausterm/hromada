@@ -194,7 +194,7 @@ export function PressCarousel() {
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 mx-8 flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity select-none"
+              className="flex-shrink-0 mx-8 flex items-center justify-center hover:opacity-50 transition-opacity select-none"
               style={{ minWidth: '160px' }}
               onClick={(e) => {
                 if (hasDraggedRef.current) e.preventDefault()

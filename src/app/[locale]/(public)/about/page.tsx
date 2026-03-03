@@ -29,6 +29,8 @@ const mediaItems = [
   { name: 'Heinrich Böll Stiftung', logo: '/press/boell.png', url: 'https://us.boell.org/en/2024/11/01/investors-once-again-asked-buy-ukrainian-renewable-energy' },
   { name: 'The Washington Post', logo: '/press/wapologo.png', url: 'https://www.washingtonpost.com/climate-solutions/2023/05/20/ukraine-solar-hospitals-attack-russia/' },
   { name: 'Euromaidan Press', logo: '/press/euromaidanpress.png', url: 'https://euromaidanpress.com/2022/04/28/russian-fossil-fuel-exports-to-eu-finances-war-with-ukraine/' },
+  { name: 'Louisiana Illuminator', logo: '/press/louisianailluminator.png', url: 'https://lailluminator.com/2025/03/25/ukraine-louisiana/' },
+  { name: 'Thomson Reuters Foundation', logo: '/press/thomsonreuters.png', url: 'https://news.trust.org/item/20220412163221-dexaq/' },
 ]
 
 export default function AboutPage() {
@@ -176,7 +178,7 @@ export default function AboutPage() {
           <h2 className="font-logo text-2xl font-semibold tracking-tight text-[var(--navy-700)] mb-8 text-center">
             {t('homepage.press.title')}
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-3xl mx-auto">
             {mediaItems.map((item) => (
               <a
                 key={item.name}
@@ -193,6 +195,9 @@ export default function AboutPage() {
               </a>
             ))}
           </div>
+          <p className="text-[10px] text-[var(--navy-300)] text-center mt-4">
+            Logos are trademarks of their respective owners, used to identify coverage of our partners&apos; work.
+          </p>
         </section>
 
         {/* CTA Buttons */}

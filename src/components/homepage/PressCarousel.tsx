@@ -45,6 +45,16 @@ const mediaItems = [
     logo: '/press/euromaidanpress.png',
     url: 'https://euromaidanpress.com/2022/04/28/russian-fossil-fuel-exports-to-eu-finances-war-with-ukraine/',
   },
+  {
+    name: 'Louisiana Illuminator',
+    logo: '/press/louisianailluminator.png',
+    url: 'https://lailluminator.com/2025/03/25/ukraine-louisiana/',
+  },
+  {
+    name: 'Thomson Reuters Foundation',
+    logo: '/press/thomsonreuters.png',
+    url: 'https://news.trust.org/item/20220412163221-dexaq/',
+  },
 ]
 
 const duplicatedItems = [...mediaItems, ...mediaItems, ...mediaItems]
@@ -224,6 +234,10 @@ export function PressCarousel() {
           ))}
         </div>
       </div>
+
+      <p className="text-[10px] text-[var(--navy-300)] text-center mt-6 px-4">
+        Logos are trademarks of their respective owners, used to identify coverage of our partners&apos; work.
+      </p>
     </section>
   )
 }

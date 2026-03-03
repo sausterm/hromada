@@ -5,7 +5,7 @@ import { getClientIp } from '@/lib/security'
 import { logTransactionEvent, TransactionAction } from '@/lib/audit'
 import { generateTaxReceipt, generateReceiptNumber } from '@/lib/tax-receipt'
 import { sendDonationForwardedEmail } from '@/lib/email'
-import { supabase, isSupabaseConfigured, TAX_RECEIPTS_BUCKET } from '@/lib/supabase'
+import { supabaseAdmin as supabase, isSupabaseConfigured, TAX_RECEIPTS_BUCKET } from '@/lib/supabase'
 import type { DonationStatus } from '@prisma/client'
 
 // Valid status transitions

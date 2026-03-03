@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link, useRouter } from '@/i18n/navigation'
 import { useAuth } from '@/hooks/useAuth'
@@ -112,6 +112,39 @@ interface User {
   _count?: {
     projectSubmissions: number
   }
+}
+
+/** Renders HTML preview in an iframe using a blob URL so all images (logo, banner, project photos) load correctly. */
+function PreviewFrame({ html, onClose }: { html: string; onClose: () => void }) {
+  const blobUrl = useMemo(() => {
+    const blob = new Blob([html], { type: 'text/html' })
+    return URL.createObjectURL(blob)
+  }, [html])
+
+  useEffect(() => {
+    return () => URL.revokeObjectURL(blobUrl)
+  }, [blobUrl])
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base">Preview</CardTitle>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <iframe
+          src={blobUrl}
+          className="w-full border-0 rounded-b-lg"
+          style={{ height: '600px' }}
+          title="Newsletter preview"
+        />
+      </CardContent>
+    </Card>
+  )
 }
 
 function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: string }) {
@@ -400,20 +433,21 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
     try {
       const formData = new FormData()
       formData.append('file', file)
+      console.log('[Banner] Uploading file:', file.name, file.size, 'bytes')
       const response = await fetch('/api/upload/public', { method: 'POST', body: formData })
+      const data = await response.json()
+      console.log('[Banner] Upload response:', response.status, data)
       if (response.ok) {
-        const data = await response.json()
         setComposeBannerUrl(data.url)
+        setComposeMessage({ type: 'success', text: 'Banner uploaded successfully.' })
       } else {
-        const data = await response.json()
-        setComposeMessage({ type: 'error', text: data.error || 'Failed to upload image.' })
+        setComposeMessage({ type: 'error', text: data.error || 'Upload failed. Try pasting a URL instead.' })
       }
     } catch (error) {
-      console.error('Failed to upload banner:', error)
-      setComposeMessage({ type: 'error', text: 'Failed to upload image.' })
+      console.error('[Banner] Upload error:', error)
+      setComposeMessage({ type: 'error', text: 'Upload failed. Try pasting a URL instead.' })
     } finally {
       setIsUploadingBanner(false)
-      // Reset file input so the same file can be re-selected
       e.target.value = ''
     }
   }
@@ -427,6 +461,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
     closing: composeClosing || undefined,
     projects: composeProjects.length > 0
       ? composeProjects.map(p => ({
+          id: p.id,
           name: p.facilityName,
           photoUrl: p.photoUrl,
           municipality: p.municipalityName,
@@ -455,10 +490,12 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
     setIsGeneratingPreview(true)
     setComposeMessage(null)
     try {
+      const payload = getComposePayload()
+      console.log('[Preview] Sending payload:', { ...payload, bannerUrl: payload.bannerUrl || '(none)' })
       const response = await fetch('/api/admin/newsletter-preview', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(getComposePayload()),
+        body: JSON.stringify(payload),
       })
       if (response.ok) {
         const data = await response.json()
@@ -2366,19 +2403,46 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         </button>
                       </div>
                     ) : (
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <span className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                          {isUploadingBanner ? 'Uploading...' : 'Upload image'}
-                        </span>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          className="hidden"
-                          onChange={handleBannerUpload}
-                          disabled={isUploadingBanner}
-                        />
-                        <span className="text-xs text-gray-500">JPG, PNG, or WebP. Max 5MB.</span>
-                      </label>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <label className="cursor-pointer">
+                            <span className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                              {isUploadingBanner ? 'Uploading...' : 'Upload image'}
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/webp"
+                              className="hidden"
+                              onChange={handleBannerUpload}
+                              disabled={isUploadingBanner}
+                            />
+                          </label>
+                          <span className="text-xs text-gray-400">or</span>
+                          <Input
+                            type="url"
+                            placeholder="Paste image URL"
+                            className="flex-1 text-sm"
+                            onBlur={(e) => {
+                              const url = e.target.value.trim()
+                              if (url) {
+                                setComposeBannerUrl(url)
+                                e.target.value = ''
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                const url = (e.target as HTMLInputElement).value.trim()
+                                if (url) {
+                                  setComposeBannerUrl(url)
+                                  ;(e.target as HTMLInputElement).value = ''
+                                }
+                              }
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-500">JPG, PNG, or WebP. Max 5MB for uploads.</span>
+                      </div>
                     )}
                   </div>
 
@@ -2589,27 +2653,9 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                 </CardContent>
               </Card>
 
-              {/* Preview iframe */}
+              {/* Preview iframe — uses blob URL so images load correctly */}
               {composePreviewHtml && (
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-base">Preview</CardTitle>
-                      <Button variant="ghost" size="sm" onClick={() => setComposePreviewHtml(null)}>
-                        Close
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <iframe
-                      srcDoc={composePreviewHtml}
-                      sandbox="allow-same-origin"
-                      className="w-full border-0 rounded-b-lg"
-                      style={{ height: '600px' }}
-                      title="Newsletter preview"
-                    />
-                  </CardContent>
-                </Card>
+                <PreviewFrame html={composePreviewHtml} onClose={() => setComposePreviewHtml(null)} />
               )}
             </div>
 

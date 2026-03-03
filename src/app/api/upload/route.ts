@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase, isSupabaseConfigured, STORAGE_BUCKET } from '@/lib/supabase'
+import { supabaseAdmin, isSupabaseConfigured, STORAGE_BUCKET } from '@/lib/supabase'
 import { verifyAdminAuth } from '@/lib/auth'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(arrayBuffer)
 
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
+    const { data, error } = await supabaseAdmin.storage
       .from(STORAGE_BUCKET)
       .upload(filename, buffer, {
         contentType: file.type,
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get public URL
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = supabaseAdmin.storage
       .from(STORAGE_BUCKET)
       .getPublicUrl(data.path)
 
@@ -117,7 +117,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const { error } = await supabase.storage
+    const { error } = await supabaseAdmin.storage
       .from(STORAGE_BUCKET)
       .remove([path])
 

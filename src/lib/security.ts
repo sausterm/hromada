@@ -308,6 +308,7 @@ export function getSecurityHeaders(): Record<string, string> {
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
       "connect-src 'self' https:",
+      "frame-src 'self' blob:",
       "frame-ancestors 'none'",
     ].join('; '),
     // HSTS (only in production)

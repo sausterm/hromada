@@ -11,19 +11,21 @@ jest.mock('@/lib/rate-limit', () => ({
 }))
 
 // Mock supabase
+const mockStorage = {
+  storage: {
+    from: jest.fn().mockReturnValue({
+      upload: jest.fn(),
+      getPublicUrl: jest.fn(),
+    }),
+  },
+}
 jest.mock('@/lib/supabase', () => ({
   STORAGE_BUCKET: 'test-bucket',
-  supabase: {
-    storage: {
-      from: jest.fn().mockReturnValue({
-        upload: jest.fn(),
-        getPublicUrl: jest.fn(),
-      }),
-    },
-  },
+  supabase: mockStorage,
+  supabaseAdmin: mockStorage,
 }))
 
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin as supabase } from '@/lib/supabase'
 
 // Magic bytes for valid file types
 const JPEG_BYTES = new Uint8Array([0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46])

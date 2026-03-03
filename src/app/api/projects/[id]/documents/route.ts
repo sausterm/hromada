@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAdminAuth } from '@/lib/auth'
-import { supabase, isSupabaseConfigured, STORAGE_BUCKET } from '@/lib/supabase'
+import { supabaseAdmin as supabase, isSupabaseConfigured, STORAGE_BUCKET } from '@/lib/supabase'
 import { extractAndTranslateDocument } from '@/lib/pdf-extract'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB for PDFs

@@ -36,6 +36,8 @@ interface EmailLayoutOptions {
   unsubscribeUrl?: string
   /** Hidden preview text shown in inbox list. */
   preheader?: string
+  /** Override the base URL for images (e.g. for local preview). */
+  baseUrl?: string
 }
 
 /**
@@ -45,7 +47,7 @@ interface EmailLayoutOptions {
  *  - Cream footer with POCACITO logo, Candid Platinum seal, legal text
  */
 export function emailLayout(content: string, options?: EmailLayoutOptions): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const appUrl = options?.baseUrl || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
   const preheaderBlock = options?.preheader
     ? `<div style="display:none;font-size:1px;color:${C.cream};line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">${options.preheader}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>`
@@ -245,6 +247,8 @@ interface ProjectCardOptions {
   projectType?: string
   /** Estimated cost in USD. */
   estimatedCostUsd?: number
+  /** Full URL to the project detail page. */
+  projectUrl?: string
 }
 
 /**
@@ -293,7 +297,7 @@ export function emailProjectCard(opts: ProjectCardOptions): string {
     ? `<p style="margin:6px 0 0;font-size:12px;color:${C.textLight};font-family:${FONT_BODY};">${metaParts.join(' &middot; ')}</p>`
     : ''
 
-  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:24px 0;border:1px solid ${C.creamDark};border-radius:8px;overflow:hidden;">
+  const card = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:24px 0;border:1px solid ${C.creamDark};border-radius:8px;overflow:hidden;">
   ${photoBlock}
   <tr>
     <td style="padding:20px 24px;${!opts.photoUrl ? 'border-left:4px solid ' + C.blue + ';' : ''}">
@@ -304,6 +308,10 @@ export function emailProjectCard(opts: ProjectCardOptions): string {
     </td>
   </tr>
 </table>`
+
+  return opts.projectUrl
+    ? `<a href="${opts.projectUrl}" style="text-decoration:none;color:inherit;display:block;">${card}</a>`
+    : card
 }
 
 // ---------------------------------------------------------------------------

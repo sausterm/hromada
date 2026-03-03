@@ -25,16 +25,18 @@ jest.mock('@/lib/prisma', () => ({
 }))
 
 // Mock Supabase
-jest.mock('@/lib/supabase', () => ({
-  supabase: {
-    storage: {
-      from: jest.fn(() => ({
-        upload: jest.fn(),
-        getPublicUrl: jest.fn(),
-        remove: jest.fn(),
-      })),
-    },
+const mockStorage = {
+  storage: {
+    from: jest.fn(() => ({
+      upload: jest.fn(),
+      getPublicUrl: jest.fn(),
+      remove: jest.fn(),
+    })),
   },
+}
+jest.mock('@/lib/supabase', () => ({
+  supabase: mockStorage,
+  supabaseAdmin: mockStorage,
   isSupabaseConfigured: true,
   STORAGE_BUCKET: 'project-images',
 }))
@@ -47,7 +49,7 @@ jest.mock('@/lib/pdf-extract', () => ({
 import { GET, DELETE } from '@/app/api/projects/[id]/documents/route'
 import { verifyAdminAuth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin as supabase } from '@/lib/supabase'
 
 const mockVerifyAdminAuth = verifyAdminAuth as jest.MockedFunction<typeof verifyAdminAuth>
 

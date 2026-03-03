@@ -13,6 +13,7 @@
 - [/] 2-pager explainer handout (Figma) #p1 @tom
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
 - [/] Email system — design and curate donor lifecycle emails #p2 @tom
+- [x] Admin newsletter compose page — write, preview, send to subscribers #p2 @tom
 
 ## To Do
 
@@ -55,6 +56,9 @@ Templates built, need review & testing:
 
 ## Done
 
+- [x] Admin newsletter compose — banner photo, featured projects (clickable, with metadata), stats, preview, draft/send #p2 @tom
+- [x] Fix Supabase storage RLS — created policies for project-images and tax-receipts buckets #p1 @tom
+- [x] Delete press release "project funded" email template (#17) — too risky pre-delivery #p2 @tom
 - [x] Horenka Hospital case study — replace fake School #7 data with real partner project #p1 @tom
 - [x] Media carousel — WaPo, Politico, NBC, Euronews, Stimson, Mother Jones, Böll #p1 @tom
 - [x] Featured projects mobile carousel with snap dots #p2 @tom

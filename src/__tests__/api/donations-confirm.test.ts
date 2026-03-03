@@ -33,7 +33,7 @@ jest.mock('@/lib/rate-limit', () => ({
 
 // Mock email
 jest.mock('@/lib/email', () => ({
-  sendDonationConfirmationEmail: jest.fn().mockResolvedValue(undefined),
+  sendDonationReceivedEmail: jest.fn().mockResolvedValue(undefined),
   sendDonationNotificationToAdmin: jest.fn().mockResolvedValue(undefined),
 }))
 
@@ -61,7 +61,7 @@ jest.mock('@/lib/audit', () => ({
 import { prisma } from '@/lib/prisma'
 import { getUserByEmail } from '@/lib/auth'
 import { rateLimit } from '@/lib/rate-limit'
-import { sendDonationConfirmationEmail, sendDonationNotificationToAdmin } from '@/lib/email'
+import { sendDonationReceivedEmail, sendDonationNotificationToAdmin } from '@/lib/email'
 
 const mockPrisma = prisma as jest.Mocked<typeof prisma>
 
@@ -156,7 +156,7 @@ describe('POST /api/donations/confirm', () => {
 
     await POST(request)
 
-    expect(sendDonationConfirmationEmail).toHaveBeenCalledWith(
+    expect(sendDonationReceivedEmail).toHaveBeenCalledWith(
       expect.objectContaining({
         donorName: 'John Doe',
         donorEmail: 'john@example.com',

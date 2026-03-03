@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { rateLimit } from '@/lib/rate-limit'
 import { prisma } from '@/lib/prisma'
 import { hashPassword, getUserByEmail } from '@/lib/auth'
-import { sendDonationConfirmationEmail, sendDonationNotificationToAdmin } from '@/lib/email'
+import { sendDonationReceivedEmail, sendDonationNotificationToAdmin } from '@/lib/email'
 import { logAuditEvent, AuditAction, getClientIp, getUserAgent, detectSuspiciousInput } from '@/lib/security'
 import { logTransactionEvent, TransactionAction } from '@/lib/audit'
 import { parseBody, donationConfirmSchema } from '@/lib/validations'
@@ -134,13 +134,13 @@ export async function POST(request: NextRequest) {
     // Send emails (non-blocking)
     // Lightweight confirmation to donor — credentials + receipt come later at FORWARDED
     const emailPromises: Promise<unknown>[] = [
-      sendDonationConfirmationEmail({
+      sendDonationReceivedEmail({
         donorName: donorName.trim(),
         donorEmail: normalizedEmail,
         projectName: projectName || 'General Fund',
         amount: amount ? parseFloat(String(amount)) : undefined,
         paymentMethod: normalizedMethod,
-      }).catch(err => console.error('Failed to send donation confirmation email:', err)),
+      }).catch(err => console.error('Failed to send donation received email:', err)),
 
       sendDonationNotificationToAdmin({
         donorName: donorName.trim(),

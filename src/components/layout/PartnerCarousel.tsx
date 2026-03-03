@@ -31,11 +31,12 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
   const duplicatedPartners = [...partners, ...partners, ...partners]
 
   const isHomepage = hideOnHomepage && pathname === '/'
+  const isAboutPage = pathname === '/about'
 
   // Single effect that initializes when DOM is available
   useEffect(() => {
-    if (isHomepage) {
-      // Tear down if navigating back to homepage
+    if (isHomepage || isAboutPage) {
+      // Tear down if navigating to homepage or about page
       if (initializedRef.current) {
         cancelAnimationFrame(animationIdRef.current)
         initializedRef.current = false
@@ -159,9 +160,9 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
       container.removeEventListener('touchmove', handleTouchMove)
       container.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [isHomepage])
+  }, [isHomepage, isAboutPage])
 
-  if (isHomepage) return null
+  if (isHomepage || isAboutPage) return null
 
   const isSection = variant === 'section'
 

@@ -20,6 +20,17 @@ const partners = [
   // { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/', descKey: 'about.partnerEnergyActDesc' },
 ]
 
+const mediaItems = [
+  { name: 'Politico', logo: '/press/politico.png', url: 'https://www.politico.eu/article/ukraine-support-green-recovery-solar-wind-power/' },
+  { name: 'Mother Jones', logo: '/press/motherjones.jpeg', url: 'https://www.motherjones.com/politics/2026/02/putin-tried-to-freeze-ukraine-instead-he-sparked-an-energy-revolution/' },
+  { name: 'Euronews', logo: '/press/euronews.svg', url: 'https://www.euronews.com/my-europe/2023/03/23/ngos-push-for-green-reconstruction-of-ukraine-so-infrastructure-can-weather-war-and-climat' },
+  { name: 'Stimson Center', logo: '/press/stimson.png', url: 'https://www.newsecuritybeat.org/2023/03/security-broadcast-ecoactions-kostiantyn-krynytskyi-securing-ukraines-energy-future/' },
+  { name: 'NBC News', logo: '/press/nbcnews.svg', url: 'https://www.nbcnews.com/science/environment/energy-grid-fire-ukraine-turn-small-scale-renewables-rcna72903' },
+  { name: 'Heinrich Böll Stiftung', logo: '/press/boell.png', url: 'https://us.boell.org/en/2024/11/01/investors-once-again-asked-buy-ukrainian-renewable-energy' },
+  { name: 'The Washington Post', logo: '/press/wapologo.png', url: 'https://www.washingtonpost.com/climate-solutions/2023/05/20/ukraine-solar-hospitals-attack-russia/' },
+  { name: 'Euromaidan Press', logo: '/press/euromaidanpress.png', url: 'https://euromaidanpress.com/2022/04/28/russian-fossil-fuel-exports-to-eu-finances-war-with-ukraine/' },
+]
+
 export default function AboutPage() {
   const t = useTranslations()
 
@@ -153,6 +164,32 @@ export default function AboutPage() {
                   <h4 className="font-semibold text-[var(--navy-700)] text-sm group-hover:text-[var(--ukraine-blue)] transition-colors">{partner.name}</h4>
                   <p className="text-sm text-[var(--navy-500)] leading-relaxed">{t(partner.descKey)}</p>
                 </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <hr className="border-[var(--cream-300)] mb-16 w-24 mx-auto" />
+
+        {/* Partner Work in the Media */}
+        <section className="fade-in-section mb-16">
+          <h2 className="font-logo text-2xl font-semibold tracking-tight text-[var(--navy-700)] mb-8 text-center">
+            {t('homepage.press.title')}
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+            {mediaItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all"
+              >
+                <img
+                  src={item.logo}
+                  alt={item.name}
+                  className="h-10 w-auto object-contain"
+                />
               </a>
             ))}
           </div>

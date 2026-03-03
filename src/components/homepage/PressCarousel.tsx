@@ -49,11 +49,13 @@ const mediaItems = [
     name: 'Louisiana Illuminator',
     logo: '/press/louisianailluminator.png',
     url: 'https://lailluminator.com/2025/03/25/ukraine-louisiana/',
+    height: 'h-6',
   },
   {
     name: 'Thomson Reuters Foundation',
     logo: '/press/thomsonreuters.png',
     url: 'https://news.trust.org/item/20220412163221-dexaq/',
+    height: 'h-20',
   },
 ]
 

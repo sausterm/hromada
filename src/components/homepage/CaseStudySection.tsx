@@ -24,11 +24,10 @@ export function CaseStudySection() {
         <div className="grid md:grid-cols-2 gap-8 md:gap-12">
           <div>
             <DocumentaryPhoto
-              src="/projects/horenka-roof-array.webp"
-              alt="Full solar array covering the Horenka hospital roof"
-              caption={t('homepage.caseStudy.photoCaption2')}
-              credit="Oleksandr Popenko / Greenpeace"
-              location="Horenka, Kyiv Oblast"
+              src="/projects/horenka-solar-install.jpeg"
+              alt="Workers installing solar panels on Horenka hospital roof"
+              caption={t('homepage.caseStudy.photoCaption1')}
+              location="Horenka"
             />
           </div>
 
@@ -65,14 +64,22 @@ export function CaseStudySection() {
 
         <div className="grid md:grid-cols-2 gap-6 mt-12">
           <DocumentaryPhoto
-            src="/projects/horenka-solar-install.jpeg"
-            alt="Workers installing solar panels on Horenka hospital roof"
-            caption={t('homepage.caseStudy.photoCaption1')}
-            location="Horenka"
+            src="/projects/horenka-roof-array.webp"
+            alt="Full solar array covering the Horenka hospital roof"
+            caption={t('homepage.caseStudy.photoCaption2')}
+            credit="Oleksandr Popenko / Greenpeace"
+            location="Horenka, Kyiv Oblast"
           />
-          <div className="flex flex-col justify-center">
-            <ImpactCard />
-          </div>
+          <DocumentaryPhoto
+            src="/projects/horenka-completed.jpeg"
+            alt="Completed solar installation on the Horenka hospital"
+            caption={t('homepage.caseStudy.photoCaption3')}
+            location="Horenka, Kyiv Oblast"
+          />
+        </div>
+
+        <div className="mt-8 max-w-lg mx-auto">
+          <ImpactCard />
         </div>
       </div>
     </section>

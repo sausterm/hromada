@@ -27,6 +27,9 @@ const C = {
   greenLight: '#e8f5e9',
 } as const
 
+// Static email assets hosted on Supabase (always accessible, no deployment dependency)
+const EMAIL_ASSETS = 'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/email'
+
 // ---------------------------------------------------------------------------
 // Layout
 // ---------------------------------------------------------------------------
@@ -81,7 +84,7 @@ export function emailLayout(content: string, options?: EmailLayoutOptions): stri
           <!-- ============ HEADER ============ -->
           <tr>
             <td style="background:${C.navy};padding:32px 40px;text-align:center;">
-              <img src="${appUrl}/email-logo.png" alt="hromada — громада" width="453" height="52" style="width:453px;max-width:100%;height:auto;display:block;margin:0 auto;" />
+              <img src="${EMAIL_ASSETS}/email-logo.png" alt="hromada — громада" width="453" height="52" style="width:453px;max-width:100%;height:auto;display:block;margin:0 auto;" />
               <!-- Blue accent line -->
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top:14px;">
                 <tr>
@@ -104,10 +107,10 @@ export function emailLayout(content: string, options?: EmailLayoutOptions): stri
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-bottom:16px;">
                 <tr>
                   <td style="padding:0 12px;" valign="middle">
-                    <img src="${appUrl}/partners/pocacitologo.png" alt="POCACITO Network" height="24" style="height:24px;display:block;" />
+                    <img src="${EMAIL_ASSETS}/pocacitologo.png" alt="POCACITO Network" height="24" style="height:24px;display:block;" />
                   </td>
                   <td style="padding:0 12px;" valign="middle">
-                    <img src="${appUrl}/partners/candidseal.png" alt="Candid Platinum Seal" height="32" style="height:32px;display:block;" />
+                    <img src="${EMAIL_ASSETS}/candidseal.png" alt="Candid Platinum Seal" height="32" style="height:32px;display:block;" />
                   </td>
                 </tr>
               </table>
@@ -329,12 +332,18 @@ interface ProcessStep {
   logoUrl?: string
   /** Logo alt text. */
   logoAlt?: string
+  /** If true, renders as a completed step with a checkmark instead of a number. */
+  completed?: boolean
 }
 
 /**
  * Vertical process flow with numbered steps, connector lines, and optional logos.
  */
 export function emailProcessFlow(title: string, steps: ProcessStep[]): string {
+  // Single continuous line via linear-gradient on the indicator column.
+  // Circles sit on top. Line runs from first circle to last circle.
+  const lineGradient = `linear-gradient(to right, transparent 15px, ${C.creamDark} 15px, ${C.creamDark} 17px, transparent 17px)`
+
   const stepRows = steps.map((step, i) => {
     const isLast = i === steps.length - 1
 
@@ -348,14 +357,23 @@ export function emailProcessFlow(title: string, steps: ProcessStep[]): string {
         </table>`
       : ''
 
+    const circleContent = step.completed
+      ? '&#10003;'
+      : `${step.number}`
+    const circleBg = step.completed ? '#4CAF50' : C.blue
+    const titleColor = step.completed ? C.textLight : C.navy
+
+    // Last step: no background line (line ends at the top of this row)
+    const bgStyle = isLast ? '' : `background:${lineGradient};`
+
     return `<tr>
-      <td width="40" valign="top" style="padding:0 0 ${isLast ? '0' : '20'}px 0;border-left:2px solid ${isLast ? 'transparent' : C.creamDark};background:transparent;">
-        <div style="width:32px;height:32px;background:${C.blue};border-radius:50%;text-align:center;line-height:32px;font-family:${FONT_BRAND};font-size:14px;font-weight:600;color:${C.white};margin-left:-17px;">
-          ${step.number}
+      <td width="32" valign="top" style="padding:0;${bgStyle}">
+        <div style="width:32px;height:32px;background:${circleBg};border-radius:50%;text-align:center;line-height:32px;font-family:${FONT_BRAND};font-size:14px;font-weight:600;color:${C.white};">
+          ${circleContent}
         </div>
       </td>
-      <td valign="top" style="padding:4px 0 ${isLast ? '0' : '20'}px 16px;">
-        <p style="margin:0;font-size:15px;font-weight:600;letter-spacing:-0.025em;color:${C.navy};font-family:${FONT_BRAND};">${step.title}</p>
+      <td valign="top" style="padding:4px 0 20px 16px;">
+        <p style="margin:0;font-size:15px;font-weight:600;letter-spacing:-0.025em;color:${titleColor};font-family:${FONT_BRAND};">${step.title}</p>
         <p style="margin:4px 0 0;font-size:13px;color:${C.textLight};line-height:1.5;font-family:${FONT_BODY};">${step.description}</p>
         ${logoBlock}
       </td>
@@ -364,7 +382,7 @@ export function emailProcessFlow(title: string, steps: ProcessStep[]): string {
 
   return `
     <h3 style="margin:28px 0 16px;font-size:18px;font-weight:600;letter-spacing:-0.025em;color:${C.navy};font-family:${FONT_BRAND};">${title}</h3>
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#fafaf8;border-radius:8px;padding:24px;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#fafaf8;border-radius:8px;">
       <tr><td style="padding:24px;">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
           ${stepRows}

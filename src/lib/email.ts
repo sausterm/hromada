@@ -674,28 +674,30 @@ export async function sendDonationForwardedEmail({
       ${emailProcessFlow('Your Project\u2019s Journey', [
         {
           number: 1,
-          title: 'Payment Confirmed',
-          description: `Your ${s(methodLabel)} was confirmed.`,
+          title: 'Payment Received',
+          description: `Your ${s(methodLabel)} was received by POCACITO Network.`,
+          completed: true,
         },
         {
           number: 2,
-          title: 'Funds Sent to Ukraine',
-          description: 'Your donation has been wired to the municipality\u2019s bank account.',
+          title: 'Funds Forwarded to Ukraine',
+          description: 'Your donation has been wired to the implementing NGO partner.',
+          completed: true,
         },
         {
           number: 3,
-          title: 'Construction Begins',
-          description: 'The municipality procures materials and work begins on your project.',
+          title: 'Public Procurement',
+          description: 'The municipality begins the formal procurement process through Prozorro.',
         },
         {
           number: 4,
-          title: 'Progress Updates',
-          description: 'You\u2019ll receive photos as construction moves forward.',
+          title: 'Construction & Updates',
+          description: 'You\u2019ll receive progress photos as the community rebuilds.',
         },
         {
           number: 5,
           title: 'Project Complete',
-          description: 'Final photos and documentation delivered to your donor dashboard.',
+          description: 'Final documentation and photos delivered to your donor dashboard.',
         },
       ])}
 

@@ -23,27 +23,10 @@
 - [ ] Replace placeholder bank details in SupportProjectCard #p0 @tom
 
 ### Emails (Launch-Critical)
-Templates built, need review & testing:
-- [ ] Review: Password reset email (#1) #p1 @tom
-- [ ] Review: Contact/donor interest notification to admin (#2) #p1 @tom
-- [ ] Review: Donor welcome email — credentials + project card + journey (#3) #p1 @tom
-- [ ] Review: Donation notification to admin (#4) #p1 @tom
-- [ ] Review: Newsletter welcome email (#5) #p1 @tom
-- [ ] Review: Calendly booking welcome email (#6) #p1 @tom
-- [ ] Review: Partnership inquiry notification to admin (#7) #p1 @tom
-- [ ] Review: Donation forwarded email + tax receipt attachment (#8) #p0 @tom
-- [ ] Review: Lightweight donation confirmation email (#9) #p1 @tom
-- [ ] Review: Project submission notification to admin (#10) #p1 @tom
-- [ ] Review: Project submission confirmation to submitter (#11) #p1 @tom
-- [ ] Review: Project approval email to submitter (#12) #p1 @tom
-- [ ] Review: Prozorro match notification to admin (#13) #p1 @tom
-- [ ] Review: Project rejection email to submitter (#14) #p1 @tom
-- [ ] Review: Project update email — Prozorro status → donor (#15) #p1 @tom
-- [ ] Build: Project completed / connected to grid email (#16) #p1 @tom
-- [ ] Build: Tax receipt PDF generator (needed by #8) #p0 @tom
+All 16 templates built. Tax receipt PDF generator also built and integrated.
+- [ ] Review test emails #1–#15 in inbox #p1 @tom
 
 ### Donor Experience
-- [ ] Receipt/tax documentation generation (PDF) — plan approved #p0 @tom
 - [ ] Connect nonprofit dashboard to real APIs (currently mock data) #p1 @tom
 - [ ] Refine donor project timeline page — photos, status badges, richer timeline #p1 @tom
 
@@ -51,11 +34,15 @@ Templates built, need review & testing:
 - [ ] Test full donation flow end-to-end with real bank details #p1 @tom
 - [ ] Set production environment variables in Amplify #p1 @tom
 
+### Pre-Launch
+- [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
+
 ### Partnerships & Outreach
 - [ ] EcoAction Ukraine MoU — finalize and sign #p1 @tom
 
 ## Done
 
+- [x] Tax receipt PDF generator — @react-pdf/renderer, IRS-compliant, integrated with donation FORWARDED flow #p0 @tom
 - [x] Admin newsletter compose — banner photo, featured projects (clickable, with metadata), stats, preview, draft/send #p2 @tom
 - [x] Fix Supabase storage RLS — created policies for project-images and tax-receipts buckets #p1 @tom
 - [x] Delete press release "project funded" email template (#17) — too risky pre-delivery #p2 @tom

@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl'
 
 const PHOTOS = [
   'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748613968183.jpeg',
-  'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748344588928.jpeg',
   'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748466070782.jpeg',
   'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748586681372.jpeg',
   'https://kwzirplynefqlpvdvpqz.supabase.co/storage/v1/object/public/project-images/site-photos/1748549701944.jpeg',
@@ -46,7 +45,7 @@ export function PhotoStripSection() {
       <style jsx>{`
         @keyframes scroll {
           0% { transform: translateX(0); }
-          100% { transform: translateX(calc(-304px * 6)); }
+          100% { transform: translateX(calc(-304px * 5)); }
         }
         .animate-scroll {
           animation: scroll 40s linear infinite;

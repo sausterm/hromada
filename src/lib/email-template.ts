@@ -239,6 +239,12 @@ interface ProjectCardOptions {
   partnerLogoUrl?: string
   /** Municipality name. */
   municipality?: string
+  /** Display label for category, e.g. "Hospital / Medical". */
+  category?: string
+  /** Display label for project type, e.g. "Solar PV". */
+  projectType?: string
+  /** Estimated cost in USD. */
+  estimatedCostUsd?: number
 }
 
 /**
@@ -278,12 +284,22 @@ export function emailProjectCard(opts: ProjectCardOptions): string {
     ? `<p style="margin:4px 0 0;font-size:13px;color:${C.textLight};font-family:${FONT_BODY};">${opts.municipality}</p>`
     : ''
 
+  // Category / type / cost metadata line
+  const metaParts: string[] = []
+  if (opts.category) metaParts.push(opts.category)
+  if (opts.projectType) metaParts.push(opts.projectType)
+  if (opts.estimatedCostUsd) metaParts.push(`$${opts.estimatedCostUsd.toLocaleString()}`)
+  const metaLine = metaParts.length > 0
+    ? `<p style="margin:6px 0 0;font-size:12px;color:${C.textLight};font-family:${FONT_BODY};">${metaParts.join(' &middot; ')}</p>`
+    : ''
+
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:24px 0;border:1px solid ${C.creamDark};border-radius:8px;overflow:hidden;">
   ${photoBlock}
   <tr>
     <td style="padding:20px 24px;${!opts.photoUrl ? 'border-left:4px solid ' + C.blue + ';' : ''}">
       <p style="margin:0;font-size:18px;font-weight:600;letter-spacing:-0.025em;color:${C.navy};font-family:${FONT_BRAND};">${opts.projectName}</p>
       ${municipalityText}
+      ${metaLine}
       ${partnerBlock}
     </td>
   </tr>

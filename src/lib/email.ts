@@ -1246,3 +1246,226 @@ export async function sendProjectCompletedEmail({
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+// 16. Newsletter Email (occasional updates to subscribers)
+// ---------------------------------------------------------------------------
+
+interface NewsletterProjectItem {
+  name: string
+  photoUrl?: string
+  municipality?: string
+  partnerName?: string
+  partnerLogoUrl?: string
+  /** Brief one-liner about this project's status or milestone. */
+  statusLine?: string
+}
+
+interface NewsletterEmailParams {
+  recipientEmail: string
+  recipientName?: string | null
+  unsubscribeToken: string
+  /** Headline for the newsletter. */
+  headline: string
+  /** Intro paragraph(s) — plain text or HTML. */
+  intro: string
+  /** Featured projects to showcase. */
+  projects?: NewsletterProjectItem[]
+  /** Optional impact stats block. */
+  stats?: { label: string; value: string }[]
+  /** Optional closing paragraph — plain text or HTML. */
+  closing?: string
+}
+
+export async function sendNewsletterEmail({
+  recipientEmail,
+  recipientName,
+  unsubscribeToken,
+  headline,
+  intro,
+  projects,
+  stats,
+  closing,
+}: NewsletterEmailParams): Promise<{ success: boolean; error?: string }> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const unsubscribeUrl = `${appUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`
+  const firstName = recipientName ? s(recipientName.split(' ')[0]) : null
+
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping newsletter email')
+    return { success: true }
+  }
+
+  try {
+    const greeting = firstName ? `<p>Hi ${firstName},</p>` : ''
+
+    const projectCards = projects?.length
+      ? projects.map(p => {
+          const card = emailProjectCard({
+            projectName: s(p.name),
+            photoUrl: p.photoUrl,
+            municipality: p.municipality ? s(p.municipality) : undefined,
+            partnerName: p.partnerName ? s(p.partnerName) : undefined,
+            partnerLogoUrl: p.partnerLogoUrl,
+          })
+          const statusLine = p.statusLine
+            ? `<p style="margin:-16px 0 24px;font-size:13px;color:#666;font-style:italic;">${s(p.statusLine)}</p>`
+            : ''
+          return card + statusLine
+        }).join('')
+      : ''
+
+    const statsBlock = stats?.length
+      ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:24px 0;">
+          <tr>
+            ${stats.map(stat => `
+              <td align="center" style="padding:16px;background:#fafaf8;border-radius:8px;">
+                <p style="margin:0;font-size:28px;font-weight:700;color:#0057B8;font-family:'Outfit','Inter',sans-serif;">${s(stat.value)}</p>
+                <p style="margin:4px 0 0;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px;">${s(stat.label)}</p>
+              </td>
+            `).join('<td width="16"></td>')}
+          </tr>
+        </table>`
+      : ''
+
+    const closingBlock = closing
+      ? `<p>${closing}</p>`
+      : '<p>Thank you for being part of this community.</p>'
+
+    const body = `
+      ${emailHeading(s(headline))}
+
+      ${greeting}
+
+      <p>${intro}</p>
+
+      ${projectCards}
+
+      ${statsBlock}
+
+      ${closingBlock}
+
+      ${emailButton('Browse All Projects', `${appUrl}/projects`)}
+
+      <p style="color:#1a2744;font-weight:600;">Thomas<br>
+      <span style="font-weight:400;color:#666;">Hromada</span></p>
+
+      ${emailMuted(`You\u2019re receiving this because you signed up at hromadaproject.org. <a href="${unsubscribeUrl}" style="color:#999;text-decoration:underline;">Unsubscribe</a>`)}
+    `
+
+    await sendEmail({
+      to: recipientEmail,
+      subject: s(headline),
+      html: emailLayout(body, { preheader: intro.substring(0, 120), unsubscribeUrl }),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send newsletter email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 18. Press Release: Project Completed (email distribution)
+// ---------------------------------------------------------------------------
+
+interface PressReleaseProjectCompletedParams {
+  recipientEmail: string
+  unsubscribeToken?: string
+  projectName: string
+  municipality: string
+  region?: string
+  partnerName: string
+  amount: number
+  projectDescription: string
+  completedDate: string
+  projectPhotoUrl?: string
+  /** Optional impact statement, e.g. "serving 2,400 residents" */
+  impactStatement?: string
+}
+
+export async function sendPressReleaseProjectCompleted({
+  recipientEmail,
+  unsubscribeToken,
+  projectName,
+  municipality,
+  region,
+  partnerName,
+  amount,
+  projectDescription,
+  completedDate,
+  projectPhotoUrl,
+  impactStatement,
+}: PressReleaseProjectCompletedParams): Promise<{ success: boolean; error?: string }> {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const unsubscribeUrl = unsubscribeToken
+    ? `${appUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`
+    : undefined
+
+  if (!ses) {
+    console.warn('AWS SES not configured, skipping press release email')
+    return { success: true }
+  }
+
+  const locationLine = region
+    ? `${s(municipality)}, ${s(region)}, Ukraine`
+    : `${s(municipality)}, Ukraine`
+
+  try {
+    const body = `
+      ${emailBadge('PRESS RELEASE')}
+
+      ${emailHeading(`${s(projectName)} completed in ${s(municipality)}`)}
+
+      <p style="font-size:13px;color:#666;margin:4px 0 20px;">${s(completedDate)} &middot; ${locationLine}</p>
+
+      ${projectPhotoUrl ? `<div style="margin:0 0 24px;border-radius:8px;overflow:hidden;">
+        <img src="${projectPhotoUrl}" alt="${s(projectName)}" width="520" style="width:100%;max-width:520px;height:auto;display:block;" />
+      </div>` : ''}
+
+      <p><strong>${locationLine}</strong> &mdash; ${s(projectDescription)}</p>
+
+      <p>The $${amount.toLocaleString()} project, funded by an American donor through the <a href="${appUrl}" style="color:#0057B8;text-decoration:none;font-weight:600;">Hromada</a> platform, is now fully operational${impactStatement ? `, ${s(impactStatement)}` : ''}. Construction was managed by <strong>${s(partnerName)}</strong> and procured through Ukraine\u2019s public Prozorro system.</p>
+
+      <p>From request to completion, the project was driven by ${s(municipality)}\u2019s own assessment of what the community needed. Hromada served as the infrastructure connecting their request with a donor willing to fund it.</p>
+
+      ${emailInfoBox(`
+        ${emailField('Project', s(projectName))}
+        ${emailField('Community', locationLine)}
+        ${emailField('Investment', `$${amount.toLocaleString()}`)}
+        ${emailField('NGO Partner', s(partnerName))}
+        ${emailField('Status', 'Completed and operational')}
+      `)}
+
+      ${emailDivider()}
+
+      ${emailSubheading('About Hromada')}
+      <p style="font-size:13px;color:#666;">Hromada connects American donors directly with Ukrainian municipalities that have identified and requested infrastructure projects. Every project on the platform comes from the community it serves. Hromada is a project of POCACITO Network, a 501(c)(3) nonprofit based in Charlottesville, Virginia.</p>
+
+      ${emailSubheading('Media Contact')}
+      <p style="font-size:13px;color:#666;">Thomas Protzman<br>
+      <a href="mailto:thomas@hromadaproject.org" style="color:#0057B8;">thomas@hromadaproject.org</a><br>
+      <a href="${appUrl}" style="color:#0057B8;">hromadaproject.org</a></p>
+
+      ${unsubscribeUrl ? emailMuted(`<a href="${unsubscribeUrl}" style="color:#999;text-decoration:underline;">Unsubscribe</a>`) : ''}
+    `
+
+    await sendEmail({
+      to: recipientEmail,
+      subject: `${s(projectName)} completed in ${s(municipality)} \u2014 funded through Hromada`,
+      html: emailLayout(body, { preheader: `${s(projectName)} is now operational in ${s(municipality)}.`, unsubscribeUrl }),
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send press release (completed) email:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email',
+    }
+  }
+}

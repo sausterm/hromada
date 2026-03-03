@@ -84,3 +84,40 @@ export async function PATCH(
     return NextResponse.json({ error: 'Failed to update campaign' }, { status: 500 })
   }
 }
+
+// DELETE - Delete a draft campaign
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+
+  const isAdmin = await verifyAdminAuth(request)
+  if (!isAdmin) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  try {
+    const campaign = await prisma.emailCampaign.findUnique({
+      where: { id },
+    })
+
+    if (!campaign) {
+      return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
+    }
+
+    if (campaign.status !== 'DRAFT') {
+      return NextResponse.json(
+        { error: 'Only draft campaigns can be deleted' },
+        { status: 400 }
+      )
+    }
+
+    await prisma.emailCampaign.delete({ where: { id } })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Failed to delete campaign:', error)
+    return NextResponse.json({ error: 'Failed to delete campaign' }, { status: 500 })
+  }
+}

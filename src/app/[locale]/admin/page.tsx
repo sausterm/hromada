@@ -6,6 +6,7 @@ import { Link, useRouter } from '@/i18n/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -65,6 +66,32 @@ function transformProject(data: any): Project {
 
 interface ContactSubmissionWithProject extends ContactSubmission {
   project: Pick<Project, 'id' | 'facilityName' | 'municipalityName' | 'contactEmail'>
+}
+
+// Campaign type for newsletter campaign management
+interface Campaign {
+  id: string
+  subject: string
+  status: string
+  totalRecipients: number
+  sentCount: number
+  failedCount: number
+  sentAt: string | null
+  completedAt: string | null
+  createdAt: string
+}
+
+// Selected project for newsletter compose
+interface ComposeProject {
+  id: string
+  facilityName: string
+  municipalityName: string
+  photoUrl?: string
+  partnerOrganization?: string
+  category?: string
+  projectType?: string
+  estimatedCostUsd?: number
+  statusLine: string
 }
 
 type SortField = 'facilityName' | 'municipalityName' | 'region' | 'category' | 'projectType' | 'urgency' | 'status'
@@ -128,6 +155,26 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   const [subscribers, setSubscribers] = useState<{ id: string; email: string; subscribedAt: string; unsubscribed: boolean }[]>([])
   const [isLoadingSubscribers, setIsLoadingSubscribers] = useState(true)
   const [newSubscriberEmail, setNewSubscriberEmail] = useState('')
+
+  // Campaign & compose state
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [isLoadingCampaigns, setIsLoadingCampaigns] = useState(true)
+  const [composeHeadline, setComposeHeadline] = useState('')
+  const [composeIntro, setComposeIntro] = useState('')
+  const [composeClosing, setComposeClosing] = useState('')
+  const [composeStats, setComposeStats] = useState<{ label: string; value: string }[]>([])
+  const [composeProjects, setComposeProjects] = useState<ComposeProject[]>([])
+  const [composeBannerUrl, setComposeBannerUrl] = useState('')
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false)
+  const [projectSearchQuery, setProjectSearchQuery] = useState('')
+  const [showProjectPicker, setShowProjectPicker] = useState(false)
+  const [isSendingCampaign, setIsSendingCampaign] = useState<string | null>(null)
+  const [isSavingDraft, setIsSavingDraft] = useState(false)
+  const [composePreviewHtml, setComposePreviewHtml] = useState<string | null>(null)
+  const [isGeneratingPreview, setIsGeneratingPreview] = useState(false)
+  const [composeMessage, setComposeMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [confirmSendCampaignId, setConfirmSendCampaignId] = useState<string | null>(null)
+
   // Featured projects management
   const [featuredSlots, setFeaturedSlots] = useState<Array<{ slot: number; projectId: string; project?: { facilityName: string; municipalityName: string } }>>([])
   const [isLoadingFeatured, setIsLoadingFeatured] = useState(true)
@@ -240,6 +287,24 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
     fetchSubscribers()
   }, [])
 
+  // Fetch campaigns
+  useEffect(() => {
+    async function fetchCampaigns() {
+      try {
+        const response = await fetch('/api/admin/campaigns')
+        if (response.ok) {
+          const data = await response.json()
+          setCampaigns(data.campaigns || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch campaigns:', error)
+      } finally {
+        setIsLoadingCampaigns(false)
+      }
+    }
+    fetchCampaigns()
+  }, [])
+
   // Fetch featured projects
   useEffect(() => {
     async function fetchFeatured() {
@@ -326,6 +391,221 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
       console.error('Failed to remove subscriber:', error)
     }
   }
+
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setIsUploadingBanner(true)
+    setComposeMessage(null)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const response = await fetch('/api/upload/public', { method: 'POST', body: formData })
+      if (response.ok) {
+        const data = await response.json()
+        setComposeBannerUrl(data.url)
+      } else {
+        const data = await response.json()
+        setComposeMessage({ type: 'error', text: data.error || 'Failed to upload image.' })
+      }
+    } catch (error) {
+      console.error('Failed to upload banner:', error)
+      setComposeMessage({ type: 'error', text: 'Failed to upload image.' })
+    } finally {
+      setIsUploadingBanner(false)
+      // Reset file input so the same file can be re-selected
+      e.target.value = ''
+    }
+  }
+
+  // Build the compose payload used by preview + save
+  const getComposePayload = () => ({
+    headline: composeHeadline,
+    intro: composeIntro,
+    bannerUrl: composeBannerUrl || undefined,
+    stats: composeStats.filter(s => s.label && s.value),
+    closing: composeClosing || undefined,
+    projects: composeProjects.length > 0
+      ? composeProjects.map(p => ({
+          name: p.facilityName,
+          photoUrl: p.photoUrl,
+          municipality: p.municipalityName,
+          partnerName: p.partnerOrganization,
+          category: p.category,
+          projectType: p.projectType,
+          estimatedCostUsd: p.estimatedCostUsd,
+          statusLine: p.statusLine || undefined,
+        }))
+      : undefined,
+  })
+
+  const clearComposeForm = () => {
+    setComposeHeadline('')
+    setComposeIntro('')
+    setComposeClosing('')
+    setComposeStats([])
+    setComposeProjects([])
+    setComposeBannerUrl('')
+    setComposePreviewHtml(null)
+    setProjectSearchQuery('')
+  }
+
+  const handlePreviewNewsletter = async () => {
+    if (!composeHeadline || !composeIntro) return
+    setIsGeneratingPreview(true)
+    setComposeMessage(null)
+    try {
+      const response = await fetch('/api/admin/newsletter-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(getComposePayload()),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setComposePreviewHtml(data.html)
+      } else {
+        setComposeMessage({ type: 'error', text: 'Failed to generate preview.' })
+      }
+    } catch (error) {
+      console.error('Failed to generate preview:', error)
+      setComposeMessage({ type: 'error', text: 'Failed to generate preview.' })
+    } finally {
+      setIsGeneratingPreview(false)
+    }
+  }
+
+  const handleSaveDraft = async (): Promise<Campaign | null> => {
+    if (!composeHeadline || !composeIntro) return null
+    setIsSavingDraft(true)
+    setComposeMessage(null)
+    try {
+      // Generate HTML first
+      const previewRes = await fetch('/api/admin/newsletter-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(getComposePayload()),
+      })
+      if (!previewRes.ok) {
+        setComposeMessage({ type: 'error', text: 'Failed to generate newsletter HTML.' })
+        return null
+      }
+      const { html } = await previewRes.json()
+
+      // Save as draft campaign
+      const response = await fetch('/api/admin/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject: composeHeadline, htmlContent: html }),
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setCampaigns((prev) => [data.campaign, ...prev])
+        clearComposeForm()
+        setComposeMessage({ type: 'success', text: 'Draft saved.' })
+        return data.campaign
+      } else {
+        setComposeMessage({ type: 'error', text: 'Failed to save draft.' })
+      }
+    } catch (error) {
+      console.error('Failed to save draft:', error)
+      setComposeMessage({ type: 'error', text: 'Failed to save draft.' })
+    } finally {
+      setIsSavingDraft(false)
+    }
+    return null
+  }
+
+  const handleSendCampaign = async (campaignId: string) => {
+    setIsSendingCampaign(campaignId)
+    setConfirmSendCampaignId(null)
+    setComposeMessage(null)
+    try {
+      const response = await fetch(`/api/admin/campaigns/${campaignId}/send`, {
+        method: 'POST',
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setCampaigns((prev) =>
+          prev.map((c) =>
+            c.id === campaignId
+              ? { ...c, status: 'COMPLETED', sentCount: data.sent, failedCount: data.failed }
+              : c
+          )
+        )
+        setComposeMessage({ type: 'success', text: `Sent to ${data.sent} subscriber${data.sent !== 1 ? 's' : ''}.${data.failed > 0 ? ` ${data.failed} failed.` : ''}` })
+      } else {
+        const data = await response.json()
+        setComposeMessage({ type: 'error', text: data.error || 'Failed to send campaign.' })
+      }
+    } catch (error) {
+      console.error('Failed to send campaign:', error)
+      setComposeMessage({ type: 'error', text: 'Failed to send campaign.' })
+    } finally {
+      setIsSendingCampaign(null)
+    }
+  }
+
+  const handleDeleteCampaign = async (campaignId: string) => {
+    setComposeMessage(null)
+    try {
+      const response = await fetch(`/api/admin/campaigns/${campaignId}`, {
+        method: 'DELETE',
+      })
+      if (response.ok) {
+        setCampaigns((prev) => prev.filter((c) => c.id !== campaignId))
+        setComposeMessage({ type: 'success', text: 'Draft deleted.' })
+      } else {
+        const data = await response.json()
+        setComposeMessage({ type: 'error', text: data.error || 'Failed to delete draft.' })
+      }
+    } catch (error) {
+      console.error('Failed to delete campaign:', error)
+      setComposeMessage({ type: 'error', text: 'Failed to delete draft.' })
+    }
+  }
+
+  const handleEditCampaign = async (campaignId: string) => {
+    // Fetch the full campaign HTML so we can load it into the preview
+    setComposeMessage(null)
+    try {
+      const response = await fetch(`/api/admin/campaigns/${campaignId}`)
+      if (response.ok) {
+        const data = await response.json()
+        const campaign = data.campaign
+        // Load subject into compose form, show HTML in preview
+        setComposeHeadline(campaign.subject)
+        setComposePreviewHtml(campaign.htmlContent)
+        // Clear other fields since we can't reverse-parse HTML back to structured data
+        setComposeIntro('')
+        setComposeClosing('')
+        setComposeStats([])
+        setComposeProjects([])
+        setComposeBannerUrl('')
+        setComposeMessage({ type: 'success', text: 'Draft loaded. Edit the fields and save again, or update the subject and re-save.' })
+        // Delete the old draft so re-saving creates a fresh one
+        await fetch(`/api/admin/campaigns/${campaignId}`, { method: 'DELETE' })
+        setCampaigns((prev) => prev.filter((c) => c.id !== campaignId))
+        // Scroll to top of compose
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } else {
+        setComposeMessage({ type: 'error', text: 'Failed to load draft.' })
+      }
+    } catch (error) {
+      console.error('Failed to load campaign:', error)
+      setComposeMessage({ type: 'error', text: 'Failed to load draft.' })
+    }
+  }
+
+  // Filter projects for the picker (exclude already-selected)
+  const selectedProjectIds_compose = new Set(composeProjects.map(p => p.id))
+  const filteredPickerProjects = projects
+    .filter(p => !selectedProjectIds_compose.has(p.id))
+    .filter(p => {
+      if (!projectSearchQuery) return true
+      const q = projectSearchQuery.toLowerCase()
+      return p.facilityName.toLowerCase().includes(q) || p.municipalityName.toLowerCase().includes(q)
+    })
+    .slice(0, 8)
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -2000,66 +2280,507 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
         )}
 
         {activeTab === 'mailingList' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <h2 className="text-xl font-semibold">Mailing List ({subscribers.filter(s => !s.unsubscribed).length})</h2>
-              <div className="flex gap-2">
-                <Input
-                  type="email"
-                  value={newSubscriberEmail}
-                  onChange={(e) => setNewSubscriberEmail(e.target.value)}
-                  placeholder="Add email..."
-                  onKeyDown={(e) => e.key === 'Enter' && handleAddSubscriber()}
-                />
-                <Button onClick={handleAddSubscriber}>Add</Button>
+          <div className="space-y-8">
+            {/* ── Status message ── */}
+            {composeMessage && (
+              <div className={`px-4 py-3 rounded-lg text-sm font-medium ${
+                composeMessage.type === 'success'
+                  ? 'bg-green-50 text-green-800 border border-green-200'
+                  : 'bg-red-50 text-red-800 border border-red-200'
+              }`}>
+                {composeMessage.text}
+                <button
+                  onClick={() => setComposeMessage(null)}
+                  className="float-right text-current opacity-60 hover:opacity-100"
+                >
+                  &times;
+                </button>
               </div>
-            </div>
+            )}
 
-            {isLoadingSubscribers ? (
-              <div className="flex justify-center py-8">
-                <LoadingSpinner size="lg" />
+            {/* ── Send confirmation banner ── */}
+            {confirmSendCampaignId && (
+              <div className="bg-[var(--navy-50)] border border-[var(--navy-200)] rounded-lg p-4">
+                <p className="text-sm font-medium text-[var(--navy-800)] mb-3">
+                  Send &ldquo;{campaigns.find(c => c.id === confirmSendCampaignId)?.subject}&rdquo; to {subscribers.filter(s => !s.unsubscribed).length} subscribers?
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleSendCampaign(confirmSendCampaignId)}
+                    disabled={isSendingCampaign === confirmSendCampaignId}
+                  >
+                    {isSendingCampaign === confirmSendCampaignId ? 'Sending...' : 'Yes, send it'}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setConfirmSendCampaignId(null)}
+                    disabled={isSendingCampaign === confirmSendCampaignId}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </div>
-            ) : subscribers.filter(s => !s.unsubscribed).length === 0 ? (
+            )}
+
+            {/* ── Compose Newsletter ── */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">Compose Newsletter</h2>
               <Card>
-                <CardContent className="p-8 text-center">
-                  <p className="text-gray-500">No subscribers yet.</p>
+                <CardContent className="p-6 space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Subject Line</label>
+                    <Input
+                      value={composeHeadline}
+                      onChange={(e) => setComposeHeadline(e.target.value)}
+                      placeholder="e.g. Spring Update from Hromada"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Intro</label>
+                    <Textarea
+                      value={composeIntro}
+                      onChange={(e) => setComposeIntro(e.target.value)}
+                      placeholder="Opening paragraph — this is what subscribers see first..."
+                      className="min-h-[100px]"
+                    />
+                  </div>
+
+                  {/* Banner image */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Banner Image (optional)</label>
+                    {composeBannerUrl ? (
+                      <div className="relative inline-block">
+                        <img
+                          src={composeBannerUrl}
+                          alt="Banner preview"
+                          className="max-h-[160px] rounded-lg object-cover border border-gray-200"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setComposeBannerUrl('')}
+                          className="absolute top-2 right-2 bg-white/90 hover:bg-white rounded-full w-6 h-6 flex items-center justify-center text-gray-600 hover:text-red-600 text-sm shadow-sm"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                          {isUploadingBanner ? 'Uploading...' : 'Upload image'}
+                        </span>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          className="hidden"
+                          onChange={handleBannerUpload}
+                          disabled={isUploadingBanner}
+                        />
+                        <span className="text-xs text-gray-500">JPG, PNG, or WebP. Max 5MB.</span>
+                      </label>
+                    )}
+                  </div>
+
+                  {/* Featured projects */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        Featured Projects{composeProjects.length > 0 ? ` (${composeProjects.length}/4)` : ' (optional)'}
+                      </label>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowProjectPicker(!showProjectPicker)}
+                        disabled={composeProjects.length >= 4}
+                      >
+                        {showProjectPicker ? 'Close' : '+ Add Project'}
+                      </Button>
+                    </div>
+
+                    {/* Project picker dropdown */}
+                    {showProjectPicker && (
+                      <div className="border border-gray-200 rounded-lg mb-3 overflow-hidden">
+                        <div className="p-2 border-b border-gray-100 bg-gray-50">
+                          <Input
+                            value={projectSearchQuery}
+                            onChange={(e) => setProjectSearchQuery(e.target.value)}
+                            placeholder="Search projects..."
+                            className="text-sm"
+                          />
+                        </div>
+                        <div className="max-h-[240px] overflow-y-auto">
+                          {filteredPickerProjects.length === 0 ? (
+                            <p className="p-3 text-sm text-gray-500 text-center">
+                              {projects.length === 0 ? 'No projects loaded.' : 'No matching projects.'}
+                            </p>
+                          ) : (
+                            filteredPickerProjects.map(project => (
+                              <button
+                                key={project.id}
+                                type="button"
+                                className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-3 border-b border-gray-50 last:border-0"
+                                onClick={() => {
+                                  setComposeProjects(prev => [...prev, {
+                                    id: project.id,
+                                    facilityName: project.facilityName,
+                                    municipalityName: project.municipalityName,
+                                    photoUrl: project.photos?.[0],
+                                    partnerOrganization: project.partnerOrganization,
+                                    category: project.category,
+                                    projectType: project.projectType,
+                                    estimatedCostUsd: project.estimatedCostUsd,
+                                    statusLine: '',
+                                  }])
+                                  setProjectSearchQuery('')
+                                  setShowProjectPicker(false)
+                                }}
+                              >
+                                {project.photos?.[0] ? (
+                                  <img
+                                    src={project.photos[0]}
+                                    alt=""
+                                    className="w-10 h-10 rounded object-cover shrink-0"
+                                  />
+                                ) : (
+                                  <div className="w-10 h-10 rounded bg-gray-200 shrink-0" />
+                                )}
+                                <div className="min-w-0">
+                                  <p className="text-sm font-medium text-gray-900 truncate">{project.facilityName}</p>
+                                  <p className="text-xs text-gray-500 truncate">{project.municipalityName}</p>
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Selected projects list */}
+                    {composeProjects.map((project, idx) => (
+                      <div key={project.id} className="flex items-start gap-3 mb-3 p-3 bg-gray-50 rounded-lg">
+                        {project.photoUrl ? (
+                          <img
+                            src={project.photoUrl}
+                            alt=""
+                            className="w-12 h-12 rounded object-cover shrink-0"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded bg-gray-200 shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900">{project.facilityName}</p>
+                          <p className="text-xs text-gray-500">{project.municipalityName}</p>
+                          <p className="text-xs text-gray-400 mb-1">
+                            {[
+                              project.category && CATEGORY_CONFIG[project.category as keyof typeof CATEGORY_CONFIG]?.label,
+                              project.projectType && PROJECT_TYPE_CONFIG[project.projectType as keyof typeof PROJECT_TYPE_CONFIG]?.label,
+                              project.estimatedCostUsd && `$${project.estimatedCostUsd.toLocaleString()}`,
+                            ].filter(Boolean).join(' · ')}
+                          </p>
+                          <Input
+                            value={project.statusLine}
+                            onChange={(e) => {
+                              const updated = [...composeProjects]
+                              updated[idx] = { ...updated[idx], statusLine: e.target.value }
+                              setComposeProjects(updated)
+                            }}
+                            placeholder="Status line (e.g. Construction underway)"
+                            className="text-xs"
+                          />
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:bg-red-50 shrink-0 mt-1"
+                          onClick={() => setComposeProjects(prev => prev.filter((_, i) => i !== idx))}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Stats rows */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium text-gray-700">Impact Stats (optional)</label>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setComposeStats((prev) => [...prev, { label: '', value: '' }])}
+                      >
+                        + Add Stat
+                      </Button>
+                    </div>
+                    {composeStats.map((stat, idx) => (
+                      <div key={idx} className="flex gap-2 mb-2">
+                        <Input
+                          value={stat.value}
+                          onChange={(e) => {
+                            const updated = [...composeStats]
+                            updated[idx] = { ...updated[idx], value: e.target.value }
+                            setComposeStats(updated)
+                          }}
+                          placeholder="Value (e.g. $125K)"
+                          className="w-1/3"
+                        />
+                        <Input
+                          value={stat.label}
+                          onChange={(e) => {
+                            const updated = [...composeStats]
+                            updated[idx] = { ...updated[idx], label: e.target.value }
+                            setComposeStats(updated)
+                          }}
+                          placeholder="Label (e.g. Funded)"
+                          className="flex-1"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:bg-red-50 shrink-0"
+                          onClick={() => setComposeStats((prev) => prev.filter((_, i) => i !== idx))}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Closing (optional)</label>
+                    <Textarea
+                      value={composeClosing}
+                      onChange={(e) => setComposeClosing(e.target.value)}
+                      placeholder="Closing paragraph..."
+                      className="min-h-[80px]"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Button
+                      variant="secondary"
+                      onClick={handlePreviewNewsletter}
+                      disabled={!composeHeadline || !composeIntro || isGeneratingPreview}
+                    >
+                      {isGeneratingPreview ? 'Generating...' : 'Preview'}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => handleSaveDraft()}
+                      disabled={!composeHeadline || !composeIntro || isSavingDraft}
+                    >
+                      {isSavingDraft ? 'Saving...' : 'Save as Draft'}
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (composeHeadline && composeIntro) {
+                          // Save draft first, then confirm send
+                          handleSaveDraft().then(campaign => {
+                            if (campaign) setConfirmSendCampaignId(campaign.id)
+                          })
+                        }
+                      }}
+                      disabled={!composeHeadline || !composeIntro || isSavingDraft}
+                    >
+                      {isSavingDraft ? 'Saving...' : `Send Now (${subscribers.filter(s => !s.unsubscribed).length})`}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
-            ) : (
-              <Card>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b">
-                      <tr>
-                        <th className="text-left p-4 text-sm font-medium text-gray-500">Email</th>
-                        <th className="text-left p-4 text-sm font-medium text-gray-500">Subscribed</th>
-                        <th className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {subscribers.filter(s => !s.unsubscribed).map((sub) => (
-                        <tr key={sub.id} className="hover:bg-gray-50">
-                          <td className="p-4 font-medium text-gray-900">{sub.email}</td>
-                          <td className="p-4 text-gray-500 text-sm">
-                            {new Date(sub.subscribedAt).toLocaleDateString()}
-                          </td>
-                          <td className="p-4 text-center">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-600 hover:bg-red-50"
-                              onClick={() => handleRemoveSubscriber(sub.id)}
-                            >
-                              Remove
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+
+              {/* Preview iframe */}
+              {composePreviewHtml && (
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base">Preview</CardTitle>
+                      <Button variant="ghost" size="sm" onClick={() => setComposePreviewHtml(null)}>
+                        Close
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    <iframe
+                      srcDoc={composePreviewHtml}
+                      sandbox="allow-same-origin"
+                      className="w-full border-0 rounded-b-lg"
+                      style={{ height: '600px' }}
+                      title="Newsletter preview"
+                    />
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* ── Campaigns ── */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">Campaigns</h2>
+              {isLoadingCampaigns ? (
+                <div className="flex justify-center py-8">
+                  <LoadingSpinner size="lg" />
                 </div>
-              </Card>
-            )}
+              ) : campaigns.length === 0 ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <p className="text-gray-500">No campaigns yet. Compose one above.</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b">
+                        <tr>
+                          <th className="text-left p-4 text-sm font-medium text-gray-500">Subject</th>
+                          <th className="text-center p-4 text-sm font-medium text-gray-500">Status</th>
+                          <th className="text-center p-4 text-sm font-medium text-gray-500">Recipients</th>
+                          <th className="text-center p-4 text-sm font-medium text-gray-500">Sent / Failed</th>
+                          <th className="text-center p-4 text-sm font-medium text-gray-500">Date</th>
+                          <th className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {campaigns.map((campaign) => (
+                          <tr key={campaign.id} className="hover:bg-gray-50">
+                            <td className="p-4 font-medium text-gray-900 max-w-[300px] truncate">
+                              {campaign.subject}
+                            </td>
+                            <td className="p-4 text-center">
+                              <Badge
+                                variant={
+                                  campaign.status === 'COMPLETED' ? 'success' :
+                                  campaign.status === 'SENDING' ? 'info' :
+                                  campaign.status === 'DRAFT' ? 'default' : 'default'
+                                }
+                                size="sm"
+                              >
+                                {campaign.status}
+                              </Badge>
+                            </td>
+                            <td className="p-4 text-center text-gray-500 text-sm">
+                              {campaign.totalRecipients}
+                            </td>
+                            <td className="p-4 text-center text-sm">
+                              {campaign.status !== 'DRAFT' ? (
+                                <span>
+                                  <span className="text-green-600">{campaign.sentCount}</span>
+                                  {campaign.failedCount > 0 && (
+                                    <span className="text-red-600"> / {campaign.failedCount}</span>
+                                  )}
+                                </span>
+                              ) : (
+                                <span className="text-gray-400">&mdash;</span>
+                              )}
+                            </td>
+                            <td className="p-4 text-center text-gray-500 text-sm">
+                              {campaign.completedAt
+                                ? new Date(campaign.completedAt).toLocaleDateString()
+                                : new Date(campaign.createdAt).toLocaleDateString()}
+                            </td>
+                            <td className="p-4 text-center">
+                              {campaign.status === 'DRAFT' && (
+                                <div className="flex gap-1 justify-center">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEditCampaign(campaign.id)}
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    disabled={isSendingCampaign === campaign.id}
+                                    onClick={() => setConfirmSendCampaignId(campaign.id)}
+                                  >
+                                    {isSendingCampaign === campaign.id ? 'Sending...' : 'Send'}
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:bg-red-50"
+                                    onClick={() => {
+                                      if (confirm(`Delete draft "${campaign.subject}"?`)) {
+                                        handleDeleteCampaign(campaign.id)
+                                      }
+                                    }}
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </Card>
+              )}
+            </div>
+
+            {/* ── Subscribers ── */}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h2 className="text-xl font-semibold">Subscribers ({subscribers.filter(s => !s.unsubscribed).length})</h2>
+                <div className="flex gap-2">
+                  <Input
+                    type="email"
+                    value={newSubscriberEmail}
+                    onChange={(e) => setNewSubscriberEmail(e.target.value)}
+                    placeholder="Add email..."
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddSubscriber()}
+                  />
+                  <Button onClick={handleAddSubscriber}>Add</Button>
+                </div>
+              </div>
+
+              {isLoadingSubscribers ? (
+                <div className="flex justify-center py-8">
+                  <LoadingSpinner size="lg" />
+                </div>
+              ) : subscribers.filter(s => !s.unsubscribed).length === 0 ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <p className="text-gray-500">No subscribers yet.</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 border-b">
+                        <tr>
+                          <th className="text-left p-4 text-sm font-medium text-gray-500">Email</th>
+                          <th className="text-left p-4 text-sm font-medium text-gray-500">Subscribed</th>
+                          <th className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y">
+                        {subscribers.filter(s => !s.unsubscribed).map((sub) => (
+                          <tr key={sub.id} className="hover:bg-gray-50">
+                            <td className="p-4 font-medium text-gray-900">{sub.email}</td>
+                            <td className="p-4 text-gray-500 text-sm">
+                              {new Date(sub.subscribedAt).toLocaleDateString()}
+                            </td>
+                            <td className="p-4 text-center">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:bg-red-50"
+                                onClick={() => handleRemoveSubscriber(sub.id)}
+                              >
+                                Remove
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </Card>
+              )}
+            </div>
           </div>
         )}
       </div>

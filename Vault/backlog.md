@@ -47,13 +47,17 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 **Policy:** Hromada is not a content-producing organization. Strictly mission-focused.
 
 Emails:
-- [ ] Design donor lifecycle emails (confirmation, forwarded/receipt, project update, completion) #p1
-- [ ] Occasional member newsletter template #p2
-- [ ] Project update email (triggered by partner status updates) #p2
+- [x] Design donor lifecycle emails (confirmation, forwarded/receipt, project update, completion) #p1 @tom
+- [x] Occasional member newsletter template (#16) #p2 @tom
+- [x] Project update email (triggered by partner status updates) #p2 @tom
+- [x] Press release templates — funded (#17) and completed (#18) #p2 @tom
+- [ ] Admin newsletter compose page (`/admin/newsletter`) — write, preview, send to subscribers #p2 @tom
+- [ ] Admin "Draft Press Release" button on funded projects — manual review + send (#17) #p2 @tom
+- [ ] Auto-send project completed press release (#18) on COMPLETED status — pulls all data from DB, sends to all subscribers #p2 @tom
 
 Press releases (only):
-- Project funded announcement
-- Project constructed / connected to grid announcement
+- [x] Project funded announcement (template #17, manual trigger)
+- [x] Project constructed / connected to grid announcement (template #18, auto on COMPLETED)
 
 Social media (only):
 - New project posted

@@ -175,9 +175,50 @@ These are well-aligned but may require Hromada to be further developed, partner 
 ## Key Considerations & Risks
 
 ### Legal & Organizational Requirements
-- **501(c)(3) status:** Many US-based tech grants (Tech Impact, Cisco, Okta) require recognized nonprofit status. If Hromada does not yet have this, it should be prioritized.
-- **EU entity requirements:** Some European grants require an EU-based legal entity or partnership with one.
-- **Partnership strategy:** For larger institutional grants (EIB, World Bank, Nefco), Hromada may need to partner with an established implementing organization rather than apply directly.
+
+#### Fiscal Sponsorship Model (Current Path)
+Hromada can operate as a **project under a 501(c)(3) fiscal sponsor** while pursuing its own independent 501(c)(3) status. This is a well-established and widely accepted model in the nonprofit/grant world. Here's how it affects eligibility:
+
+**How fiscal sponsorship works for grants:**
+- The fiscal sponsor (the existing 501(c)(3)) is the legal applicant and grant recipient
+- Grant funds flow through the sponsor, who then disburses them to Hromada as a sponsored project
+- The sponsor provides tax-exempt status, financial oversight, and legal liability coverage
+- Hromada retains operational control over its project and mission
+- Most funders explicitly accept fiscally sponsored projects — many application forms have a specific checkbox or field for this
+
+**Two common fiscal sponsorship models:**
+- **Model A (Comprehensive):** Hromada operates as a program *of* the sponsor. The sponsor has full legal control. Simpler, but less autonomy.
+- **Model C (Pre-approved grant relationship):** Hromada operates independently and the sponsor acts as a pass-through for tax-deductible donations and grants. More autonomy, increasingly common.
+
+**Grant eligibility impact by opportunity:**
+
+| Grant | Fiscal Sponsor Accepted? | Notes |
+|-------|--------------------------|-------|
+| Nefco Green Recovery | Yes | Applies to municipalities directly; Hromada would be a tech partner |
+| Elrha HIF | Yes | Explicitly accepts fiscally sponsored orgs |
+| Google.org | Yes | Accepts nonprofits and civic entities under fiscal sponsorship |
+| EU Ukraine Investment Framework | N/A | Institutional partnership; entity structure less relevant |
+| Cisco Global Impact | Yes | Requires 501(c)(3) — fiscal sponsor qualifies |
+| Twilio Impact Fund | Yes | Accepts fiscally sponsored projects |
+| Tech Impact | Likely yes | Requires 501(c)(3) + $500K budget — sponsor's budget may qualify |
+| Okta for Good | Yes | Accepts recognized nonprofits including sponsored projects |
+| Microsoft Nonprofit | Yes | Accepts fiscally sponsored orgs via TechSoup verification |
+| GlobalGiving | Yes | Requires fiscal sponsor if no independent status |
+
+**Important fiscal sponsorship considerations:**
+- **Overhead fee:** Fiscal sponsors typically charge 5–15% of grant funds as an administrative fee
+- **Grant language:** Applications should clearly name both the fiscal sponsor and Hromada as the project
+- **Timeline:** You can apply for grants immediately under a fiscal sponsor — no need to wait for your own 501(c)(3)
+- **Transition plan:** When Hromada obtains its own 501(c)(3), active grants can typically be transferred from the sponsor to the new entity (with funder approval)
+
+**Recommended fiscal sponsor characteristics:**
+- Mission alignment with Ukraine aid, civic technology, or international development
+- Experience sponsoring technology or international projects
+- Transparent fee structure
+- Willingness to support grant applications and compliance reporting
+
+- **EU entity requirements:** Some European grants require an EU-based legal entity or partnership with one. A US fiscal sponsor does not solve this — for EU-only grants, consider partnering with a European NGO or establishing a European entity.
+- **Partnership strategy:** For larger institutional grants (EIB, World Bank, Nefco), Hromada may need to partner with an established implementing organization rather than apply directly. A fiscal sponsor strengthens credibility here.
 
 ### USAID / US Government Funding
 - USAID is closed. US government funding for Ukraine civilian aid is at its lowest point since the full-scale invasion.
@@ -197,7 +238,7 @@ These are well-aligned but may require Hromada to be further developed, partner 
 ## Recommended Next Steps
 
 ### Immediate (March–April 2026)
-1. **Verify nonprofit status** — Confirm or initiate 501(c)(3) filing (required for most US tech grants)
+1. **Secure fiscal sponsor** — Partner with a 501(c)(3) fiscal sponsor to enable immediate grant applications while pursuing independent status
 2. **Register on grant platforms** — Create accounts on Instrumentl, GrantStation, and the Common Grant Application platform (Elrha)
 3. **Monitor ICTworks** — Set up alerts for new digital development grant postings
 4. **Apply to Microsoft Nonprofit Program** — Quick win for infrastructure cost savings

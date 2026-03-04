@@ -203,7 +203,7 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
               <img
                 src={partner.logo}
                 alt={partner.name}
-                className={`${isSection ? ((partner as any).sectionHeight || (partner as any).height || 'h-14') : ((partner as any).height || 'h-12')} w-auto object-contain pointer-events-none`}
+                className={`${isSection ? ((partner as any).sectionHeight || (partner as any).height || 'h-16') : ((partner as any).height || 'h-16')} w-auto object-contain pointer-events-none`}
                 loading="lazy"
                 draggable={false}
               />

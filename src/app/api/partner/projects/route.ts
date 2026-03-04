@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifyPartnerAuth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { parseBody, projectSubmissionSchema } from '@/lib/validations'
+import { sendProjectSubmissionNotification, sendProjectSubmissionConfirmation } from '@/lib/email'
 import type { Urgency } from '@prisma/client'
 
 // GET /api/partner/projects - List partner's own project submissions
@@ -75,6 +76,35 @@ export async function POST(request: NextRequest) {
         submittedByUserId: session.userId,
       },
     })
+
+    // Look up partner account email for confirmation (not the project contact)
+    const partnerUser = await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { email: true, name: true },
+    })
+
+    // Send email notifications (fire-and-forget)
+    sendProjectSubmissionNotification({
+      facilityName: body.facilityName,
+      municipalityName: body.municipalityName,
+      municipalityEmail: body.municipalityEmail,
+      region: body.region || undefined,
+      category: body.category,
+      projectType: body.projectType,
+      urgency,
+      briefDescription: body.briefDescription,
+      contactName: body.contactName,
+      contactEmail: body.contactEmail,
+      contactPhone: body.contactPhone || undefined,
+      photoCount: body.photos?.length || 0,
+      edrpou: body.edrpou || undefined,
+    }).catch((e) => console.error('Failed to send admin notification:', e))
+
+    sendProjectSubmissionConfirmation({
+      contactName: partnerUser?.name || body.contactName,
+      contactEmail: partnerUser?.email || body.contactEmail.trim().toLowerCase(),
+      facilityName: body.facilityName,
+    }).catch((e) => console.error('Failed to send submission confirmation:', e))
 
     return NextResponse.json({ submission }, { status: 201 })
   } catch (error) {

@@ -30,7 +30,7 @@ interface FormData {
   technicalPowerKw: string
   numberOfPanels: string
   cofinancingAvailable: string
-  cofinancingDetails: string
+  cofinancingPercent: string
   cityName: string
   address: string
   cityLatitude: string
@@ -58,7 +58,7 @@ const initialFormData: FormData = {
   technicalPowerKw: '',
   numberOfPanels: '',
   cofinancingAvailable: '',
-  cofinancingDetails: '',
+  cofinancingPercent: '0',
   cityName: '',
   address: '',
   cityLatitude: '',
@@ -200,10 +200,20 @@ export default function PartnerNewProjectPage() {
 
     setIsSubmitting(true)
     try {
+      // Serialize cofinancing percent into cofinancingDetails string for the API
+      let cofinancingDetails = ''
+      if (formData.cofinancingAvailable === 'YES' && Number(formData.cofinancingPercent) > 0) {
+        const pct = formData.cofinancingPercent
+        const cost = Number(formData.estimatedCostUsd)
+        cofinancingDetails = cost > 0
+          ? `${pct}% ($${Math.round(cost * Number(pct) / 100).toLocaleString()})`
+          : `${pct}%`
+      }
+
       const response = await fetch('/api/partner/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, cofinancingDetails }),
       })
 
       if (response.ok) {
@@ -498,14 +508,28 @@ export default function PartnerNewProjectPage() {
               </div>
               {formData.cofinancingAvailable === 'YES' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     {t('submitProject.fields.cofinancingDetails')}
                   </label>
-                  <Input
-                    value={formData.cofinancingDetails}
-                    onChange={handleChange('cofinancingDetails')}
-                    placeholder={t('submitProject.fields.cofinancingPlaceholder')}
-                  />
+                  <div className="space-y-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      step="1"
+                      value={formData.cofinancingPercent}
+                      onChange={handleChange('cofinancingPercent')}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[var(--navy-600)]"
+                    />
+                    <p className="text-sm font-medium text-gray-900">
+                      Co-financing: {formData.cofinancingPercent}%
+                      {formData.estimatedCostUsd && Number(formData.estimatedCostUsd) > 0 && (
+                        <span className="text-gray-600">
+                          {' '}(${Math.round(Number(formData.estimatedCostUsd) * Number(formData.cofinancingPercent) / 100).toLocaleString()})
+                        </span>
+                      )}
+                    </p>
+                  </div>
                 </div>
               )}
             </CardContent>

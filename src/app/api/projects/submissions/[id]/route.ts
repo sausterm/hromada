@@ -52,11 +52,16 @@ export async function PATCH(
 
     const submission = await prisma.projectSubmission.findUnique({
       where: { id },
+      include: { submittedByUser: true },
     })
 
     if (!submission) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 })
     }
+
+    // Email the partner account that submitted, not the on-the-ground project contact
+    const partnerEmail = submission.submittedByUser?.email || submission.contactEmail
+    const partnerName = submission.submittedByUser?.name || submission.contactName
 
     if (submission.status !== 'PENDING') {
       return NextResponse.json({ error: 'Submission has already been processed' }, { status: 400 })
@@ -134,10 +139,10 @@ export async function PATCH(
         },
       })
 
-      // Send branded approval email
+      // Send branded approval email to the partner account
       await sendProjectApprovalEmail({
-        contactName: submission.contactName,
-        contactEmail: submission.contactEmail,
+        contactName: partnerName,
+        contactEmail: partnerEmail,
         facilityName: submission.facilityName,
         projectId: project.id,
       }).catch((e) => console.error('Failed to send approval email:', e))
@@ -163,10 +168,10 @@ export async function PATCH(
         },
       })
 
-      // Send branded rejection email
+      // Send branded rejection email to the partner account
       await sendProjectRejectionEmail({
-        contactName: submission.contactName,
-        contactEmail: submission.contactEmail,
+        contactName: partnerName,
+        contactEmail: partnerEmail,
         facilityName: submission.facilityName,
         rejectionReason: rejectionReason.trim(),
       }).catch((e) => console.error('Failed to send rejection email:', e))

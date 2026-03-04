@@ -185,7 +185,8 @@ export async function PATCH(
     }
   } catch (error) {
     console.error('Failed to process submission:', error)
-    return NextResponse.json({ error: 'Failed to process submission' }, { status: 500 })
+    const detail = error instanceof Error ? error.message : String(error)
+    return NextResponse.json({ error: 'Failed to process submission', detail }, { status: 500 })
   }
 }
 

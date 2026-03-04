@@ -193,6 +193,16 @@ export const PROJECT_TYPE_CONFIG: Record<ProjectType, { label: string; color: st
     color: '#8B7355',  // Warm taupe
     icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'  // Home
   },
+  WATER_TREATMENT: {
+    label: 'Water Treatment',
+    color: '#5B8FA8',  // Muted teal
+    icon: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>'  // Droplet
+  },
+  GENERAL: {
+    label: 'General',
+    color: '#8B7355',  // Warm taupe
+    icon: '<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>'  // Factory
+  },
 }
 
 // Co-financing status display info

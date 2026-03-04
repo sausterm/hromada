@@ -13,10 +13,18 @@ let client: SESv2Client | null = null
 function getClient(): SESv2Client | null {
   if (client) return client
 
-  // In AWS (Amplify), credentials come from the IAM role automatically.
-  // Locally, the SDK uses ~/.aws/credentials or env vars.
   try {
-    client = new SESv2Client({ region: SES_REGION })
+    client = new SESv2Client({
+      region: SES_REGION,
+      ...(process.env.SES_ACCESS_KEY_ID && process.env.SES_SECRET_ACCESS_KEY
+        ? {
+            credentials: {
+              accessKeyId: process.env.SES_ACCESS_KEY_ID,
+              secretAccessKey: process.env.SES_SECRET_ACCESS_KEY,
+            },
+          }
+        : {}),
+    })
     return client
   } catch (error) {
     console.warn('Failed to initialize SES client:', error)

@@ -30,7 +30,7 @@ frontend:
           echo "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" >> .env.production
     build:
       commands:
-        - npm run build
+        - NODE_OPTIONS=--max-old-space-size=8192 npm run build
         - find .next -name '*.map' -delete
         - cp .env.production .next/.env.production
         - cp .env.production .next/standalone/.env.production 2>/dev/null || true

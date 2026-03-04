@@ -8,7 +8,7 @@ export type Urgency = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 export type Status = 'OPEN' | 'IN_DISCUSSION' | 'MATCHED' | 'FULFILLED'
 
 // Project type for renewable energy projects
-export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION'
+export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION' | 'WATER_TREATMENT' | 'GENERAL'
 
 // Co-financing availability status
 export type CofinancingStatus = 'YES' | 'NO' | 'NEEDS_CLARIFICATION'

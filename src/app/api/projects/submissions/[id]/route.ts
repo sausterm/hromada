@@ -95,6 +95,12 @@ export async function PATCH(
         console.log('[approve] Content appears to be in Ukrainian, skipping translation')
       }
 
+      // Validate projectType against Prisma enum (UI types may be ahead of DB schema)
+      const VALID_PROJECT_TYPES = ['SOLAR_PV', 'HEAT_PUMP', 'WATER_TREATMENT', 'GENERAL']
+      const safeProjectType = VALID_PROJECT_TYPES.includes(submission.projectType)
+        ? submission.projectType
+        : null
+
       // Create a new Project from the submission
       const project = await prisma.project.create({
         data: {
@@ -111,7 +117,7 @@ export async function PATCH(
           contactPhone: submission.contactPhone,
           urgency: submission.urgency,
           status: 'OPEN',
-          projectType: submission.projectType as any || null,
+          projectType: safeProjectType as any,
           projectSubtype: submission.projectSubtype,
           technicalPowerKw: submission.technicalPowerKw,
           numberOfPanels: submission.numberOfPanels,

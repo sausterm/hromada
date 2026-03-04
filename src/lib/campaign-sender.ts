@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/ses'
-import { emailLayout } from '@/lib/email-template'
-import type { EmailCampaign, CampaignStatus } from '@prisma/client'
+import type { CampaignStatus } from '@prisma/client'
 
 const BATCH_SIZE = 50
 const BATCH_DELAY_MS = 200
@@ -68,14 +67,17 @@ export async function sendCampaign(campaignId: string): Promise<{
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
         const unsubscribeLink = `${appUrl}/unsubscribe?token=${sub.unsubscribeToken}`
 
-        const htmlWithFooter = emailLayout(campaign.htmlContent, {
-          unsubscribeUrl: unsubscribeLink,
-        })
+        // htmlContent is already wrapped in emailLayout by the preview route.
+        // Just replace the placeholder unsubscribe link with the real per-subscriber URL.
+        const html = campaign.htmlContent.replace(
+          /href="#"([^>]*>Unsubscribe)/g,
+          `href="${unsubscribeLink}"$1`
+        )
 
         const result = await sendEmail({
           to: sub.email,
           subject: campaign.subject,
-          html: htmlWithFooter,
+          html,
         })
 
         // Update EmailSend record

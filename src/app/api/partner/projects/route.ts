@@ -83,8 +83,8 @@ export async function POST(request: NextRequest) {
       select: { email: true, name: true },
     })
 
-    // Send email notifications (fire-and-forget)
-    sendProjectSubmissionNotification({
+    // Send email notifications (must await — Amplify tears down the function after response)
+    await sendProjectSubmissionNotification({
       facilityName: body.facilityName,
       municipalityName: body.municipalityName,
       municipalityEmail: body.municipalityEmail,
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       edrpou: body.edrpou || undefined,
     }).catch((e) => console.error('Failed to send admin notification:', e))
 
-    sendProjectSubmissionConfirmation({
+    await sendProjectSubmissionConfirmation({
       contactName: partnerUser?.name || body.contactName,
       contactEmail: partnerUser?.email || body.contactEmail.trim().toLowerCase(),
       facilityName: body.facilityName,

@@ -17,10 +17,19 @@ import {
   emailProcessFlow,
 } from '@/lib/email-template'
 
-// Only create SES client if region is configured
-// On AWS Amplify, credentials come from the IAM role automatically
+// Create SES client with explicit credentials (Amplify compute doesn't inherit IAM role)
 const ses = process.env.SES_REGION
-  ? new SESClient({ region: process.env.SES_REGION })
+  ? new SESClient({
+      region: process.env.SES_REGION,
+      ...(process.env.SES_ACCESS_KEY_ID && process.env.SES_SECRET_ACCESS_KEY
+        ? {
+            credentials: {
+              accessKeyId: process.env.SES_ACCESS_KEY_ID,
+              secretAccessKey: process.env.SES_SECRET_ACCESS_KEY,
+            },
+          }
+        : {}),
+    })
   : null
 
 const FROM_DONOR = process.env.SES_FROM_DONOR || 'thomas@hromadaproject.org'
@@ -1029,7 +1038,7 @@ export async function sendProjectUpdateEmail({
 
     await sendEmail({
       to: donorEmail,
-      subject: `Project update: ${s(projectName)}`,
+      subject: `Project update: ${projectName}`,
       html: emailLayout(body, { preheader: s(updateTitle) }),
     })
 

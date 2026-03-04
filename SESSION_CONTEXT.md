@@ -1,8 +1,8 @@
 # Session Context — Hromada
 
-**Date**: 2026-03-02
+**Date**: 2026-03-04
 **Branch**: `v2-payment-processing`
-**Status**: Project updates system built, Horenka case study live, homepage redesigned, donor/partner/admin dashboards functional
+**Status**: Amplify build fixed (webpack flag), password reset verified locally, demo site deployed. SES emails blocked on Amplify service role (see handoff below).
 
 ---
 
@@ -225,12 +225,22 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 ## Amplify Deploy Status
 
 - **App ID**: `d3lasyv0tebbph`
-- **Deploys succeeding** — build issues resolved, ISR cache clearing added
+- **AWS Account**: Thomas's (582500931967). Sloan has CLI access via `--profile hromada`.
+- **Deploys succeeding** — build uses `next build --webpack` to avoid Turbopack symlink issue
+- **Build command**: `NODE_OPTIONS=--max-old-space-size=8192 npm run build` (8GB heap for OOM protection)
 - **On-demand revalidation** — `/api/revalidate` endpoint for clearing ISR cache
-- **Env vars restored**: All env vars from `.env.local` are now in Amplify (DATABASE_URL, DIRECT_URL, DEEPL_API_KEY, SITE_PASSWORD, SESSION_SECRET, HROMADA_ADMIN_SECRET, NEXT_PUBLIC_* vars). Previously only a subset was configured.
-- **SITE_PASSWORD**: Was missing from Amplify, causing "Site access is not configured" on hromadaproject.org. Now set.
-- **AWS CLI available**: `aws amplify list-jobs --app-id d3lasyv0tebbph --branch-name v2-payment-processing`
-- **Warning**: `aws amplify update-app --environment-variables` REPLACES all env vars, not just the ones specified. Always include all vars when updating. Use `--cli-input-json file://` with a JSON file to avoid shell escaping issues with special characters (!, @, etc.).
+- **Custom domains**: `demo.hromadaproject.org` → `v2-payment-processing`, `hromadaproject.org` / `www` → `main`
+- **Env vars**: All configured including `SES_REGION=us-east-1` (added 2026-03-04). See `Vault/reports/2026-03-04-webpack-build-fix.md` for full list.
+- **AWS CLI**: `aws amplify list-jobs --app-id d3lasyv0tebbph --branch-name v2-payment-processing --profile hromada`
+- **Warning**: `aws amplify update-branch --environment-variables` REPLACES all env vars, not just the ones specified. Always include all vars when updating.
+
+### BLOCKER: Amplify Service Role (Thomas action required)
+
+The Amplify app has **no IAM service role**. The compute function can't call SES — password reset emails fail silently on demo site. See `Vault/reports/2026-03-04-webpack-build-fix.md` for exact steps Thomas needs to take (update trust policy on `Hromada-LambdaExecRole`, attach to Amplify app). Takes ~2 minutes.
+
+### SES Sandbox Mode
+
+SES is in sandbox on Thomas's account — can only send to verified addresses. Verified: `hromadaproject.org` (domain), `thomasprotzman@proton.me`, `tprotzmant+test1@gmail.com`, `sloanaustermann@proton.me`, `sloantaustermann@gmail.com`. Thomas should request production access for launch.
 
 ---
 

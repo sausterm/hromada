@@ -14,6 +14,8 @@
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
 - [/] Email system — design and curate donor lifecycle emails #p2 @tom
 - [x] Admin newsletter compose page — write, preview, send to subscribers #p2 @tom
+- [x] Amplify build fix — `--webpack` flag, OOM protection, font/Buffer fixes #p0 @sloan
+- [/] Amplify service role for SES — Thomas needs to attach `Hromada-LambdaExecRole` to Amplify app #p0 @tom
 
 ## To Do
 

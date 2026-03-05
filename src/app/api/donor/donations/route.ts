@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await verifyAuth(request)
     const allowedRoles = ['DONOR', 'ADMIN', 'PARTNER', 'NONPROFIT_MANAGER']
-    if (!session || !allowedRoles.includes(session.role)) {
+    if (!session || !session.role || !allowedRoles.includes(session.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

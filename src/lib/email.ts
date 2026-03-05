@@ -996,7 +996,7 @@ interface ProjectUpdateEmailParams {
   projectId: string
   updateTitle: string
   updateMessage: string
-  tenderID: string
+  tenderID?: string
 }
 
 export async function sendProjectUpdateEmail({

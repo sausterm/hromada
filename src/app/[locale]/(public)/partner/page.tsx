@@ -233,14 +233,14 @@ export default function PartnerDashboardPage() {
                             <div className="flex gap-2 justify-center">
                               {submission.status === 'APPROVED' && submission.approvedProjectId ? (
                                 <>
-                                  <Link href={`/projects/${submission.approvedProjectId}`}>
+                                  <Link href={`/donor/projects/${submission.approvedProjectId}`}>
                                     <Button variant="ghost" size="sm">
                                       {t('partner.projects.viewDetails')}
                                     </Button>
                                   </Link>
                                   <Link href={`/partner/projects/${submission.approvedProjectId}/update`}>
                                     <Button variant="outline" size="sm">
-                                      Post Update
+                                      {t('partner.projects.postUpdate')}
                                     </Button>
                                   </Link>
                                 </>

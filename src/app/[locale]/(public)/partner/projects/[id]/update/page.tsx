@@ -72,8 +72,8 @@ export default function PartnerPostUpdatePage() {
     setIsSubmitting(true)
     try {
       const body: Record<string, string> = { title, message, type }
-      if (type === 'PHOTO_ADDED' && photos[0]) {
-        body.photoUrl = photos[0]
+      if (type === 'PHOTO_ADDED' && photos.length > 0) {
+        body.photoUrls = JSON.stringify(photos)
       }
 
       const res = await fetch(`/api/projects/${projectId}/updates`, {
@@ -187,7 +187,7 @@ export default function PartnerPostUpdatePage() {
                   <PublicImageUpload
                     images={photos}
                     onChange={setPhotos}
-                    maxImages={1}
+                    maxImages={5}
                   />
                 </div>
               )}

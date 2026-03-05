@@ -17,6 +17,12 @@ import {
   PROJECT_TYPE_CONFIG,
 } from '@/types'
 
+const PARTNER_ORGANIZATIONS = [
+  'Ecoaction',
+  'Ecoclub Rivne',
+  'Greenpeace Ukraine',
+] as const
+
 interface FormData {
   municipalityName: string
   municipalityEmail: string
@@ -38,7 +44,8 @@ interface FormData {
   contactName: string
   contactEmail: string
   contactPhone: string
-  partnerOrganization: string
+  partnerOrganization: string[]
+  partnerOrganizationOther: string
   edrpou: string
   projectSubtype: string
   additionalNotes: string
@@ -67,7 +74,8 @@ const initialFormData: FormData = {
   contactEmail: '',
   contactPhone: '',
   edrpou: '',
-  partnerOrganization: '',
+  partnerOrganization: [],
+  partnerOrganizationOther: '',
   projectSubtype: '',
   additionalNotes: '',
   photos: [],
@@ -81,6 +89,7 @@ export default function PartnerNewProjectPage() {
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showOtherPartner, setShowOtherPartner] = useState(false)
   const [isGeocoding, setIsGeocoding] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
@@ -88,7 +97,13 @@ export default function PartnerNewProjectPage() {
   // Pre-fill partner organization from user
   useEffect(() => {
     if (user?.organization) {
-      setFormData((prev) => ({ ...prev, partnerOrganization: user.organization || '' }))
+      const org = user.organization
+      if (PARTNER_ORGANIZATIONS.includes(org as typeof PARTNER_ORGANIZATIONS[number])) {
+        setFormData((prev) => ({ ...prev, partnerOrganization: [org] }))
+      } else {
+        setFormData((prev) => ({ ...prev, partnerOrganizationOther: org }))
+        setShowOtherPartner(true)
+      }
     }
   }, [user])
 
@@ -210,10 +225,17 @@ export default function PartnerNewProjectPage() {
           : `${pct}%`
       }
 
+      // Combine selected partner orgs + other into comma-separated string
+      const allPartnerOrgs = [
+        ...formData.partnerOrganization,
+        ...(formData.partnerOrganizationOther.trim() ? [formData.partnerOrganizationOther.trim()] : []),
+      ]
+      const partnerOrganization = allPartnerOrgs.join(', ')
+
       const response = await fetch('/api/partner/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, cofinancingDetails }),
+        body: JSON.stringify({ ...formData, partnerOrganization, cofinancingDetails }),
       })
 
       if (response.ok) {
@@ -271,6 +293,7 @@ export default function PartnerNewProjectPage() {
                 <Button variant="outline" onClick={() => {
                   setSubmitSuccess(false)
                   setFormData(initialFormData)
+                  setShowOtherPartner(false)
                 }}>
                   {t('submitProject.buttons.submitAnother')}
                 </Button>
@@ -645,15 +668,53 @@ export default function PartnerNewProjectPage() {
                     placeholder={t('submitProject.fields.phonePlaceholder')}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('submitProject.fields.partnerOrganization')}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('submitProject.fields.partnerOrganization')}
+                </label>
+                <div className="space-y-2">
+                  {PARTNER_ORGANIZATIONS.map((org) => (
+                    <label key={org} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.partnerOrganization.includes(org)}
+                        onChange={(e) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            partnerOrganization: e.target.checked
+                              ? [...prev.partnerOrganization, org]
+                              : prev.partnerOrganization.filter((o) => o !== org),
+                          }))
+                        }}
+                        className="h-4 w-4 rounded border-gray-300 text-[var(--navy-600)] focus:ring-[var(--navy-500)]"
+                      />
+                      <span className="text-sm text-gray-700">{org}</span>
+                    </label>
+                  ))}
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showOtherPartner}
+                      onChange={(e) => {
+                        setShowOtherPartner(e.target.checked)
+                        if (!e.target.checked) {
+                          setFormData((prev) => ({ ...prev, partnerOrganizationOther: '' }))
+                        }
+                      }}
+                      className="h-4 w-4 rounded border-gray-300 text-[var(--navy-600)] focus:ring-[var(--navy-500)]"
+                    />
+                    <span className="text-sm text-gray-700">Other</span>
                   </label>
-                  <Input
-                    value={formData.partnerOrganization}
-                    onChange={handleChange('partnerOrganization')}
-                    placeholder={t('submitProject.fields.partnerPlaceholder')}
-                  />
+                  {showOtherPartner && (
+                    <div className="ml-6">
+                      <Input
+                        value={formData.partnerOrganizationOther}
+                        onChange={handleChange('partnerOrganizationOther')}
+                        placeholder={t('submitProject.fields.partnerPlaceholder')}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>

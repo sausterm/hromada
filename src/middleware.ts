@@ -33,7 +33,7 @@ const PROTECTED_ROUTES: Record<string, string[]> = {
   '/admin': ['ADMIN'],
   '/nonprofit': ['NONPROFIT_MANAGER', 'ADMIN'],
   '/partner': ['PARTNER', 'ADMIN'],
-  '/donor': ['DONOR', 'ADMIN'],
+  '/donor': ['DONOR', 'ADMIN', 'PARTNER', 'NONPROFIT_MANAGER'],
 };
 
 // Create the internationalization middleware

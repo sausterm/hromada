@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAuth } from '@/lib/auth'
 import { z } from 'zod'
+import { notifyDonors } from '@/lib/notify-donors'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -12,6 +13,7 @@ const createUpdateSchema = z.object({
   message: z.string().min(1).max(2000),
   type: z.enum(['MANUAL', 'PHOTO_ADDED']),
   photoUrl: z.string().url().optional(),
+  photoUrls: z.string().optional(),
 })
 
 // POST /api/projects/[id]/updates — Create a manual project update
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     // Verify the project exists
     const project = await prisma.project.findUnique({
       where: { id: projectId },
-      select: { id: true },
+      select: { id: true, facilityName: true },
     })
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
@@ -61,7 +63,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       )
     }
 
-    const { title, message, type, photoUrl } = parsed.data
+    const { title, message, type, photoUrl, photoUrls: photoUrlsRaw } = parsed.data
+    const photoUrls: string[] = photoUrlsRaw ? JSON.parse(photoUrlsRaw) : photoUrl ? [photoUrl] : []
 
     // Look up user for author info
     const user = await prisma.user.findUnique({
@@ -79,13 +82,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         type,
         title,
         message,
-        metadata: photoUrl ? { photoUrl } : undefined,
+        metadata: photoUrls.length > 0 ? { photoUrl: photoUrls[0], photoUrls } : undefined,
         isPublic: true,
         createdById: session.userId,
         createdByName,
         createdByRole,
       },
     })
+
+    // Fire-and-forget: notify donors who funded this project
+    notifyDonors(projectId, project.facilityName, {
+      title,
+      message,
+    }).catch(err => console.error('[update-notify] Failed:', err))
 
     return NextResponse.json({ update }, { status: 201 })
   } catch (error) {

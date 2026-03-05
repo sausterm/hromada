@@ -10,7 +10,7 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 
 - [x] Research FSA models (Model A vs Model C), templates, and standard language #p0 @sloan
 - [x] Draft Fiscal Sponsorship Agreement — first draft for POCACITO + attorney review #p0 @sloan @tom
-- [/] Review FSA draft with POCACITO board #p0 @tom
+- [/] POCACITO board review (board meets March 27) #p0 @tom
 - [x] Attorney review and finalization of FSA #p0 @tom
 - [ ] Sign FSA with POCACITO Network #p0
 - [ ] Obtain real bank details from POCACITO (routing, account, SWIFT) #p0 @sloan
@@ -35,12 +35,20 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 - [x] Financial transaction audit trail — append-only TransactionEvent table for donation/wire lifecycle #p1 @sloan
 - [ ] Plaid integration — auto-detect incoming wire transfers #p1
 - [ ] Wise API integration — track outbound transfers to Ukraine #p1
-- [ ] Connect nonprofit dashboard APIs (currently returns mock data) #p1
+- [x] Connect nonprofit dashboard APIs — already wired to real Prisma queries #p1
 - [x] Donor password reset flow #p2
-- [ ] Receipt/tax documentation generation (PDF) #p2
+- [x] Receipt/tax documentation generation (PDF) — @react-pdf/renderer, IRS-compliant #p2 @tom
 - [ ] Email notifications on donation status changes #p2
 - [ ] ACH payment method support #p3
 - [ ] Donation matching campaigns #p3
+
+## Soft Launch Prep (Target ~March 14) #p0
+
+- [ ] Remove site password (or convert to soft-launch invite list) #p0 @tom
+- [ ] Hide/disable donation flow and bank details for directory mode #p0
+- [ ] Remove POCACITO/FSA branding for directory-only mode #p1
+- [ ] Ensure Ecoaction projects are submitted, approved, and browsable #p0 @tom
+- [ ] Move EventBridge cron target back to hromadaproject.org #p1 @tom
 
 ## Communications & Outreach #p1
 
@@ -52,6 +60,9 @@ Emails:
 - [x] Project update email (triggered by partner status updates) #p2 @tom
 - [x] Press release template — project completed (#18) #p2 @tom
 - [x] Admin newsletter compose page — write, preview, send to subscribers #p2 @tom
+- [x] Email system production-ready — SES credentials, recipient routing, newsletter sending all working #p0 @tom
+- [x] Fix newsletter double-logo bug (campaign sender double-wrapping emailLayout) #p2 @tom
+- [ ] Request SES production access (exit sandbox) — currently can only send to verified addresses #p1 @tom
 - [ ] Auto-send project completed press release (#18) on COMPLETED status — pulls all data from DB, sends to all subscribers #p2 @tom
 
 Press releases (only):

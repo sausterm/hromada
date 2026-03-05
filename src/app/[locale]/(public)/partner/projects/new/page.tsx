@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { PublicImageUpload } from '@/components/forms/PublicImageUpload'
+import { DocumentUpload } from '@/components/forms/DocumentUpload'
 import {
   type Category,
   CATEGORY_CONFIG,
@@ -50,6 +51,7 @@ interface FormData {
   projectSubtype: string
   additionalNotes: string
   photos: string[]
+  documents: Array<{ key: string; filename: string; size: number }>
 }
 
 const initialFormData: FormData = {
@@ -79,6 +81,7 @@ const initialFormData: FormData = {
   projectSubtype: '',
   additionalNotes: '',
   photos: [],
+  documents: [],
 }
 
 export default function PartnerNewProjectPage() {
@@ -235,7 +238,12 @@ export default function PartnerNewProjectPage() {
       const response = await fetch('/api/partner/projects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, partnerOrganization, cofinancingDetails }),
+        body: JSON.stringify({
+          ...formData,
+          partnerOrganization,
+          cofinancingDetails,
+          documents: formData.documents.map((d) => d.key),
+        }),
       })
 
       if (response.ok) {
@@ -767,6 +775,28 @@ export default function PartnerNewProjectPage() {
                 images={formData.photos}
                 onChange={handlePhotosChange}
                 maxImages={5}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Project Documents */}
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Supporting Documents{' '}
+                <span className="text-gray-400 font-normal">({t('submitProject.sections.optional')})</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-500 mb-4">
+                Upload cost estimates, engineering assessments, or other project documentation as PDFs.
+              </p>
+              <DocumentUpload
+                documents={formData.documents}
+                onChange={(documents) => setFormData((prev) => ({ ...prev, documents }))}
+                partnerOrg={formData.partnerOrganization.join(', ') || 'unknown'}
+                projectName={formData.facilityName || 'unnamed'}
+                maxDocuments={10}
               />
             </CardContent>
           </Card>

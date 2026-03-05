@@ -12,6 +12,8 @@
 - [x] Donor project timeline page — full progress view for funded projects #p1 @tom
 - [/] 2-pager explainer handout (Figma) #p1 @tom
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
+- [/] Ecoaction project docs in repo (Lychkove + Samar) — needs Sloan review and partner submission #p0 @sloan
+- [x] S3 document upload pipeline — staging→production flow for partner PDF submissions #p1 @tom
 
 ## To Do
 

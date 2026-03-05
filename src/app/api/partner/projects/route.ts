@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
         projectSubtype: body.projectSubtype || null,
         additionalNotes: body.additionalNotes?.substring(0, 1000) || null,
         photos: body.photos || [],
+        documents: body.documents || [],
         submittedByUserId: session.userId,
       },
     })

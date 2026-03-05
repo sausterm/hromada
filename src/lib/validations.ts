@@ -93,6 +93,7 @@ export const projectSubmissionSchema = z.object({
   projectSubtype: z.string().max(255).optional().nullable(),
   additionalNotes: z.string().max(1000).optional().nullable(),
   photos: z.array(z.string().url()).max(5).optional(),
+  documents: z.array(z.string().max(500)).max(10).optional(),
   edrpou: z.string().regex(/^\d{8}$/, 'EDRPOU must be exactly 8 digits').optional(),
   submittedByUserId: z.string().optional(),
 })

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { translateProjectToUkrainian, detectLanguage } from '@/lib/translate'
 import { verifyAdminAuth } from '@/lib/auth'
 import { sendProjectApprovalEmail, sendProjectRejectionEmail } from '@/lib/email'
+import { promoteDocuments, deleteFromStaging, getProductionUrl } from '@/lib/s3'
 
 // GET - Get single submission
 export async function GET(
@@ -134,6 +135,26 @@ export async function PATCH(
         },
       })
 
+      // Promote documents from staging to production and create ProjectDocument records
+      if (submission.documents && submission.documents.length > 0) {
+        const promotedCount = await promoteDocuments(submission.documents)
+        console.log(`[approve] Promoted ${promotedCount}/${submission.documents.length} documents`)
+
+        // Create ProjectDocument records for each promoted document
+        for (const key of submission.documents) {
+          const filename = key.split('/').pop() || key
+          await prisma.projectDocument.create({
+            data: {
+              projectId: project.id,
+              url: getProductionUrl(key),
+              filename,
+              documentType: 'OTHER',
+              extractionStatus: 'pending',
+            },
+          })
+        }
+      }
+
       // Update submission status
       await prisma.projectSubmission.update({
         where: { id },
@@ -161,6 +182,12 @@ export async function PATCH(
     } else if (action === 'reject') {
       if (!rejectionReason?.trim()) {
         return NextResponse.json({ error: 'Rejection reason is required' }, { status: 400 })
+      }
+
+      // Clean up staged documents
+      if (submission.documents && submission.documents.length > 0) {
+        const deletedCount = await deleteFromStaging(submission.documents)
+        console.log(`[reject] Deleted ${deletedCount}/${submission.documents.length} staged documents`)
       }
 
       // Update submission status

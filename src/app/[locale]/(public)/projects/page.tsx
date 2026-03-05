@@ -433,6 +433,7 @@ export default function ProjectsPage() {
                 ref={priceButtonRef}
                 aria-expanded={isPriceDropdownOpen}
                 aria-controls={priceDropdownId}
+                onClick={() => toggleDropdown(isPriceDropdownOpen, setIsPriceDropdownOpen)}
                 onMouseEnter={() => openDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsPriceDropdownOpen, priceTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 py-1.5 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border w-[130px] ${
@@ -573,6 +574,7 @@ export default function ProjectsPage() {
             <div className="relative shrink-0">
               <button
                 ref={projectTypeButtonRef}
+                onClick={() => toggleDropdown(isProjectTypeOpen, setIsProjectTypeOpen)}
                 onMouseEnter={() => openDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsProjectTypeOpen, projectTypeTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${
@@ -623,6 +625,7 @@ export default function ProjectsPage() {
                 ref={powerButtonRef}
                 aria-expanded={isPowerDropdownOpen}
                 aria-controls={powerDropdownId}
+                onClick={() => toggleDropdown(isPowerDropdownOpen, setIsPowerDropdownOpen)}
                 onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 py-1.5 rounded-full text-sm font-medium transition-all shrink-0 whitespace-nowrap border w-[140px] ${
@@ -734,6 +737,7 @@ export default function ProjectsPage() {
             <div className="relative shrink-0">
               <button
                 ref={cofinancingButtonRef}
+                onClick={() => toggleDropdown(isCofinancingOpen, setIsCofinancingOpen)}
                 onMouseEnter={() => openDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
                 onMouseLeave={() => closeDropdown(setIsCofinancingOpen, cofinancingTimeoutRef)}
                 className={`inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all whitespace-nowrap border ${

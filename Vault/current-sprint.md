@@ -1,7 +1,7 @@
 # Current Sprint
 
-**Sprint:** 2026-02-24 → 2026-03-10
-**Focus:** Donor experience + payment processing pipeline
+**Sprint:** 2026-03-03 → 2026-03-17
+**Focus:** Email system hardening, partner submission flow, launch readiness
 
 ---
 
@@ -9,13 +9,9 @@
 
 - [/] FSA submission to POCACITO — attorney-reviewed, awaiting board #p0 @tom
 - [/] Partner MoU with EcoAction — template done, finalizing #p1 @tom
-- [/] Donor project timeline page — full progress view for funded projects #p1 @tom
+- [x] Donor project timeline page — full progress view for funded projects #p1 @tom
 - [/] 2-pager explainer handout (Figma) #p1 @tom
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
-- [/] Email system — design and curate donor lifecycle emails #p2 @tom
-- [x] Admin newsletter compose page — write, preview, send to subscribers #p2 @tom
-- [x] Amplify build fix — `--webpack` flag, OOM protection, font/Buffer fixes #p0 @sloan
-- [/] Amplify service role for SES — Thomas needs to attach `Hromada-LambdaExecRole` to Amplify app #p0 @tom
 
 ## To Do
 
@@ -24,17 +20,18 @@
 - [ ] Obtain real bank details from POCACITO post-signing #p0 @tom
 - [ ] Replace placeholder bank details in SupportProjectCard #p0 @tom
 
-### Emails (Launch-Critical)
-All 16 templates built. Tax receipt PDF generator also built and integrated.
-- [ ] Review test emails #1–#15 in inbox #p1 @tom
+### Emails
+- [ ] Test remaining emails once payment flow is live (#3, #4, #8) #p1 @tom
+- [ ] Test project lifecycle emails (#12, #13, #15) when events occur #p2 @tom
+- [ ] Request SES production access (exit sandbox) before launch #p1 @tom
 
 ### Donor Experience
-- [ ] Connect nonprofit dashboard to real APIs (currently mock data) #p1 @tom
-- [ ] Refine donor project timeline page — photos, status badges, richer timeline #p1 @tom
+- [x] Connect nonprofit dashboard to real APIs — already wired to Prisma (donations/list, wire-transfers/list, donations/[id]/status) #p1 @tom
+- [x] Refine donor project timeline page — photos, status badges, richer timeline #p1 @tom
 
 ### Technical
 - [ ] Test full donation flow end-to-end with real bank details #p1 @tom
-- [ ] Set production environment variables in Amplify #p1 @tom
+- [ ] Move EventBridge cron target back to hromadaproject.org before launch #p1 @tom
 
 ### Pre-Launch
 - [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
@@ -44,6 +41,25 @@ All 16 templates built. Tax receipt PDF generator also built and integrated.
 
 ## Done
 
+### This Sprint (Mar 3–17)
+- [x] Email system fully operational — 10/10 testable emails confirmed working in production #p0 @tom
+- [x] SES credentials for Amplify compute — created IAM user `hromada-ses-sender` with explicit credentials #p0 @tom
+- [x] Fix SES credentials in `ses.ts` (campaign sender) — same Amplify credential issue #p1 @tom
+- [x] Fix partner submission emails (#9, #10) — added missing email calls to partner route #p1 @tom
+- [x] Fix email recipient — approval/rejection emails now go to partner account, not project contact #p1 @tom
+- [x] Fix fire-and-forget emails on Amplify — added `await` so Lambda doesn't tear down before send #p1 @tom
+- [x] Fix ADMIN_EMAIL — changed from placeholder `admin@example.com` to real address #p1 @tom
+- [x] Fix newsletter double-logo — removed double `emailLayout` wrapping in campaign sender #p2 @tom
+- [x] Cofinancing percentage slider on partner submission form — 0-100% range with calculated dollar amount #p2 @tom
+- [x] Partner org multi-select checkboxes — replace free-text input with Ecoaction/Ecoclub Rivne/Greenpeace Ukraine checkboxes + Other #p2 @tom
+- [x] Prisma enum sync — added BATTERY_STORAGE and THERMO_MODERNIZATION to ProjectType #p1 @tom
+- [x] PROJECT_TYPE_CONFIG — added WATER_TREATMENT and GENERAL entries #p1 @tom
+- [x] Safe projectType validation in approval flow — fallback to null for unknown types #p1 @tom
+- [x] EventBridge cron target updated to demo subdomain for v2 branch testing #p2 @tom
+- [x] Amplify build fix — `--webpack` flag, OOM protection, font/Buffer fixes #p0 @sloan
+- [x] Admin newsletter compose page — write, preview, send to subscribers #p2 @tom
+
+### Previous Sprints
 - [x] Tax receipt PDF generator — @react-pdf/renderer, IRS-compliant, integrated with donation FORWARDED flow #p0 @tom
 - [x] Admin newsletter compose — banner photo, featured projects (clickable, with metadata), stats, preview, draft/send #p2 @tom
 - [x] Fix Supabase storage RLS — created policies for project-images and tax-receipts buckets #p1 @tom
@@ -87,17 +103,27 @@ All 16 templates built. Tax receipt PDF generator also built and integrated.
 
 ## Sprint Notes
 
-- **FSA is the only blocker to launch** — all security work is complete
-- Horenka case study now uses real partner data (Ecoaction + Ecoclub + Greenpeace, €56K heat pump + solar)
-- Media carousel adds credibility — 7 major outlets featuring partner work
-- Calendly fully integrated with auto-mailing-list enrollment
-- Tax receipt PDF plan approved — implementation ready when prioritized
+- **Soft launch target: ~March 14** — matchmaking directory mode, no FSA/POCACITO references, no donation flow. Ecoaction already providing real projects.
+- **FSA signing target: March 28** — POCACITO board meets March 27, signing expected next day
+- **NGO partner meetings Friday (Mar 7):** Kostia (Ecoaction) and Natalia (Ecoclub Rivne) — MoU walkthroughs and expectations.
+- **Email system fully operational** — 10/10 testable emails confirmed working (Mar 4)
+  - Tested: #1 (password reset), #5 (newsletter welcome), #6 (Calendly welcome), #7 (partnership inquiry), #9 (submission to admin), #10 (submission confirmation), #11 (project approval), #14 (project rejection), #16 (newsletter campaign)
+  - Remaining: #3, #4, #8 (need payment flow), #12, #13, #15 (need specific events)
+  - SES is in sandbox mode — must request production access before full launch
+- Partner submission → approval → live project flow tested end-to-end
+- Calendly cron confirmed working via EventBridge (currently targeting demo subdomain)
 - Prozorro integration complete: tender link → ProjectUpdate → donor email → daily polling
+
+## Two-Phase Launch Plan
+
+1. **Soft launch (~March 14):** Matchmaking directory — browse projects, partner submissions, no payment flow. No mention of FSA or POCACITO. Site password removed or converted to invite list.
+2. **Full launch (~March 28+):** FSA signed, bank details live, donation flow enabled, POCACITO branding restored.
 
 ## Blockers
 
 | Blocker | Owner | Status |
 |---------|-------|--------|
-| FSA signing | @tom | Awaiting POCACITO board |
-| Real bank details | @tom | Blocked by FSA |
-| EcoAction MoU | @tom | Template ready, finalizing |
+| FSA signing | @tom | POCACITO board meets Mar 27, signing ~Mar 28 |
+| Real bank details | @tom | Blocked by FSA — available immediately upon signing |
+| NGO partner MoUs | @tom | Kostia (Ecoaction) + Natalia (Ecoclub) meetings Friday Mar 7 |
+| SES production access | @tom | Must exit sandbox before full launch |

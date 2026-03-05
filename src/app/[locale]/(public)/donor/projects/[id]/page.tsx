@@ -11,6 +11,10 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { formatCurrency, getLocalizedProject, type Project } from '@/types'
+import { DONATION_STATUS_CONFIG, PAYMENT_METHOD_LABELS, formatDate } from '@/lib/donor-constants'
+import { JourneyStepper } from '@/components/donor/JourneyStepper'
+import { UpdateTimeline, type TimelineUpdate } from '@/components/donor/UpdateTimeline'
+import { PhotoLightbox } from '@/components/donor/PhotoLightbox'
 
 interface ProjectUpdate {
   id: string
@@ -30,24 +34,6 @@ interface DonorDonation {
   status: string
   submittedAt: string
   receivedAt: string | null
-}
-
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  PENDING_CONFIRMATION: { label: 'Awaiting Confirmation', color: 'bg-yellow-100 text-yellow-800' },
-  RECEIVED: { label: 'Received', color: 'bg-blue-100 text-blue-800' },
-  ALLOCATED: { label: 'Allocated', color: 'bg-purple-100 text-purple-800' },
-  FORWARDED: { label: 'Sent to Ukraine', color: 'bg-indigo-100 text-indigo-800' },
-  COMPLETED: { label: 'Completed', color: 'bg-green-100 text-green-800' },
-  FAILED: { label: 'Issue', color: 'bg-red-100 text-red-800' },
-  REFUNDED: { label: 'Refunded', color: 'bg-gray-100 text-gray-800' },
-}
-
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  WIRE: 'Wire Transfer',
-  DAF: 'DAF Grant',
-  CHECK: 'Check',
-  ACH: 'Bank Transfer',
-  OTHER: 'Other',
 }
 
 function transformProject(data: Record<string, unknown>): Project {
@@ -148,7 +134,7 @@ export default function DonorProjectDetailPage() {
     if (!authLoading) {
       if (!isAuthenticated) {
         router.push('/login')
-      } else if (!hasRole(['DONOR', 'ADMIN'])) {
+      } else if (!hasRole(['DONOR', 'ADMIN', 'PARTNER', 'NONPROFIT_MANAGER'])) {
         router.push('/')
       }
     }
@@ -201,23 +187,8 @@ export default function DonorProjectDetailPage() {
     fetchData()
   }, [projectId, authLoading, isAuthenticated])
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    })
-  }
-
-  const formatDateTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    })
-  }
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
+  const [lightboxAlt, setLightboxAlt] = useState('')
 
   if (authLoading || isLoading) {
     return (
@@ -227,7 +198,7 @@ export default function DonorProjectDetailPage() {
     )
   }
 
-  if (!isAuthenticated || !hasRole(['DONOR', 'ADMIN'])) {
+  if (!isAuthenticated || !hasRole(['DONOR', 'ADMIN', 'PARTNER', 'NONPROFIT_MANAGER'])) {
     return null
   }
 
@@ -282,7 +253,7 @@ export default function DonorProjectDetailPage() {
                 <CardContent>
                   <div className="space-y-3">
                     {donations.map((donation) => {
-                      const statusConfig = STATUS_CONFIG[donation.status] || STATUS_CONFIG.PENDING_CONFIRMATION
+                      const statusConfig = DONATION_STATUS_CONFIG[donation.status] || DONATION_STATUS_CONFIG.PENDING_CONFIRMATION
                       return (
                         <div key={donation.id} className="flex items-center justify-between p-3 rounded-lg bg-[var(--cream-50)] border border-[var(--cream-300)]">
                           <div>
@@ -300,6 +271,15 @@ export default function DonorProjectDetailPage() {
                       )
                     })}
                   </div>
+
+                  {/* Journey Stepper */}
+                  <div className="mt-5 pt-5 border-t border-[var(--cream-300)]">
+                    <JourneyStepper
+                      status={donations[0].status}
+                      hasProzorroUpdates={updates.some(u => u.type === 'PROZORRO_STATUS')}
+                      hasPhotoUpdates={updates.some(u => u.type === 'PHOTO_ADDED')}
+                    />
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -310,71 +290,14 @@ export default function DonorProjectDetailPage() {
                 <CardTitle>Project Updates</CardTitle>
               </CardHeader>
               <CardContent>
-                {updates.length > 0 ? (
-                  <div className="space-y-6">
-                    {updates.map((update, index) => (
-                      <div key={update.id} className="relative pl-8">
-                        {/* Timeline line */}
-                        {index < updates.length - 1 && (
-                          <div className="absolute left-[9px] top-8 bottom-0 w-0.5 bg-[var(--cream-300)]" />
-                        )}
-                        {/* Timeline dot */}
-                        <div className="absolute left-0 top-1 w-5 h-5 rounded-full bg-[var(--navy-600)] border-2 border-white shadow flex items-center justify-center">
-                          {update.type === 'PROZORRO_STATUS' && (
-                            <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4" />
-                            </svg>
-                          )}
-                        </div>
-
-                        <div>
-                          <div className="font-medium text-[var(--navy-700)]">{update.title}</div>
-                          <div className="text-xs text-[var(--navy-400)] mt-0.5">
-                            {formatDateTime(update.createdAt)}
-                            {update.createdByName && (
-                              <span className="ml-2 text-[var(--navy-500)]">
-                                — {update.createdByName} ({update.createdByRole})
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm text-[var(--navy-600)] mt-2 leading-relaxed">
-                            {update.message}
-                          </p>
-                          {typeof update.metadata?.prozorroUrl === 'string' && (
-                            <a
-                              href={update.metadata.prozorroUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--ukraine-blue)] hover:underline mt-2"
-                            >
-                              View on Prozorro
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>
-                            </a>
-                          )}
-                          {typeof update.metadata?.photoUrl === 'string' && (
-                            <div className="mt-3 rounded-lg overflow-hidden">
-                              <img
-                                src={update.metadata.photoUrl}
-                                alt={update.title}
-                                className="w-full max-h-64 object-cover rounded-lg"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-[var(--navy-400)]">
-                    <svg className="w-14 h-14 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p className="font-medium">No updates yet</p>
-                    <p className="text-sm mt-1">We&apos;ll notify you by email when there&apos;s progress on this project.</p>
-                  </div>
-                )}
+                <UpdateTimeline
+                  updates={updates as TimelineUpdate[]}
+                  variant="full"
+                  onPhotoClick={(src, alt) => {
+                    setLightboxSrc(src)
+                    setLightboxAlt(alt)
+                  }}
+                />
               </CardContent>
             </Card>
           </div>
@@ -417,6 +340,12 @@ export default function DonorProjectDetailPage() {
           </div>
         </div>
       </div>
+
+      <PhotoLightbox
+        src={lightboxSrc}
+        alt={lightboxAlt}
+        onClose={() => setLightboxSrc(null)}
+      />
     </main>
   )
 }

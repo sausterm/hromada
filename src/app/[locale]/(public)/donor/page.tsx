@@ -10,6 +10,9 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { formatCurrency } from '@/types'
+import { DONATION_STATUS_CONFIG, PAYMENT_METHOD_LABELS, formatDate, formatDateTime } from '@/lib/donor-constants'
+import { JourneyStepper } from '@/components/donor/JourneyStepper'
+import { UpdateTimeline, type TimelineUpdate } from '@/components/donor/UpdateTimeline'
 
 // Types
 interface DonationUpdate {
@@ -17,6 +20,7 @@ interface DonationUpdate {
   title: string
   message: string
   createdAt: string
+  type?: string
   metadata?: Record<string, unknown> | null
   source?: 'donation' | 'project'
   createdByName?: string
@@ -33,52 +37,6 @@ interface Donation {
   submittedAt: string
   receivedAt: string | null
   updates: DonationUpdate[]
-}
-
-const STATUS_CONFIG: Record<string, { label: string; color: string; description: string }> = {
-  PENDING_CONFIRMATION: {
-    label: 'Awaiting Confirmation',
-    color: 'bg-yellow-100 text-yellow-800',
-    description: 'We are confirming receipt of your payment',
-  },
-  RECEIVED: {
-    label: 'Received',
-    color: 'bg-blue-100 text-blue-800',
-    description: 'Your donation has been received and will be transferred soon',
-  },
-  ALLOCATED: {
-    label: 'Allocated',
-    color: 'bg-purple-100 text-purple-800',
-    description: 'Your donation has been allocated for transfer',
-  },
-  FORWARDED: {
-    label: 'Sent to Ukraine',
-    color: 'bg-indigo-100 text-indigo-800',
-    description: 'Funds have been sent to the municipality',
-  },
-  COMPLETED: {
-    label: 'Completed',
-    color: 'bg-green-100 text-green-800',
-    description: 'Municipality has confirmed receipt',
-  },
-  FAILED: {
-    label: 'Issue',
-    color: 'bg-red-100 text-red-800',
-    description: 'There was an issue with your donation',
-  },
-  REFUNDED: {
-    label: 'Refunded',
-    color: 'bg-gray-100 text-gray-800',
-    description: 'Your donation has been refunded',
-  },
-}
-
-const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  WIRE: 'Wire Transfer',
-  DAF: 'DAF Grant',
-  CHECK: 'Check',
-  ACH: 'Bank Transfer',
-  OTHER: 'Other',
 }
 
 // Demo data for development — replaced by real API data when donations exist
@@ -209,24 +167,6 @@ function DonorDashboard() {
     await logout()
   }
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    })
-  }
-
-  const formatDateTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    })
-  }
-
   return (
     <main className="min-h-screen bg-gray-50">
       <Header />
@@ -321,7 +261,7 @@ function DonorDashboard() {
                   ) : (
                     <div className="space-y-4">
                       {donations.map((donation) => {
-                        const statusConfig = STATUS_CONFIG[donation.status] || STATUS_CONFIG.PENDING_CONFIRMATION
+                        const statusConfig = DONATION_STATUS_CONFIG[donation.status] || DONATION_STATUS_CONFIG.PENDING_CONFIRMATION
                         const isSelected = selectedDonation?.id === donation.id
 
                         return (
@@ -396,67 +336,21 @@ function DonorDashboard() {
                       </div>
                     </div>
 
-                    {selectedDonation.updates.length > 0 ? (() => {
-                      const recentUpdates = selectedDonation.updates.slice(-3).reverse()
-                      const hasMore = selectedDonation.updates.length > 3
-                      return (
-                        <>
-                          <div className="space-y-4">
-                            {recentUpdates.map((update, index) => (
-                              <div key={update.id} className="relative pl-6">
-                                {/* Timeline line */}
-                                {index < recentUpdates.length - 1 && (
-                                  <div className="absolute left-[7px] top-6 bottom-0 w-0.5 bg-gray-200" />
-                                )}
-                                {/* Timeline dot */}
-                                <div className="absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full bg-[var(--navy-600)] border-2 border-white shadow" />
+                    {/* Journey Stepper */}
+                    <div className="mb-4 pb-4 border-b">
+                      <JourneyStepper
+                        status={selectedDonation.status}
+                        hasProzorroUpdates={selectedDonation.updates.some(u => u.type === 'PROZORRO_STATUS' || (u.metadata?.type as string) === 'PROZORRO_STATUS')}
+                        hasPhotoUpdates={selectedDonation.updates.some(u => u.type === 'PHOTO_ADDED' || (u.metadata?.type as string) === 'PHOTO_ADDED')}
+                        compact
+                      />
+                    </div>
 
-                                <div>
-                                  <div className="font-medium text-gray-900">{update.title}</div>
-                                  <div className="text-xs text-gray-500 mt-0.5">
-                                    {formatDateTime(update.createdAt)}
-                                    {update.createdByName && (
-                                      <span className="ml-1.5 text-gray-600">
-                                        — {update.createdByName} ({update.createdByRole})
-                                      </span>
-                                    )}
-                                  </div>
-                                  <p className="text-sm text-gray-600 mt-2">
-                                    {update.message}
-                                  </p>
-                                  {typeof update.metadata?.prozorroUrl === 'string' && (
-                                    <a
-                                      href={update.metadata.prozorroUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 text-sm text-[var(--ukraine-blue)] hover:underline mt-2"
-                                    >
-                                      View on Prozorro
-                                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                      </svg>
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          {hasMore && (
-                            <p className="text-xs text-[var(--navy-400)] mt-3">
-                              + {selectedDonation.updates.length - 3} earlier update{selectedDonation.updates.length - 3 !== 1 ? 's' : ''} — view full timeline below
-                            </p>
-                          )}
-                        </>
-                      )
-                    })() : (
-                      <div className="text-center py-8 text-gray-500">
-                        <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p className="text-sm">No updates yet</p>
-                        <p className="text-xs mt-1">We&apos;ll notify you when there&apos;s news about your donation.</p>
-                      </div>
-                    )}
+                    <UpdateTimeline
+                      updates={selectedDonation.updates as TimelineUpdate[]}
+                      maxUpdates={3}
+                      variant="compact"
+                    />
 
                     {/* View Project Link */}
                     {selectedDonation.projectId && (
@@ -519,7 +413,7 @@ export default function DonorPage() {
     if (!isLoading) {
       if (!isAuthenticated) {
         router.push('/login')
-      } else if (!hasRole(['DONOR', 'ADMIN'])) {
+      } else if (!hasRole(['DONOR', 'ADMIN', 'PARTNER', 'NONPROFIT_MANAGER'])) {
         // Non-donors get redirected based on their role
         router.push('/')
       }
@@ -534,7 +428,7 @@ export default function DonorPage() {
     )
   }
 
-  if (!isAuthenticated || !hasRole(['DONOR', 'ADMIN'])) {
+  if (!isAuthenticated || !hasRole(['DONOR', 'ADMIN', 'PARTNER', 'NONPROFIT_MANAGER'])) {
     return null
   }
 

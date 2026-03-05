@@ -10,16 +10,19 @@ A trusted, transparent platform where donors can discover Ukrainian community pr
 
 - **Sloan** — Technical lead, full-stack development
 - **Tom** — Co-founder, partnerships, strategy. Board connections at POCACITO.
-- **Kostiantyn Krynytskyi** — Director (Ukraine), handles municipal relationships and bank details
+- **Kostiantyn Krynytskyi** — Founding Partner (Ecoaction), handles municipal relationships and bank details
+- **Natalia** — Founding Partner (Ecoclub Rivne)
+- **Polina** — Founding Partner (Greenpeace Ukraine)
 
 ## Fiscal Sponsorship — POCACITO Network
 
-**Status:** FSA drafted, attorney-reviewed, ready to send to POCACITO (Feb 19, 2026).
+**Status:** FSA attorney-reviewed. POCACITO board meets **March 27**, signing expected **March 28**.
 
 - POCACITO Network has agreed to serve as fiscal sponsor at **0% fee**
 - Tom has relationships with half the POCACITO board — they are actively helping get Hromada going
 - ✅ FSA drafted and reviewed by lawyers (Feb 19)
-- **Next step:** Send FSA to POCACITO for board review (Feb 20)
+- ✅ FSA sent to POCACITO for board review (Feb 20)
+- **Next step:** Board meeting March 27 → signing March 28
 - Bank details (routing, account, SWIFT) available from POCACITO immediately upon FSA signing
 - See: [[specs/fiscal-sponsorship]]
 
@@ -86,7 +89,7 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 - [x] CI/CD pipeline (GitHub Actions)
 
 ### What Remains in Phase 0
-- [ ] Connect nonprofit dashboard to real donation/wire-transfer APIs (currently mock data) #p1 @sloan
+- [x] Connect nonprofit dashboard to real donation/wire-transfer APIs #p1 @sloan
 - [x] Decompose 754-line homepage into components #p2 @sloan
 - [x] Add `Cache-Control` headers to public API routes #p2
 
@@ -112,13 +115,14 @@ All critical and high-priority security items resolved.
 
 ### Track B: Fiscal Sponsorship (Legal — @tom @sloan)
 
-**Status:** FSA ready to send to POCACITO (Feb 20, 2026)
+**Status:** Awaiting POCACITO board meeting (March 27). Signing expected March 28.
 
 - [x] Research FSA models/templates #p0 @sloan
 - [x] Draft Fiscal Sponsorship Agreement #p0 @sloan @tom
 - [x] Attorney review and finalization #p0 @tom ← completed Feb 19
-- [ ] POCACITO board review #p0 @tom ← **NEXT: sending Feb 20**
-- [ ] Sign FSA #p0 @tom
+- [x] FSA sent to POCACITO for board review #p0 @tom ← sent Feb 20
+- [ ] POCACITO board review #p0 @tom ← **board meets March 27**
+- [ ] Sign FSA #p0 @tom ← **target March 28**
 - [ ] Obtain real bank details #p0 @sloan
 - [ ] Replace placeholder bank details in `SupportProjectCard.tsx` #p0 @sloan
 
@@ -126,23 +130,25 @@ All critical and high-priority security items resolved.
 
 Can start after Track A, before FSA is signed.
 
-- [ ] Connect nonprofit dashboard to real APIs #p1
+- [x] Connect nonprofit dashboard to real APIs #p1
 - [ ] Test full donation flow end-to-end #p1
-- [ ] Verify email delivery in production #p1
-- [ ] Set production environment variables in Amplify #p1
-- [ ] Configure custom domain with SSL #p1
+- [x] Verify email delivery in production — 10/10 testable emails confirmed working (Mar 4) #p1
+- [x] Set production environment variables in Amplify — SES credentials, ADMIN_EMAIL, all vars configured #p1
+- [x] Configure custom domain with SSL — hromadaproject.org + demo subdomain on Amplify #p1
+- [ ] Request SES production access (exit sandbox) #p1
+- [ ] Move EventBridge cron target back to hromadaproject.org before launch #p1
 - [ ] Review Terms of Service against FSA terms #p1 @tom
 - [ ] Review Privacy Policy for donor data coverage #p1 @tom
 - [ ] Verify all POCACITO references are accurate #p1
 
 ### Track D: Partnerships & Outreach (@tom)
 
-Partner ecosystem and messaging strategy.
+Partner ecosystem and messaging strategy. Ecoaction already submitting real projects.
 
 #### Partner MoUs
 - [x] Draft Partner MoU template (Feb 2026)
-- [ ] EcoAction Ukraine MoU — finalize and sign #p1
-- [ ] Additional Ukrainian NGO partners — identify and outreach #p2
+- [/] EcoAction Ukraine MoU — meeting with Kostia Friday Mar 7, already providing projects #p1
+- [/] Ecoclub Rivne MoU — meeting with Natalia Friday Mar 7 #p1
 - [ ] US municipal partnership outreach (sister city programs) #p3
 
 #### Messaging & Storytelling
@@ -152,18 +158,25 @@ Partner ecosystem and messaging strategy.
 - [ ] Donor testimonial collection process #p2
 - [ ] Case study: first successful project funding #p3
 
-### Launch Gate
+### Launch Gate — Two Phases
 
-Tracks A (security) complete. Tracks B, C, D in progress. Then:
-
-- [ ] FSA signed and bank details in hand
+**Phase 1: Soft launch (~March 14)** — matchmaking directory, no donation flow, no FSA/POCACITO references.
 - [ ] Remove site password (or convert to soft-launch invite list)
+- [ ] Hide/disable donation flow and bank details
+- [ ] Remove POCACITO branding for directory-only mode
+- [ ] Ecoaction projects live and browsable
+- [ ] Confirm admin and partner access
+
+**Phase 2: Full launch (~March 28+)** — FSA signed, donations enabled.
+- [ ] FSA signed and bank details in hand
+- [ ] Replace placeholder bank details with real POCACITO info
+- [ ] Restore POCACITO branding
 - [ ] Test donation flow on production URL with real bank details
-- [ ] Confirm admin and nonprofit manager access
+- [ ] Confirm nonprofit manager access
 - [ ] Launch messaging ready (announcement, social)
 - [ ] **GO LIVE**
 
-> **Current status:** Security done, FSA going to POCACITO Feb 20. Once signed, launch is ~1 week away.
+> **Current status (Mar 4):** Security done, email system done. Soft launch as directory ~March 14. POCACITO board meets March 27, FSA signing ~March 28. Full launch days after signing.
 
 ---
 
@@ -182,7 +195,7 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 
 ### Donor Quality of Life
 - [x] Donor password reset flow #p2 @sloan
-- [ ] Receipt/tax documentation generation (PDF) #p2 @sloan
+- [x] Receipt/tax documentation generation (PDF) — @react-pdf/renderer, IRS-compliant #p2 @tom
 - [ ] Email notifications on donation status changes #p2
 - [ ] ACH payment method support (lower-cost for smaller donations) #p3
 
@@ -210,7 +223,7 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 ### Donor Experience
 - [x] Donor profiles with giving history and impact summary #p2
 - [x] Project update notifications (email + in-app) #p3
-- [/] Donor project timeline page — post-donation progress tracking #p2
+- [x] Donor project timeline page — post-donation progress tracking #p2
 - [ ] Impact reporting with progress photos and before/after #p3
 - [ ] Social sharing for projects #p3
 - [ ] Recurring donation support #p3
@@ -270,13 +283,14 @@ Tracks A (security) complete. Tracks B, C, D in progress. Then:
 | Phase | Focus | Target | Status |
 |-------|-------|--------|--------|
 | **Phase 0** | Foundation (code) | Feb 2026 | ✅ ~95% complete |
-| **Phase 1** | Launch readiness | Mar 2026 | 🔄 ~70% — awaiting FSA |
-| **LAUNCH** | First real donation | Mar 2026 (est.) | ⏳ Blocked by FSA signing |
-| **Phase 2** | Automation | Apr–May 2026 | ~15% — Sentry, CSRF, password reset |
+| **Phase 1** | Launch readiness | Mar 2026 | 🔄 ~80% — soft launch ~Mar 14, FSA signing ~Mar 28 |
+| **SOFT LAUNCH** | Directory mode | ~Mar 14 | ⏳ Ecoaction projects ready, no donation flow |
+| **FULL LAUNCH** | First real donation | ~Mar 28+ | ⏳ Blocked by FSA signing (board meets Mar 27) |
+| **Phase 2** | Automation | Apr–May 2026 | ~20% — Sentry, CSRF, password reset, tax receipts |
 | **Phase 3** | Growth | Jun–Sep 2026 | ~20% — mobile map, donor dashboard, test coverage |
 | **Phase 4** | Scale | Oct 2026+ | ~5% — CI/CD, Candid done |
 
-> **The critical path is the FSA.** Security hardening is complete. FSA is attorney-reviewed and going to POCACITO Feb 20. The moment the FSA is signed and bank details are in hand, launch is days away — not weeks.
+> **The critical path is the FSA.** Security hardening and email system are complete. FSA is attorney-reviewed and with POCACITO board. The moment the FSA is signed and bank details are in hand, launch is days away — not weeks. SES production access must also be requested before launch (currently sandbox only).
 
 ---
 

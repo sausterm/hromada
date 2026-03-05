@@ -6,7 +6,8 @@ import { verifyAuth } from '@/lib/auth'
 export async function GET(request: NextRequest) {
   try {
     const session = await verifyAuth(request)
-    if (!session || (session.role !== 'DONOR' && session.role !== 'ADMIN')) {
+    const allowedRoles = ['DONOR', 'ADMIN', 'PARTNER', 'NONPROFIT_MANAGER']
+    if (!session || !allowedRoles.includes(session.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -67,6 +68,9 @@ export async function GET(request: NextRequest) {
               message: u.message,
               createdAt: u.createdAt.toISOString(),
               metadata: u.metadata as Record<string, unknown> | null,
+              type: u.type,
+              createdByName: u.createdByName,
+              createdByRole: u.createdByRole,
               source: 'project' as const,
             }))
           : []),

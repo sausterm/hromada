@@ -36,6 +36,25 @@ const PROTECTED_ROUTES: Record<string, string[]> = {
   '/donor': ['DONOR', 'ADMIN', 'PARTNER', 'NONPROFIT_MANAGER'],
 };
 
+// Routes accessible without the site password (after removing locale prefix).
+// Matched by prefix — e.g. '/about' allows '/about/team' too.
+const PUBLIC_ROUTES = [
+  '/',           // Homepage (newsletter signup)
+  '/about',
+  '/projects',   // Browse list only — /projects/[id] requires password below
+  '/contact',
+  '/partner-with-us',
+  '/ofac-policy',
+  '/privacy',
+  '/terms',
+  '/transparency',
+  '/unsubscribe',
+  '/login',
+  '/forgot-password',
+  '/site-access',
+  '/blocked',
+];
+
 // Create the internationalization middleware
 const intlMiddleware = createIntlMiddleware({
   locales,
@@ -134,12 +153,6 @@ export default async function middleware(request: NextRequestWithGeo) {
   // Fall back to CloudFront-Viewer-Country for Amplify deployments
   const country = request.geo?.country || request.headers.get('cloudfront-viewer-country') || undefined;
 
-  // Check if accessing the password page (prevent redirect loop)
-  if (pathname.includes('/site-access')) {
-    const response = intlMiddleware(request);
-    return applyHeaders(response);
-  }
-
   // --- Site password gate ---
   const sitePassword = process.env.SITE_PASSWORD;
   if (!sitePassword) {
@@ -148,24 +161,43 @@ export default async function middleware(request: NextRequestWithGeo) {
     return applyHeaders(response);
   }
 
-  const siteAccessCookie = request.cookies.get(AUTH_COOKIE_NAME);
-  let siteAccessValid = false;
-  if (siteAccessCookie?.value) {
-    try {
-      const expectedToken = await deriveHmacToken(sitePassword);
-      siteAccessValid = siteAccessCookie.value === expectedToken;
-    } catch {
-      siteAccessValid = false;
-    }
-  }
+  // Determine the route path without locale prefix
+  const pathSegmentsForGate = pathname.split('/').filter(Boolean);
+  const localeSegment = locales.includes(pathSegmentsForGate[0] as any) ? pathSegmentsForGate[0] : null;
+  const routePath = localeSegment
+    ? '/' + pathSegmentsForGate.slice(1).join('/')
+    : pathname;
 
-  if (!siteAccessValid) {
-    const pathSegments = pathname.split('/').filter(Boolean);
-    const locale = locales.includes(pathSegments[0] as any) ? pathSegments[0] : 'en';
-    const url = new URL(`/${locale}/site-access`, request.url);
-    url.searchParams.set('redirect', pathname);
-    const response = NextResponse.redirect(url);
-    return applyHeaders(response);
+  // Check if this route is publicly accessible (exact match for '/', prefix match for others)
+  const isPublicRoute = PUBLIC_ROUTES.some((route) => {
+    if (route === '/') return routePath === '/' || routePath === '';
+    return routePath === route || routePath.startsWith(route + '/');
+  });
+
+  // Public routes and the /projects list page bypass the password gate,
+  // but individual project pages (/projects/[id]) still require it
+  const isProjectDetailPage = /^\/projects\/[^/]+/.test(routePath) && routePath !== '/projects';
+  const skipPasswordGate = isPublicRoute && !isProjectDetailPage;
+
+  if (!skipPasswordGate) {
+    const siteAccessCookie = request.cookies.get(AUTH_COOKIE_NAME);
+    let siteAccessValid = false;
+    if (siteAccessCookie?.value) {
+      try {
+        const expectedToken = await deriveHmacToken(sitePassword);
+        siteAccessValid = siteAccessCookie.value === expectedToken;
+      } catch {
+        siteAccessValid = false;
+      }
+    }
+
+    if (!siteAccessValid) {
+      const locale = localeSegment || 'en';
+      const url = new URL(`/${locale}/site-access`, request.url);
+      url.searchParams.set('redirect', pathname);
+      const response = NextResponse.redirect(url);
+      return applyHeaders(response);
+    }
   }
 
   // Check if accessing the blocked page already (prevent redirect loop)

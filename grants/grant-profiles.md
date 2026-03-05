@@ -5,6 +5,57 @@
 
 ---
 
+## About Hromada — What We're Pitching
+
+**Hromada** (громада — Ukrainian for "community") is a technology platform connecting American and international donors directly with Ukrainian municipalities that need support for critical infrastructure — hospitals, schools, water utilities, and energy systems.
+
+### What Exists Today (MVP)
+- **Next.js 14 web application** (TypeScript, Tailwind CSS, PostgreSQL/Prisma, Leaflet maps)
+- **Interactive map of Ukraine** with verified infrastructure projects plotted at city/town level
+- **Category filtering** — hospitals, schools, water utilities, energy infrastructure
+- **Project detail pages** with descriptions, photos, status, and funding needs
+- **Contact facilitation** — donors express interest via form; admin connects them with municipalities
+- **Admin dashboard** — CRUD for projects, contact submission management, image uploads
+- **Bilingual support** — English and Ukrainian
+- **Security-conscious design** — coordinates are city/town level only, never exact addresses, to avoid creating a targetable infrastructure database
+- **288 tests passing**, ~30% coverage
+
+### What's on the Roadmap
+- Municipality self-service accounts
+- Donor accounts and contribution tracking
+- Automated status update notifications
+- Analytics dashboard
+- Multi-language expansion
+
+### Organizational Structure (Hybrid Model)
+- **Nonprofit 501(c)(3)** — owns the mission, brand, core IP, governance principles, data ethics framework
+- **For-profit subsidiary (LLC/C-Corp)** — builds/operates platform, runs integrations, provides SaaS, contracts with municipalities/NGOs
+- **50/50 founder split** (Thomas D. Protzman & Sloan Austermann)
+- IP assigned to nonprofit; for-profit operates under license and pays revenue share back
+- Currently pursuing fiscal sponsorship while 501(c)(3) status is pending
+
+### IP Strategy
+- **Open:** APIs, schemas, crisis data formats, interoperability standards (Apache 2.0/MIT)
+- **Protected:** Core orchestration logic, matching/prioritization algorithms, UX flows, integrations (copyright/trade secret)
+
+### Verification Model (4-Layer Stack)
+Hromada uses a lightweight, decentralized verification approach designed for conflict zones:
+1. **Local Attestation** — project closure confirmed by local attestors (4 yes/no questions + optional photos)
+2. **Independent Secondary Signal** — asynchronous peer confirmation (NGO partner, municipality, follow-on request)
+3. **Reputation Impact** — validator weight increases/decreases based on track record
+4. **Randomized Lightweight Audits** — strategic spot-checks on high-risk/large projects
+
+> "Hromada verifies outcomes through local attestation, peer confirmation, and ongoing reputation — not centralized audits."
+
+### Key Stats for Grant Applications
+- **$588B** total reconstruction need over 10 years (World Bank, Feb 2026)
+- **$45B shortfall** in civilian/social spending for 2026
+- **USAID closed July 1, 2025** — 83% of programs cut, $9B clawed back
+- Hromada fills the **transparency and coordination gap** left by USAID's departure
+- Security-first design makes the platform safe for use in active conflict zones
+
+---
+
 ## Table of Contents
 
 - [URGENT: Google.org AI for Government Innovation (Deadline: April 3, 2026)](#1-googleorg-impact-challenge-ai-for-government-innovation)
@@ -61,12 +112,19 @@ This is the single most relevant currently-open opportunity for Hromada. Google.
 
 ### Application Strategy for Hromada
 
-**Framing:**
-Position Hromada as an AI-powered reconstruction coordination platform that:
-- Uses AI for needs assessment prioritization across Ukrainian municipalities
-- Employs intelligent donor-project matching based on donor interests, project urgency, and funding gaps
-- Provides AI-driven progress monitoring and outcome prediction
-- Generates transparency and accountability reports automatically
+**What We Already Have (demonstrate feasibility):**
+- Working Next.js platform with interactive map, project database, category filtering, and contact facilitation
+- Bilingual (EN/UK) interface with 288 passing tests
+- Security-conscious architecture (city-level coordinates, not exact addresses)
+- 4-layer verification model designed for conflict zones (local attestation, peer confirmation, reputation scoring, spot audits)
+- Hybrid nonprofit/for-profit structure with clear IP strategy
+
+**AI Enhancement Layer (what the grant funds):**
+Position Hromada as adding an AI layer on top of its existing working platform:
+- **Intelligent donor-project matching** — AI analyzes donor interests, project urgency, and funding gaps to recommend optimal matches
+- **Needs assessment prioritization** — AI processes municipality submissions to rank by urgency, population impact, and seasonal criticality (e.g., heating before winter)
+- **Outcome prediction** — AI monitors project completion patterns to flag at-risk projects early, enhancing the existing 4-layer verification stack
+- **Automated transparency reports** — AI generates donor-facing impact summaries from attestation data
 
 **Required Government Partnership:**
 Secure formal documentation from Ukrainian municipal authorities and/or the Ministry of Digital Transformation. Ukraine has a strategic relationship with Google on AI in government and aims to be top 3 in AI adoption by 2030 under its Digital Agenda 2030.
@@ -74,17 +132,19 @@ Secure formal documentation from Ukrainian municipal authorities and/or the Mini
 **Key Narrative Points:**
 - $588B reconstruction need with a $45B shortfall in 2026 alone
 - USAID closure created a coordination gap — Hromada fills it with AI-powered transparency
-- Platform already has interactive map, project filtering, and contact facilitation
-- AI layer adds intelligent matching, prioritization, and monitoring
-- Scalable beyond Ukraine to any post-conflict or disaster recovery context
+- Platform is **already built and functional** — not a concept; the grant accelerates AI integration and scaling
+- Security-first design makes this usable in active conflict zones where other platforms can't operate
+- Open API/schema strategy means the platform is interoperable with existing humanitarian systems
+- Scalable beyond Ukraine to any post-conflict or disaster recovery context (Gaza, Sudan, etc.)
 - Aligns with Ukraine's WINWIN 2030 Innovation Strategy and Digital Agenda 2030
 
+**IP Consideration:** For-profit applicants must be willing to open-source IP. Hromada's strategy already designates APIs, schemas, and data formats as open (Apache 2.0/MIT). Core orchestration logic remains protected. Confirm this satisfies Google's open-source requirement — it should, since interoperability standards are the open layer.
+
 **Metrics to Include:**
-- Number of municipalities served
-- Number of infrastructure projects tracked
-- Donor-to-project match rate and speed
-- Reduction in time from need identification to funding
-- AI accuracy in needs prioritization
+- Number of municipalities served and projects tracked on the interactive map
+- Donor inquiry-to-connection time (current contact facilitation flow)
+- Platform uptime and bilingual user engagement
+- Projected: donor-to-project match rate improvement with AI, reduction in time from need identification to funding
 
 **Application Portal:** https://googlenewaccount2.submittable.com/submit/b77643df-9f35-4379-8fa1-fe7371318081/google-org-impact-challenge-ai-for-government-innovation
 
@@ -127,10 +187,11 @@ The Nefco Green Recovery Programme funds repair and reconstruction of municipal 
 
 Hromada cannot apply directly as a grant recipient (only municipalities can). Instead, pursue **partnership pathways:**
 
-1. **Technology Platform Partner:** Position Hromada as the digital infrastructure for municipalities to discover, document, and publicize their recovery needs, making them more attractive to Nefco and other donors
-2. **Complement Local Green Recovery Plans:** Nefco requires municipalities to develop Local Green Recovery Plans. Hromada could provide the digital framework for these plans
-3. **Technical Assistance Consultant:** Bid on future RFPs for technical assistance (project selection, needs assessment, digital project management)
-4. **Donor Visibility Layer:** Offer to serve as the public-facing discovery platform for Nefco-funded projects, increasing transparency and attracting co-funding
+1. **Technology Platform Partner:** Hromada's interactive map and project database already serve as discovery infrastructure for municipalities. Pitch Nefco on using Hromada as the public-facing layer where municipalities list their green recovery needs, making them visible to Nefco and other donors simultaneously
+2. **Complement Local Green Recovery Plans:** Nefco requires municipalities to develop Local Green Recovery Plans. Hromada's project detail pages (descriptions, photos, status, categories) provide the digital framework — municipalities could draft their plans directly through Hromada's admin interface
+3. **Technical Assistance Consultant:** The for-profit subsidiary can bid on RFPs for technical assistance (project selection, needs assessment, digital project management) — this is exactly what the hybrid structure enables
+4. **Donor Visibility Layer:** Hromada's existing contact facilitation system (donor submits interest → admin connects with municipality) is a ready-made co-funding discovery mechanism for Nefco projects
+5. **Verification Integration:** Hromada's 4-layer completion verification model (local attestation + reputation scoring) could serve as Nefco's lightweight project monitoring tool, reducing their need for expensive on-site audits
 
 **Key Contact:**
 - Ulf Bojo, VP Green Transition in Eastern Europe — ulf.bojo@nefco.int, +358 40 527 3699
@@ -188,15 +249,16 @@ The HIF funds innovation in humanitarian response — technology platforms, new 
 ### Application Strategy for Hromada
 
 **Critical Framing Requirement:** Elrha's mandate is explicitly *humanitarian*, not development/reconstruction. Frame Hromada as:
-- A **humanitarian coordination/efficiency tool** improving speed, targeting, and accountability of critical infrastructure reconstruction (water, sanitation, health, shelter) in conflict-affected communities
-- Focus on WASH infrastructure and health facilities to align with Elrha's thematic priorities
+- A **humanitarian coordination/efficiency tool** — the platform's category filtering already separates hospitals, water utilities, and energy infrastructure, which maps directly to WASH and health priorities
+- Emphasize the **verification model** — Elrha cares deeply about locally-led innovation, and Hromada's 4-layer attestation stack (local attestors, peer confirmation, reputation scoring, spot audits) is designed to be non-colonial and community-driven
+- The security-conscious design (city-level coordinates only) directly addresses Elrha's ethical concerns about operating in conflict zones
 
 **Recommended Path:**
-1. Start with a **Recognition Grant (GBP 20K)** to research and validate how donor-municipality matching gaps delay humanitarian infrastructure rebuilding
-2. Partner with a **Ukrainian humanitarian NGO** for local credibility
-3. Email **hif@elrha.org** with a brief concept note for preliminary feedback before investing in a full application
-4. Target the **AI for Humanitarians** call if adding AI-powered features
-5. Later apply to the **Scaling Challenge** once evidence is built
+1. Start with a **Recognition Grant (GBP 20K)** to research and validate how donor-municipality matching gaps delay humanitarian infrastructure rebuilding — use data from Hromada's existing contact submissions and project database
+2. Partner with a **Ukrainian humanitarian NGO** for local credibility — the nonprofit entity in Hromada's hybrid structure positions well for this
+3. Email **hif@elrha.org** with a brief concept note for preliminary feedback — include screenshots of the working platform and verification model documentation
+4. Target the **AI for Humanitarians** call if pursuing the AI layer (pairs well with Google.org application)
+5. Later apply to the **Scaling Challenge** once evidence is built from platform usage data
 
 **Contact:**
 - HIF email: hif@elrha.org
@@ -293,9 +355,10 @@ Cisco funds early-stage, innovative solutions leveraging technology for social i
 ### Application Strategy for Hromada
 
 **Frame as crisis response technology, not infrastructure funding:**
-- The exclusion of "capital building funds" means Hromada should emphasize the *platform and coordination mechanism*, not the physical infrastructure projects themselves
-- Highlight technology innovation, scalability, and underserved community impact
+- The exclusion of "capital building funds" means Hromada should emphasize the *platform and coordination mechanism* — the Next.js application, interactive map, contact facilitation system, and verification model — not the physical infrastructure projects listed on the platform
+- Highlight the technology stack: Next.js 14, TypeScript, PostgreSQL/Prisma, Leaflet maps, bilingual support, 288 passing tests — this is a real, production-grade platform
 - Demonstrate that Ukrainian municipalities served are 65%+ economically underserved (war-affected communities easily qualify)
+- The for-profit subsidiary's ability to contract with municipalities/NGOs demonstrates sustainability beyond grant funding
 
 **When to Act:**
 - Monitor https://www.cisco.com/site/us/en/about/purpose/social-impact/investments/global-impact-cash-grants.html for reopening
@@ -334,8 +397,8 @@ Twilio.org funds organizations using communications technology for social impact
 
 **Framing:**
 - Emphasize the **displaced communities** cohort — Ukraine displacement is a major global crisis
-- Show how Twilio's communications tools (SMS alerts to donors, voice coordination with municipalities, project status updates) integrate into Hromada
-- Highlight humanitarian coordination as core to the platform
+- Hromada already uses **Resend for email notifications** when donors submit contact forms. Show how Twilio could enhance this: SMS alerts to donors when projects get funded, voice coordination with municipalities in low-connectivity areas, automated project status updates via WhatsApp/SMS
+- The existing contact facilitation flow (donor submits interest → admin receives email → admin connects with municipality) would be transformed by Twilio's communications infrastructure into real-time, multi-channel coordination
 
 ---
 
@@ -356,9 +419,9 @@ Annual awards recognizing nonprofits with innovative technology projects that po
 **Eligibility Note:** Requires $500K+ annual budget. If applying under a fiscal sponsor, the sponsor's budget may qualify. Confirm eligibility before applying.
 
 **Framing:**
-- Describe Hromada's interactive map + project filtering as an innovative technology approach to a community challenge
-- Emphasize measurable community impact (number of municipalities served, infrastructure projects funded)
-- Technology should be the centerpiece — the map, the matching algorithm, the contact facilitation system
+- Lead with a demo of the working platform — the interactive Leaflet map with category filtering (hospitals, schools, water, energy), project detail pages with photos, and the full contact-to-connection pipeline
+- Measurable community impact: number of municipalities listed, infrastructure projects tracked, donor inquiries processed
+- Technology innovation angle: bilingual Next.js app with OpenStreetMap integration, security-conscious coordinate handling, 4-layer decentralized verification model — this is a novel approach to humanitarian tech
 
 **When to Act:** Monitor https://techimpact.org/techforward/awards for the 2026 application window (expected May–June 2026)
 
@@ -397,10 +460,10 @@ Okta for Good has four funding pillars: Tech for Good ($20M), Digital Equity ($1
 - Monitor for open calls
 
 ### Application Strategy
-- **Immediate:** Apply for the 50 free Okta product licenses
+- **Immediate:** Apply for the 50 free Okta product licenses — Hromada currently uses a simple admin secret (`HROMADA_ADMIN_SECRET`) for authentication. Okta would replace this with proper identity management as the platform adds municipality self-service accounts and donor accounts (both on the roadmap)
 - **October 2026:** Submit a technology leader for the Fellowship program ($25K grant)
 - **Ongoing:** Monitor for Identity Lab and Tech for Good open calls
-- **Framing:** Hromada's admin dashboard, municipality accounts, and donor identity management need secure identity infrastructure — exactly what Okta provides
+- **Framing:** Hromada's security audit identified session token handling and admin authentication as areas needing improvement. Okta directly solves this while the Identity Lab framing shows how secure identity infrastructure enables trusted humanitarian coordination in conflict zones
 
 ---
 
@@ -517,9 +580,11 @@ Pro-bono program providing IBM watsonx, Granite AI, Cloud, Red Hat tech, expert 
 **If 2026 theme is resilient infrastructure, disaster recovery, or sustainable cities — this is a top-tier fit.**
 
 **Framing:**
-- Position as supporting vulnerable communities impacted by environmental/economic stress
-- Emphasize measurable outcomes, SDG alignment (SDG 9 — Infrastructure, SDG 11 — Sustainable Cities, SDG 16 — Peace/Institutions)
-- The war's environmental devastation provides strong framing for environmental vulnerability
+- Hromada already tracks energy infrastructure and water utilities as project categories — align these with SDG 7 (Clean Energy), SDG 6 (Water), SDG 11 (Sustainable Cities)
+- The platform's open API/schema strategy (Apache 2.0/MIT) aligns with IBM's open-source philosophy and Red Hat ecosystem
+- IBM watsonx could power the AI matching and prioritization layer that's on Hromada's roadmap
+- The verification model's reputation scoring system could be enhanced with IBM's AI for anomaly detection
+- The war's environmental devastation provides strong framing for environmental vulnerability — Hromada connects donors with the exact municipal infrastructure that addresses it
 
 **When to Act:** Monitor https://www.ibm.com/impact/initiatives/ibm-sustainability-accelerator for the 2026 RFP announcement
 
@@ -631,14 +696,36 @@ Global crowdfunding platform connecting nonprofits with donors. 238+ nonprofits 
 ### Key Dependencies
 
 ```
-Fiscal Sponsor Secured ──→ Unlocks: Google.org, Twilio, Elrha, GlobalGiving, Cisco
-                           Blocked: Microsoft Nonprofit, Google for Nonprofits
+WHAT WE HAVE NOW
+├── Working Next.js platform (map, filtering, contact flow, admin dashboard)
+├── Bilingual EN/UK support
+├── 288 passing tests, TypeScript, production-grade stack
+├── 4-layer verification model (designed, not yet implemented in code)
+├── Hybrid nonprofit/for-profit structure (designed, entities not yet formed)
+├── IP strategy (open APIs + protected core, documented)
+└── Founders alignment memo (drafted)
 
-Government Partnership ──→ Required for: Google.org AI Challenge (URGENT)
-  Documentation
+WHAT WE NEED — IN ORDER
 
-AI Feature Development ──→ Strengthens: Google.org, Elrha AI call, IBM Accelerator
+1. Fiscal Sponsor Secured ──→ Unlocks: Google.org, Twilio, Elrha, GlobalGiving, Cisco
+   (Required BEFORE April 3 for Google.org application)
 
-Independent 501(c)(3) ──→ Unlocks: Microsoft, Google for Nonprofits, simplified
-                           applications across all grants
+2. Government Partnership ──→ Required for: Google.org AI Challenge (URGENT)
+   Documentation               Letter from Ukrainian municipality or Ministry of
+                                Digital Transformation
+
+3. 501(c)(3) Formation ───→ Unlocks: Microsoft Nonprofit, Google for Nonprofits,
+                              simplified applications, direct grant receipt
+                              (Can happen in parallel with fiscal sponsorship)
+
+4. For-Profit Entity ─────→ Unlocks: Nefco consulting bids, EIB procurement,
+   (LLC or C-Corp)            World Bank contracts, revenue sustainability
+                              (Form before or alongside nonprofit)
+
+5. AI Feature Development ─→ Strengthens: Google.org, Elrha AI call, IBM Accelerator
+                              (Can be funded BY grants — chicken-and-egg solved by
+                               showing working platform + AI roadmap)
+
+6. Municipality Accounts ──→ Strengthens: ALL grants (proves adoption)
+   (Roadmap feature)          Currently admin-only data entry
 ```

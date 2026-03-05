@@ -184,6 +184,55 @@ Donor → POCACITO bank account (Bank of America)
 - What insurance does POCACITO carry, and does it cover Hromada's activities?
 - Who at POCACITO is the operational contact for day-to-day fund management?
 
+## FSA Amendments Needed (From MoU Legal Review, Mar 5 2026)
+
+The partner MoUs (EcoAction, Ecoclub Rivne) were reviewed by a five-domain legal panel. Several MoU provisions require corresponding FSA changes or POCACITO board action. Ordered by priority:
+
+### 1. Partner Agreement Signing Authority — BLOCKS MoU SIGNING
+
+**Problem:** FSA §7 authorizes the Project Director to sign *disbursement requests* only. It does not authorize signing partner MoUs or other operational agreements that reference POCACITO as an indemnified party (MoU §11(b)) or that create obligations Hromada performs under POCACITO's umbrella.
+
+**Fix (choose one):**
+- **(A) Amend FSA §7** — add after "authority to sign disbursement requests": *"The Project Director shall have authority to execute memoranda of understanding, partner agreements, and other operational agreements necessary for the implementation of the Project, provided that such agreements do not create financial obligations on the part of the Fiscal Sponsor beyond those contemplated by this Agreement."*
+- **(B) Separate board resolution** — POCACITO passes a resolution at the March 27 meeting authorizing the Project Director to execute partner MoUs. Attach as Exhibit A to each MoU.
+- **(C) POCACITO officer countersigns** each MoU — avoids the authority question but adds a signature step.
+
+**Recommended:** Option B (least disruptive — doesn't reopen the FSA).
+
+### 2. Partner Vetting Obligation — Should Add to FSA §18
+
+**Problem:** FSA §18 requires due diligence on "all recipient organizations and municipalities" but does not mention partner NGOs who serve as verifiers/monitors. The MoUs now require formal partner vetting (MoU §4.0) — the FSA should acknowledge this.
+
+**Suggested addition to FSA §18, after the first paragraph:**
+> *The Sponsored Organization shall maintain organizational due diligence records for all partner organizations involved in project identification, verification, or monitoring, including registration documentation, personnel lists, and funding source disclosures.*
+
+### 3. Donor Refund/Reallocation Policy — Not Addressed in FSA
+
+**Problem:** The MoUs reference "Hromada's published donor refund and reallocation policy" for failed projects (MoU §6, Failed Projects). The FSA is silent on refund mechanics. FSA §6 governs disbursements but not returns.
+
+**Questions for POCACITO:**
+- Who authorizes a donor refund — Hromada or POCACITO?
+- Can Hromada reallocate funds to another project with donor consent, or does POCACITO approve?
+- What's the process when a co-financing commitment is withdrawn post-publication (MoU §6(d) mandates automatic refund)?
+
+**Suggested addition to FSA §6 or as new section:**
+> *In the event that a funded project cannot be completed or funds must be returned to donors, the Project Director shall submit a written refund or reallocation request to the Fiscal Sponsor. The Fiscal Sponsor shall process approved refunds within [X] business days. Reallocation of funds to an alternative project requires donor consent and Fiscal Sponsor approval.*
+
+### 4. Audit Flow-Through — Confirm Compatibility
+
+**Problem:** FSA §8 requires records be "available to auditors as required by law." The MoUs grant Hromada explicit audit rights over Ukrainian partners (MoU §4.6), including the right to commission independent audits. Confirm POCACITO is comfortable with Hromada auditing foreign partners under their umbrella.
+
+**Action:** Verbal confirmation from board is sufficient. No FSA amendment needed unless POCACITO wants one.
+
+### Summary — Action Items for March 27 Board Meeting
+
+| # | Item | Action | Urgency |
+|---|------|--------|---------|
+| 1 | Signing authority for partner MoUs | Board resolution or FSA §7 amendment | Blocks MoU signing |
+| 2 | Partner vetting obligation | Add to FSA §18 | Before first disbursement |
+| 3 | Donor refund policy | Discuss and document | Before full launch |
+| 4 | Audit flow-through | Verbal confirmation | Low urgency |
+
 ## Related
 
 - Decision: [[decisions/002-payment-architecture]]

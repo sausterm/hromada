@@ -2,7 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, formatRelativeTime, getLocalizedProject } from '@/types'
+import { type Project, CATEGORY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, formatRelativeTime, getLocalizedProject } from '@/types'
 import { ShareButton } from '@/components/ui/ShareButton'
 
 interface ProjectCardProps {
@@ -24,8 +24,6 @@ export function ProjectCard({
   const locale = useLocale()
   const localized = getLocalizedProject(project, locale)
   const categoryConfig = CATEGORY_CONFIG[project.category]
-  const urgencyConfig = URGENCY_CONFIG[project.urgency]
-
   const mainPhoto = project.photos?.[0]
 
   // Common class names for the card container
@@ -117,15 +115,6 @@ export function ProjectCard({
           )}
         </div>
 
-        {/* Urgency Badge (only show if high or critical) */}
-        {(project.urgency === 'HIGH' || project.urgency === 'CRITICAL') && (
-          <div
-            className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-medium text-white shadow-sm"
-            style={{ backgroundColor: urgencyConfig.color }}
-          >
-            {t(`urgency.${project.urgency}`)}
-          </div>
-        )}
       </div>
 
       {/* Content Section */}

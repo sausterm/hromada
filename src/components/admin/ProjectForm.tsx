@@ -11,12 +11,10 @@ import { PublicImageUpload } from '@/components/forms/PublicImageUpload'
 import {
   type Project,
   type Category,
-  type Urgency,
   type Status,
   type ProjectType,
   type CofinancingStatus,
   CATEGORY_CONFIG,
-  URGENCY_CONFIG,
   STATUS_CONFIG,
   PROJECT_TYPE_CONFIG,
   COFINANCING_CONFIG,
@@ -42,7 +40,6 @@ export interface ProjectFormData {
   contactName: string
   contactEmail: string
   contactPhone: string
-  urgency: Urgency
   status: Status
   photos: string[]
   // Technical & Financial Details
@@ -72,7 +69,6 @@ const initialFormData: ProjectFormData = {
   contactName: '',
   contactEmail: '',
   contactPhone: '',
-  urgency: 'MEDIUM',
   status: 'OPEN',
   photos: [],
   // Technical & Financial Details
@@ -121,7 +117,6 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
         contactName: project.contactName,
         contactEmail: project.contactEmail,
         contactPhone: project.contactPhone || '',
-        urgency: project.urgency,
         status: project.status,
         photos: project.photos || [],
         // Technical & Financial Details
@@ -337,22 +332,6 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
                   {(Object.keys(CATEGORY_CONFIG) as Category[]).map((cat) => (
                     <option key={cat} value={cat}>
                       {CATEGORY_CONFIG[cat].label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Urgency *
-                </label>
-                <select
-                  value={formData.urgency}
-                  onChange={handleChange('urgency')}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-200)] focus:border-[var(--ukraine-500)]"
-                >
-                  {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urg) => (
-                    <option key={urg} value={urg}>
-                      {URGENCY_CONFIG[urg].label}
                     </option>
                   ))}
                 </select>

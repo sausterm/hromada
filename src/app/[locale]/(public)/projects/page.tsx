@@ -12,7 +12,6 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import {
   type Project,
   type Category,
-  type Urgency,
   type CofinancingStatus,
   type ProjectType,
   CATEGORY_CONFIG,
@@ -24,14 +23,6 @@ import {
 
 // Sort options type
 type SortOption = 'newest' | 'oldest' | 'highestCost' | 'lowestCost' | 'alphabetical'
-
-// Urgency priority for sorting
-const URGENCY_PRIORITY: Record<Urgency, number> = {
-  CRITICAL: 4,
-  HIGH: 3,
-  MEDIUM: 2,
-  LOW: 1,
-}
 
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {

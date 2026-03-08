@@ -7,13 +7,18 @@
 
 ## In Progress
 
-- [/] FSA submission to POCACITO — attorney-reviewed, awaiting board #p0 @tom
-- [/] Partner MoU with EcoAction — template done, finalizing #p1 @tom
+- [/] FSA submission to POCACITO — attorney-reviewed, awaiting board Mar 27 #p0 @tom
+- [x] Partner MoUs — legal review complete, shared with Kostia + Natalia, sent to their boards + Max/Brendan for review #p1 @tom
 - [x] Donor project timeline page — full progress view for funded projects #p1 @tom
+- [/] 1-pager for Scott Sklar — critical for donor intro calls, Figma, Sunday Mar 8 #p0 @tom
 - [/] 2-pager explainer handout (Figma) #p1 @tom
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
-- [/] Ecoaction project docs in repo (Lychkove + Samar) — needs Sloan review and partner submission #p0 @sloan
+- [/] Ecoaction project docs in repo (Lychkove + Samar) — needs Sloan review and partner submission #p1 @sloan
 - [x] S3 document upload pipeline — staging→production flow for partner PDF submissions #p1 @tom
+- [ ] IDP project card styling — special visual treatment (colored border or badge) for internally displaced community projects #p1 @tom
+- [x] Add 12 Ecoaction Tier 2 projects with cropped photos (no docs yet) #p1 @tom
+- [x] Admin dashboard — Partner column in projects table #p2 @tom
+- [ ] Ask Kostia for original photos to replace Canva crops #p2 @tom
 
 ## To Do
 
@@ -39,11 +44,22 @@
 - [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
 
 ### Partnerships & Outreach
-- [ ] EcoAction Ukraine MoU — finalize and sign #p1 @tom
+- [x] EcoAction Ukraine MoU — reviewed with Kostia, sent to board #p1 @tom
+- [x] Ecoclub Rivne MoU — reviewed with Natalia, sent to board #p1 @tom
+- [ ] Greenpeace Ukraine — schedule call with Polina Kolodiazhna #p1 @tom
+- [ ] EOPA partnership — evaluate, schedule joint call #p2 @tom
+- [ ] Michael Shank meeting — Tuesday Mar 11 #p1 @tom
+- [ ] Scott Sklar conference call — needs 1-pager first #p1 @tom
 
 ## Done
 
 ### This Sprint (Mar 3–17)
+- [x] MoU legal review — 5-domain panel, 15 recommendations implemented in both MoUs #p1 @tom
+- [x] MoU revisions per Tom+Sloan feedback — "promptly" defined, response time 14→7 days, screening timing for post-procurement contractors #p1 @tom
+- [x] FSA amendments documented in Vault/specs/fiscal-sponsorship.md — 4 items for Mar 27 board meeting #p1 @tom
+- [x] Sloan IAM permissions — `Hromada-iam-scoped` policy (create/manage hromada-* roles), dev-delete exception in `Hromada-no-delete` #p1 @tom
+- [x] Partner project CSV template — bilingual headers, for bulk project intake #p2 @tom
+- [x] Doc analyzer Lambda pipeline — confirmed fully deployed (S3 buckets, Lambda, trigger all live) #p1 @sloan
 - [x] Email system fully operational — 10/10 testable emails confirmed working in production #p0 @tom
 - [x] SES credentials for Amplify compute — created IAM user `hromada-ses-sender` with explicit credentials #p0 @tom
 - [x] Fix SES credentials in `ses.ts` (campaign sender) — same Amplify credential issue #p1 @tom
@@ -107,7 +123,13 @@
 
 - **Soft launch target: ~March 14** — matchmaking directory mode, no FSA/POCACITO references, no donation flow. Ecoaction already providing real projects.
 - **FSA signing target: March 28** — POCACITO board meets March 27, signing expected next day
-- **NGO partner meetings Friday (Mar 7):** Kostia (Ecoaction) and Natalia (Ecoclub Rivne) — MoU walkthroughs and expectations.
+- **All three partners confirmed** (EcoAction, Ecoclub Rivne, Greenpeace UA). MoUs verbally reviewed with Kostia and Natalia, passed to their boards. MoU signing not urgent — FSA is the real blocker.
+- **Natalia** in group chat, sending headshot + gathering projects next week.
+- **Scott Sklar** interested — needs 1-pager and conference call to present to his network.
+- **Michael Shank** meeting Tuesday Mar 11 — potential first donor, knows Kostia and Natalia personally.
+- **EOPA partnership** under evaluation — Max intro'd, good donor network, centrist positioning, AI impact modeling tool (Aug).
+- **May 20 event** — Cannon Building Room 340 (morning). Max booked. Lloyd Doggett + Kostia speaking, Natalia attending, Ukrainian mayors, hopefully Svitlana Romanko, Clarence Edwards, Romina Bandura.
+- **Sloan IAM** — added `Hromada-iam-scoped` (create/manage `hromada-*` roles) and dev-delete exception to `Hromada-no-delete`.
 - **Email system fully operational** — 10/10 testable emails confirmed working (Mar 4)
   - Tested: #1 (password reset), #5 (newsletter welcome), #6 (Calendly welcome), #7 (partnership inquiry), #9 (submission to admin), #10 (submission confirmation), #11 (project approval), #14 (project rejection), #16 (newsletter campaign)
   - Remaining: #3, #4, #8 (need payment flow), #12, #13, #15 (need specific events)
@@ -127,5 +149,7 @@
 |---------|-------|--------|
 | FSA signing | @tom | POCACITO board meets Mar 27, signing ~Mar 28 |
 | Real bank details | @tom | Blocked by FSA — available immediately upon signing |
-| NGO partner MoUs | @tom | Kostia (Ecoaction) + Natalia (Ecoclub) meetings Friday Mar 7 |
+| NGO partner MoUs | @tom | Verbally reviewed, at partner boards + Max/Brendan. Not urgent pre-FSA. |
+| 1-pager for Sklar | @tom | Needed for donor intro calls. Figma Sunday Mar 8. |
+| May 20 event prep | @tom @max | Cannon Building booked. Need speaker confirmations, invites, materials. |
 | SES production access | @tom | Must exit sandbox before full launch |

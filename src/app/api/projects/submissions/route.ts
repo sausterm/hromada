@@ -98,7 +98,6 @@ export async function POST(request: NextRequest) {
       region: data.region,
       category: data.category,
       projectType: data.projectType,
-      urgency: data.urgency || 'MEDIUM',
       briefDescription: data.briefDescription,
       contactName: data.contactName,
       contactEmail: data.contactEmail,

@@ -22,7 +22,8 @@ A trusted, transparent platform where donors can discover Ukrainian community pr
 - Tom has relationships with half the POCACITO board — they are actively helping get Hromada going
 - ✅ FSA drafted and reviewed by lawyers (Feb 19)
 - ✅ FSA sent to POCACITO for board review (Feb 20)
-- **Next step:** Board meeting March 27 → signing March 28
+- ✅ FSA amendments needed documented (Mar 7) — signing authority for MoUs, partner vetting, refund policy, audit flow-through
+- **Next step:** Board meeting March 27 → signing March 28. Raise MoU signing authority at board meeting.
 - Bank details (routing, account, SWIFT) available from POCACITO immediately upon FSA signing
 - See: [[specs/fiscal-sponsorship]]
 
@@ -147,16 +148,28 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 
 #### Partner MoUs
 - [x] Draft Partner MoU template (Feb 2026)
-- [/] EcoAction Ukraine MoU — meeting with Kostia Friday Mar 7, already providing projects #p1
-- [/] Ecoclub Rivne MoU — meeting with Natalia Friday Mar 7 #p1
+- [x] Legal review — 5-domain panel, 15 recommendations implemented (Mar 5-7)
+- [x] EcoAction Ukraine MoU — reviewed with Kostia, at EcoAction board #p1
+- [x] Ecoclub Rivne MoU — reviewed with Natalia, at Ecoclub board #p1
+- [/] Greenpeace Ukraine MoU — call with Polina Kolodiazhna next week #p1
+- [/] MoU signing — not urgent pre-FSA, boards reviewing, Max/Brendan also reviewing #p1
 - [ ] US municipal partnership outreach (sister city programs) #p3
 
 #### Messaging & Storytelling
 - [ ] Core messaging framework (value prop, donor personas, key messages) #p1
+- [/] 1-pager for Scott Sklar — critical for donor intro calls #p0 @tom
 - [ ] Project storytelling template (before/after, impact metrics) #p1
 - [ ] Launch announcement draft (press release, social media) #p2
 - [ ] Donor testimonial collection process #p2
 - [ ] Case study: first successful project funding #p3
+
+#### Events
+- [/] May 20 — Cannon Congressional Office Building, Room 340 (morning). Booked by Max. Speakers: Lloyd Doggett, Kostia. Natalia attending. Ukrainian mayors. Hopeful: Svitlana Romanko, Clarence Edwards, Romina Bandura. #p1 @tom @max
+
+#### External Partnerships
+- [/] EOPA (Elected Officials to Protect America) — AI energy impact tool, donor network, centrist positioning. Joint call TBD. #p2 @tom
+- [/] Michael Shank — potential first donor, knows Kostia + Natalia. Meeting Tue Mar 11. #p1 @tom
+- [/] Scott Sklar — connector to donor networks. Needs 1-pager, then conference call. #p1 @tom
 
 ### Launch Gate — Two Phases
 
@@ -165,6 +178,7 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [ ] Hide/disable donation flow and bank details
 - [ ] Remove POCACITO branding for directory-only mode
 - [ ] Ecoaction projects live and browsable
+- [ ] Bulk project intake — CSV template ready, need upload script #p1
 - [ ] Confirm admin and partner access
 
 **Phase 2: Full launch (~March 28+)** — FSA signed, donations enabled.
@@ -176,7 +190,7 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [ ] Launch messaging ready (announcement, social)
 - [ ] **GO LIVE**
 
-> **Current status (Mar 4):** Security done, email system done. Soft launch as directory ~March 14. POCACITO board meets March 27, FSA signing ~March 28. Full launch days after signing.
+> **Current status (Mar 7):** Security done, email system done, MoUs legally reviewed and at partner boards. All three partners confirmed. Soft launch as directory ~March 14. POCACITO board meets March 27, FSA signing ~March 28. Full launch days after signing. May 20 Cannon Building event booked. Scott Sklar and Michael Shank emerging as first donor/advisor contacts.
 
 ---
 

@@ -782,7 +782,6 @@ interface ProjectSubmissionNotificationParams {
   region?: string | null
   category: string
   projectType: string
-  urgency: string
   briefDescription: string
   contactName: string
   contactEmail: string
@@ -798,7 +797,6 @@ export async function sendProjectSubmissionNotification({
   region,
   category,
   projectType,
-  urgency,
   briefDescription,
   contactName,
   contactEmail,

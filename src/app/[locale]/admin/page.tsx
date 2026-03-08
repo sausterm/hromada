@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { type Project, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG } from '@/types'
+import { type Project, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG } from '@/types'
 
 // ProjectSubmission type for API responses
 interface ProjectSubmission {
@@ -23,7 +23,6 @@ interface ProjectSubmission {
   projectType: string
   briefDescription: string
   fullDescription: string
-  urgency: string
   estimatedCostUsd: number | null
   technicalPowerKw: number | null
   numberOfPanels: number | null
@@ -94,7 +93,7 @@ interface ComposeProject {
   statusLine: string
 }
 
-type SortField = 'facilityName' | 'municipalityName' | 'region' | 'category' | 'projectType' | 'urgency' | 'status'
+type SortField = 'facilityName' | 'municipalityName' | 'region' | 'partnerOrganization' | 'category' | 'projectType' | 'status'
 type SortDirection = 'asc' | 'desc'
 
 // Sort options for submissions
@@ -875,6 +874,10 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
           aVal = a.region || ''
           bVal = b.region || ''
           break
+        case 'partnerOrganization':
+          aVal = a.partnerOrganization || ''
+          bVal = b.partnerOrganization || ''
+          break
         case 'category':
           aVal = CATEGORY_CONFIG[a.category].label
           bVal = CATEGORY_CONFIG[b.category].label
@@ -882,10 +885,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
         case 'projectType':
           aVal = a.projectType ? PROJECT_TYPE_CONFIG[a.projectType].label : ''
           bVal = b.projectType ? PROJECT_TYPE_CONFIG[b.projectType].label : ''
-          break
-        case 'urgency':
-          aVal = URGENCY_CONFIG[a.urgency].label
-          bVal = URGENCY_CONFIG[b.urgency].label
           break
         case 'status':
           aVal = STATUS_CONFIG[a.status].label
@@ -1073,7 +1072,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   const stats = {
     totalProjects: projects.length,
     openProjects: projects.filter((p) => p.status === 'OPEN').length,
-    criticalProjects: projects.filter((p) => p.urgency === 'CRITICAL').length,
     contactSubmissions: contactSubmissions.length,
     pendingSubmissions: pendingSubmissionsCount,
   }
@@ -1115,12 +1113,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-green-600">{stats.openProjects}</p>
               <p className="text-sm text-gray-500">{t('admin.stats.openProjects')}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-red-600">{stats.criticalProjects}</p>
-              <p className="text-sm text-gray-500">{t('admin.stats.criticalProjects')}</p>
             </CardContent>
           </Card>
           <Card>
@@ -1457,6 +1449,15 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         </span>
                       </th>
                       <th
+                        className="text-left p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('partnerOrganization')}
+                      >
+                        <span className="flex items-center">
+                          {t('admin.projects.table.partner')}
+                          <SortIcon field="partnerOrganization" />
+                        </span>
+                      </th>
+                      <th
                         className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('category')}
                       >
@@ -1476,15 +1477,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                       </th>
                       <th
                         className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
-                        onClick={() => handleSort('urgency')}
-                      >
-                        <span className="flex items-center justify-center">
-                          {t('admin.projects.table.urgency')}
-                          <SortIcon field="urgency" />
-                        </span>
-                      </th>
-                      <th
-                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('status')}
                       >
                         <span className="flex items-center justify-center">
@@ -1498,7 +1490,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                   <tbody className="divide-y">
                     {paginatedProjects.map((project) => {
                       const categoryConfig = CATEGORY_CONFIG[project.category]
-                      const urgencyConfig = URGENCY_CONFIG[project.urgency]
                       const statusConfig = STATUS_CONFIG[project.status]
 
                       return (
@@ -1516,6 +1507,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                           </td>
                           <td className="p-4 text-gray-600">{project.municipalityName}</td>
                           <td className="p-4 text-gray-500 text-sm">{project.region || '-'}</td>
+                          <td className="p-4 text-gray-500 text-sm">{project.partnerOrganization || '-'}</td>
                           <td className="p-4 text-center">
                             <Badge dot dotColor={categoryConfig.color} size="sm">
                               {t(`categories.${project.category}`)}
@@ -1529,14 +1521,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                             ) : (
                               <span className="text-gray-400 text-sm">-</span>
                             )}
-                          </td>
-                          <td className="p-4 text-center">
-                            <Badge
-                              variant={project.urgency === 'CRITICAL' ? 'danger' : project.urgency === 'HIGH' ? 'warning' : 'default'}
-                              size="sm"
-                            >
-                              {t(`urgency.${project.urgency}`)}
-                            </Badge>
                           </td>
                           <td className="p-4 text-center">
                             <Badge
@@ -1767,10 +1751,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                             <span className="text-gray-500">{t('admin.submissions.labels.type')}:</span>{' '}
                             <span className="font-medium">{t(`projectTypes.${submission.projectType}`)}</span>
                           </div>
-                          <div>
-                            <span className="text-gray-500">{t('admin.submissions.labels.urgency')}:</span>{' '}
-                            <span className="font-medium">{t(`urgency.${submission.urgency}`)}</span>
-                          </div>
                           {submission.estimatedCostUsd && (
                             <div>
                               <span className="text-gray-500">{t('admin.submissions.labels.cost')}:</span>{' '}
@@ -1876,10 +1856,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                       <div>
                         <p className="text-gray-500">{t('admin.submissions.labels.projectType')}</p>
                         <p className="font-medium">{t(`projectTypes.${selectedSubmission.projectType}`)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('admin.submissions.labels.urgency')}</p>
-                        <p className="font-medium">{t(`urgency.${selectedSubmission.urgency}`)}</p>
                       </div>
                       <div>
                         <p className="text-gray-500">{t('admin.submissions.labels.location')}</p>

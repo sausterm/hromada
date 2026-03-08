@@ -8,7 +8,7 @@ export type Urgency = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 export type Status = 'OPEN' | 'IN_DISCUSSION' | 'MATCHED' | 'FULFILLED'
 
 // Project type for renewable energy projects
-export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION' | 'WATER_TREATMENT' | 'GENERAL'
+export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION' | 'GENERAL'
 
 // Co-financing availability status
 export type CofinancingStatus = 'YES' | 'NO' | 'NEEDS_CLARIFICATION'
@@ -154,14 +154,6 @@ export const CATEGORY_CONFIG: Record<Category, { label: string; color: string; i
   },
 }
 
-// Urgency display info - warm palette
-export const URGENCY_CONFIG: Record<Urgency, { label: string; color: string }> = {
-  LOW: { label: 'Low', color: '#8B7355' },          // Warm taupe
-  MEDIUM: { label: 'Medium', color: '#D4954A' },    // Warm amber
-  HIGH: { label: 'High', color: '#D4754E' },        // Terracotta
-  CRITICAL: { label: 'Critical', color: '#B84A32' }, // Deep rust
-}
-
 // Status display info - warm palette
 export const STATUS_CONFIG: Record<Status, { label: string; color: string }> = {
   OPEN: { label: 'Seeking Donors', color: '#7B9E6B' },      // Sage green
@@ -192,11 +184,6 @@ export const PROJECT_TYPE_CONFIG: Record<ProjectType, { label: string; color: st
     label: 'Thermo-modernization',
     color: '#8B7355',  // Warm taupe
     icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'  // Home
-  },
-  WATER_TREATMENT: {
-    label: 'Water Treatment',
-    color: '#5B8FA8',  // Muted teal
-    icon: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>'  // Droplet
   },
   GENERAL: {
     label: 'General',

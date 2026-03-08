@@ -47,7 +47,8 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 - [ ] Remove site password (or convert to soft-launch invite list) #p0 @tom
 - [ ] Hide/disable donation flow and bank details for directory mode #p0
 - [ ] Remove POCACITO/FSA branding for directory-only mode #p1
-- [ ] Ensure Ecoaction projects are submitted, approved, and browsable #p0 @tom
+- [/] Ensure Ecoaction projects are submitted, approved, and browsable — Lychkove + Samar docs in repo (Mar 4) #p0 @tom
+- [ ] Bulk project upload script — read Partner_Project_Template.csv, create projects via API #p1 @tom
 - [ ] Move EventBridge cron target back to hromadaproject.org #p1 @tom
 
 ## Communications & Outreach #p1
@@ -74,9 +75,28 @@ Social media (only):
 - Partner featured in press
 
 Materials:
+- [/] 1-pager for Scott Sklar — critical for donor intro conference call #p0 @tom
 - [/] 2-pager explainer handout (Figma) — visual overview for in-person meetings #p1 @tom
 - [/] 6-pager detailed explainer (Figma) — deeper dive for donors/partners #p1 @tom
+- [ ] May 20 Cannon Building event materials — invitations, program, handouts #p1 @tom @max
 - [ ] Director's letter template (as-needed basis) #p3 @tom
+
+## Events #p1
+
+- [/] May 20 Cannon Building Room 340 — morning event. Max booked. #p1 @tom @max
+  - [ ] Confirm Lloyd Doggett speaking
+  - [ ] Confirm Kostia speaking
+  - [ ] Confirm Natalia attending
+  - [ ] Invite Ukrainian mayors
+  - [ ] Invite Svitlana Romanko, Clarence Edwards, Romina Bandura
+  - [ ] Event program and run-of-show
+  - [ ] Printed materials for attendees
+
+## External Partnerships #p2
+
+- [/] EOPA partnership evaluation — joint call, data use terms, community consent model #p2 @tom
+- [/] Scott Sklar — 1-pager then conference call to his network #p1 @tom
+- [/] Michael Shank — meeting Tue Mar 11, potential first donor #p1 @tom
 
 ## Municipal Partnerships #p1
 

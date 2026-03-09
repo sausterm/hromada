@@ -728,10 +728,19 @@ export function UkraineMap({
         scrollWheelZoom={true}
         style={{ minHeight: '100%' }}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        {process.env.NEXT_PUBLIC_MAPTILER_KEY ? (
+          <TileLayer
+            attribution='&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url={`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}@2x.png?key=${process.env.NEXT_PUBLIC_MAPTILER_KEY}`}
+            tileSize={512}
+            zoomOffset={-1}
+          />
+        ) : (
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        )}
 
         <MapEventHandler projects={projects} onBoundsChange={onBoundsChange} />
         <ResetViewControl />

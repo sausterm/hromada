@@ -65,25 +65,7 @@ export default function TransparencyPage() {
             <p>{t('transparency.directConnectionText')}</p>
           </section>
 
-          {/* 5. Municipal Governance Data */}
-          <section className="fade-in-section">
-            <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">
-              {t('transparency.governanceDataTitle')}
-            </h2>
-            <p>{t('transparency.governanceDataText')}</p>
-            <p className="mt-2">
-              <a
-                href="https://transparentcities.in.ua/en/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--ukraine-blue)] hover:underline"
-              >
-                {t('prescreening.visitTransparentCities')}
-              </a>
-            </p>
-          </section>
-
-          {/* 6. Legal & Policies */}
+          {/* 5. Legal & Policies */}
           <section className="fade-in-section">
             <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">
               {t('prescreening.policiesTitle')}

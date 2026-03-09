@@ -3,14 +3,6 @@
 import { useTranslations } from 'next-intl'
 import { FAQItem } from '@/components/homepage/FAQItem'
 
-const PARTNERS = [
-  { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/' },
-  { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/' },
-  // { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/' },
-  { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/' },
-  // { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/' },
-]
-
 export function FAQSection() {
   const t = useTranslations()
 
@@ -31,16 +23,6 @@ export function FAQSection() {
               <a href="https://prozorro.gov.ua" target="_blank" rel="noopener noreferrer" className="opacity-70 hover:opacity-100 transition-opacity inline-block">
                 <img src="/partners/prozorrologo.png" alt="Prozorro" className="h-7" />
               </a>
-            </div>
-          </FAQItem>
-          <FAQItem question={t('homepage.faq.q3')}>
-            {t('homepage.faq.a3')}
-            <div className="flex flex-wrap items-center gap-6 mt-4">
-              {PARTNERS.map((p) => (
-                <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer" title={p.name} className="opacity-70 hover:opacity-100 transition-opacity">
-                  <img src={p.logo} alt={p.name} className="h-8" />
-                </a>
-              ))}
             </div>
           </FAQItem>
           <FAQItem question={t('homepage.faq.q4')}>

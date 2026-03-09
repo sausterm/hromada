@@ -24,6 +24,9 @@ import {
 // Sort options type
 type SortOption = 'newest' | 'oldest' | 'highestCost' | 'lowestCost' | 'alphabetical'
 
+// Ukraine bounding box (covers the entire country)
+const UKRAINE_BOUNDS: MapBounds = { south: 44, west: 22, north: 52.5, east: 40.5 }
+
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {
   return {
@@ -54,26 +57,48 @@ export default function ProjectsPage() {
   const [allProjects, setAllProjects] = useState<Project[]>([])
   const [visibleProjects, setVisibleProjects] = useState<Project[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const coveredBoundsRef = useRef<MapBounds | null>(null)
 
-  // Fetch projects from API
-  useEffect(() => {
-    async function fetchProjects() {
-      try {
-        const response = await fetch('/api/projects?all=true')
-        if (response.ok) {
-          const data = await response.json()
-          const projects = data.projects.map(transformProject)
+  // Fetch projects by bounds and merge into state
+  const fetchProjectsByBounds = useCallback(async (bounds: MapBounds, isInitial = false) => {
+    try {
+      const response = await fetch(
+        `/api/projects?bounds=${bounds.south},${bounds.west},${bounds.north},${bounds.east}`
+      )
+      if (response.ok) {
+        const data = await response.json()
+        const projects = data.projects.map(transformProject)
+        if (isInitial) {
           setAllProjects(projects)
           setVisibleProjects(projects)
+        } else {
+          setAllProjects((prev) => {
+            const existingIds = new Set(prev.map((p) => p.id))
+            const newProjects = projects.filter((p: Project) => !existingIds.has(p.id))
+            return newProjects.length > 0 ? [...prev, ...newProjects] : prev
+          })
         }
-      } catch (error) {
-        console.error('Failed to fetch projects:', error)
-      } finally {
-        setIsLoading(false)
+        // Expand covered bounds
+        coveredBoundsRef.current = coveredBoundsRef.current
+          ? {
+              south: Math.min(coveredBoundsRef.current.south, bounds.south),
+              west: Math.min(coveredBoundsRef.current.west, bounds.west),
+              north: Math.max(coveredBoundsRef.current.north, bounds.north),
+              east: Math.max(coveredBoundsRef.current.east, bounds.east),
+            }
+          : bounds
       }
+    } catch (error) {
+      console.error('Failed to fetch projects:', error)
+    } finally {
+      if (isInitial) setIsLoading(false)
     }
-    fetchProjects()
   }, [])
+
+  // Initial fetch with Ukraine bounding box
+  useEffect(() => {
+    fetchProjectsByBounds(UKRAINE_BOUNDS, true)
+  }, [fetchProjectsByBounds])
   const [highlightedProjectId, setHighlightedProjectId] = useState<string | null>(null)
   const [flyToProjectId, setFlyToProjectId] = useState<string | null>(null) // Separate state for zoom-on-click
   const [isMobileMapOpen, setIsMobileMapOpen] = useState(false)
@@ -301,9 +326,9 @@ export default function ProjectsPage() {
     setDisplayCount((prev) => prev + ITEMS_PER_PAGE)
   }, [])
 
-  // Handle map bounds change - only update if visible projects actually changed
+  // Handle map bounds change - update visible projects and fetch if needed
   const handleBoundsChange = useCallback(
-    (_bounds: MapBounds, visible: Project[]) => {
+    (bounds: MapBounds, visible: Project[]) => {
       setVisibleProjects((prev) => {
         // Compare IDs to avoid unnecessary state updates
         const prevIds = new Set(prev.map((p) => p.id))
@@ -313,8 +338,19 @@ export default function ProjectsPage() {
         }
         return visible
       })
+
+      // Fetch more projects if viewport extends beyond what we've already fetched
+      const covered = coveredBoundsRef.current
+      if (covered && (
+        bounds.south < covered.south ||
+        bounds.west < covered.west ||
+        bounds.north > covered.north ||
+        bounds.east > covered.east
+      )) {
+        fetchProjectsByBounds(bounds)
+      }
     },
-    []
+    [fetchProjectsByBounds]
   )
 
   // Handle card hover - highlight corresponding marker on map

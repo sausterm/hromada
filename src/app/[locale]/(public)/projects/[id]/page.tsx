@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
+import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/layout/Header'
@@ -243,11 +244,14 @@ export default function ProjectDetailPage() {
             {/* Photo Gallery */}
             {project.photos && project.photos.length > 0 && (
               <div className="space-y-3">
-                <div className="aspect-video bg-[var(--cream-200)] rounded-xl overflow-hidden">
-                  <img
+                <div className="relative aspect-video bg-[var(--cream-200)] rounded-xl overflow-hidden">
+                  <Image
                     src={project.photos[selectedPhoto]}
                     alt={localized.facilityName}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 66vw"
+                    className="object-cover"
+                    priority
                   />
                 </div>
                 {project.photos.length > 1 && (
@@ -256,16 +260,18 @@ export default function ProjectDetailPage() {
                       <button
                         key={index}
                         onClick={() => setSelectedPhoto(index)}
-                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                        className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                           selectedPhoto === index
                             ? 'border-[var(--ukraine-600)]'
                             : 'border-transparent opacity-70 hover:opacity-100'
                         }`}
                       >
-                        <img
+                        <Image
                           src={photo}
                           alt={`${localized.facilityName} ${index + 1}`}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="80px"
+                          className="object-cover"
                         />
                       </button>
                     ))}
@@ -419,9 +425,11 @@ export default function ProjectDetailPage() {
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 group"
                               >
-                                <img
+                                <Image
                                   src={partnerConfig.logo}
                                   alt={partnerConfig.name}
+                                  width={64}
+                                  height={32}
                                   className="h-8 w-auto object-contain"
                                 />
                                 <span className="font-medium text-[var(--navy-700)] text-sm group-hover:text-[var(--navy-600)] transition-colors">

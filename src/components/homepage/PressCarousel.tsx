@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 
@@ -226,12 +227,16 @@ export function PressCarousel() {
               }}
               draggable={false}
             >
-              <img
-                src={item.logo}
-                alt={item.name}
-                className={`${(item as any).height || 'h-14'} w-auto object-contain pointer-events-none`}
-                draggable={false}
-              />
+              <div className={`relative ${(item as any).height || 'h-14'} w-40`}>
+                <Image
+                  src={item.logo}
+                  alt={item.name}
+                  fill
+                  sizes="160px"
+                  className="object-contain pointer-events-none"
+                  draggable={false}
+                />
+              </div>
             </a>
           ))}
         </div>

@@ -147,6 +147,7 @@ function MapEventHandler({
   const map = useMap()
   const zoomOutTimeoutRef = useRef<number | null>(null)
   const popupOpenTimeRef = useRef<number | null>(null)
+  const debounceRef = useRef<number | null>(null)
 
   const updateBounds = useCallback(() => {
     if (!onBoundsChange) return
@@ -173,9 +174,29 @@ function MapEventHandler({
     onBoundsChange(mapBounds, visibleProjects)
   }, [map, projects, onBoundsChange])
 
+  // Debounced version for map move/zoom events (300ms)
+  const debouncedUpdateBounds = useCallback(() => {
+    if (debounceRef.current) {
+      window.clearTimeout(debounceRef.current)
+    }
+    debounceRef.current = window.setTimeout(() => {
+      updateBounds()
+      debounceRef.current = null
+    }, 300)
+  }, [updateBounds])
+
+  // Clean up debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        window.clearTimeout(debounceRef.current)
+      }
+    }
+  }, [])
+
   useMapEvents({
-    moveend: updateBounds,
-    zoomend: updateBounds,
+    moveend: debouncedUpdateBounds,
+    zoomend: debouncedUpdateBounds,
     popupopen: (e) => {
       // Track when popup opened
       popupOpenTimeRef.current = Date.now()

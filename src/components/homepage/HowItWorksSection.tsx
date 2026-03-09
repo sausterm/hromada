@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Users, SearchCheck, Megaphone, Heart, Wrench, SolarPanel, type LucideIcon } from 'lucide-react'
@@ -154,7 +155,7 @@ export function HowItWorksSection() {
                   style={{ backgroundColor: step.hexColor }}
                 >
                   {step.logoSrc ? (
-                    <img src={step.logoSrc} alt="" className="w-full h-full object-contain" />
+                    <Image src={step.logoSrc} alt="" width={32} height={32} className="w-full h-full object-contain" />
                   ) : step.Icon ? (
                     <step.Icon className="w-5 h-5" strokeWidth={1.75} />
                   ) : null}
@@ -199,7 +200,7 @@ export function HowItWorksSection() {
             rel="noopener noreferrer"
             className="flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border border-[var(--cream-200)] shadow-lg hover:shadow-xl transition-shadow sm:flex-1"
           >
-            <img src="/partners/candidseal.png" alt="Candid Platinum Seal" className="w-10 h-10 object-contain flex-shrink-0" />
+            <Image src="/partners/candidseal.png" alt="Candid Platinum Seal" width={40} height={40} className="w-10 h-10 object-contain flex-shrink-0" />
             <div className="text-left">
               <div className="text-[var(--navy-700)] font-semibold text-sm">501(c)(3) Fiscal Sponsor</div>
               <div className="text-xs text-[var(--navy-500)]">POCACITO Network · Candid Platinum Seal</div>

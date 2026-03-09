@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
+import Image from 'next/image'
 import { type Project, CATEGORY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, formatRelativeTime, getLocalizedProject } from '@/types'
 import { ShareButton } from '@/components/ui/ShareButton'
 
@@ -39,10 +40,12 @@ export function ProjectCard({
       {/* Image Section - fixed aspect ratio, never shrinks */}
       <div className="relative aspect-[16/10] bg-[var(--cream-200)] flex-shrink-0 overflow-hidden">
         {mainPhoto ? (
-          <img
+          <Image
             src={mainPhoto}
             alt={localized.facilityName}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-[var(--navy-400)]">

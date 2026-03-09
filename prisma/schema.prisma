@@ -54,6 +54,7 @@ model Project {
   @@index([urgency])
   @@index([projectType])
   @@index([createdAt])
+  @@index([cityLatitude, cityLongitude])
 }
 
 /// Project images with a maximum of 5 per project.

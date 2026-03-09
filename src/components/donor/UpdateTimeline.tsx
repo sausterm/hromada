@@ -46,9 +46,12 @@ function TimelineDotIcon({ type, compact }: { type?: string; compact: boolean })
 export function UpdateTimeline({ updates, maxUpdates, onPhotoClick, variant }: UpdateTimelineProps) {
   const isCompact = variant === 'compact'
 
-  const displayUpdates = maxUpdates
-    ? updates.slice(-maxUpdates).reverse()
-    : [...updates].reverse()
+  // Full variant: chronological (oldest first). Compact/preview: reverse-chronological (newest first).
+  const sorted = [...updates].sort((a, b) => {
+    const diff = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    return isCompact ? -diff : diff
+  })
+  const displayUpdates = maxUpdates ? sorted.slice(0, maxUpdates) : sorted
   const hiddenCount = maxUpdates && updates.length > maxUpdates
     ? updates.length - maxUpdates
     : 0

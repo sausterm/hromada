@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -203,9 +204,11 @@ export function SupportProjectCard({
               className="w-full flex items-center justify-center gap-2 bg-[var(--ukraine-blue)] hover:opacity-90 text-white font-medium py-3 px-4 rounded-lg transition-opacity"
             >
               {t('scheduleCallWith')}
-              <img
+              <Image
                 src="/calendly-logo-white.png"
                 alt="Calendly"
+                width={72}
+                height={18}
                 className="h-[18px] w-auto relative top-[1px]"
               />
             </a>

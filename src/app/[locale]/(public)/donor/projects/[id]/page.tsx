@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { Link, useRouter } from '@/i18n/navigation'
@@ -10,7 +11,18 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { formatCurrency, getLocalizedProject, type Project } from '@/types'
+import {
+  formatCurrency,
+  formatPower,
+  getLocalizedProject,
+  type Project,
+  CATEGORY_CONFIG,
+  PROJECT_TYPE_CONFIG,
+  COFINANCING_CONFIG,
+  type Category,
+  type ProjectType,
+  type CofinancingStatus,
+} from '@/types'
 import { DONATION_STATUS_CONFIG, PAYMENT_METHOD_LABELS, formatDate } from '@/lib/donor-constants'
 import { JourneyStepper } from '@/components/donor/JourneyStepper'
 import { UpdateTimeline, type TimelineUpdate } from '@/components/donor/UpdateTimeline'
@@ -51,7 +63,67 @@ function transformProject(data: Record<string, unknown>): Project {
   } as Project
 }
 
+// Partner organizations configuration with logos and links
+const PARTNER_CONFIG: Record<string, { logo: string; url: string; name: string }> = {
+  'ecoaction': {
+    logo: '/partners/EcoactionLogo.png',
+    url: 'https://en.ecoaction.org.ua/',
+    name: 'NGO Ecoaction',
+  },
+  'ecoclub': {
+    logo: '/partners/EcoclubLogo.png',
+    url: 'https://ecoclubrivne.org/en/',
+    name: 'NGO Ecoclub',
+  },
+  'greenpeace': {
+    logo: '/partners/greenpeacelogo.png',
+    url: 'https://www.greenpeace.org/ukraine/en/',
+    name: 'Greenpeace Ukraine',
+  },
+}
+
+function findPartnerConfig(orgName: string | undefined) {
+  if (!orgName) return null
+  const lowerName = orgName.toLowerCase()
+  for (const [key, config] of Object.entries(PARTNER_CONFIG)) {
+    if (lowerName.includes(key)) return config
+  }
+  return null
+}
+
 const LUTSKTEPLO_ID = 'cmkx2spy5001pv9rqtj76tfg6'
+
+// Demo project for when the real project doesn't exist in DB
+const DEMO_PROJECT: Project = {
+  id: LUTSKTEPLO_ID,
+  municipalityName: 'Lutsk',
+  municipalityNameUk: 'Луцьк',
+  facilityName: 'Municipal enterprise Lutskteplo',
+  facilityNameUk: 'Комунальне підприємство «Луцьктепло»',
+  category: 'ENERGY',
+  projectType: 'HEAT_PUMP',
+  briefDescription: 'Heat pump modernization for the district heating system serving 12,000 residents in Lutsk',
+  briefDescriptionUk: 'Модернізація теплонасосної системи централізованого теплопостачання для 12 000 мешканців Луцька',
+  fullDescription: 'Installation of a modern heat pump system for the Lutskteplo district heating enterprise, replacing aging infrastructure and reducing energy consumption by 40%. The project serves approximately 12,000 residents across the municipality.',
+  fullDescriptionUk: 'Встановлення сучасної теплонасосної системи для КП «Луцьктепло», що замінить застарілу інфраструктуру та зменшить споживання енергії на 40%.',
+  estimatedCostUsd: 345000,
+  technicalPowerKw: 200,
+  region: 'Volyn Oblast',
+  partnerOrganization: 'NGO Ecoaction',
+  cofinancingAvailable: 'NO',
+  urgency: 'MEDIUM',
+  status: 'MATCHED',
+  cityLatitude: 50.7472,
+  cityLongitude: 25.3254,
+  contactName: 'Kostiantyn Krynytskyi',
+  contactEmail: 'kostiantyn@ecoaction.org',
+  municipalityEmail: 'info@lutskteplo.gov.ua',
+  description: 'Installation of a modern heat pump system for the Lutskteplo district heating enterprise, replacing aging infrastructure and reducing energy consumption by 40%.',
+  address: 'Lutsk, Volyn Oblast',
+  createdAt: new Date('2025-12-01'),
+  updatedAt: new Date('2026-02-22'),
+  photos: [],
+} as Project
 
 const DEMO_UPDATES: ProjectUpdate[] = [
   {
@@ -160,6 +232,10 @@ export default function DonorProjectDetailPage() {
           }))
           // Use demo updates for Lutskteplo if no real updates exist
           setUpdates(realUpdates.length > 0 ? realUpdates : (projectId === LUTSKTEPLO_ID ? DEMO_UPDATES : []))
+        } else if (projectId === LUTSKTEPLO_ID) {
+          // Demo project doesn't exist in DB — use hardcoded demo data
+          setProject(DEMO_PROJECT)
+          setUpdates(DEMO_UPDATES)
         }
 
         if (donationsRes.ok) {
@@ -306,34 +382,131 @@ export default function DonorProjectDetailPage() {
           <div className="space-y-6">
             {/* Project Photo */}
             {project.photos && project.photos.length > 0 && (
-              <div className="rounded-xl overflow-hidden">
-                <img
+              <div className="relative rounded-xl overflow-hidden h-48">
+                <Image
                   src={project.photos[0]}
                   alt={localized.facilityName}
-                  className="w-full h-48 object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 33vw"
+                  className="object-cover"
                 />
               </div>
             )}
 
-            {/* Tax Info */}
+            {/* Project Details */}
             <Card>
-              <CardContent className="p-5">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900">Tax-Deductible</h4>
-                    <p className="text-xs text-gray-600 mt-1">
-                      Via POCACITO Network (EIN 99-0392258). Contact{' '}
-                      <a href="mailto:donations@pocacito.org" className="text-[var(--navy-600)] hover:underline">
-                        donations@pocacito.org
-                      </a>{' '}
-                      for tax receipts.
-                    </p>
-                  </div>
+              <CardHeader>
+                <CardTitle>Project Details</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Category Badge */}
+                  {project.category && CATEGORY_CONFIG[project.category as Category] && (() => {
+                    const catConfig = CATEGORY_CONFIG[project.category as Category]
+                    return (
+                      <div>
+                        <p className="text-sm text-[var(--navy-500)] mb-1">Category</p>
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium"
+                          style={{ backgroundColor: `${catConfig.color}20`, color: catConfig.color }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" dangerouslySetInnerHTML={{ __html: catConfig.icon }} />
+                          {catConfig.label}
+                        </span>
+                      </div>
+                    )
+                  })()}
+
+                  {/* Project Type Badge */}
+                  {project.projectType && PROJECT_TYPE_CONFIG[project.projectType as ProjectType] && (() => {
+                    const typeConfig = PROJECT_TYPE_CONFIG[project.projectType as ProjectType]
+                    return (
+                      <div>
+                        <p className="text-sm text-[var(--navy-500)] mb-1">Project Type</p>
+                        <span
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium"
+                          style={{ backgroundColor: `${typeConfig.color}20`, color: typeConfig.color }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" dangerouslySetInnerHTML={{ __html: typeConfig.icon }} />
+                          {typeConfig.label}
+                        </span>
+                      </div>
+                    )
+                  })()}
+
+                  {/* Estimated Cost */}
+                  {project.estimatedCostUsd && (
+                    <div>
+                      <p className="text-sm text-[var(--navy-500)] mb-1">Estimated Cost</p>
+                      <p className="font-medium text-[var(--navy-700)]">{formatCurrency(project.estimatedCostUsd)}</p>
+                    </div>
+                  )}
+
+                  {/* Technical Power */}
+                  {project.technicalPowerKw && (
+                    <div>
+                      <p className="text-sm text-[var(--navy-500)] mb-1">System Capacity</p>
+                      <p className="font-medium text-[var(--navy-700)]">{formatPower(project.technicalPowerKw)}</p>
+                    </div>
+                  )}
+
+                  {/* Region */}
+                  {project.region && (
+                    <div>
+                      <p className="text-sm text-[var(--navy-500)] mb-1">Region</p>
+                      <p className="font-medium text-[var(--navy-700)]">{project.region}</p>
+                    </div>
+                  )}
+
+                  {/* Co-financing */}
+                  {project.cofinancingAvailable && COFINANCING_CONFIG[project.cofinancingAvailable as CofinancingStatus] && (
+                    <div>
+                      <p className="text-sm text-[var(--navy-500)] mb-1">Co-financing</p>
+                      <span
+                        className="inline-flex items-center px-2.5 py-1 rounded text-sm font-medium"
+                        style={{
+                          backgroundColor: `${COFINANCING_CONFIG[project.cofinancingAvailable as CofinancingStatus].color}20`,
+                          color: COFINANCING_CONFIG[project.cofinancingAvailable as CofinancingStatus].color,
+                        }}
+                      >
+                        {COFINANCING_CONFIG[project.cofinancingAvailable as CofinancingStatus].label}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Partner Organization with Logo */}
+                  {project.partnerOrganization && (() => {
+                    const partnerConfig = findPartnerConfig(project.partnerOrganization)
+                    return (
+                      <div>
+                        <p className="text-sm text-[var(--navy-500)] mb-2">Partner</p>
+                        {partnerConfig ? (
+                          <a
+                            href={partnerConfig.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 group"
+                          >
+                            <Image
+                              src={partnerConfig.logo}
+                              alt={partnerConfig.name}
+                              width={64}
+                              height={32}
+                              className="h-8 w-auto object-contain"
+                            />
+                            <span className="font-medium text-[var(--navy-700)] text-sm group-hover:text-[var(--navy-600)] transition-colors">
+                              {project.partnerOrganization}
+                            </span>
+                            <svg className="w-3.5 h-3.5 flex-shrink-0 text-[var(--navy-400)] group-hover:text-[var(--navy-600)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        ) : (
+                          <p className="font-medium text-[var(--navy-700)] text-sm">{project.partnerOrganization}</p>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               </CardContent>
             </Card>

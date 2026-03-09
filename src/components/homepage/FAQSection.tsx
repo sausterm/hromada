@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { FAQItem } from '@/components/homepage/FAQItem'
 
@@ -21,7 +22,7 @@ export function FAQSection() {
             {t('homepage.faq.a2')}
             <div className="mt-4">
               <a href="https://prozorro.gov.ua" target="_blank" rel="noopener noreferrer" className="opacity-70 hover:opacity-100 transition-opacity inline-block">
-                <img src="/partners/prozorrologo.png" alt="Prozorro" className="h-7" />
+                <Image src="/partners/prozorrologo.png" alt="Prozorro" width={112} height={28} className="h-7 w-auto" />
               </a>
             </div>
           </FAQItem>

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 
@@ -176,10 +177,12 @@ export function PublicImageUpload({
                 dragIndex === index ? 'border-[var(--navy-500)] opacity-50' : 'border-transparent'
               }`}
             >
-              <img
+              <Image
                 src={url}
                 alt={`${t('submitProject.photos.imageAlt')} ${index + 1}`}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 640px) 50vw, 33vw"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 <button

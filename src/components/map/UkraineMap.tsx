@@ -4,8 +4,6 @@ import { Component, useState, useCallback, useEffect, useRef, memo, useMemo, typ
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import L from 'leaflet'
-import 'maplibre-gl/dist/maplibre-gl.css'
-import '@maplibre/maplibre-gl-leaflet'
 import { type Project, type Category, CATEGORY_CONFIG } from '@/types'
 import { ProjectPopup } from './ProjectPopup'
 import 'leaflet/dist/leaflet.css'
@@ -29,33 +27,6 @@ class PopupErrorBoundary extends Component<{ children: ReactNode }, { hasError: 
   }
 }
 
-// MapTiler vector tile base layer (renders Ukrainian labels via MapLibre GL)
-const MAPTILER_STYLE_URL = `https://api.maptiler.com/maps/019cd35b-7b22-7f4c-9d43-c9cdc6f4e129/style.json?key=${process.env.NEXT_PUBLIC_MAPTILER_KEY}`
-
-function MapTilerLayer() {
-  const map = useMap()
-  const layerRef = useRef<L.Layer | null>(null)
-
-  useEffect(() => {
-    if (layerRef.current) return // already added
-    // @maplibre/maplibre-gl-leaflet adds L.maplibreGL to Leaflet
-    const gl = (L as any).maplibreGL({
-      style: MAPTILER_STYLE_URL,
-      attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    })
-    gl.addTo(map)
-    layerRef.current = gl
-
-    return () => {
-      if (layerRef.current) {
-        map.removeLayer(layerRef.current)
-        layerRef.current = null
-      }
-    }
-  }, [map])
-
-  return null
-}
 
 // Ukraine center coordinates
 const UKRAINE_CENTER: [number, number] = [48.3794, 31.1656]
@@ -754,18 +725,15 @@ export function UkraineMap({
       <MapContainer
         center={UKRAINE_CENTER}
         zoom={UKRAINE_ZOOM}
+        maxZoom={18}
         className="w-full h-full"
         scrollWheelZoom={true}
         style={{ minHeight: '100%' }}
       >
-        {process.env.NEXT_PUBLIC_MAPTILER_KEY ? (
-          <MapTilerLayer />
-        ) : (
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-        )}
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
         <MapEventHandler projects={projects} onBoundsChange={onBoundsChange} />
         <ResetViewControl />

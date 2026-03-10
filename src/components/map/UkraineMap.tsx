@@ -7,8 +7,160 @@ import L from 'leaflet'
 import { type Project, type Category, CATEGORY_CONFIG } from '@/types'
 import { ProjectPopup } from './ProjectPopup'
 import 'leaflet/dist/leaflet.css'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.Default.css'
+
+// MapTiler custom map with Ukrainian labels (vector tiles via MapLibre GL).
+// Uses "underlay" pattern: MapLibre GL renders behind a transparent Leaflet map.
+const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY
+const MAPTILER_STYLE_URL = MAPTILER_KEY
+  ? `https://api.maptiler.com/maps/019cd35b-7b22-7f4c-9d43-c9cdc6f4e129/style.json?key=${MAPTILER_KEY}`
+  : null
+
+// Renders MapLibre GL map inside the Leaflet container as a base layer.
+// The GL canvas sits at z-index 0, below Leaflet's panes (z-index 200+).
+// MapLibre GL uses 512px tiles vs Leaflet's 256px, so zoom offset is -1.
+//
+// Sync strategy:
+// - Pan (drag): `move` → `jumpTo` — frame-perfect sync
+// - Scroll wheel zoom: `zoomanim` → `easeTo(250ms)` — matches CSS animation
+// - flyTo (cluster click, reset, etc.): GL does its own `flyTo` in parallel —
+//   prevents tile-loading blinks that `jumpTo` per frame would cause
+function MapTilerBaseLayer() {
+  const map = useMap()
+
+  useEffect(() => {
+    if (!MAPTILER_STYLE_URL) return
+
+    const container = map.getContainer()
+    // Make Leaflet container transparent so GL canvas shows through cleanly
+    container.style.background = 'transparent'
+
+    // Create a div inside the Leaflet container for MapLibre GL
+    const glDiv = document.createElement('div')
+    glDiv.style.position = 'absolute'
+    glDiv.style.inset = '0'
+    glDiv.style.zIndex = '0'
+    container.insertBefore(glDiv, container.firstChild)
+
+    let glMap: any = null
+    let isFlying = false
+    let cancelled = false
+
+    import('maplibre-gl').then((mod) => {
+      if (cancelled) return
+      const maplibregl = mod.default
+      const center = map.getCenter()
+
+      glMap = new maplibregl.Map({
+        container: glDiv,
+        style: MAPTILER_STYLE_URL,
+        center: [center.lng, center.lat],
+        zoom: map.getZoom() - 1,
+        interactive: false,
+        attributionControl: false,
+        fadeDuration: 0, // Instant tile appearance — prevents blink on zoom
+      })
+
+      // ── Sync handlers ──
+
+      // Pan (drag) & programmatic moves that aren't flyTo
+      const syncView = () => {
+        if (!glMap || isFlying) return
+        const c = map.getCenter()
+        glMap.jumpTo({
+          center: [c.lng, c.lat],
+          zoom: map.getZoom() - 1,
+        })
+      }
+
+      // Scroll-wheel zoom uses a 250ms CSS animation (cubic-bezier)
+      const onZoomAnim = (e: L.ZoomAnimEvent) => {
+        if (!glMap || isFlying) return
+        glMap.easeTo({
+          center: [e.center.lng, e.center.lat],
+          zoom: e.zoom - 1,
+          duration: 250,
+        })
+      }
+
+      // Snap to exact final position after any movement completes
+      const onMoveEnd = () => {
+        isFlying = false
+        if (!glMap) return
+        const c = map.getCenter()
+        glMap.jumpTo({
+          center: [c.lng, c.lat],
+          zoom: map.getZoom() - 1,
+        })
+      }
+
+      map.on('move', syncView)
+      map.on('zoomanim', onZoomAnim)
+      map.on('moveend', onMoveEnd)
+
+      // ── Mirror flyTo on the GL map ──
+      // Leaflet's flyTo fires continuous `move` events, but jumpTo-ing each
+      // frame causes tile-loading blinks. Instead, tell GL to do its own
+      // parallel flyTo animation and suppress per-frame sync.
+      const origFlyTo = map.flyTo.bind(map)
+      ;(map as any)._origFlyTo = origFlyTo
+      ;(map as any).flyTo = function (
+        latlng: L.LatLngExpression,
+        zoom?: number,
+        options?: any,
+      ) {
+        if (glMap) {
+          isFlying = true
+          const ll = L.latLng(latlng)
+          const targetZoom = zoom ?? map.getZoom()
+          const durationSec = options?.duration ?? 0.25
+          glMap.flyTo({
+            center: [ll.lng, ll.lat],
+            zoom: targetZoom - 1,
+            duration: durationSec * 1000,
+          })
+        }
+        return origFlyTo.call(map, latlng, zoom, options)
+      }
+
+      // Store handlers for cleanup
+      ;(glDiv as any)._handlers = { syncView, onZoomAnim, onMoveEnd }
+    }).catch((err) => {
+      console.error('[MapTiler] Failed to load maplibre-gl:', err)
+    })
+
+    return () => {
+      cancelled = true
+      // Restore original flyTo
+      if ((map as any)._origFlyTo) {
+        ;(map as any).flyTo = (map as any)._origFlyTo
+        delete (map as any)._origFlyTo
+      }
+      const h = (glDiv as any)._handlers
+      if (h) {
+        if (h.syncView) map.off('move', h.syncView)
+        if (h.onZoomAnim) map.off('zoomanim', h.onZoomAnim)
+        if (h.onMoveEnd) map.off('moveend', h.onMoveEnd)
+      }
+      if (glMap) { glMap.remove(); glMap = null }
+      if (glDiv.parentNode) glDiv.parentNode.removeChild(glDiv)
+    }
+  }, [map])
+
+  // Add MapTiler attribution to Leaflet's attribution control
+  useEffect(() => {
+    if (!MAPTILER_STYLE_URL) return
+    const ctrl = map.attributionControl
+    if (!ctrl) return
+    const attr = '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    ctrl.addAttribution(attr)
+    return () => { ctrl.removeAttribution(attr) }
+  }, [map])
+
+  return null
+}
 
 // Error boundary to prevent popup crashes from taking down the page
 class PopupErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
@@ -480,6 +632,16 @@ const ProjectMarkers = memo(function ProjectMarkers({
   const clusterGroupCallback = useCallback((node: L.MarkerClusterGroup | null) => {
     if (node) {
       clusterGroupRef.current = node
+      // Use flyTo for cluster clicks instead of default fitBounds —
+      // flyTo fires continuous move events so the GL base map tracks smoothly
+      node.on('clusterclick', (e: any) => {
+        const bounds = e.layer.getBounds().pad(0.5)
+        const map = e.layer._map
+        if (map) {
+          const zoom = map.getBoundsZoom(bounds)
+          map.flyTo(bounds.getCenter(), zoom, { duration: 0.4 })
+        }
+      })
     }
   }, [clusterGroupRef])
 
@@ -494,7 +656,7 @@ const ProjectMarkers = memo(function ProjectMarkers({
       maxClusterRadius={60}
       spiderfyOnMaxZoom={false}
       showCoverageOnHover={false}
-      zoomToBoundsOnClick={true}
+      zoomToBoundsOnClick={false}
       disableClusteringAtZoom={12}
       removeOutsideVisibleBounds={true}
       animate={true}
@@ -730,10 +892,16 @@ export function UkraineMap({
         scrollWheelZoom={true}
         style={{ minHeight: '100%' }}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        {/* MapTiler vector tiles with Ukrainian labels (GL canvas inside Leaflet container) */}
+        {MAPTILER_STYLE_URL && <MapTilerBaseLayer />}
+
+        {/* OSM raster fallback when MapTiler key not available */}
+        {!MAPTILER_STYLE_URL && (
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+        )}
 
         <MapEventHandler projects={projects} onBoundsChange={onBoundsChange} />
         <ResetViewControl />

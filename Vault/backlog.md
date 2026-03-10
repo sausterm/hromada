@@ -110,20 +110,21 @@ Materials:
 ## Performance #p1
 
 - [x] Add `Cache-Control` headers to public API routes (`/api/projects`, etc.) #p1
-- [ ] Replace native `<img>` with Next.js `<Image>` component (multiple files) #p1
-- [ ] Viewport-based map loading — currently loads ALL projects, won't scale past ~100 #p1
-- [ ] Hybrid SSR/CSR for homepage — improve SEO and initial load #p2
-- [ ] Add database indexes review (Prisma schema has some, verify coverage) #p2
-- [ ] API response compression #p3
+- [x] MapTiler vector tiles with Ukrainian labels — MapLibre GL rendered inside Leaflet container, parallel flyTo sync, OSM fallback #p1
+- [x] Replace native `<img>` with Next.js `<Image>` component — all React components migrated, only HTML email templates remain as native #p1
+- [x] Viewport-based map loading — bounds-based API filtering, client-side region caching, debounced fetch, composite DB index #p1
+- [x] Hybrid SSR/CSR for homepage — server component with client-side hydration for interactive elements #p2
+- [x] Add database indexes review — comprehensive indexing across all tables (category, status, coordinates, foreign keys, ~30+ indexes) #p2
+- [x] API response compression — handled by Next.js (gzip default) + CloudFront (gzip+brotli), no additional config needed #p3
 
 ## Accessibility #p1
 
-- [ ] Mobile map view — currently shows "coming soon" placeholder #p1
-- [ ] Skip-to-content navigation links #p2
-- [ ] ARIA labels on all form elements (contact, donation, partnership forms) #p2
-- [ ] Keyboard navigation for Leaflet map component #p2
-- [ ] Color contrast audit against WCAG 2.1 AA #p3
-- [ ] Screen reader testing pass #p3
+- [x] Mobile map view — dual-map pattern with list/map toggle #p1
+- [x] Skip-to-content navigation link — locale-aware, visually hidden until focused, targets `<main id="main-content">` on all pages #p2
+- [x] ARIA labels on all form elements — Input/Textarea components auto-add `aria-invalid` + `aria-describedby` linking error messages, EmailCaptureForm labeled #p2
+- [x] Keyboard navigation for Leaflet map component — `role="region"`, `aria-label`, `keyboard={true}`, built-in arrow/+/- keys #p2
+- [x] Color contrast audit against WCAG 2.1 AA — 26 failures fixed (darkened text/category/badge colors) #p3
+- [x] Screen reader testing pass — `<main>` landmarks on all pages, `<h1>` everywhere, `scope="col"` on tables, `aria-expanded` on FAQ, `role="alert"` on errors, heading hierarchy fixed #p3
 
 ## Code Quality #p2
 
@@ -150,6 +151,11 @@ Materials:
 - [ ] Progress reporting tools with photo evidence #p3
 - [ ] Budget tracking and transparency reports #p3
 - [ ] Automated status updates to donors #p3
+
+## Analytics #p1
+
+- [ ] AWS Pinpoint setup — user analytics, donor funnel tracking, event segmentation #p1 @sloan
+- [ ] KPI dashboard (CloudWatch or QuickSight) — visitor→project view→support click→donation conversion #p2 @sloan
 
 ## Infrastructure #p2
 

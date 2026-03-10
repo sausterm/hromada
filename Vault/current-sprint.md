@@ -18,6 +18,8 @@
 - [ ] IDP project card styling — special visual treatment (colored border or badge) for internally displaced community projects #p1 @tom
 - [x] Add 12 Ecoaction Tier 2 projects with cropped photos (no docs yet) #p1 @tom
 - [x] Admin dashboard — Partner column in projects table #p2 @tom
+- [x] MapTiler vector tiles with Ukrainian labels — MapLibre GL inside Leaflet container, parallel flyTo sync, cluster click handling, OSM fallback #p1 @tom
+- [x] CSP worker-src for MapLibre GL web workers #p2 @tom
 - [ ] Ask Kostia for original photos to replace Canva crops #p2 @tom
 
 ## To Do
@@ -38,10 +40,13 @@
 
 ### Technical
 - [ ] Test full donation flow end-to-end with real bank details #p1 @tom
-- [ ] Move EventBridge cron target back to hromadaproject.org before launch #p1 @tom
+- [x] Move EventBridge cron target back to hromadaproject.org — already pointing there, both domains serve same branch #p1 @tom
 
 ### Pre-Launch
 - [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
+
+### Partner Onboarding
+- [ ] Send Natalia project intake template or form — she needs a good way to enter project info #p1 @tom ← **Tuesday Mar 10**
 
 ### Partnerships & Outreach
 - [x] EcoAction Ukraine MoU — reviewed with Kostia, sent to board #p1 @tom
@@ -68,6 +73,13 @@
 - [x] Fix fire-and-forget emails on Amplify — added `await` so Lambda doesn't tear down before send #p1 @tom
 - [x] Fix ADMIN_EMAIL — changed from placeholder `admin@example.com` to real address #p1 @tom
 - [x] Fix newsletter double-logo — removed double `emailLayout` wrapping in campaign sender #p2 @tom
+- [x] MapTiler vector tiles with Ukrainian labels via MapLibre GL — custom map style, parallel flyTo sync, fadeDuration: 0, cluster click handling #p1 @tom
+- [x] CSP update — added worker-src 'self' blob: for MapLibre GL web workers #p2 @tom
+- [x] WCAG color contrast fixes — 26 failures fixed across public + admin pages (navy/gray/category colors darkened) #p2 @tom
+- [x] Screen reader accessibility pass — `<main>` landmarks, `<h1>` on all pages, `scope="col"` on tables, `aria-expanded` on FAQ, `role="alert"` on errors, heading hierarchy fixes #p2 @tom
+- [x] Keyboard navigation for Leaflet map — `role="region"`, `aria-label`, `keyboard={true}` #p2 @tom
+- [x] Skip-to-content navigation link — locale-aware, visually hidden until focused #p2 @tom
+- [x] ARIA labels on form elements — Input/Textarea auto-add `aria-invalid` + `aria-describedby`, EmailCaptureForm labeled #p2 @tom
 - [x] Cofinancing percentage slider on partner submission form — 0-100% range with calculated dollar amount #p2 @tom
 - [x] Partner org multi-select checkboxes — replace free-text input with Ecoaction/Ecoclub Rivne/Greenpeace Ukraine checkboxes + Other #p2 @tom
 - [x] Prisma enum sync — added BATTERY_STORAGE and THERMO_MODERNIZATION to ProjectType #p1 @tom

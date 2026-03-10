@@ -75,7 +75,7 @@ Social media (only):
 - Partner featured in press
 
 Materials:
-- [/] 1-pager for Scott Sklar — critical for donor intro conference call #p0 @tom
+- [x] 1-pager for Scott Sklar — completed in Figma, Mar 8 #p0 @tom
 - [/] 2-pager explainer handout (Figma) — visual overview for in-person meetings #p1 @tom
 - [/] 6-pager detailed explainer (Figma) — deeper dive for donors/partners #p1 @tom
 - [ ] May 20 Cannon Building event materials — invitations, program, handouts #p1 @tom @max

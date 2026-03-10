@@ -10,7 +10,7 @@
 - [/] FSA submission to POCACITO — attorney-reviewed, awaiting board Mar 27 #p0 @tom
 - [x] Partner MoUs — legal review complete, shared with Kostia + Natalia, sent to their boards + Max/Brendan for review #p1 @tom
 - [x] Donor project timeline page — full progress view for funded projects #p1 @tom
-- [/] 1-pager for Scott Sklar — critical for donor intro calls, Figma, Sunday Mar 8 #p0 @tom
+- [x] 1-pager for Scott Sklar — completed in Figma, Mar 8 #p0 @tom
 - [/] 2-pager explainer handout (Figma) #p1 @tom
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
 - [/] Ecoaction project docs in repo (Lychkove + Samar) — needs Sloan review and partner submission #p1 @sloan
@@ -150,6 +150,6 @@
 | FSA signing | @tom | POCACITO board meets Mar 27, signing ~Mar 28 |
 | Real bank details | @tom | Blocked by FSA — available immediately upon signing |
 | NGO partner MoUs | @tom | Verbally reviewed, at partner boards + Max/Brendan. Not urgent pre-FSA. |
-| 1-pager for Sklar | @tom | Needed for donor intro calls. Figma Sunday Mar 8. |
+| 1-pager for Sklar | @tom | ✅ Completed Mar 8 |
 | May 20 event prep | @tom @max | Cannon Building booked. Need speaker confirmations, invites, materials. |
 | SES production access | @tom | Must exit sandbox before full launch |

@@ -157,7 +157,7 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 
 #### Messaging & Storytelling
 - [ ] Core messaging framework (value prop, donor personas, key messages) #p1
-- [/] 1-pager for Scott Sklar — critical for donor intro calls #p0 @tom
+- [x] 1-pager for Scott Sklar — completed in Figma, Mar 8 #p0 @tom
 - [ ] Project storytelling template (before/after, impact metrics) #p1
 - [ ] Launch announcement draft (press release, social media) #p2
 - [ ] Donor testimonial collection process #p2
@@ -190,7 +190,7 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [ ] Launch messaging ready (announcement, social)
 - [ ] **GO LIVE**
 
-> **Current status (Mar 7):** Security done, email system done, MoUs legally reviewed and at partner boards. All three partners confirmed. Soft launch as directory ~March 14. POCACITO board meets March 27, FSA signing ~March 28. Full launch days after signing. May 20 Cannon Building event booked. Scott Sklar and Michael Shank emerging as first donor/advisor contacts.
+> **Current status (Mar 9):** Security done, email system done, MoUs legally reviewed and at partner boards. All three partners confirmed. 14 projects live with cropped photos. 1-pager for Sklar complete. Soft launch as directory ~March 14. Michael Shank meeting Tue Mar 11. POCACITO board meets March 27, FSA signing ~March 28. Full launch days after signing. May 20 Cannon Building event booked.
 
 ---
 

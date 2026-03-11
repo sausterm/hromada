@@ -168,7 +168,7 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 
 #### External Partnerships
 - [/] EOPA (Elected Officials to Protect America) — AI energy impact tool, donor network, centrist positioning. Joint call TBD. #p2 @tom
-- [/] Michael Shank — potential first donor, knows Kostia + Natalia. Meeting Tue Mar 11. #p1 @tom
+- [x] Michael Shank — met Mar 11. Wants to intro FCNL head post-soft-launch, circulate press release, get Dear Colleague letter from Doggett to other members. #p1 @tom
 - [/] Scott Sklar — connector to donor networks. Needs 1-pager, then conference call. #p1 @tom
 
 ### Launch Gate — Two Phases

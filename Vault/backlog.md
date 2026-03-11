@@ -96,7 +96,7 @@ Materials:
 
 - [/] EOPA partnership evaluation — joint call, data use terms, community consent model #p2 @tom
 - [/] Scott Sklar — 1-pager then conference call to his network #p1 @tom
-- [/] Michael Shank — meeting Tue Mar 11, potential first donor #p1 @tom
+- [x] Michael Shank — met Mar 11. Follow-ups: FCNL head intro, press release, Doggett Dear Colleague letter #p1 @tom
 
 ## Municipal Partnerships #p1
 

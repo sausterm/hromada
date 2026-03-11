@@ -59,6 +59,8 @@
 ## Done
 
 ### This Sprint (Mar 3–17)
+- [x] Test coverage boost to 75% — 20 new suites, 394 new tests, 4 broken tests fixed #p1 @tom
+- [x] Map fix: 2D Mercator projection + minZoom/maxBounds/worldCopyJump #p1 @tom
 - [x] MoU legal review — 5-domain panel, 15 recommendations implemented in both MoUs #p1 @tom
 - [x] MoU revisions per Tom+Sloan feedback — "promptly" defined, response time 14→7 days, screening timing for post-procurement contractors #p1 @tom
 - [x] FSA amendments documented in Vault/specs/fiscal-sponsorship.md — 4 items for Mar 27 board meeting #p1 @tom
@@ -134,11 +136,11 @@
 ## Sprint Notes
 
 - **Soft launch target: ~March 14** — matchmaking directory mode, no FSA/POCACITO references, no donation flow. Ecoaction already providing real projects.
-- **FSA signing target: March 28** — POCACITO board meets March 27, signing expected next day
+- **FSA signing target: March 28** — POCACITO board meets March 27, signing expected next day. **Board is 50/50** per Brendan — 4 members, unanimous required. Brendan + Max pro-Hromada. Felicia (CU Boulder) likely yes. Alexx Baerwald Simard (Johns Hopkins) is the holdout — averse to conflict-adjacent work.
 - **All three partners confirmed** (EcoAction, Ecoclub Rivne, Greenpeace UA). MoUs verbally reviewed with Kostia and Natalia, passed to their boards. MoU signing not urgent — FSA is the real blocker.
 - **Natalia** in group chat, sending headshot + gathering projects next week.
 - **Scott Sklar** interested — needs 1-pager and conference call to present to his network.
-- **Michael Shank** meeting Tuesday Mar 11 — potential first donor, knows Kostia and Natalia personally.
+- **Michael Shank** officially advising Hromada as of Mar 10. Added to Signal. Will intro Tom to FCNL head after soft launch, looking at RMI. Wants press release for soft launch. Thinks May 20 should be policy-oriented.
 - **EOPA partnership** under evaluation — Max intro'd, good donor network, centrist positioning, AI impact modeling tool (Aug).
 - **May 20 event** — Cannon Building Room 340 (morning). Max booked. Lloyd Doggett + Kostia speaking, Natalia attending, Ukrainian mayors, hopefully Svitlana Romanko, Clarence Edwards, Romina Bandura.
 - **Sloan IAM** — added `Hromada-iam-scoped` (create/manage `hromada-*` roles) and dev-delete exception to `Hromada-no-delete`.

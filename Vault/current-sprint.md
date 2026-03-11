@@ -47,6 +47,8 @@
 - [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
 
 ### Partner Onboarding
+- [x] CSV bulk import for partner project submissions — /partner/projects/import with drag-and-drop, validation preview, bulk API #p1 @tom
+- [x] Partner onboarding welcome — 3-step guide on dashboard for new partners (download template → fill → upload) #p1 @tom
 - [ ] Send Natalia project intake template or form — she needs a good way to enter project info #p1 @tom ← **Tuesday Mar 10**
 
 ### Partnerships & Outreach

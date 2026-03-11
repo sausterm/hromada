@@ -979,7 +979,18 @@
       "title": "Tax-Deductible Donations",
       "message": "All donations are made through POCACITO Network, a registered 501(c)(3) nonprofit organization. You will receive a tax receipt for your records."
     },
-    "viewProject": "View Project Details"
+    "viewProject": "View Project Details",
+    "onboarding": {
+      "welcomeTitle": "Welcome to your dashboard, {name}!",
+      "welcomeDescription": "This is where you'll track your contributions as they make their way to Ukrainian communities. Here's what to expect:",
+      "dismiss": "Dismiss welcome message",
+      "step1Title": "We verify your payment",
+      "step1Description": "Our team confirms receipt of your wire, DAF grant, or check within 3–5 business days.",
+      "step2Title": "Funds are forwarded",
+      "step2Description": "Once verified, funds are wired directly to the municipality. You'll see every step here.",
+      "step3Title": "Track the impact",
+      "step3Description": "Follow procurement, construction updates, and photos as the community rebuilds."
+    }
   },
   "nonprofit": {
     "title": "Nonprofit Manager Dashboard",

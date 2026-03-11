@@ -135,6 +135,21 @@ function DonorDashboard() {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null)
   const [isLoadingDonations, setIsLoadingDonations] = useState(true)
   const [fetchError, setFetchError] = useState<string | null>(null)
+  const [welcomeDismissed, setWelcomeDismissed] = useState(false)
+
+  // Check if this is a first-time visitor (no dismiss stored in localStorage)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setWelcomeDismissed(localStorage.getItem('hromada_donor_welcome_dismissed') === 'true')
+    }
+  }, [])
+
+  const dismissWelcome = () => {
+    setWelcomeDismissed(true)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hromada_donor_welcome_dismissed', 'true')
+    }
+  }
 
   useEffect(() => {
     async function fetchDonations() {
@@ -221,6 +236,67 @@ function DonorDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* First-time donor welcome */}
+        {!welcomeDismissed && !isLoadingDonations && (
+          <Card className="mb-8 border-[var(--navy-600)] border-2 bg-white">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start">
+                <h2 className="text-xl font-bold text-gray-900 mb-2">
+                  {t('donor.onboarding.welcomeTitle', { name: user?.name?.split(' ')[0] || '' })}
+                </h2>
+                <button
+                  onClick={dismissWelcome}
+                  className="text-gray-400 hover:text-gray-600 p-1"
+                  aria-label={t('donor.onboarding.dismiss')}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" x2="6" y1="6" y2="18" />
+                    <line x1="6" x2="18" y1="6" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-gray-600 mb-5">
+                {t('donor.onboarding.welcomeDescription')}
+              </p>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-600">
+                      <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">{t('donor.onboarding.step1Title')}</p>
+                    <p className="text-sm text-gray-600">{t('donor.onboarding.step1Description')}</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
+                      <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">{t('donor.onboarding.step2Title')}</p>
+                    <p className="text-sm text-gray-600">{t('donor.onboarding.step2Description')}</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">{t('donor.onboarding.step3Title')}</p>
+                    <p className="text-sm text-gray-600">{t('donor.onboarding.step3Description')}</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {isLoadingDonations ? (
           <div className="flex justify-center py-12">

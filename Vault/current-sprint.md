@@ -48,7 +48,10 @@
 - [x] Ecoclub Rivne MoU — reviewed with Natalia, sent to board #p1 @tom
 - [/] Greenpeace Ukraine — call Thu Mar 12 10AM ET with Polina + 2 others #p1 @tom
 - [ ] EOPA partnership — evaluate, schedule joint call #p2 @tom
-- [x] Michael Shank meeting — Tuesday Mar 11 #p1 @tom
+- [x] Michael Shank meeting — Tuesday Mar 11. Wants to intro FCNL head post-soft-launch, circulate press release, get Dear Colleague letter from Doggett to other members #p1 @tom
+- [ ] Draft press release for soft launch — Shank to circulate #p1 @tom
+- [ ] Shank intro to FCNL head — after soft launch #p1 @tom
+- [ ] Dear Colleague letter from Lloyd Doggett — Shank to help coordinate #p1 @tom
 - [ ] Scott Sklar conference call — needs 1-pager first #p1 @tom
 
 ## Done

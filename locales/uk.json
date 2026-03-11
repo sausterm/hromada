@@ -235,7 +235,8 @@
     }
   },
   "projectCard": {
-    "postedAgo": "Додано {time}"
+    "postedAgo": "Додано {time}",
+    "idpCommunity": "Громада ВПО"
   },
   "projectDetail": {
     "backToProjects": "← Назад до проєктів",

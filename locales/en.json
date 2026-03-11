@@ -227,7 +227,8 @@
     }
   },
   "projectCard": {
-    "postedAgo": "Posted {time}"
+    "postedAgo": "Posted {time}",
+    "idpCommunity": "IDP Community"
   },
   "projectDetail": {
     "backToProjects": "← Back to projects",

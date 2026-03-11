@@ -110,6 +110,67 @@ export default function PartnerDashboardPage() {
 
       <main id="main-content" className="container mx-auto px-4 py-8">
         <h1 className="sr-only">{t('partner.title')}</h1>
+
+        {/* Onboarding welcome — shown when partner has no submissions yet */}
+        {!isLoadingSubmissions && submissions.length === 0 && (
+          <Card className="mb-8 border-[var(--ukraine-600)] border-2">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                {t('partner.onboarding.welcomeTitle', { name: user?.name || '' })}
+              </h2>
+              <p className="text-gray-600 mb-6">
+                {t('partner.onboarding.welcomeDescription')}
+              </p>
+              <div className="grid md:grid-cols-3 gap-4">
+                {/* Step 1 */}
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--ukraine-600)] text-white flex items-center justify-center font-bold text-sm">1</div>
+                  <div>
+                    <p className="font-semibold text-gray-900">{t('partner.onboarding.step1Title')}</p>
+                    <p className="text-sm text-gray-600">{t('partner.onboarding.step1Description')}</p>
+                  </div>
+                </div>
+                {/* Step 2 */}
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--ukraine-600)] text-white flex items-center justify-center font-bold text-sm">2</div>
+                  <div>
+                    <p className="font-semibold text-gray-900">{t('partner.onboarding.step2Title')}</p>
+                    <p className="text-sm text-gray-600">{t('partner.onboarding.step2Description')}</p>
+                  </div>
+                </div>
+                {/* Step 3 */}
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--ukraine-600)] text-white flex items-center justify-center font-bold text-sm">3</div>
+                  <div>
+                    <p className="font-semibold text-gray-900">{t('partner.onboarding.step3Title')}</p>
+                    <p className="text-sm text-gray-600">{t('partner.onboarding.step3Description')}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a
+                  href="/Partner_Project_Template.csv"
+                  download
+                  className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" x2="12" y1="15" y2="3" />
+                  </svg>
+                  {t('partner.onboarding.downloadTemplate')}
+                </a>
+                <Link href="/partner/projects/import">
+                  <Button>{t('partner.onboarding.importCsv')}</Button>
+                </Link>
+                <Link href="/partner/projects/new">
+                  <Button variant="outline">{t('partner.onboarding.addManually')}</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
@@ -142,9 +203,14 @@ export default function PartnerDashboardPage() {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 className="text-xl font-semibold">{t('partner.projects.title')}</h2>
-            <Link href="/partner/projects/new">
-              <Button>{t('partner.projects.addNew')}</Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link href="/partner/projects/import">
+                <Button variant="outline">{t('partner.projects.importCsv')}</Button>
+              </Link>
+              <Link href="/partner/projects/new">
+                <Button>{t('partner.projects.addNew')}</Button>
+              </Link>
+            </div>
           </div>
 
           {isLoadingSubmissions ? (
@@ -155,9 +221,14 @@ export default function PartnerDashboardPage() {
             <Card>
               <CardContent className="p-8 text-center">
                 <p className="text-gray-500 mb-4">{t('partner.projects.noProjects')}</p>
-                <Link href="/partner/projects/new">
-                  <Button>{t('partner.projects.addNew')}</Button>
-                </Link>
+                <div className="flex gap-2 justify-center">
+                  <Link href="/partner/projects/import">
+                    <Button variant="outline">{t('partner.projects.importCsv')}</Button>
+                  </Link>
+                  <Link href="/partner/projects/new">
+                    <Button>{t('partner.projects.addNew')}</Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           ) : (

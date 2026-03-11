@@ -253,7 +253,7 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [x] Screen reader testing pass — landmarks, headings, table scope, aria-expanded, role="alert", heading hierarchy #p3
 
 ### Code Quality
-- [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2
+- [x] Consolidate InquiryForm and ContactForm (near-duplicates) — InquiryForm deleted #p2
 - [/] Increase test coverage to 85% (currently at ~75%, up from ~63%) #p2
 - [ ] Add E2E tests for browse projects, admin CRUD #p2
 - [x] Fix remaining TypeScript errors (0 errors, `tsc --noEmit` clean) #p3

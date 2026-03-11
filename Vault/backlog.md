@@ -130,7 +130,7 @@ Materials:
 
 - [x] Decompose homepage (`src/app/[locale]/(public)/page.tsx` — 754 lines) #p2
 - [x] Calendly integration — scheduling with auto-mailing-list enrollment #p1 @tom
-- [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2
+- [x] Consolidate InquiryForm and ContactForm (near-duplicates) — InquiryForm deleted, ContactForm is the single form #p2
 - [x] Fix remaining TypeScript errors (3) #p3
 - [ ] Add missing type definitions for Leaflet marker clustering #p3
 - [ ] Increase test coverage from ~70% to 85% #p2

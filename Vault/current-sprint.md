@@ -15,6 +15,7 @@
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
 - [/] Ecoaction project docs in repo (Lychkove + Samar) — needs Sloan review and partner submission #p1 @sloan
 - [x] S3 document upload pipeline — staging→production flow for partner PDF submissions #p1 @tom
+- [x] IDP_HOUSING project type — added to Prisma schema, migration, TypeScript types, PROJECT_TYPE_CONFIG, EN/UK translations. Auto-appears in all forms. #p1 @sloan
 - [ ] IDP project card styling — special visual treatment (colored border or badge) for internally displaced community projects #p1 @tom
 - [x] Add 12 Ecoaction Tier 2 projects with cropped photos (no docs yet) #p1 @tom
 - [x] Admin dashboard — Partner column in projects table #p2 @tom

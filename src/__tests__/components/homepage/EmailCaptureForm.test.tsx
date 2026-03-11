@@ -6,6 +6,7 @@ import { EmailCaptureForm } from '@/components/homepage/EmailCaptureForm'
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
+      'homepage.cta.namePlaceholder': 'Your name',
       'homepage.cta.emailPlaceholder': 'Enter your email',
       'homepage.cta.emailButton': 'Stay Updated',
       'homepage.cta.emailSuccess': 'Thanks for subscribing!',
@@ -31,6 +32,14 @@ describe('EmailCaptureForm', () => {
       const input = screen.getByPlaceholderText('Enter your email')
       expect(input).toBeInTheDocument()
       expect(input).toHaveAttribute('type', 'email')
+    })
+
+    it('renders the name input', () => {
+      render(<EmailCaptureForm />)
+
+      const input = screen.getByPlaceholderText('Your name')
+      expect(input).toBeInTheDocument()
+      expect(input).toHaveAttribute('type', 'text')
     })
 
     it('renders the submit button', () => {
@@ -70,6 +79,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -77,7 +87,7 @@ describe('EmailCaptureForm', () => {
         expect(global.fetch).toHaveBeenCalledWith('/api/newsletter', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: 'donor@example.com' }),
+          body: JSON.stringify({ email: 'donor@example.com', name: 'Test Donor' }),
         })
       })
     })
@@ -88,6 +98,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -102,6 +113,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -117,12 +129,13 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), '  donor@example.com  ')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith('/api/newsletter', expect.objectContaining({
-          body: JSON.stringify({ email: 'donor@example.com' }),
+          body: JSON.stringify({ email: 'donor@example.com', name: 'Test Donor' }),
         }))
       })
     })
@@ -137,6 +150,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -151,6 +165,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -166,6 +181,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -180,6 +196,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -194,6 +211,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -206,15 +224,30 @@ describe('EmailCaptureForm', () => {
 
   describe('Empty email prevention', () => {
     it('does not submit when email is empty whitespace', async () => {
-      const user = userEvent.setup()
-
       render(<EmailCaptureForm />)
 
-      // Set value to whitespace only
+      // Set name but email to whitespace only
+      const nameInput = screen.getByPlaceholderText('Your name')
+      fireEvent.change(nameInput, { target: { value: 'Test' } })
       const input = screen.getByPlaceholderText('Enter your email')
       fireEvent.change(input, { target: { value: '   ' } })
 
       // Manually trigger form submit
+      const form = input.closest('form')!
+      fireEvent.submit(form)
+
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
+
+    it('does not submit when name is empty whitespace', async () => {
+      render(<EmailCaptureForm />)
+
+      // Set email but name to whitespace only
+      const nameInput = screen.getByPlaceholderText('Your name')
+      fireEvent.change(nameInput, { target: { value: '   ' } })
+      const input = screen.getByPlaceholderText('Enter your email')
+      fireEvent.change(input, { target: { value: 'donor@example.com' } })
+
       const form = input.closest('form')!
       fireEvent.submit(form)
 
@@ -244,6 +277,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 
@@ -260,6 +294,7 @@ describe('EmailCaptureForm', () => {
 
       render(<EmailCaptureForm />)
 
+      await user.type(screen.getByPlaceholderText('Your name'), 'Test Donor')
       await user.type(screen.getByPlaceholderText('Enter your email'), 'donor@example.com')
       await user.click(screen.getByRole('button', { name: 'Stay Updated' }))
 

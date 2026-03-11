@@ -9,16 +9,16 @@ describe('Badge', () => {
 
   it('applies variant styles', () => {
     const { rerender } = render(<Badge variant="success">Success</Badge>)
-    expect(screen.getByText('Success')).toHaveClass('bg-[#7B9E6B20]', 'text-[#5A7D4A]')
+    expect(screen.getByText('Success')).toHaveClass('bg-[#5C7F4B20]', 'text-[#3E5E34]')
 
     rerender(<Badge variant="danger">Danger</Badge>)
-    expect(screen.getByText('Danger')).toHaveClass('bg-[#B84A3220]', 'text-[#9A3D28]')
+    expect(screen.getByText('Danger')).toHaveClass('bg-[#A8483020]', 'text-[#9A3D28]')
 
     rerender(<Badge variant="warning">Warning</Badge>)
-    expect(screen.getByText('Warning')).toHaveClass('bg-[#D4954A20]', 'text-[#B87A2E]')
+    expect(screen.getByText('Warning')).toHaveClass('bg-[#B0783020]', 'text-[#8A5C1F]')
 
     rerender(<Badge variant="info">Info</Badge>)
-    expect(screen.getByText('Info')).toHaveClass('bg-[#5B8FA820]', 'text-[#4A7A8F]')
+    expect(screen.getByText('Info')).toHaveClass('bg-[#3E7A9020]', 'text-[#2E5F73]')
   })
 
   it('applies size styles', () => {

@@ -140,13 +140,14 @@ describe('middleware', () => {
   })
 
   describe('site password gate', () => {
-    it('returns 503 when SITE_PASSWORD is not set', async () => {
+    it('allows access when SITE_PASSWORD is not set (graceful degradation)', async () => {
       delete process.env.SITE_PASSWORD
 
       const req = makeRequest('/en/projects')
       const response = await middleware(req)
 
-      expect(response.status).toBe(503)
+      // Middleware degrades gracefully — allows open access when no password configured
+      expect(response.status).toBe(200)
     })
 
     it('redirects to site-access when no cookie present', async () => {

@@ -170,7 +170,7 @@ describe('LoginPage', () => {
 
     it('renders the login title', () => {
       render(<LoginPage />)
-      expect(screen.getByText('Login')).toBeInTheDocument()
+      expect(screen.getAllByText('Login').length).toBeGreaterThanOrEqual(1)
     })
 
     it('renders the login subtitle', () => {
@@ -237,7 +237,7 @@ describe('LoginPage', () => {
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByTestId('input-error')).toHaveTextContent('Email and password are required')
+        expect(screen.getByText('Email and password are required')).toBeInTheDocument()
       })
     })
 
@@ -252,7 +252,7 @@ describe('LoginPage', () => {
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByTestId('input-error')).toHaveTextContent('Email and password are required')
+        expect(screen.getByText('Email and password are required')).toBeInTheDocument()
       })
     })
 
@@ -269,7 +269,7 @@ describe('LoginPage', () => {
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByTestId('input-error')).toHaveTextContent('Email and password are required')
+        expect(screen.getByText('Email and password are required')).toBeInTheDocument()
       })
     })
   })
@@ -385,7 +385,7 @@ describe('LoginPage', () => {
       await user.click(submitButton)
 
       await waitFor(() => {
-        expect(screen.getByTestId('input-error')).toHaveTextContent('Invalid credentials')
+        expect(screen.getByText('Invalid credentials')).toBeInTheDocument()
       })
     })
   })

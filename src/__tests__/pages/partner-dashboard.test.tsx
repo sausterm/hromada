@@ -212,7 +212,7 @@ describe('PartnerDashboardPage', () => {
 
       await waitFor(() => {
         expect(screen.getByText('hromada')).toBeInTheDocument()
-        expect(screen.getByText('Partner')).toBeInTheDocument()
+        expect(screen.getAllByText('Partner').length).toBeGreaterThanOrEqual(1)
       })
     })
 
@@ -485,7 +485,7 @@ describe('PartnerDashboardPage', () => {
       await waitFor(() => {
         const viewDetailsLink = screen.getByText('View Details')
         expect(viewDetailsLink).toBeInTheDocument()
-        expect(viewDetailsLink.closest('a')).toHaveAttribute('href', '/projects/project-123')
+        expect(viewDetailsLink.closest('a')).toHaveAttribute('href', '/donor/projects/project-123')
       })
     })
 

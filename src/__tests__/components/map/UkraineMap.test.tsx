@@ -59,10 +59,12 @@ jest.mock('react-leaflet', () => ({
 
 jest.mock('react-leaflet-cluster', () => {
   return React.forwardRef(({ children }: any, ref: any) => {
-    // Provide mock ref methods that the component uses
+    // Provide mock ref methods that the component uses, including `on` for event binding
     React.useImperativeHandle(ref, () => ({
       eachLayer: jest.fn(),
       getLayers: jest.fn(() => []),
+      on: jest.fn(),
+      off: jest.fn(),
     }))
     return (
       <div data-testid="marker-cluster-group">
@@ -105,6 +107,7 @@ jest.mock('leaflet', () => ({
 
 // Mock CSS imports
 jest.mock('leaflet/dist/leaflet.css', () => ({}))
+jest.mock('maplibre-gl/dist/maplibre-gl.css', () => ({}))
 jest.mock('react-leaflet-cluster/dist/assets/MarkerCluster.css', () => ({}))
 jest.mock('react-leaflet-cluster/dist/assets/MarkerCluster.Default.css', () => ({}))
 

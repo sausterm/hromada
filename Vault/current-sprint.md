@@ -38,6 +38,7 @@
 ### Donor Experience
 - [x] Connect nonprofit dashboard to real APIs — already wired to Prisma (donations/list, wire-transfers/list, donations/[id]/status) #p1 @tom
 - [x] Refine donor project timeline page — photos, status badges, richer timeline #p1 @tom
+- [x] Donor onboarding welcome card — dismissible 3-step guide on first dashboard visit (verify → forward → track) #p1 @tom
 
 ### Technical
 - [ ] Test full donation flow end-to-end with real bank details #p1 @tom

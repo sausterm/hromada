@@ -156,7 +156,7 @@ export default function PartnerPostUpdatePage() {
               {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title * <span className="text-gray-400 font-normal">({title.length}/200)</span>
+                  Title * <span className="text-gray-500 font-normal">({title.length}/200)</span>
                 </label>
                 <Input
                   value={title}
@@ -169,7 +169,7 @@ export default function PartnerPostUpdatePage() {
               {/* Message */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Message * <span className="text-gray-400 font-normal">({message.length}/2000)</span>
+                  Message * <span className="text-gray-500 font-normal">({message.length}/2000)</span>
                 </label>
                 <Textarea
                   value={message}

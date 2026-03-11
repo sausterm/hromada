@@ -24,7 +24,16 @@ jest.mock('@/lib/prisma', () => ({
       findMany: jest.fn(),
       create: jest.fn(),
     },
+    user: {
+      findUnique: jest.fn(),
+    },
   },
+}))
+
+// Mock email
+jest.mock('@/lib/email', () => ({
+  sendProjectSubmissionNotification: jest.fn().mockResolvedValue({ success: true }),
+  sendProjectSubmissionConfirmation: jest.fn().mockResolvedValue({ success: true }),
 }))
 
 import { verifyPartnerAuth } from '@/lib/auth'

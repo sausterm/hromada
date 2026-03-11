@@ -41,7 +41,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-[var(--cream-100)] flex flex-col">
       <Header />
 
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
+      <main id="main-content" className="flex-1 max-w-3xl mx-auto px-4 py-12">
         {/* Mission */}
         <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
           {t('about.title')}
@@ -170,7 +170,7 @@ export default function AboutPage() {
                   className="h-10 w-20 object-contain flex-shrink-0 opacity-70 group-hover:opacity-100 transition-opacity"
                 />
                 <div>
-                  <h4 className="font-semibold text-[var(--navy-700)] text-sm group-hover:text-[var(--ukraine-blue)] transition-colors">{partner.name}</h4>
+                  <h3 className="font-semibold text-[var(--navy-700)] text-sm group-hover:text-[var(--ukraine-blue)] transition-colors">{partner.name}</h3>
                   <p className="text-sm text-[var(--navy-500)] leading-relaxed">{t(partner.descKey)}</p>
                 </div>
               </a>
@@ -204,7 +204,7 @@ export default function AboutPage() {
               </a>
             ))}
           </div>
-          <p className="text-[10px] text-[var(--navy-300)] text-center mt-4">
+          <p className="text-[10px] text-[var(--navy-500)] text-center mt-4">
             Logos are trademarks of their respective owners, used to identify coverage of our partners&apos; work.
           </p>
         </section>

@@ -63,7 +63,7 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 - [x] PostgreSQL database via Prisma on Supabase
 - [x] Role-based auth (Admin, Partner, Nonprofit Manager, Donor) with JWT sessions
 - [x] Internationalization (EN/UK) with next-intl
-- [x] Interactive Leaflet map with project markers and clustering
+- [x] Interactive Leaflet map with project markers and clustering (MapTiler vector tiles with Ukrainian labels via MapLibre GL)
 - [x] Mobile map view with list/map toggle
 - [x] Project CRUD with admin dashboard
 - [x] Project submission workflow (partner submits → admin approves)
@@ -239,17 +239,18 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [x] Project update notifications (email + in-app) #p3
 - [x] Donor project timeline page — post-donation progress tracking #p2
 - [ ] Impact reporting with progress photos and before/after #p3
-- [ ] Social sharing for projects #p3
+- [x] Social sharing for projects (ShareButton: Twitter, LinkedIn, Facebook, Email, Copy Link) #p3
 - [ ] Recurring donation support #p3
 - [ ] Donation matching campaigns #p3
 
 ### Performance & Accessibility
-- [ ] Viewport-based map loading (won't scale past ~100 projects) #p1
+- [x] Viewport-based map loading — bounds-based API, client-side region caching, debounced fetch #p1
 - [x] Mobile map view (dual-map pattern with list/map toggle) #p1
-- [ ] Skip-to-content navigation links #p2
-- [/] ARIA labels on all form elements (semantic label associations in place, sparse aria-label attributes) #p2
-- [ ] Keyboard navigation for Leaflet map #p2
-- [ ] Color contrast audit against WCAG 2.1 AA #p3
+- [x] Skip-to-content navigation link — locale-aware, targets `<main id="main-content">` on all pages #p2
+- [x] ARIA labels on all form elements — Input/Textarea auto-add `aria-invalid` + `aria-describedby`, EmailCaptureForm labeled #p2
+- [x] Keyboard navigation for Leaflet map — `role="region"`, `aria-label`, built-in keyboard nav #p2
+- [x] Color contrast audit against WCAG 2.1 AA — 26 failures fixed across public + admin #p3
+- [x] Screen reader testing pass — landmarks, headings, table scope, aria-expanded, role="alert", heading hierarchy #p3
 
 ### Code Quality
 - [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2

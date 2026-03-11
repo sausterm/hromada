@@ -20,7 +20,6 @@ jest.mock('next-intl', () => ({
       'admin.nav.contacts': 'Contacts',
       'admin.stats.totalProjects': 'Total Projects',
       'admin.stats.openProjects': 'Open Projects',
-      'admin.stats.criticalProjects': 'Critical Projects',
       'admin.stats.pendingSubmissions': 'Pending Submissions',
       'admin.projects.title': 'Projects',
       'admin.projects.searchPlaceholder': 'Search projects...',
@@ -322,7 +321,6 @@ describe('AdminPage', () => {
       await waitFor(() => {
         expect(screen.getByText('Total Projects')).toBeInTheDocument()
         expect(screen.getByText('Open Projects')).toBeInTheDocument()
-        expect(screen.getByText('Critical Projects')).toBeInTheDocument()
         expect(screen.getByText('Pending Submissions')).toBeInTheDocument()
       })
     })
@@ -348,7 +346,6 @@ describe('AdminPage', () => {
         const projectButtons = screen.getAllByRole('button', { name: /Projects/i })
         expect(projectButtons.length).toBeGreaterThanOrEqual(1)
         expect(screen.getAllByRole('button', { name: /Submissions/i }).length).toBeGreaterThanOrEqual(1)
-        expect(screen.getAllByRole('button', { name: /Contacts/i }).length).toBeGreaterThanOrEqual(1)
       })
     })
   })
@@ -464,20 +461,6 @@ describe('AdminPage', () => {
       })
     })
 
-    it('switches to contacts tab', async () => {
-      const user = userEvent.setup()
-      render(<AdminPage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByRole('button', { name: /Contacts/i }))
-
-      await waitFor(() => {
-        expect(screen.getByText('John Donor')).toBeInTheDocument()
-      })
-    })
   })
 
   describe('Bulk Actions', () => {
@@ -1150,133 +1133,6 @@ describe('AdminPage', () => {
     })
   })
 
-  describe('Contacts Tab', () => {
-    beforeEach(() => {
-      mockAuthState.isAuthenticated = true
-      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
-        if (url === '/api/projects?all=true') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ projects: mockProjects }),
-          })
-        }
-        if (url === '/api/contact') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ submissions: mockContactSubmissions }),
-          })
-        }
-        if (url === '/api/projects/submissions') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ submissions: [] }),
-          })
-        }
-        if (url.includes('/api/contact/') && options?.method === 'PATCH') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({}),
-          })
-        }
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
-      })
-    })
-
-    it('shows contact submissions', async () => {
-      const user = userEvent.setup()
-      render(<AdminPage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByRole('button', { name: /Contacts/i }))
-
-      await waitFor(() => {
-        expect(screen.getByText('John Donor')).toBeInTheDocument()
-        expect(screen.getByText('I want to help')).toBeInTheDocument()
-      })
-    })
-
-    it('marks contact as handled', async () => {
-      const user = userEvent.setup()
-      render(<AdminPage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByRole('button', { name: /Contacts/i }))
-
-      await waitFor(() => {
-        expect(screen.getByText('John Donor')).toBeInTheDocument()
-      })
-
-      // Click mark as handled button
-      const handleButton = screen.getByText('admin.contacts.markHandled')
-      await user.click(handleButton)
-
-      // Should call PATCH API
-      await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          '/api/contact/contact-1',
-          expect.objectContaining({
-            method: 'PATCH',
-            body: JSON.stringify({ handled: true }),
-          })
-        )
-      })
-    })
-
-    it('filters contacts by search query', async () => {
-      const user = userEvent.setup()
-      render(<AdminPage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByRole('button', { name: /Contacts/i }))
-
-      await waitFor(() => {
-        expect(screen.getByText('John Donor')).toBeInTheDocument()
-      })
-
-      // Type in search
-      const searchInput = screen.getByPlaceholderText('Search contacts...')
-      await user.type(searchInput, 'nonexistent')
-
-      // Contact should be filtered out
-      await waitFor(() => {
-        expect(screen.queryByText('John Donor')).not.toBeInTheDocument()
-      })
-    })
-
-    it('filters contacts by handled status', async () => {
-      const user = userEvent.setup()
-      render(<AdminPage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
-      })
-
-      await user.click(screen.getByRole('button', { name: /Contacts/i }))
-
-      await waitFor(() => {
-        expect(screen.getByText('John Donor')).toBeInTheDocument()
-      })
-
-      // Filter by handled only
-      const filterSelect = screen.getByDisplayValue('All')
-      await user.selectOptions(filterSelect, 'HANDLED')
-
-      // Unhandled contact should be filtered out
-      await waitFor(() => {
-        expect(screen.queryByText('John Donor')).not.toBeInTheDocument()
-      })
-    })
-  })
-
   describe('Submissions Tab Filtering', () => {
     beforeEach(() => {
       mockAuthState.isAuthenticated = true
@@ -1801,60 +1657,6 @@ describe('AdminPage', () => {
     })
   })
 
-  describe('Contact Mark As Handled Error', () => {
-    it('handles mark as handled error', async () => {
-      mockAuthState.isAuthenticated = true
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-      ;(global.fetch as jest.Mock).mockImplementation((url, options) => {
-        if (url === '/api/projects?all=true') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ projects: mockProjects }),
-          })
-        }
-        if (url === '/api/contact') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ submissions: mockContactSubmissions }),
-          })
-        }
-        if (url === '/api/projects/submissions') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ submissions: [] }),
-          })
-        }
-        if (url.includes('/api/contact/') && options?.method === 'PATCH') {
-          return Promise.reject(new Error('Network error'))
-        }
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
-      })
-
-      const user = userEvent.setup()
-      render(<AdminPage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
-      })
-      await user.click(screen.getByRole('button', { name: /Contacts/i }))
-
-      await waitFor(() => {
-        expect(screen.getByText('John Donor')).toBeInTheDocument()
-      })
-
-      // Click mark as handled button
-      const handleButton = screen.getByText('admin.contacts.markHandled')
-      await user.click(handleButton)
-
-      // Should log error
-      await waitFor(() => {
-        expect(consoleSpy).toHaveBeenCalledWith('Failed to update submission:', expect.any(Error))
-      })
-
-      consoleSpy.mockRestore()
-    })
-  })
-
   describe('Bulk Delete Error', () => {
     it('handles bulk delete network error', async () => {
       mockAuthState.isAuthenticated = true
@@ -1984,21 +1786,6 @@ describe('AdminPage', () => {
       expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
     })
 
-    it('sorts by urgency when clicking urgency header', async () => {
-      const user = userEvent.setup()
-      render(<AdminPage />)
-
-      await waitFor(() => {
-        expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
-      })
-
-      const urgencyHeader = screen.getByText('admin.projects.table.urgency')
-      await user.click(urgencyHeader)
-
-      // Projects should still be rendered
-      expect(screen.getByText('Zebra Hospital')).toBeInTheDocument()
-    })
-
     it('sorts by status when clicking status header', async () => {
       const user = userEvent.setup()
       render(<AdminPage />)
@@ -2052,59 +1839,6 @@ describe('AdminPage', () => {
       // Should render dash for missing project type
       const dashes = screen.getAllByText('-')
       expect(dashes.length).toBeGreaterThan(0)
-    })
-  })
-
-  describe('Contacts Sort by Handled', () => {
-    beforeEach(() => {
-      mockAuthState.isAuthenticated = true
-      const contactsWithMixed = [
-        { ...mockContactSubmissions[0], id: 'contact-1', handled: false, donorName: 'Unhandled Donor' },
-        { ...mockContactSubmissions[0], id: 'contact-2', handled: true, donorName: 'Handled Donor' },
-      ]
-      ;(global.fetch as jest.Mock).mockImplementation((url) => {
-        if (url === '/api/projects?all=true') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ projects: mockProjects }),
-          })
-        }
-        if (url === '/api/contact') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ submissions: contactsWithMixed }),
-          })
-        }
-        if (url === '/api/projects/submissions') {
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ submissions: [] }),
-          })
-        }
-        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
-      })
-    })
-
-    it('sorts contacts by handled status', async () => {
-      const user = userEvent.setup()
-      render(<AdminPage />)
-
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Contacts/i })).toBeInTheDocument()
-      })
-      await user.click(screen.getByRole('button', { name: /Contacts/i }))
-
-      await waitFor(() => {
-        expect(screen.getByText('Unhandled Donor')).toBeInTheDocument()
-      })
-
-      // Change sort to by handled
-      const sortSelect = screen.getByDisplayValue('Newest First')
-      await user.selectOptions(sortSelect, 'handled')
-
-      // Both contacts should still be visible
-      expect(screen.getByText('Unhandled Donor')).toBeInTheDocument()
-      expect(screen.getByText('Handled Donor')).toBeInTheDocument()
     })
   })
 

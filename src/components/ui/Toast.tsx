@@ -88,7 +88,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
       <p className="flex-1 text-sm font-medium">{toast.message}</p>
       <button
         onClick={onRemove}
-        className="text-gray-400 hover:text-gray-600 transition-colors"
+        className="text-gray-500 hover:text-gray-600 transition-colors"
         aria-label="Dismiss"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

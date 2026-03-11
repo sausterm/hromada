@@ -178,7 +178,7 @@ export function ContactForm({ projectId, projectName, onSuccess }: ContactFormPr
               <span className={`text-xs ${
                 formData.message.length > MAX_MESSAGE_LENGTH
                   ? 'text-red-500'
-                  : 'text-gray-400'
+                  : 'text-gray-500'
               }`}>
                 {formData.message.length}/{MAX_MESSAGE_LENGTH}
               </span>

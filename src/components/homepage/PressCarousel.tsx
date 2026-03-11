@@ -242,7 +242,7 @@ export function PressCarousel() {
         </div>
       </div>
 
-      <p className="text-[10px] text-[var(--navy-300)] text-center mt-6 px-4">
+      <p className="text-[10px] text-[var(--navy-500)] text-center mt-6 px-4">
         Logos are trademarks of their respective owners, used to identify coverage of our partners&apos; work.
       </p>
     </section>

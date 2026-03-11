@@ -90,7 +90,8 @@ function SiteAccessForm() {
   }
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-[var(--navy-900)] z-50">
+    <main id="main-content" className="fixed inset-0 flex flex-col bg-[var(--navy-900)] z-50">
+      <h1 className="sr-only">Site Access</h1>
       {/* Blurred hero background */}
       <div className="absolute inset-0 overflow-hidden">
         <div
@@ -141,8 +142,10 @@ function SiteAccessForm() {
 
         {/* Right flag */}
         <div className="flex-1 flex justify-end">
-          <div
-            className="w-9 h-9 rounded-full cursor-pointer"
+          <a
+            href={locale === 'en' ? '/uk/site-access' : '/en/site-access'}
+            className="w-9 h-9 rounded-full cursor-pointer block"
+            aria-label={locale === 'en' ? 'Switch to Ukrainian' : 'Switch to English'}
             onMouseEnter={() => setIsLangHovered(true)}
             onMouseLeave={() => setIsLangHovered(false)}
             style={{ perspective: '100px' }}
@@ -167,7 +170,7 @@ function SiteAccessForm() {
                 <OtherFlagComponent className="w-full h-full" />
               </div>
             </div>
-          </div>
+          </a>
         </div>
       </header>
 
@@ -187,13 +190,14 @@ function SiteAccessForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password"
-                    className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 pr-10 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent transition-all"
+                    className="w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 pr-10 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent transition-all"
                     autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/70 transition-colors"
                   >
                     {showPassword ? (
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -208,7 +212,7 @@ function SiteAccessForm() {
                   </button>
                 </div>
                 {error && (
-                  <p className="mt-2 text-sm text-red-300">{error}</p>
+                  <p role="alert" className="mt-2 text-sm text-red-300">{error}</p>
                 )}
               </div>
 
@@ -221,7 +225,7 @@ function SiteAccessForm() {
               </button>
             </form>
 
-            <p className="mt-6 text-xs text-center text-white/40">
+            <p className="mt-6 text-xs text-center text-white/60">
               This site is currently in preview mode.
             </p>
           </div>
@@ -251,7 +255,7 @@ function SiteAccessForm() {
           animation: saLogoFlip 1.2s ease-in-out;
         }
       `}</style>
-    </div>
+    </main>
   )
 }
 
@@ -259,7 +263,7 @@ export default function SiteAccessPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-[var(--navy-900)] flex items-center justify-center">
-        <div className="text-white/50">Loading...</div>
+        <div className="text-white/70">Loading...</div>
       </div>
     }>
       <SiteAccessForm />

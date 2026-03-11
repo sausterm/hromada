@@ -93,9 +93,7 @@ describe('AboutPage', () => {
       render(<AboutPage />)
       expect(screen.getByAltText('Ecoaction')).toBeInTheDocument()
       expect(screen.getByAltText('Ecoclub')).toBeInTheDocument()
-      expect(screen.getByAltText('RePower Ukraine')).toBeInTheDocument()
       expect(screen.getByAltText('Greenpeace')).toBeInTheDocument()
-      expect(screen.getByAltText('Energy Act For Ukraine')).toBeInTheDocument()
     })
 
     it('renders team section', () => {

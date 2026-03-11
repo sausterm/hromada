@@ -297,7 +297,7 @@ export default function SubmitProjectPage() {
       <div className="min-h-screen bg-[var(--cream-50)]">
         <Header />
 
-        <main className="max-w-2xl mx-auto px-4 py-16">
+        <main id="main-content" className="max-w-2xl mx-auto px-4 py-16">
           {/* Success Message */}
           <div className="bg-[var(--cream-100)] rounded-xl p-8 border border-[var(--cream-300)] text-center mb-8">
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#7B9E6B20] flex items-center justify-center">
@@ -367,7 +367,7 @@ export default function SubmitProjectPage() {
     <div className="min-h-screen bg-[var(--cream-50)]">
       <Header />
 
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
+      <main id="main-content" className="flex-1 max-w-3xl mx-auto px-4 py-12">
         <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-6">
           {t('submitProject.title')}
         </h1>
@@ -623,7 +623,7 @@ export default function SubmitProjectPage() {
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
                   {t('submitProject.fields.briefDescription')} <span className="text-red-600">*</span>
-                  <span className="text-[var(--navy-400)] font-normal ml-2">
+                  <span className="text-[var(--navy-500)] font-normal ml-2">
                     ({formData.briefDescription.length}/150)
                   </span>
                 </label>
@@ -640,7 +640,7 @@ export default function SubmitProjectPage() {
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
                   {t('submitProject.fields.fullDescription')} <span className="text-red-600">*</span>
-                  <span className="text-[var(--navy-400)] font-normal ml-2">
+                  <span className="text-[var(--navy-500)] font-normal ml-2">
                     ({formData.fullDescription.length}/2000)
                   </span>
                 </label>
@@ -841,7 +841,7 @@ export default function SubmitProjectPage() {
                     placeholder={t('submitProject.fields.cityLatitudePlaceholder')}
                     error={errors.cityLatitude}
                   />
-                  <p className="text-xs text-[var(--navy-400)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
+                  <p className="text-xs text-[var(--navy-500)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
@@ -853,7 +853,7 @@ export default function SubmitProjectPage() {
                     placeholder={t('submitProject.fields.cityLongitudePlaceholder')}
                     error={errors.cityLongitude}
                   />
-                  <p className="text-xs text-[var(--navy-400)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
+                  <p className="text-xs text-[var(--navy-500)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
                 </div>
               </div>
             </div>
@@ -907,7 +907,7 @@ export default function SubmitProjectPage() {
           {/* Section 6: Supporting Information */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              {t('submitProject.sections.supportingInfo')} <span className="text-[var(--navy-400)] font-normal">({t('submitProject.sections.optional')})</span>
+              {t('submitProject.sections.supportingInfo')} <span className="text-[var(--navy-500)] font-normal">({t('submitProject.sections.optional')})</span>
             </h2>
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
@@ -950,7 +950,7 @@ export default function SubmitProjectPage() {
           {/* Section 7: Project Photos */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              {t('submitProject.photos.title')} <span className="text-[var(--navy-400)] font-normal">({t('submitProject.sections.optional')})</span>
+              {t('submitProject.photos.title')} <span className="text-[var(--navy-500)] font-normal">({t('submitProject.sections.optional')})</span>
             </h2>
             <p className="text-sm text-[var(--navy-500)] mb-4">
               {t('submitProject.photos.description')}

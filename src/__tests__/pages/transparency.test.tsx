@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import TransparencyPage from '@/app/[locale]/(public)/transparency/page'
 
 // Mock next-intl
@@ -33,20 +32,6 @@ jest.mock('next-intl', () => ({
       'prescreening.ofacDesc': 'All recipients screened.',
       'transparency.directConnectionTitle': 'Direct Connection',
       'transparency.directConnectionText': 'Funds go directly to municipalities.',
-      'transparency.governanceDataTitle': 'Municipal Governance Data',
-      'transparency.governanceDataText': 'We reference TI Ukraine rankings.',
-      'prescreening.visitTransparentCities': 'Visit Transparent Cities',
-      'transparency.faqTitle': 'Frequently Asked Questions',
-      'transparency.faq1Question': 'How are projects selected?',
-      'transparency.faq1Answer': 'Projects are submitted by municipalities.',
-      'transparency.faq2Question': 'Where does my money go?',
-      'transparency.faq2Answer': 'Directly to the municipality.',
-      'transparency.faq3Question': 'Is my donation tax-deductible?',
-      'transparency.faq3Answer': 'Yes, through POCACITO Network.',
-      'transparency.faq4Question': 'How do you prevent fraud?',
-      'transparency.faq4Answer': 'Multiple verification layers.',
-      'transparency.faq5Question': 'Can I visit the project?',
-      'transparency.faq5Answer': 'We can facilitate visits.',
       'prescreening.policiesTitle': 'Policies',
       'prescreening.sanctionsPolicy': 'Sanctions Policy',
       'footer.terms': 'Terms',
@@ -100,21 +85,10 @@ describe('TransparencyPage', () => {
     expect(screen.getByText(/Banking Verification/)).toBeInTheDocument()
   })
 
-  it('renders municipal governance data section', () => {
+  it('renders direct connection section', () => {
     render(<TransparencyPage />)
-    expect(screen.getByText('Municipal Governance Data')).toBeInTheDocument()
-    expect(screen.getByText('Visit Transparent Cities')).toBeInTheDocument()
-  })
-
-  it('renders FAQ section with expandable items', async () => {
-    const user = userEvent.setup()
-    render(<TransparencyPage />)
-    expect(screen.getByText('Frequently Asked Questions')).toBeInTheDocument()
-    expect(screen.getByText('How are projects selected?')).toBeInTheDocument()
-
-    // Click to expand a FAQ
-    await user.click(screen.getByText('How are projects selected?'))
-    expect(screen.getByText('Projects are submitted by municipalities.')).toBeInTheDocument()
+    expect(screen.getByText('Direct Connection')).toBeInTheDocument()
+    expect(screen.getByText('Funds go directly to municipalities.')).toBeInTheDocument()
   })
 
   it('renders policy links', () => {

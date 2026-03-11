@@ -34,7 +34,7 @@ export function CTASection() {
         <div className="max-w-md mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <div className="flex-1 h-px bg-[var(--cream-300)]" />
-            <span className="text-sm text-[var(--navy-400)] font-medium">{t('homepage.cta.emailDivider')}</span>
+            <span className="text-sm text-[var(--navy-500)] font-medium">{t('homepage.cta.emailDivider')}</span>
             <div className="flex-1 h-px bg-[var(--cream-300)]" />
           </div>
           <EmailCaptureForm />

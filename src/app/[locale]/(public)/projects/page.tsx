@@ -831,7 +831,8 @@ export default function ProjectsPage() {
       </div>
 
       {/* Main Content - Split Screen */}
-      <main className="flex-1 flex overflow-hidden">
+      <main id="main-content" className="flex-1 flex overflow-hidden">
+        <h1 className="sr-only">{t('nav.projects')}</h1>
         {/* Left Panel - Project List (hidden when mobile map is open) */}
         <div ref={listContainerRef} className={`${isMobileMapOpen ? 'hidden' : ''} w-full lg:block lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-100)] lg:border-r lg:border-[var(--cream-300)] lg:shadow-[2px_0_8px_-2px_rgba(0,0,0,0.06)]`}>
           {/* Results Header - Single Line */}
@@ -841,7 +842,7 @@ export default function ProjectsPage() {
               <div className="flex-1 min-w-0">
                 <div className="relative">
                   <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-400)]"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-500)]"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -858,13 +859,13 @@ export default function ProjectsPage() {
                     placeholder={t('homepage.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-8 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-100)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+                    className="w-full pl-9 pr-8 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-100)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-500)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
                   />
                   {/* Clear search button */}
                   {searchQuery && (
                     <button
                       onClick={clearSearch}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-400)] hover:text-[var(--navy-600)] transition-colors"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-500)] hover:text-[var(--navy-600)] transition-colors"
                       aria-label={t('homepage.searchClear')}
                     >
                       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -922,7 +923,7 @@ export default function ProjectsPage() {
                   <span className="text-[var(--navy-600)] text-sm font-medium">
                     {' '}{t('common.projects')}{' '}
                   </span>
-                  <span className="text-[var(--navy-400)]">|</span>
+                  <span className="text-[var(--navy-500)]">|</span>
                   <span className="text-[var(--navy-800)] text-sm font-bold">
                     {' '}{formatCurrency(totalFundingNeeded, { compact: true })}
                   </span>
@@ -989,7 +990,7 @@ export default function ProjectsPage() {
                   exit={{ opacity: 0 }}
                   className="col-span-full py-12 text-center"
                 >
-                  <div className="text-[var(--navy-300)] mb-4">
+                  <div className="text-[var(--navy-500)] mb-4">
                     <svg
                       className="h-16 w-16 mx-auto"
                       fill="none"
@@ -1025,7 +1026,7 @@ export default function ProjectsPage() {
             <p className="text-xs text-[var(--navy-600)] text-center">
               <span className="font-medium">hromada</span> {t('homepage.footer')}
               <br />
-              <span className="text-[var(--navy-400)]">
+              <span className="text-[var(--navy-500)]">
                 {t('homepage.noPaymentProcessing')}
               </span>
             </p>

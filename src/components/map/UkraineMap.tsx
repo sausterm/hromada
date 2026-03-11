@@ -61,7 +61,37 @@ function MapTilerBaseLayer() {
         interactive: false,
         attributionControl: false,
         fadeDuration: 0, // Instant tile appearance — prevents blink on zoom
+        projection: { type: 'mercator' }, // Force 2D flat — globe breaks Leaflet marker positioning
       })
+
+      // Leaflet's zoom animation uses CSS cubic-bezier(0, 0, 0.25, 1).
+      // GL's default easeTo uses bezier(0.25, 0.1, 0.25, 1) — a different curve.
+      // Matching the easing keeps markers and tiles perfectly in sync during scroll-wheel zoom.
+      //
+      // cubic-bezier(0, 0, 0.25, 1): solve for y given t parameter
+      // B(t) parametric: x(t) = 3*0.25*t^2*(1-t) + t^3 = 0.75t^2 - 0.5t^3
+      //                  y(t) = 3*t*(1-t)^2*0 + 3*t^2*(1-t)*1 + t^3 = 3t^2 - 2t^3
+      // Wait — control points are (0,0), (0,0), (0.25,1), (1,1).
+      // P0=(0,0), P1=(0,0), P2=(0.25,1), P3=(1,1)
+      // x(t) = 3(1-t)^2*t*0 + 3(1-t)*t^2*0.25 + t^3 = 0.75t^2(1-t) + t^3 = 0.75t^2 - 0.75t^3 + t^3 = 0.75t^2 + 0.25t^3
+      // y(t) = 3(1-t)*t^2*1 + t^3 = 3t^2 - 3t^3 + t^3 = 3t^2 - 2t^3
+      //
+      // Given input u ∈ [0,1], find t such that x(t) = u, then return y(t).
+      const leafletEasing = (u: number) => {
+        // Newton's method to solve x(t) = 0.75t^2 + 0.25t^3 = u for t
+        let t = u // initial guess
+        for (let i = 0; i < 8; i++) {
+          const t2 = t * t
+          const t3 = t2 * t
+          const x = 0.75 * t2 + 0.25 * t3
+          const dx = 1.5 * t + 0.75 * t2 // dx/dt
+          if (Math.abs(x - u) < 1e-6) break
+          t -= (x - u) / dx
+        }
+        // y(t) = 3t^2 - 2t^3
+        const t2 = t * t
+        return 3 * t2 - 2 * t2 * t
+      }
 
       // ── Sync handlers ──
 
@@ -75,13 +105,14 @@ function MapTilerBaseLayer() {
         })
       }
 
-      // Scroll-wheel zoom uses a 250ms CSS animation (cubic-bezier)
+      // Scroll-wheel zoom uses a 250ms CSS animation (cubic-bezier(0,0,0.25,1))
       const onZoomAnim = (e: L.ZoomAnimEvent) => {
         if (!glMap || isFlying) return
         glMap.easeTo({
           center: [e.center.lng, e.center.lat],
           zoom: e.zoom - 1,
           duration: 250,
+          easing: leafletEasing,
         })
       }
 
@@ -658,7 +689,7 @@ const ProjectMarkers = memo(function ProjectMarkers({
       showCoverageOnHover={false}
       zoomToBoundsOnClick={false}
       disableClusteringAtZoom={12}
-      removeOutsideVisibleBounds={true}
+      removeOutsideVisibleBounds={false}
       animate={true}
       animateAddingMarkers={false}
     >
@@ -883,13 +914,18 @@ export function UkraineMap({
   const clusterGroupRef = useRef<L.MarkerClusterGroup | null>(null)
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" role="region" aria-label="Interactive map of Ukrainian infrastructure projects">
       <MapContainer
         center={UKRAINE_CENTER}
         zoom={UKRAINE_ZOOM}
+        minZoom={3}
         maxZoom={18}
+        maxBounds={[[-85, -180], [85, 180]]}
+        maxBoundsViscosity={1.0}
+        worldCopyJump={true}
         className="w-full h-full"
         scrollWheelZoom={true}
+        keyboard={true}
         style={{ minHeight: '100%' }}
       >
         {/* MapTiler vector tiles with Ukrainian labels (GL canvas inside Leaflet container) */}

@@ -356,7 +356,7 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Brief Description * <span className="text-gray-400 font-normal">({formData.briefDescription?.length || 0}/150)</span>
+                Brief Description * <span className="text-gray-500 font-normal">({formData.briefDescription?.length || 0}/150)</span>
               </label>
               <Textarea
                 value={formData.briefDescription}
@@ -369,7 +369,7 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Description * <span className="text-gray-400 font-normal">({formData.fullDescription?.length || 0}/2000)</span>
+                Full Description * <span className="text-gray-500 font-normal">({formData.fullDescription?.length || 0}/2000)</span>
               </label>
               <Textarea
                 value={formData.fullDescription}
@@ -390,7 +390,7 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                City/Region <span className="text-gray-400">(optional, for geocoding)</span>
+                City/Region <span className="text-gray-500">(optional, for geocoding)</span>
               </label>
               <div className="flex gap-2">
                 <div className="flex-1">
@@ -470,7 +470,7 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone <span className="text-gray-400">(optional)</span>
+                  Phone <span className="text-gray-500">(optional)</span>
                 </label>
                 <Input
                   type="tel"
@@ -718,7 +718,7 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Title * <span className="text-gray-400 font-normal">({updateTitle.length}/200)</span>
+                      Title * <span className="text-gray-500 font-normal">({updateTitle.length}/200)</span>
                     </label>
                     <Input
                       value={updateTitle}
@@ -730,7 +730,7 @@ export function ProjectForm({ project, onSubmit, onCancel, onDelete, isLoading }
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Message * <span className="text-gray-400 font-normal">({updateMessage.length}/2000)</span>
+                      Message * <span className="text-gray-500 font-normal">({updateMessage.length}/2000)</span>
                     </label>
                     <Textarea
                       value={updateMessage}

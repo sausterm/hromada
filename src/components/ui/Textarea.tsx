@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, type TextareaHTMLAttributes } from 'react'
+import { forwardRef, useId, type TextareaHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -19,12 +19,16 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       error: 'border-red-500 focus:border-red-500 focus:ring-red-200',
     }
 
+    const reactId = useId()
     const inputVariant = error ? 'error' : variant
+    const errorId = error ? `${props.id || reactId}-error` : undefined
 
     return (
       <div>
         <textarea
           ref={ref}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={errorId}
           className={cn(
             baseStyles,
             variants[inputVariant],
@@ -33,7 +37,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           )}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && <p id={errorId} role="alert" className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
     )
   }

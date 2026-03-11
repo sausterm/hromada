@@ -46,6 +46,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://hromadaproject.org'),
     title: 'hromada | Support Ukrainian renewable infrastructure',
     description: 'Connect with Ukrainian municipalities to support infrastructure recovery',
     authors: [{ name: 'Thomas D. Protzman' }, { name: 'Sloan Austermann' }],
@@ -95,11 +96,21 @@ export default async function LocaleLayout({
 
   console.log(`[i18n] Locale detected: ${locale}`);
 
+  const skipText = locale === 'uk' ? 'Перейти до вмісту' : 'Skip to content'
+
   return (
     <div
       lang={locale}
       className={`${inter.variable} ${geistMono.variable} ${outfit.variable} antialiased min-h-screen flex flex-col`}
     >
+      {/* Preconnect to MapTiler so DNS+TLS resolves while map JS loads */}
+      <link rel="preconnect" href="https://api.maptiler.com" />
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-white focus:text-[var(--navy-800)] focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-500)] font-medium text-sm"
+      >
+        {skipText}
+      </a>
       <NextIntlClientProvider messages={messages} locale={locale}>
         <ScrollFadeObserver />
         <ToastProvider>

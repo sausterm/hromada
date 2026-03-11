@@ -135,7 +135,7 @@ describe('AdminPage', () => {
     it('renders Admin badge', async () => {
       render(<AdminPage />)
       await waitFor(() => {
-        expect(screen.getByText('Admin')).toBeInTheDocument()
+        expect(screen.getAllByText('Admin').length).toBeGreaterThanOrEqual(1)
       })
     })
 

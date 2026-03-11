@@ -80,7 +80,7 @@ The Partner agrees to:
 
 a. Monitor that funds disbursed by Hromada for a given project are used by the municipality for the stated project purpose and not diverted to unrelated expenditures.
 
-b. Promptly notify Hromada in writing if the Partner becomes aware or has reasonable grounds to believe that project funds have been misused, misallocated, or diverted from their intended purpose.
+b. Notify Hromada in writing within five (5) business days of becoming aware, or having reasonable grounds to believe, that project funds have been misused, misallocated, or diverted from their intended purpose.
 
 c. Cooperate with Hromada in investigating any reports or allegations of fund misuse.
 
@@ -94,7 +94,7 @@ b. Provide photographic documentation of the completed project, including images
 
 c. Provide a project closure report upon completion, confirming: (i) whether the project was executed as described; (ii) whether the deliverables are materially consistent with the original project scope; (iii) whether the completed infrastructure is delivering its intended utility; and (iv) whether there are any unresolved issues.
 
-d. Respond to requests from Hromada for additional information, documentation, or clarification regarding any project within fourteen (14) calendar days of the request.
+d. Respond to requests from Hromada for additional information, documentation, or clarification regarding any project within seven (7) calendar days of the request.
 
 ### 4.4 Sanctions Compliance Cooperation
 
@@ -102,13 +102,13 @@ The Partner acknowledges that Hromada is subject to U.S. sanctions laws administ
 
 a. Exercise reasonable due diligence to ensure that it does not engage, contract with, or facilitate the transfer of funds or resources to any individual or entity appearing on the OFAC Specially Designated Nationals and Blocked Persons List (SDN List) or any other applicable OFAC sanctions list.
 
-b. Exercise reasonable due diligence to ensure that it does not engage, contract with, or facilitate the transfer of funds or resources to any individual or entity located in, or operating primarily within, any territory of Ukraine not under the effective control of the Government of Ukraine, as determined by Hromada in consultation with applicable U.S. government guidance.
+b. Exercise reasonable due diligence to ensure that it does not engage, contract with, or facilitate the transfer of funds or resources to any individual or entity located in, or operating primarily within, any territory of Ukraine not under the effective control of the Government of Ukraine, as determined by Hromada in consultation with applicable U.S. government guidance. For the avoidance of doubt, a municipality or community that has relocated from an occupied territory to a location under effective government control shall be evaluated based on its current operating location, not its pre-displacement registration.
 
 c. Exercise reasonable due diligence to ensure that it does not facilitate any transaction routed through or involving a financial institution identified on the Sectoral Sanctions Identifications List (SSI List) or otherwise blocked under U.S. sanctions.
 
 d. Promptly notify Hromada in writing if the Partner becomes aware or has reasonable grounds to believe that any individual or entity involved in a Hromada-funded project may be subject to U.S. sanctions.
 
-e. Cooperate with Hromada's sanctions screening procedures, including providing the full legal names (in both Ukrainian and English transliteration) of municipal officials, contractors, and vendors involved in Hromada-funded projects. Such names shall be provided (i) before a project is submitted for publication on the Hromada platform, and (ii) within five (5) business days of any personnel change. Hromada shall not disburse funds for any project until sanctions screening of all identified individuals is complete.
+e. Cooperate with Hromada's sanctions screening procedures, including providing the full legal names (in both Ukrainian and English transliteration) of municipal officials, contractors, and vendors involved in Hromada-funded projects, to the extent known at the time. Municipal officials and other known personnel shall be provided before a project is submitted for publication on the Hromada platform. Contractors and vendors selected through procurement shall be provided within five (5) business days of their selection. The Partner shall notify Hromada within five (5) business days of any subsequent personnel change. Hromada shall not disburse funds for any project until sanctions screening of all identified individuals is complete.
 
 f. Promptly notify Hromada in writing of any change in municipal leadership, project contractors, or other material personnel changes affecting a Hromada-funded project.
 

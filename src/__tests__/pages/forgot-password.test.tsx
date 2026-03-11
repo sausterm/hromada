@@ -73,7 +73,7 @@ describe('ForgotPasswordPage', () => {
     it('renders the email form', () => {
       render(<ForgotPasswordPage />)
 
-      expect(screen.getByText('Reset Password')).toBeInTheDocument()
+      expect(screen.getAllByText('Reset Password').length).toBeGreaterThanOrEqual(1)
       expect(screen.getByText('Enter your email to receive a reset code.')).toBeInTheDocument()
       expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument()
       expect(screen.getByText('Send Code')).toBeInTheDocument()

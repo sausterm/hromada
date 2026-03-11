@@ -111,7 +111,7 @@ describe('TimelineEvent', () => {
 
       const date = screen.getByText('March 2024')
       expect(date).toHaveClass('text-xs')
-      expect(date).toHaveClass('text-[var(--navy-400)]')
+      expect(date).toHaveClass('text-[var(--navy-500)]')
       expect(date).toHaveClass('font-medium')
     })
 

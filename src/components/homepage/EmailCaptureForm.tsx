@@ -48,18 +48,22 @@ export function EmailCaptureForm() {
       <input
         type="text"
         required
+        aria-required="true"
+        aria-label={t('homepage.cta.namePlaceholder')}
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder={t('homepage.cta.namePlaceholder')}
-        className="sm:w-36 px-4 py-2.5 rounded-lg border border-[var(--cream-300)] bg-white text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+        className="sm:w-36 px-4 py-2.5 rounded-lg border border-[var(--cream-300)] bg-white text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-500)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
       />
       <input
         type="email"
         required
+        aria-required="true"
+        aria-label={t('homepage.cta.emailPlaceholder')}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder={t('homepage.cta.emailPlaceholder')}
-        className="flex-1 min-w-0 px-4 py-2.5 rounded-lg border border-[var(--cream-300)] bg-white text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+        className="flex-1 min-w-0 px-4 py-2.5 rounded-lg border border-[var(--cream-300)] bg-white text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-500)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
       />
       <button
         type="submit"

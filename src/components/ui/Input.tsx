@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react'
+import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
@@ -40,7 +40,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       lg: 'px-4 py-3 text-base',
     }
 
+    const reactId = useId()
     const inputVariant = error ? 'error' : variant
+    const errorId = error ? `${props.id || reactId}-error` : undefined
 
     if (leftAddon || rightAddon) {
       return (
@@ -52,6 +54,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
           <input
             ref={ref}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={errorId}
             className={cn(
               baseStyles,
               variants[inputVariant],
@@ -67,7 +71,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               {rightAddon}
             </div>
           )}
-          {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+          {error && <p id={errorId} role="alert" className="mt-1 text-sm text-red-600">{error}</p>}
         </div>
       )
     }
@@ -76,10 +80,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div>
         <input
           ref={ref}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={errorId}
           className={cn(baseStyles, variants[inputVariant], sizes[inputSize], className)}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+        {error && <p id={errorId} role="alert" className="mt-1 text-sm text-red-600">{error}</p>}
       </div>
     )
   }

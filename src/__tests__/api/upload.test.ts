@@ -11,21 +11,23 @@ jest.mock('@/lib/auth', () => ({
 }))
 
 // Mock supabase
-const mockStorage = {
-  storage: {
-    from: jest.fn().mockReturnValue({
-      upload: jest.fn(),
-      remove: jest.fn(),
-      getPublicUrl: jest.fn(),
-    }),
-  },
-}
-jest.mock('@/lib/supabase', () => ({
-  isSupabaseConfigured: true,
-  STORAGE_BUCKET: 'test-bucket',
-  supabase: mockStorage,
-  supabaseAdmin: mockStorage,
-}))
+jest.mock('@/lib/supabase', () => {
+  const mockStorage = {
+    storage: {
+      from: jest.fn().mockReturnValue({
+        upload: jest.fn(),
+        remove: jest.fn(),
+        getPublicUrl: jest.fn(),
+      }),
+    },
+  }
+  return {
+    isSupabaseConfigured: true,
+    STORAGE_BUCKET: 'test-bucket',
+    supabase: mockStorage,
+    supabaseAdmin: mockStorage,
+  }
+})
 
 import { verifyAdminAuth } from '@/lib/auth'
 import { supabaseAdmin as supabase, isSupabaseConfigured } from '@/lib/supabase'

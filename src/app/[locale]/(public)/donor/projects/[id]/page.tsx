@@ -280,7 +280,7 @@ export default function DonorProjectDetailPage() {
 
   if (!project) {
     return (
-      <main className="min-h-screen bg-[var(--cream-100)]">
+      <main id="main-content" className="min-h-screen bg-[var(--cream-100)]">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold text-[var(--navy-700)] mb-4">Project not found</h1>
@@ -295,7 +295,7 @@ export default function DonorProjectDetailPage() {
   const localized = getLocalizedProject(project, locale)
 
   return (
-    <main className="min-h-screen bg-[var(--cream-100)]">
+    <main id="main-content" className="min-h-screen bg-[var(--cream-100)]">
       <Header />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -497,7 +497,7 @@ export default function DonorProjectDetailPage() {
                             <span className="font-medium text-[var(--navy-700)] text-sm group-hover:text-[var(--navy-600)] transition-colors">
                               {project.partnerOrganization}
                             </span>
-                            <svg className="w-3.5 h-3.5 flex-shrink-0 text-[var(--navy-400)] group-hover:text-[var(--navy-600)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-3.5 h-3.5 flex-shrink-0 text-[var(--navy-500)] group-hover:text-[var(--navy-600)] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                             </svg>
                           </a>

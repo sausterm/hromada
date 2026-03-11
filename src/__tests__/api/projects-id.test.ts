@@ -21,6 +21,22 @@ jest.mock('@/lib/auth', () => ({
   verifyAdminAuth: jest.fn(),
 }))
 
+// Mock translate
+jest.mock('@/lib/translate', () => ({
+  translateProjectToUkrainian: jest.fn().mockResolvedValue({}),
+}))
+
+// Mock prozorro
+jest.mock('@/lib/prozorro', () => ({
+  getProzorroTender: jest.fn(),
+  getProzorroUrl: jest.fn(),
+}))
+
+// Mock prozorro-sync
+jest.mock('@/lib/prozorro-sync', () => ({
+  notifyDonors: jest.fn().mockResolvedValue(undefined),
+}))
+
 import { prisma } from '@/lib/prisma'
 import { verifyAdminAuth } from '@/lib/auth'
 
@@ -56,6 +72,7 @@ describe('GET /api/projects/[id]', () => {
       include: {
         photos: { orderBy: { sortOrder: 'asc' } },
         documents: { orderBy: { createdAt: 'asc' } },
+        updates: { where: { isPublic: true }, orderBy: { createdAt: 'desc' } },
       },
     })
   })

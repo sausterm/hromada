@@ -1,6 +1,5 @@
 import {
   CATEGORY_CONFIG,
-  URGENCY_CONFIG,
   STATUS_CONFIG,
   PROJECT_TYPE_CONFIG,
   COFINANCING_CONFIG,
@@ -36,22 +35,6 @@ describe('Type configurations', () => {
       const hexRegex = /^#[0-9A-Fa-f]{6}$/
       Object.values(CATEGORY_CONFIG).forEach((config) => {
         expect(config.color).toMatch(hexRegex)
-      })
-    })
-  })
-
-  describe('URGENCY_CONFIG', () => {
-    it('has all required urgency levels', () => {
-      expect(URGENCY_CONFIG).toHaveProperty('LOW')
-      expect(URGENCY_CONFIG).toHaveProperty('MEDIUM')
-      expect(URGENCY_CONFIG).toHaveProperty('HIGH')
-      expect(URGENCY_CONFIG).toHaveProperty('CRITICAL')
-    })
-
-    it('each urgency has label and color', () => {
-      Object.values(URGENCY_CONFIG).forEach((config) => {
-        expect(config).toHaveProperty('label')
-        expect(config).toHaveProperty('color')
       })
     })
   })

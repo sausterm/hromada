@@ -46,9 +46,9 @@
 ### Partnerships & Outreach
 - [x] EcoAction Ukraine MoU — reviewed with Kostia, sent to board #p1 @tom
 - [x] Ecoclub Rivne MoU — reviewed with Natalia, sent to board #p1 @tom
-- [ ] Greenpeace Ukraine — schedule call with Polina Kolodiazhna #p1 @tom
+- [/] Greenpeace Ukraine — call Thu Mar 12 10AM ET with Polina + 2 others #p1 @tom
 - [ ] EOPA partnership — evaluate, schedule joint call #p2 @tom
-- [ ] Michael Shank meeting — Tuesday Mar 11 #p1 @tom
+- [x] Michael Shank meeting — Tuesday Mar 11 #p1 @tom
 - [ ] Scott Sklar conference call — needs 1-pager first #p1 @tom
 
 ## Done

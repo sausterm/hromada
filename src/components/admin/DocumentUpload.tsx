@@ -184,13 +184,13 @@ export function DocumentUpload({ projectId, onDocumentsChange }: DocumentUploadP
             e.target.value = ''
           }}
         />
-        <svg className="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-8 h-8 mx-auto text-gray-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
         </svg>
         <p className="text-sm text-gray-600">
           {isUploading ? 'Uploading...' : 'Drop a PDF here or click to browse'}
         </p>
-        <p className="text-xs text-gray-400 mt-1">PDF only, max 10MB</p>
+        <p className="text-xs text-gray-500 mt-1">PDF only, max 10MB</p>
       </div>
 
       {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}
@@ -215,7 +215,7 @@ export function DocumentUpload({ projectId, onDocumentsChange }: DocumentUploadP
                       {doc.documentType.replace(/_/g, ' ')}
                     </span>
                     {doc.fileSize && (
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-500">
                         {formatFileSize(doc.fileSize)}
                       </span>
                     )}

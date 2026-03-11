@@ -48,7 +48,7 @@ export function ProjectCard({
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-[var(--navy-400)]">
+          <div className="w-full h-full flex items-center justify-center text-[var(--navy-500)]">
             {/* Category-specific placeholder icons */}
             {project.category === 'HOSPITAL' && (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -184,7 +184,7 @@ export function ProjectCard({
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-[var(--cream-300)]">
           {/* Posted time */}
-          <span className="text-xs text-[var(--navy-400)] whitespace-nowrap" suppressHydrationWarning>
+          <span className="text-xs text-[var(--navy-500)] whitespace-nowrap" suppressHydrationWarning>
             {t('projectCard.postedAgo', { time: formatRelativeTime(project.createdAt, t) })}
           </span>
 

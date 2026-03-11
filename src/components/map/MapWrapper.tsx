@@ -14,7 +14,7 @@ const UkraineMap = dynamic(
       <div className="w-full h-full bg-[var(--cream-100)] flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" className="mx-auto mb-4" />
-          <p className="text-[var(--charcoal-500)]">Loading map...</p>
+          <p className="text-[var(--charcoal-700)]">Loading map...</p>
         </div>
       </div>
     ),

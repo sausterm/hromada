@@ -17,11 +17,12 @@ export function FAQItem({ question, children }: { question: string; children: Re
     <div className="border-b border-[var(--cream-300)] last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
         className="w-full py-4 flex items-center justify-between text-left hover:text-[var(--navy-800)] transition-colors"
       >
         <span className="font-medium text-[var(--navy-700)] pr-4">{question}</span>
         <svg
-          className={`w-5 h-5 flex-shrink-0 text-[var(--navy-400)] transition-transform duration-300 ease-out ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 flex-shrink-0 text-[var(--navy-500)] transition-transform duration-300 ease-out ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

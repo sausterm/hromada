@@ -12,10 +12,6 @@ const customJestConfig = {
     '^framer-motion$': '<rootDir>/src/__mocks__/framer-motion.tsx',
   },
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
-  // Transform jose package which uses ES modules
-  transformIgnorePatterns: [
-    '/node_modules/(?!(jose)/)',
-  ],
   // Run tests sequentially to avoid parallel execution issues with shared mocks
   maxWorkers: 1,
   collectCoverageFrom: [
@@ -35,4 +31,17 @@ const customJestConfig = {
   // },
 }
 
-module.exports = createJestConfig(customJestConfig)
+// next/jest adds its own transformIgnorePatterns that conflict with ours.
+// We need to post-process the config to consolidate them.
+const jestConfig = createJestConfig(customJestConfig)
+module.exports = async () => {
+  const config = await jestConfig()
+  // Replace the default transformIgnorePatterns with a unified one
+  // that allows transforming jose, next-intl, and geist (from next/jest defaults)
+  config.transformIgnorePatterns = [
+    '/node_modules/(?!.pnpm)(?!(jose|next-intl|use-intl|@formatjs|intl-messageformat|geist)/)',
+    '/node_modules/.pnpm/(?!(jose|next-intl|use-intl|@formatjs|intl-messageformat|geist)@)',
+    '^.+\\.module\\.(css|sass|scss)$',
+  ]
+  return config
+}

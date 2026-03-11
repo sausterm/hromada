@@ -104,7 +104,7 @@ export function UpdateTimeline({ updates, maxUpdates, onPhotoClick, variant }: U
                     </Badge>
                   )}
                 </div>
-                <div className={`text-xs ${isCompact ? 'text-gray-500' : 'text-[var(--navy-400)]'} mt-0.5`}>
+                <div className={`text-xs ${isCompact ? 'text-gray-500' : 'text-[var(--navy-500)]'} mt-0.5`}>
                   {formatDateTime(update.createdAt)}
                   {update.createdByName && (
                     <span className={`ml-1.5 ${isCompact ? 'text-gray-600' : 'text-[var(--navy-500)]'}`}>
@@ -164,7 +164,7 @@ export function UpdateTimeline({ updates, maxUpdates, onPhotoClick, variant }: U
         })}
       </div>
       {hiddenCount > 0 && (
-        <p className="text-xs text-[var(--navy-400)] mt-3">
+        <p className="text-xs text-[var(--navy-500)] mt-3">
           + {hiddenCount} earlier update{hiddenCount !== 1 ? 's' : ''} — view full timeline below
         </p>
       )}

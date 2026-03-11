@@ -238,7 +238,7 @@ export function SupportProjectCard({
               <div className="flex-1">
                 <div className="font-medium text-gray-900 text-sm">{t('methods.wire.title')}</div>
               </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -255,7 +255,7 @@ export function SupportProjectCard({
               <div className="flex-1">
                 <div className="font-medium text-gray-900 text-sm">{t('methods.daf.title')}</div>
               </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -272,7 +272,7 @@ export function SupportProjectCard({
               <div className="flex-1">
                 <div className="font-medium text-gray-900 text-sm">{t('methods.check.title')}</div>
               </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>

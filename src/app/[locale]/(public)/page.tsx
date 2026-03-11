@@ -103,15 +103,17 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-[var(--cream-100)]">
       <Header transparent />
-      <HeroSection totalStats={totalStats} />
-      <FeaturedProjectsSection projects={featuredProjects} />
-      <HowItWorksSection />
-      <PartnerCarousel variant="section" />
-      <CaseStudySection />
-      <PhotoStripSection />
-      <PressCarousel />
-      <FAQSection />
-      <CTASection />
+      <main id="main-content">
+        <HeroSection totalStats={totalStats} />
+        <FeaturedProjectsSection projects={featuredProjects} />
+        <HowItWorksSection />
+        <PartnerCarousel variant="section" />
+        <CaseStudySection />
+        <PhotoStripSection />
+        <PressCarousel />
+        <FAQSection />
+        <CTASection />
+      </main>
     </div>
   )
 }

@@ -168,7 +168,7 @@ function DonorDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main id="main-content" className="min-h-screen bg-gray-50">
       <Header />
 
       <div className="container mx-auto px-4 py-8">
@@ -245,12 +245,12 @@ function DonorDashboard() {
                 <CardContent>
                   {donations.length === 0 ? (
                     <div className="text-center py-12">
-                      <div className="text-gray-400 mb-4">
+                      <div className="text-gray-500 mb-4">
                         <svg className="w-16 h-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                       </div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No donations yet</h3>
+                      <h2 className="text-lg font-medium text-gray-900 mb-2">No donations yet</h2>
                       <p className="text-gray-600 mb-4">
                         Browse our projects and make your first contribution to support Ukrainian communities.
                       </p>
@@ -390,7 +390,7 @@ function DonorDashboard() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Tax-Deductible Donations</h3>
+                <h2 className="font-medium text-gray-900">Tax-Deductible Donations</h2>
                 <p className="text-sm text-gray-600 mt-1">
                   All donations are made through POCACITO Network, a registered 501(c)(3) nonprofit organization (EIN 99-0392258).
                   You will receive a tax receipt for your records. If you need a copy of your tax receipt,

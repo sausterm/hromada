@@ -161,7 +161,7 @@ export function InquiryForm({ projectId, projectName, onSuccess }: InquiryFormPr
 
           <div>
             <label htmlFor="organization" className="block text-sm font-medium text-gray-700 mb-1">
-              Organization <span className="text-gray-400">(optional)</span>
+              Organization <span className="text-gray-500">(optional)</span>
             </label>
             <Input
               id="organization"

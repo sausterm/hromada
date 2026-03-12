@@ -105,6 +105,7 @@ export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set())
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
+  const [filterIDP, setFilterIDP] = useState(false)
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000])
   const [powerRange, setPowerRange] = useState<[number, number]>([0, 500])
@@ -234,6 +235,11 @@ export default function ProjectsPage() {
       result = result.filter((p) => p.projectType === selectedProjectType)
     }
 
+    // IDP community filter
+    if (filterIDP) {
+      result = result.filter((p) => p.isIDP === true)
+    }
+
     // Price range filter (when max is at 500k, include everything above too)
     const [minPrice, maxPrice] = priceRange
     if (minPrice > 0 || maxPrice < 500000) {
@@ -257,7 +263,7 @@ export default function ProjectsPage() {
     }
 
     return result
-  }, [allProjects, searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange, locale])
+  }, [allProjects, searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, filterIDP, priceRange, powerRange, locale])
 
   // Sorted projects
   const sortedProjects = useMemo(() => {
@@ -319,7 +325,7 @@ export default function ProjectsPage() {
   // Reset pagination when filters change
   useEffect(() => {
     setDisplayCount(ITEMS_PER_PAGE)
-  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange])
+  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, filterIDP, priceRange, powerRange])
 
   // Show more projects
   const showMoreProjects = useCallback(() => {
@@ -417,6 +423,7 @@ export default function ProjectsPage() {
     setSelectedCategories(new Set())
     setSelectedCofinancing(null)
     setSelectedProjectType(null)
+    setFilterIDP(false)
     setPriceRange([0, 500000])
     setPowerRange([0, 500])
     setSortBy('newest')
@@ -429,10 +436,11 @@ export default function ProjectsPage() {
     count += selectedCategories.size
     if (selectedCofinancing) count++
     if (selectedProjectType) count++
+    if (filterIDP) count++
     if (priceRange[0] > 0 || priceRange[1] < 500000) count++
     if (powerRange[0] > 0 || powerRange[1] < 500) count++
     return count
-  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange])
+  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, filterIDP, priceRange, powerRange])
 
   // Total funding needed for visible projects
   const totalFundingNeeded = useMemo(() => {
@@ -596,6 +604,22 @@ export default function ProjectsPage() {
                 </button>
               )
             })}
+
+            {/* IDP Community toggle */}
+            <button
+              onClick={() => setFilterIDP(!filterIDP)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0 border ${
+                filterIDP
+                  ? 'bg-[#7B5F9B]/10 text-[#7B5F9B] border-[#7B5F9B]'
+                  : 'bg-white/80 border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+              }`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span className="hidden sm:inline">{t('projectCard.idpCommunity')}</span>
+            </button>
 
             {/* Project Type dropdown */}
             <div className="relative shrink-0">

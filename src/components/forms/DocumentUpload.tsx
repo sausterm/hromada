@@ -146,7 +146,7 @@ export function DocumentUpload({
               <button
                 type="button"
                 onClick={() => removeDocument(index)}
-                className="p-1.5 text-[var(--navy-400)] hover:text-red-500 transition-colors"
+                className="p-1.5 text-[var(--navy-500)] hover:text-red-500 transition-colors"
                 title="Remove document"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -180,7 +180,7 @@ export function DocumentUpload({
             disabled={isUploading}
           />
           <div className="space-y-2">
-            <div className="text-[var(--navy-400)]">
+            <div className="text-[var(--navy-500)]">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -194,7 +194,7 @@ export function DocumentUpload({
                 </>
               )}
             </p>
-            <p className="text-xs text-[var(--navy-400)]">
+            <p className="text-xs text-[var(--navy-500)]">
               PDF only, up to 20MB per file
             </p>
           </div>

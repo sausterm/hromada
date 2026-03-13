@@ -47,7 +47,8 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 - [ ] Remove site password (or convert to soft-launch invite list) #p0 @tom
 - [ ] Hide/disable donation flow and bank details for directory mode #p0
 - [ ] Remove POCACITO/FSA branding for directory-only mode #p1
-- [ ] Ensure Ecoaction projects are submitted, approved, and browsable #p0 @tom
+- [/] Ensure Ecoaction projects are submitted, approved, and browsable — Lychkove + Samar docs in repo (Mar 4) #p0 @tom
+- [ ] Bulk project upload script — read Partner_Project_Template.csv, create projects via API #p1 @tom
 - [ ] Move EventBridge cron target back to hromadaproject.org #p1 @tom
 
 ## Communications & Outreach #p1
@@ -74,12 +75,33 @@ Social media (only):
 - Partner featured in press
 
 Materials:
+- [x] 1-pager for Scott Sklar — completed in Figma, Mar 8 #p0 @tom
 - [/] 2-pager explainer handout (Figma) — visual overview for in-person meetings #p1 @tom
 - [/] 6-pager detailed explainer (Figma) — deeper dive for donors/partners #p1 @tom
+- [ ] May 20 Cannon Building event materials — invitations, program, handouts #p1 @tom @max
 - [ ] Director's letter template (as-needed basis) #p3 @tom
+
+## Events #p1
+
+- [/] May 20 Cannon Building Room 340 — morning event. Max booked. #p1 @tom @max
+  - [ ] Confirm Lloyd Doggett speaking
+  - [ ] Confirm Kostia speaking
+  - [ ] Confirm Natalia attending
+  - [ ] Invite Ukrainian mayors
+  - [ ] Invite Svitlana Romanko, Clarence Edwards, Romina Bandura
+  - [ ] Event program and run-of-show
+  - [ ] Printed materials for attendees
+
+## External Partnerships #p2
+
+- [/] EOPA partnership evaluation — joint call, data use terms, community consent model #p2 @tom
+- [/] Scott Sklar — 1-pager then conference call to his network #p1 @tom
+- [x] Michael Shank — met Mar 11. Follow-ups: FCNL head intro, press release, Doggett Dear Colleague letter #p1 @tom
 
 ## Municipal Partnerships #p1
 
+- [ ] Sister city matching — lookup table mapping Ukrainian cities to US sister city partners, flag new projects from sister cities for outreach #p1 @tom
+- [ ] Sister city banner on project detail page (e.g. "Kharkiv is a sister city of Cincinnati, OH") #p2
 - [ ] Admin dashboard: partnership inquiry management (list, status, respond) #p1
 - [ ] Partnership matching system (US city ↔ Ukrainian hromada) #p2
 - [ ] Partner onboarding workflow #p2
@@ -90,26 +112,27 @@ Materials:
 ## Performance #p1
 
 - [x] Add `Cache-Control` headers to public API routes (`/api/projects`, etc.) #p1
-- [ ] Replace native `<img>` with Next.js `<Image>` component (multiple files) #p1
-- [ ] Viewport-based map loading — currently loads ALL projects, won't scale past ~100 #p1
-- [ ] Hybrid SSR/CSR for homepage — improve SEO and initial load #p2
-- [ ] Add database indexes review (Prisma schema has some, verify coverage) #p2
-- [ ] API response compression #p3
+- [x] MapTiler vector tiles with Ukrainian labels — MapLibre GL rendered inside Leaflet container, parallel flyTo sync, OSM fallback #p1
+- [x] Replace native `<img>` with Next.js `<Image>` component — all React components migrated, only HTML email templates remain as native #p1
+- [x] Viewport-based map loading — bounds-based API filtering, client-side region caching, debounced fetch, composite DB index #p1
+- [x] Hybrid SSR/CSR for homepage — server component with client-side hydration for interactive elements #p2
+- [x] Add database indexes review — comprehensive indexing across all tables (category, status, coordinates, foreign keys, ~30+ indexes) #p2
+- [x] API response compression — handled by Next.js (gzip default) + CloudFront (gzip+brotli), no additional config needed #p3
 
 ## Accessibility #p1
 
-- [ ] Mobile map view — currently shows "coming soon" placeholder #p1
-- [ ] Skip-to-content navigation links #p2
-- [ ] ARIA labels on all form elements (contact, donation, partnership forms) #p2
-- [ ] Keyboard navigation for Leaflet map component #p2
-- [ ] Color contrast audit against WCAG 2.1 AA #p3
-- [ ] Screen reader testing pass #p3
+- [x] Mobile map view — dual-map pattern with list/map toggle #p1
+- [x] Skip-to-content navigation link — locale-aware, visually hidden until focused, targets `<main id="main-content">` on all pages #p2
+- [x] ARIA labels on all form elements — Input/Textarea components auto-add `aria-invalid` + `aria-describedby` linking error messages, EmailCaptureForm labeled #p2
+- [x] Keyboard navigation for Leaflet map component — `role="region"`, `aria-label`, `keyboard={true}`, built-in arrow/+/- keys #p2
+- [x] Color contrast audit against WCAG 2.1 AA — 26 failures fixed (darkened text/category/badge colors) #p3
+- [x] Screen reader testing pass — `<main>` landmarks on all pages, `<h1>` everywhere, `scope="col"` on tables, `aria-expanded` on FAQ, `role="alert"` on errors, heading hierarchy fixed #p3
 
 ## Code Quality #p2
 
 - [x] Decompose homepage (`src/app/[locale]/(public)/page.tsx` — 754 lines) #p2
 - [x] Calendly integration — scheduling with auto-mailing-list enrollment #p1 @tom
-- [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2
+- [x] Consolidate InquiryForm and ContactForm (near-duplicates) — InquiryForm deleted, ContactForm is the single form #p2
 - [x] Fix remaining TypeScript errors (3) #p3
 - [ ] Add missing type definitions for Leaflet marker clustering #p3
 - [ ] Increase test coverage from ~70% to 85% #p2
@@ -130,6 +153,11 @@ Materials:
 - [ ] Progress reporting tools with photo evidence #p3
 - [ ] Budget tracking and transparency reports #p3
 - [ ] Automated status updates to donors #p3
+
+## Analytics #p1
+
+- [ ] AWS Pinpoint setup — user analytics, donor funnel tracking, event segmentation #p1 @sloan
+- [ ] KPI dashboard (CloudWatch or QuickSight) — visitor→project view→support click→donation conversion #p2 @sloan
 
 ## Infrastructure #p2
 

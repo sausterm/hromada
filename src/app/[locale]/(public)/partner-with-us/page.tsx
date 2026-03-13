@@ -54,7 +54,7 @@ export default function PartnerWithUsPage() {
     <div className="min-h-screen flex flex-col bg-[var(--cream-100)]">
       <Header />
 
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
+      <main id="main-content" className="flex-1 max-w-3xl mx-auto px-4 py-12">
         {/* Hero */}
         <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
           {t('hero.title')}
@@ -129,7 +129,7 @@ export default function PartnerWithUsPage() {
           <div className="flex flex-wrap justify-center gap-3">
             {COMMUNITY_TYPES.map((ct) => (
               <div key={ct.key} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[var(--cream-200)] text-sm text-[var(--navy-600)]">
-                <svg className="w-4 h-4 text-[var(--navy-400)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-[var(--navy-500)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={ct.icon} />
                 </svg>
                 {t(`whoParticipates.${ct.key}`)}

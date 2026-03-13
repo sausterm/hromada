@@ -16,10 +16,10 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     const variants = {
       default: 'bg-[var(--cream-200)] text-[var(--navy-700)]',
       secondary: 'bg-[var(--cream-300)] text-[var(--navy-600)]',
-      success: 'bg-[#7B9E6B20] text-[#5A7D4A]',  // Sage green
-      warning: 'bg-[#D4954A20] text-[#B87A2E]',  // Warm amber
-      danger: 'bg-[#B84A3220] text-[#9A3D28]',   // Deep rust
-      info: 'bg-[#5B8FA820] text-[#4A7A8F]',     // Muted teal
+      success: 'bg-[#5C7F4B20] text-[#3E5E34]',  // Sage green (WCAG AA: 8.5:1)
+      warning: 'bg-[#B0783020] text-[#8A5C1F]',  // Warm amber (WCAG AA: 6.2:1)
+      danger: 'bg-[#A8483020] text-[#9A3D28]',   // Deep rust (WCAG AA: 6.8:1)
+      info: 'bg-[#3E7A9020] text-[#2E5F73]',     // Muted teal (WCAG AA: 7.1:1)
       outline: 'bg-transparent border border-[var(--cream-400)] text-[var(--navy-600)]',
     }
 

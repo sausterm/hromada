@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     const cursor = searchParams.get('cursor') // cursor-based pagination
     const limitParam = searchParams.get('limit')
     const allParam = searchParams.get('all') // ?all=true returns all (for map)
+    const boundsParam = searchParams.get('bounds') // ?bounds=south,west,north,east
 
     const limit = Math.min(
       parseInt(limitParam || String(DEFAULT_PAGE_SIZE), 10) || DEFAULT_PAGE_SIZE,
@@ -41,8 +42,18 @@ export async function GET(request: NextRequest) {
       where.projectType = projectType
     }
 
-    // If ?all=true, return all projects (needed for map markers)
-    if (allParam === 'true') {
+    // Add spatial bounds filtering: ?bounds=south,west,north,east
+    if (boundsParam) {
+      const parts = boundsParam.split(',').map(Number)
+      if (parts.length === 4 && parts.every((n) => !isNaN(n))) {
+        const [south, west, north, east] = parts
+        where.cityLatitude = { gte: south, lte: north }
+        where.cityLongitude = { gte: west, lte: east }
+      }
+    }
+
+    // If ?all=true or ?bounds=..., return all matching projects (no pagination)
+    if (allParam === 'true' || boundsParam) {
       const [projects, featuredRows] = await Promise.all([
         prisma.project.findMany({
           where,

@@ -169,7 +169,7 @@ function NonprofitDashboard() {
 
   if (isLoadingData) {
     return (
-      <main className="min-h-screen bg-gray-50">
+      <main id="main-content" className="min-h-screen bg-gray-50">
         <Header />
         <div className="flex items-center justify-center py-20">
           <LoadingSpinner size="lg" />
@@ -179,7 +179,7 @@ function NonprofitDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main id="main-content" className="min-h-screen bg-gray-50">
       <Header />
 
       <div className="container mx-auto px-4 py-8">
@@ -406,13 +406,13 @@ function NonprofitDashboard() {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b text-left text-sm text-gray-500">
-                          <th className="pb-3 font-medium">Donor</th>
-                          <th className="pb-3 font-medium">Project</th>
-                          <th className="pb-3 font-medium">Amount</th>
-                          <th className="pb-3 font-medium">Method</th>
-                          <th className="pb-3 font-medium">Status</th>
-                          <th className="pb-3 font-medium">Date</th>
-                          <th className="pb-3 font-medium">Actions</th>
+                          <th scope="col" className="pb-3 font-medium">Donor</th>
+                          <th scope="col" className="pb-3 font-medium">Project</th>
+                          <th scope="col" className="pb-3 font-medium">Amount</th>
+                          <th scope="col" className="pb-3 font-medium">Method</th>
+                          <th scope="col" className="pb-3 font-medium">Status</th>
+                          <th scope="col" className="pb-3 font-medium">Date</th>
+                          <th scope="col" className="pb-3 font-medium">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="text-sm">
@@ -482,13 +482,13 @@ function NonprofitDashboard() {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b text-left text-sm text-gray-500">
-                          <th className="pb-3 font-medium">Reference</th>
-                          <th className="pb-3 font-medium">Recipient</th>
-                          <th className="pb-3 font-medium">Project</th>
-                          <th className="pb-3 font-medium">Amount</th>
-                          <th className="pb-3 font-medium">Status</th>
-                          <th className="pb-3 font-medium">Sent</th>
-                          <th className="pb-3 font-medium">Actions</th>
+                          <th scope="col" className="pb-3 font-medium">Reference</th>
+                          <th scope="col" className="pb-3 font-medium">Recipient</th>
+                          <th scope="col" className="pb-3 font-medium">Project</th>
+                          <th scope="col" className="pb-3 font-medium">Amount</th>
+                          <th scope="col" className="pb-3 font-medium">Status</th>
+                          <th scope="col" className="pb-3 font-medium">Sent</th>
+                          <th scope="col" className="pb-3 font-medium">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="text-sm">

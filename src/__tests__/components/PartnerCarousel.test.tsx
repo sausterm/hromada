@@ -1,6 +1,12 @@
 import { render, screen, act } from '@testing-library/react'
 import { PartnerCarousel } from '@/components/layout/PartnerCarousel'
 
+// Mock next/image
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ alt, fill, sizes, ...props }: any) => <img alt={alt} {...props} />,
+}))
+
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -57,7 +63,7 @@ describe('PartnerCarousel', () => {
     })
 
     const links = screen.getAllByRole('link')
-    expect(links.length).toBe(18) // 6 partners x 3
+    expect(links.length).toBe(12) // 4 partners x 3
     expect(links[0]).toHaveAttribute('target', '_blank')
     expect(links[0]).toHaveAttribute('rel', 'noopener noreferrer')
   })
@@ -68,9 +74,7 @@ describe('PartnerCarousel', () => {
     })
 
     expect(screen.getAllByAltText('Ecoclub').length).toBe(3)
-    expect(screen.getAllByAltText('RePower Ukraine').length).toBe(3)
     expect(screen.getAllByAltText('Greenpeace').length).toBe(3)
-    expect(screen.getAllByAltText('Energy Act For Ukraine').length).toBe(3)
     expect(screen.getAllByAltText('POCACITO').length).toBe(3)
   })
 })

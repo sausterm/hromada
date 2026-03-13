@@ -29,6 +29,7 @@ model Project {
   cofinancingAvailable CofinancingStatus?
   cofinancingDetails   String?
   partnerOrganization  String?
+  isIDP                Boolean             @default(false)
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
   region               String?
@@ -54,6 +55,7 @@ model Project {
   @@index([urgency])
   @@index([projectType])
   @@index([createdAt])
+  @@index([cityLatitude, cityLongitude])
 }
 
 /// Project images with a maximum of 5 per project.

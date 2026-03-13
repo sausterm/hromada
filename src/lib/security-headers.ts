@@ -23,6 +23,7 @@ export function getSecurityHeaders(): Record<string, string> {
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
       "connect-src 'self' https:",
+      "worker-src 'self' blob:",
       "frame-src 'self' blob:",
       "frame-ancestors 'none'",
     ].join('; '),

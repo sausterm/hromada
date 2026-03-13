@@ -9,10 +9,8 @@ import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import {
   type Category,
-  type Urgency,
   type ProjectType,
   CATEGORY_CONFIG,
-  URGENCY_CONFIG,
   PROJECT_TYPE_CONFIG,
 } from '@/types'
 import { PublicImageUpload } from '@/components/forms/PublicImageUpload'
@@ -28,7 +26,6 @@ interface FormData {
   projectType: string
   briefDescription: string
   fullDescription: string
-  urgency: Urgency | ''
   // Technical & financial
   estimatedCostUsd: string
   technicalPowerKw: string
@@ -61,7 +58,6 @@ const initialFormData: FormData = {
   projectType: '',
   briefDescription: '',
   fullDescription: '',
-  urgency: '',
   estimatedCostUsd: '',
   technicalPowerKw: '',
   numberOfPanels: '',
@@ -92,29 +88,27 @@ export default function SubmitProjectPage() {
   // Dropdown states
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
   const [isProjectTypeOpen, setIsProjectTypeOpen] = useState(false)
-  const [isUrgencyOpen, setIsUrgencyOpen] = useState(false)
   const [isCofinancingOpen, setIsCofinancingOpen] = useState(false)
 
   // Dropdown refs
   const categoryButtonRef = useRef<HTMLButtonElement>(null)
   const projectTypeButtonRef = useRef<HTMLButtonElement>(null)
-  const urgencyButtonRef = useRef<HTMLButtonElement>(null)
   const cofinancingButtonRef = useRef<HTMLButtonElement>(null)
 
   // Close dropdowns on scroll
   useEffect(() => {
     const handleScroll = () => {
-      if (isCategoryOpen || isProjectTypeOpen || isUrgencyOpen || isCofinancingOpen) {
+      if (isCategoryOpen || isProjectTypeOpen || isCofinancingOpen) {
         setIsCategoryOpen(false)
         setIsProjectTypeOpen(false)
-        setIsUrgencyOpen(false)
+
         setIsCofinancingOpen(false)
       }
     }
 
     window.addEventListener('scroll', handleScroll, true)
     return () => window.removeEventListener('scroll', handleScroll, true)
-  }, [isCategoryOpen, isProjectTypeOpen, isUrgencyOpen, isCofinancingOpen])
+  }, [isCategoryOpen, isProjectTypeOpen, isCofinancingOpen])
 
   // Format number with commas (e.g., 50000 -> "50,000")
   const formatNumberWithCommas = (value: string): string => {
@@ -303,7 +297,7 @@ export default function SubmitProjectPage() {
       <div className="min-h-screen bg-[var(--cream-50)]">
         <Header />
 
-        <main className="max-w-2xl mx-auto px-4 py-16">
+        <main id="main-content" className="max-w-2xl mx-auto px-4 py-16">
           {/* Success Message */}
           <div className="bg-[var(--cream-100)] rounded-xl p-8 border border-[var(--cream-300)] text-center mb-8">
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#7B9E6B20] flex items-center justify-center">
@@ -373,7 +367,7 @@ export default function SubmitProjectPage() {
     <div className="min-h-screen bg-[var(--cream-50)]">
       <Header />
 
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
+      <main id="main-content" className="flex-1 max-w-3xl mx-auto px-4 py-12">
         <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-6">
           {t('submitProject.title')}
         </h1>
@@ -624,65 +618,12 @@ export default function SubmitProjectPage() {
                   </div>
                   {errors.projectType && <p className="mt-1 text-sm text-red-600">{errors.projectType}</p>}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
-                    {t('submitProject.fields.urgency')} <span className="text-red-600">*</span>
-                  </label>
-                  <div
-                    className="relative"
-                    onMouseEnter={() => setIsUrgencyOpen(true)}
-                    onMouseLeave={() => setIsUrgencyOpen(false)}
-                  >
-                    <button
-                      type="button"
-                      ref={urgencyButtonRef}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-left focus:outline-none focus:ring-2 focus:ring-[var(--ukraine-200)] focus:border-[var(--ukraine-500)] flex items-center justify-between transition-all duration-150"
-                    >
-                      <span>
-                        {formData.urgency
-                          ? t(`urgency.${formData.urgency}`)
-                          : `-- ${t('submitProject.fields.selectUrgency')} --`}
-                      </span>
-                      <svg className={`h-4 w-4 transition-transform ${isUrgencyOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </button>
-                    {isUrgencyOpen && urgencyButtonRef.current && (
-                      <div
-                        className="fixed z-50 pt-1"
-                        style={{
-                          top: urgencyButtonRef.current.getBoundingClientRect().bottom,
-                          left: urgencyButtonRef.current.getBoundingClientRect().left,
-                          width: urgencyButtonRef.current.getBoundingClientRect().width,
-                        }}
-                        onMouseEnter={() => setIsUrgencyOpen(true)}
-                        onMouseLeave={() => setIsUrgencyOpen(false)}
-                      >
-                        <div className="rounded-lg bg-white shadow-lg border border-[var(--cream-300)] py-2">
-                          {(Object.keys(URGENCY_CONFIG) as Urgency[]).map((urg) => (
-                            <button
-                              key={urg}
-                              type="button"
-                              onClick={() => {
-                                setFormData((prev) => ({ ...prev, urgency: urg }))
-                                setIsUrgencyOpen(false)
-                              }}
-                              className={`w-full text-left px-4 py-2 text-sm transition-colors ${formData.urgency === urg ? 'bg-[var(--cream-100)] text-[var(--navy-800)] font-medium' : 'text-[var(--navy-600)] hover:bg-[var(--cream-100)]'}`}
-                            >
-                              {t(`urgency.${urg}`)}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
                   {t('submitProject.fields.briefDescription')} <span className="text-red-600">*</span>
-                  <span className="text-[var(--navy-400)] font-normal ml-2">
+                  <span className="text-[var(--navy-500)] font-normal ml-2">
                     ({formData.briefDescription.length}/150)
                   </span>
                 </label>
@@ -699,7 +640,7 @@ export default function SubmitProjectPage() {
               <div>
                 <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
                   {t('submitProject.fields.fullDescription')} <span className="text-red-600">*</span>
-                  <span className="text-[var(--navy-400)] font-normal ml-2">
+                  <span className="text-[var(--navy-500)] font-normal ml-2">
                     ({formData.fullDescription.length}/2000)
                   </span>
                 </label>
@@ -900,7 +841,7 @@ export default function SubmitProjectPage() {
                     placeholder={t('submitProject.fields.cityLatitudePlaceholder')}
                     error={errors.cityLatitude}
                   />
-                  <p className="text-xs text-[var(--navy-400)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
+                  <p className="text-xs text-[var(--navy-500)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[var(--navy-700)] mb-1">
@@ -912,7 +853,7 @@ export default function SubmitProjectPage() {
                     placeholder={t('submitProject.fields.cityLongitudePlaceholder')}
                     error={errors.cityLongitude}
                   />
-                  <p className="text-xs text-[var(--navy-400)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
+                  <p className="text-xs text-[var(--navy-500)] mt-1">{t('submitProject.fields.coordinatesHelper')}</p>
                 </div>
               </div>
             </div>
@@ -966,7 +907,7 @@ export default function SubmitProjectPage() {
           {/* Section 6: Supporting Information */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              {t('submitProject.sections.supportingInfo')} <span className="text-[var(--navy-400)] font-normal">({t('submitProject.sections.optional')})</span>
+              {t('submitProject.sections.supportingInfo')} <span className="text-[var(--navy-500)] font-normal">({t('submitProject.sections.optional')})</span>
             </h2>
             <div className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
@@ -1009,7 +950,7 @@ export default function SubmitProjectPage() {
           {/* Section 7: Project Photos */}
           <section className="bg-[var(--cream-100)] rounded-xl p-6 border border-[var(--cream-300)]">
             <h2 className="text-lg font-semibold text-[var(--navy-700)] mb-4 pb-2 border-b border-[var(--cream-300)]">
-              {t('submitProject.photos.title')} <span className="text-[var(--navy-400)] font-normal">({t('submitProject.sections.optional')})</span>
+              {t('submitProject.photos.title')} <span className="text-[var(--navy-500)] font-normal">({t('submitProject.sections.optional')})</span>
             </h2>
             <p className="text-sm text-[var(--navy-500)] mb-4">
               {t('submitProject.photos.description')}

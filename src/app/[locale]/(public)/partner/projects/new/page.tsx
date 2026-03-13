@@ -285,7 +285,7 @@ export default function PartnerNewProjectPage() {
             </Link>
           </div>
         </header>
-        <main className="max-w-2xl mx-auto px-4 py-16 text-center">
+        <main id="main-content" className="max-w-2xl mx-auto px-4 py-16 text-center">
           <Card>
             <CardContent className="p-8">
               <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
@@ -330,7 +330,7 @@ export default function PartnerNewProjectPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-3xl">
+      <main id="main-content" className="container mx-auto px-4 py-8 max-w-3xl">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('partner.submission.title')}</h1>
         <p className="text-gray-600 mb-8">{t('partner.submission.description')}</p>
 
@@ -764,7 +764,7 @@ export default function PartnerNewProjectPage() {
             <CardHeader>
               <CardTitle>
                 {t('submitProject.photos.title')}{' '}
-                <span className="text-gray-400 font-normal">({t('submitProject.sections.optional')})</span>
+                <span className="text-gray-500 font-normal">({t('submitProject.sections.optional')})</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -784,7 +784,7 @@ export default function PartnerNewProjectPage() {
             <CardHeader>
               <CardTitle>
                 Supporting Documents{' '}
-                <span className="text-gray-400 font-normal">({t('submitProject.sections.optional')})</span>
+                <span className="text-gray-500 font-normal">({t('submitProject.sections.optional')})</span>
               </CardTitle>
             </CardHeader>
             <CardContent>

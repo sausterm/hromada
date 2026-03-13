@@ -40,7 +40,7 @@ export function DocumentaryPhoto({
       </div>
       <figcaption className="mt-3 text-sm text-[var(--navy-500)] italic">
         {caption}
-        {credit && <span className="block text-xs text-[var(--navy-400)] mt-0.5 not-italic">© {credit}</span>}
+        {credit && <span className="block text-xs text-[var(--navy-500)] mt-0.5 not-italic">© {credit}</span>}
       </figcaption>
     </figure>
   )

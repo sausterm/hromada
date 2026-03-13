@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Header } from '@/components/layout/Header'
@@ -40,7 +41,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-[var(--cream-100)] flex flex-col">
       <Header />
 
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
+      <main id="main-content" className="flex-1 max-w-3xl mx-auto px-4 py-12">
         {/* Mission */}
         <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
           {t('about.title')}
@@ -71,9 +72,11 @@ export default function AboutPage() {
               <div key={member.initials} className="flex items-start gap-5">
                 {member.photo ? (
                   <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0">
-                    <img
+                    <Image
                       src={member.photo}
                       alt={member.initials}
+                      width={96}
+                      height={96}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -105,9 +108,11 @@ export default function AboutPage() {
 
           <div className="flex justify-center mb-6">
             <a href="https://www.pocacito.org/" target="_blank" rel="noopener noreferrer">
-              <img
+              <Image
                 src="/partners/pocacitologo.png"
                 alt="POCACITO Network"
+                width={192}
+                height={48}
                 className="h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
               />
             </a>
@@ -132,7 +137,7 @@ export default function AboutPage() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-4 py-2 bg-white rounded-full border border-[var(--cream-200)] text-sm text-[var(--navy-600)] font-medium hover:border-[var(--ukraine-blue)] transition-colors"
             >
-              <img src="/partners/candidseal.png" alt="Candid Platinum Seal" className="w-5 h-5 object-contain" />
+              <Image src="/partners/candidseal.png" alt="Candid Platinum Seal" width={20} height={20} className="w-5 h-5 object-contain" />
               {t('about.fiscalSponsorCandid')}
             </a>
           </div>
@@ -157,13 +162,15 @@ export default function AboutPage() {
                 rel="noopener noreferrer"
                 className="flex items-start gap-4 group"
               >
-                <img
+                <Image
                   src={partner.logo}
                   alt={partner.name}
+                  width={80}
+                  height={40}
                   className="h-10 w-20 object-contain flex-shrink-0 opacity-70 group-hover:opacity-100 transition-opacity"
                 />
                 <div>
-                  <h4 className="font-semibold text-[var(--navy-700)] text-sm group-hover:text-[var(--ukraine-blue)] transition-colors">{partner.name}</h4>
+                  <h3 className="font-semibold text-[var(--navy-700)] text-sm group-hover:text-[var(--ukraine-blue)] transition-colors">{partner.name}</h3>
                   <p className="text-sm text-[var(--navy-500)] leading-relaxed">{t(partner.descKey)}</p>
                 </div>
               </a>
@@ -187,15 +194,17 @@ export default function AboutPage() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all"
               >
-                <img
+                <Image
                   src={item.logo}
                   alt={item.name}
+                  width={160}
+                  height={40}
                   className="h-10 w-auto object-contain"
                 />
               </a>
             ))}
           </div>
-          <p className="text-[10px] text-[var(--navy-300)] text-center mt-4">
+          <p className="text-[10px] text-[var(--navy-500)] text-center mt-4">
             Logos are trademarks of their respective owners, used to identify coverage of our partners&apos; work.
           </p>
         </section>

@@ -9,7 +9,7 @@ function UnsubscribeContent() {
   const success = searchParams.get('success') === 'true'
 
   return (
-    <main className="flex-1 max-w-2xl mx-auto px-4 py-16 text-center">
+    <main id="main-content" className="flex-1 max-w-2xl mx-auto px-4 py-16 text-center">
       {success ? (
         <>
           <h1 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-6">
@@ -38,7 +38,7 @@ export default function UnsubscribePage() {
     <div className="min-h-screen bg-[var(--cream-50)] flex flex-col">
       <Header />
       <Suspense fallback={
-        <main className="flex-1 max-w-2xl mx-auto px-4 py-16 text-center">
+        <main id="main-content" className="flex-1 max-w-2xl mx-auto px-4 py-16 text-center">
           <p className="text-[var(--navy-600)]">Loading...</p>
         </main>
       }>

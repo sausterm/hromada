@@ -518,7 +518,7 @@ export function LiveMonitoringDisplay({ progress = 1 }: { progress?: number }) {
         {/* Display screen */}
         <div className="bg-white m-3 rounded-lg p-4 border border-gray-200">
           {/* Timestamp */}
-          <div className="text-center text-gray-400 text-xs mb-4 font-mono">
+          <div className="text-center text-gray-500 text-xs mb-4 font-mono">
             {new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}
           </div>
 
@@ -532,7 +532,7 @@ export function LiveMonitoringDisplay({ progress = 1 }: { progress?: number }) {
                 </svg>
               </div>
               <div className="text-2xl font-bold text-green-600">{animatedSolar.toFixed(2)}</div>
-              <div className="text-xs text-gray-400">kW Solar</div>
+              <div className="text-xs text-gray-500">kW Solar</div>
             </div>
 
             {/* Center - Status */}
@@ -544,7 +544,7 @@ export function LiveMonitoringDisplay({ progress = 1 }: { progress?: number }) {
                   {progress > 0.5 ? 'ON' : 'OFF'}
                 </span>
               </div>
-              <div className="mt-2 text-xs text-gray-400">System Status</div>
+              <div className="mt-2 text-xs text-gray-500">System Status</div>
             </div>
 
             {/* Load */}
@@ -555,7 +555,7 @@ export function LiveMonitoringDisplay({ progress = 1 }: { progress?: number }) {
                 </svg>
               </div>
               <div className="text-2xl font-bold text-blue-600">{animatedLoad.toFixed(2)}</div>
-              <div className="text-xs text-gray-400">kW Load</div>
+              <div className="text-xs text-gray-500">kW Load</div>
             </div>
           </div>
 

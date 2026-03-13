@@ -11,14 +11,14 @@ export default function ContactPage() {
     <div className="min-h-screen bg-[var(--cream-100)] flex flex-col">
       <Header />
 
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-12">
+      <main id="main-content" className="flex-1 max-w-3xl mx-auto px-4 py-12">
         <h1 className="font-logo text-4xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
           {t('title')}
         </h1>
         <p className="text-xl leading-relaxed text-[var(--navy-500)] mb-2 text-center">
           {t('description')}
         </p>
-        <p className="text-sm text-[var(--navy-400)] mb-12 text-center">
+        <p className="text-sm text-[var(--navy-500)] mb-12 text-center">
           {t('responseTime')}
         </p>
 

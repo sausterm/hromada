@@ -20,7 +20,7 @@ export function PhotoStripSection() {
   return (
     <section className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)] overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 lg:px-8 mb-8">
-        <h3 className="text-[var(--navy-700)] text-xl font-semibold text-center">{t('homepage.photoStrip.title')}</h3>
+        <h2 className="text-[var(--navy-700)] text-xl font-semibold text-center">{t('homepage.photoStrip.title')}</h2>
       </div>
 
       <div className="relative overflow-hidden overscroll-x-contain" style={{ touchAction: 'pan-y pinch-zoom' }}>

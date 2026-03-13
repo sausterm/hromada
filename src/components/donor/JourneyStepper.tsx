@@ -47,7 +47,7 @@ export function JourneyStepper({ status, hasProzorroUpdates, hasPhotoUpdates, co
                     ? 'bg-green-500 text-white'
                     : isCurrent
                       ? 'bg-[var(--navy-600)] text-white'
-                      : 'bg-[var(--cream-300)] text-[var(--navy-400)]'
+                      : 'bg-[var(--cream-300)] text-[var(--navy-500)]'
                 }`}
               >
                 {isCompleted ? (
@@ -74,13 +74,13 @@ export function JourneyStepper({ status, hasProzorroUpdates, hasPhotoUpdates, co
                 className={`${compact ? 'text-xs' : 'text-sm'} ${
                   isCompleted || isCurrent
                     ? 'font-semibold text-[var(--navy-700)]'
-                    : 'text-[var(--navy-400)]'
+                    : 'text-[var(--navy-500)]'
                 }`}
               >
                 {step.title}
               </div>
               {!compact && (
-                <div className="text-xs text-[var(--navy-400)] mt-0.5">
+                <div className="text-xs text-[var(--navy-500)] mt-0.5">
                   {step.description}
                 </div>
               )}

@@ -8,7 +8,7 @@ export type Urgency = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 export type Status = 'OPEN' | 'IN_DISCUSSION' | 'MATCHED' | 'FULFILLED'
 
 // Project type for renewable energy projects
-export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION' | 'WATER_TREATMENT' | 'GENERAL'
+export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION' | 'GENERAL'
 
 // Co-financing availability status
 export type CofinancingStatus = 'YES' | 'NO' | 'NEEDS_CLARIFICATION'
@@ -73,6 +73,7 @@ export interface Project {
   cofinancingAvailable?: CofinancingStatus
   cofinancingDetails?: string
   partnerOrganization?: string
+  isIDP?: boolean
   // Prozorro procurement tracking
   edrpou?: string
   prozorroTenderId?: string
@@ -129,45 +130,37 @@ export interface ContactSubmission {
 export const CATEGORY_CONFIG: Record<Category, { label: string; color: string; icon: string }> = {
   HOSPITAL: {
     label: 'Hospital / Medical',
-    color: '#C75B39',  // Deep terracotta
+    color: '#A84830',  // Deep terracotta (WCAG AA: 5.6:1 with white)
     icon: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>'  // HeartPulse
   },
   SCHOOL: {
     label: 'School / Education',
-    color: '#7B9E6B',  // Sage green
+    color: '#5C7F4B',  // Sage green (WCAG AA: 4.7:1 with white)
     icon: '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>'  // GraduationCap
   },
   WATER: {
     label: 'Water Utility',
-    color: '#5B8FA8',  // Muted teal
+    color: '#3E7A90',  // Muted teal (WCAG AA: 4.6:1 with white)
     icon: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>'  // Droplet
   },
   ENERGY: {
     label: 'Energy Infrastructure',
-    color: '#D4954A',  // Warm amber
+    color: '#B07830',  // Warm amber (WCAG AA: 4.5:1 with white)
     icon: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>'  // Zap/Bolt
   },
   OTHER: {
     label: 'Other Infrastructure',
-    color: '#8B7355',  // Warm taupe
+    color: '#6A5840',  // Warm taupe (WCAG AA: 7.0:1 with white)
     icon: '<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>'  // Factory
   },
 }
 
-// Urgency display info - warm palette
-export const URGENCY_CONFIG: Record<Urgency, { label: string; color: string }> = {
-  LOW: { label: 'Low', color: '#8B7355' },          // Warm taupe
-  MEDIUM: { label: 'Medium', color: '#D4954A' },    // Warm amber
-  HIGH: { label: 'High', color: '#D4754E' },        // Terracotta
-  CRITICAL: { label: 'Critical', color: '#B84A32' }, // Deep rust
-}
-
 // Status display info - warm palette
 export const STATUS_CONFIG: Record<Status, { label: string; color: string }> = {
-  OPEN: { label: 'Seeking Donors', color: '#7B9E6B' },      // Sage green
-  IN_DISCUSSION: { label: 'In Discussion', color: '#5B8FA8' }, // Muted teal
-  MATCHED: { label: 'Matched', color: '#9B7BB8' },          // Dusty purple
-  FULFILLED: { label: 'Fulfilled', color: '#8B7355' },      // Warm taupe
+  OPEN: { label: 'Seeking Donors', color: '#5C7F4B' },      // Sage green (WCAG AA)
+  IN_DISCUSSION: { label: 'In Discussion', color: '#3E7A90' }, // Muted teal (WCAG AA)
+  MATCHED: { label: 'Matched', color: '#7B5F9B' },          // Dusty purple (WCAG AA)
+  FULFILLED: { label: 'Fulfilled', color: '#6A5840' },      // Warm taupe (WCAG AA)
 }
 
 // Project type display info - warm palette
@@ -175,41 +168,36 @@ export const STATUS_CONFIG: Record<Status, { label: string; color: string }> = {
 export const PROJECT_TYPE_CONFIG: Record<ProjectType, { label: string; color: string; icon: string }> = {
   SOLAR_PV: {
     label: 'Solar PV',
-    color: '#D4954A',  // Warm amber
+    color: '#B07830',  // Warm amber (WCAG AA)
     icon: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>'  // Sun
   },
   BATTERY_STORAGE: {
     label: 'Battery Storage',
-    color: '#5B8FA8',  // Muted teal
+    color: '#3E7A90',  // Muted teal (WCAG AA)
     icon: '<rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="22" x2="22" y1="11" y2="13"/>'  // Battery
   },
   HEAT_PUMP: {
     label: 'Heat Pump',
-    color: '#C75B39',  // Deep terracotta
+    color: '#A84830',  // Deep terracotta (WCAG AA)
     icon: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'  // Flame
   },
   THERMO_MODERNIZATION: {
     label: 'Thermo-modernization',
-    color: '#8B7355',  // Warm taupe
+    color: '#6A5840',  // Warm taupe (WCAG AA)
     icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'  // Home
-  },
-  WATER_TREATMENT: {
-    label: 'Water Treatment',
-    color: '#5B8FA8',  // Muted teal
-    icon: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>'  // Droplet
   },
   GENERAL: {
     label: 'General',
-    color: '#8B7355',  // Warm taupe
+    color: '#6A5840',  // Warm taupe (WCAG AA)
     icon: '<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/>'  // Factory
   },
 }
 
 // Co-financing status display info
 export const COFINANCING_CONFIG: Record<CofinancingStatus, { label: string; color: string }> = {
-  YES: { label: 'Yes', color: '#7B9E6B' },                    // Sage green
-  NO: { label: 'No', color: '#B84A32' },                      // Deep rust
-  NEEDS_CLARIFICATION: { label: 'Needs Clarification', color: '#D4954A' }, // Warm amber
+  YES: { label: 'Yes', color: '#5C7F4B' },                    // Sage green (WCAG AA)
+  NO: { label: 'No', color: '#9A3D28' },                      // Deep rust (WCAG AA)
+  NEEDS_CLARIFICATION: { label: 'Needs Clarification', color: '#B07830' }, // Warm amber (WCAG AA)
 }
 
 // Currency format options

@@ -16,7 +16,7 @@ export function TimelineEvent({
         <div className="w-0.5 h-full bg-[var(--cream-300)] mt-2" />
       </div>
       <div className="pb-8">
-        <div className="text-xs text-[var(--navy-400)] font-medium mb-1">{date}</div>
+        <div className="text-xs text-[var(--navy-500)] font-medium mb-1">{date}</div>
         <div className="font-semibold text-[var(--navy-700)]">{title}</div>
         {description && <p className="text-sm text-[var(--navy-500)] mt-1">{description}</p>}
       </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link, useRouter } from '@/i18n/navigation'
@@ -10,7 +11,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { type Project, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG } from '@/types'
+import { type Project, type ContactSubmission, CATEGORY_CONFIG, STATUS_CONFIG, PROJECT_TYPE_CONFIG } from '@/types'
 
 // ProjectSubmission type for API responses
 interface ProjectSubmission {
@@ -23,7 +24,6 @@ interface ProjectSubmission {
   projectType: string
   briefDescription: string
   fullDescription: string
-  urgency: string
   estimatedCostUsd: number | null
   technicalPowerKw: number | null
   numberOfPanels: number | null
@@ -94,7 +94,7 @@ interface ComposeProject {
   statusLine: string
 }
 
-type SortField = 'facilityName' | 'municipalityName' | 'region' | 'category' | 'projectType' | 'urgency' | 'status'
+type SortField = 'facilityName' | 'municipalityName' | 'region' | 'partnerOrganization' | 'category' | 'projectType' | 'status'
 type SortDirection = 'asc' | 'desc'
 
 // Sort options for submissions
@@ -875,6 +875,10 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
           aVal = a.region || ''
           bVal = b.region || ''
           break
+        case 'partnerOrganization':
+          aVal = a.partnerOrganization || ''
+          bVal = b.partnerOrganization || ''
+          break
         case 'category':
           aVal = CATEGORY_CONFIG[a.category].label
           bVal = CATEGORY_CONFIG[b.category].label
@@ -882,10 +886,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
         case 'projectType':
           aVal = a.projectType ? PROJECT_TYPE_CONFIG[a.projectType].label : ''
           bVal = b.projectType ? PROJECT_TYPE_CONFIG[b.projectType].label : ''
-          break
-        case 'urgency':
-          aVal = URGENCY_CONFIG[a.urgency].label
-          bVal = URGENCY_CONFIG[b.urgency].label
           break
         case 'status':
           aVal = STATUS_CONFIG[a.status].label
@@ -1054,14 +1054,14 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   const SortIcon = ({ field }: { field: SortField }) => (
     <span className="inline-flex flex-col ml-1">
       <svg
-        className={`w-3 h-3 -mb-1 ${sortField === field && sortDirection === 'asc' ? 'text-gray-900' : 'text-gray-300'}`}
+        className={`w-3 h-3 -mb-1 ${sortField === field && sortDirection === 'asc' ? 'text-gray-900' : 'text-gray-500'}`}
         fill="currentColor"
         viewBox="0 0 24 24"
       >
         <path d="M12 5l-8 8h16l-8-8z" />
       </svg>
       <svg
-        className={`w-3 h-3 ${sortField === field && sortDirection === 'desc' ? 'text-gray-900' : 'text-gray-300'}`}
+        className={`w-3 h-3 ${sortField === field && sortDirection === 'desc' ? 'text-gray-900' : 'text-gray-500'}`}
         fill="currentColor"
         viewBox="0 0 24 24"
       >
@@ -1073,7 +1073,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   const stats = {
     totalProjects: projects.length,
     openProjects: projects.filter((p) => p.status === 'OPEN').length,
-    criticalProjects: projects.filter((p) => p.urgency === 'CRITICAL').length,
     contactSubmissions: contactSubmissions.length,
     pendingSubmissions: pendingSubmissionsCount,
   }
@@ -1102,7 +1101,8 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <main id="main-content" className="container mx-auto px-4 py-8">
+        <h1 className="sr-only">{t('nav.admin')}</h1>
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
@@ -1115,12 +1115,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
             <CardContent className="p-4 text-center">
               <p className="text-3xl font-bold text-green-600">{stats.openProjects}</p>
               <p className="text-sm text-gray-500">{t('admin.stats.openProjects')}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-bold text-red-600">{stats.criticalProjects}</p>
-              <p className="text-sm text-gray-500">{t('admin.stats.criticalProjects')}</p>
             </CardContent>
           </Card>
           <Card>
@@ -1198,7 +1192,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                   <span className="font-semibold text-gray-900">Featured Projects</span>
                   <Badge size="sm" variant="info">{featuredSlots.length}/4</Badge>
                 </div>
-                <svg className={`w-5 h-5 text-gray-400 transition-transform ${showFeaturedManager ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className={`w-5 h-5 text-gray-500 transition-transform ${showFeaturedManager ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
@@ -1220,7 +1214,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                           const slotData = featuredSlots.find(s => s.slot === slotNum)
                           return (
                             <div key={slotNum} className={`border-2 rounded-lg p-3 min-h-[80px] relative ${slotData ? 'border-amber-300 bg-amber-50' : 'border-dashed border-gray-300'}`}>
-                              <div className="text-xs font-bold text-gray-400 mb-1">Slot {slotNum}</div>
+                              <div className="text-xs font-bold text-gray-500 mb-1">Slot {slotNum}</div>
                               {slotData ? (
                                 <div className="pr-6">
                                   <p className="font-medium text-sm text-gray-900 truncate">
@@ -1231,7 +1225,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                                   </p>
                                   <button
                                     onClick={() => setFeaturedSlots(prev => prev.filter(s => s.slot !== slotNum))}
-                                    className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 rounded"
+                                    className="absolute top-2 right-2 p-1 text-gray-500 hover:text-red-500 rounded"
                                   >
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1297,7 +1291,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                                   className="w-full text-left px-3 py-2 text-sm rounded hover:bg-blue-50 flex justify-between items-center"
                                 >
                                   <span className="font-medium truncate">{p.facilityName}</span>
-                                  <span className="text-gray-400 text-xs ml-2 flex-shrink-0">{p.municipalityName}</span>
+                                  <span className="text-gray-500 text-xs ml-2 flex-shrink-0">{p.municipalityName}</span>
                                 </button>
                               ))
                             }
@@ -1308,7 +1302,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                               const q = featuredSearchQuery.toLowerCase()
                               return p.facilityName.toLowerCase().includes(q) || p.municipalityName.toLowerCase().includes(q)
                             }).length === 0 && (
-                              <p className="text-sm text-gray-400 text-center py-2">No matching projects</p>
+                              <p className="text-sm text-gray-500 text-center py-2">No matching projects</p>
                             )}
                           </div>
                         </div>
@@ -1332,7 +1326,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                 <div className="relative">
                   <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -1421,7 +1415,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b">
                     <tr>
-                      <th className="p-4 w-12">
+                      <th scope="col" className="p-4 w-12">
                         <input
                           type="checkbox"
                           checked={paginatedProjects.length > 0 && paginatedProjects.every((p) => selectedProjectIds.has(p.id))}
@@ -1430,7 +1424,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         />
                       </th>
                       <th
-                        className="text-left p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        className="text-left p-4 text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('facilityName')}
                       >
                         <span className="flex items-center">
@@ -1439,7 +1433,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         </span>
                       </th>
                       <th
-                        className="text-left p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        className="text-left p-4 text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('municipalityName')}
                       >
                         <span className="flex items-center">
@@ -1448,7 +1442,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         </span>
                       </th>
                       <th
-                        className="text-left p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        className="text-left p-4 text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('region')}
                       >
                         <span className="flex items-center">
@@ -1457,7 +1451,16 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         </span>
                       </th>
                       <th
-                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        className="text-left p-4 text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
+                        onClick={() => handleSort('partnerOrganization')}
+                      >
+                        <span className="flex items-center">
+                          {t('admin.projects.table.partner')}
+                          <SortIcon field="partnerOrganization" />
+                        </span>
+                      </th>
+                      <th
+                        className="text-center p-4 text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('category')}
                       >
                         <span className="flex items-center justify-center">
@@ -1466,7 +1469,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         </span>
                       </th>
                       <th
-                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        className="text-center p-4 text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('projectType')}
                       >
                         <span className="flex items-center justify-center">
@@ -1475,16 +1478,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         </span>
                       </th>
                       <th
-                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
-                        onClick={() => handleSort('urgency')}
-                      >
-                        <span className="flex items-center justify-center">
-                          {t('admin.projects.table.urgency')}
-                          <SortIcon field="urgency" />
-                        </span>
-                      </th>
-                      <th
-                        className="text-center p-4 text-sm font-medium text-gray-500 cursor-pointer hover:bg-gray-100 select-none"
+                        className="text-center p-4 text-sm font-medium text-gray-600 cursor-pointer hover:bg-gray-100 select-none"
                         onClick={() => handleSort('status')}
                       >
                         <span className="flex items-center justify-center">
@@ -1492,13 +1486,12 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                           <SortIcon field="status" />
                         </span>
                       </th>
-                      <th className="text-center p-4 text-sm font-medium text-gray-500">{t('admin.projects.table.actions')}</th>
+                      <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">{t('admin.projects.table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {paginatedProjects.map((project) => {
                       const categoryConfig = CATEGORY_CONFIG[project.category]
-                      const urgencyConfig = URGENCY_CONFIG[project.urgency]
                       const statusConfig = STATUS_CONFIG[project.status]
 
                       return (
@@ -1516,6 +1509,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                           </td>
                           <td className="p-4 text-gray-600">{project.municipalityName}</td>
                           <td className="p-4 text-gray-500 text-sm">{project.region || '-'}</td>
+                          <td className="p-4 text-gray-500 text-sm">{project.partnerOrganization || '-'}</td>
                           <td className="p-4 text-center">
                             <Badge dot dotColor={categoryConfig.color} size="sm">
                               {t(`categories.${project.category}`)}
@@ -1527,16 +1521,8 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                                 {t(`projectTypes.${project.projectType}`)}
                               </Badge>
                             ) : (
-                              <span className="text-gray-400 text-sm">-</span>
+                              <span className="text-gray-500 text-sm">-</span>
                             )}
-                          </td>
-                          <td className="p-4 text-center">
-                            <Badge
-                              variant={project.urgency === 'CRITICAL' ? 'danger' : project.urgency === 'HIGH' ? 'warning' : 'default'}
-                              size="sm"
-                            >
-                              {t(`urgency.${project.urgency}`)}
-                            </Badge>
                           </td>
                           <td className="p-4 text-center">
                             <Badge
@@ -1659,7 +1645,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                 {/* Search */}
                 <div className="relative">
                   <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -1750,7 +1736,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                             <Badge size="sm" dot dotColor={CATEGORY_CONFIG[submission.category as keyof typeof CATEGORY_CONFIG]?.color || '#888'}>
                               {CATEGORY_CONFIG[submission.category as keyof typeof CATEGORY_CONFIG]?.label || submission.category}
                             </Badge>
-                            <p className="text-xs text-gray-400 mt-1">
+                            <p className="text-xs text-gray-500 mt-1">
                               {new Date(submission.createdAt).toLocaleDateString()}
                             </p>
                           </div>
@@ -1766,10 +1752,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                           <div>
                             <span className="text-gray-500">{t('admin.submissions.labels.type')}:</span>{' '}
                             <span className="font-medium">{t(`projectTypes.${submission.projectType}`)}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">{t('admin.submissions.labels.urgency')}:</span>{' '}
-                            <span className="font-medium">{t(`urgency.${submission.urgency}`)}</span>
                           </div>
                           {submission.estimatedCostUsd && (
                             <div>
@@ -1876,10 +1858,6 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                       <div>
                         <p className="text-gray-500">{t('admin.submissions.labels.projectType')}</p>
                         <p className="font-medium">{t(`projectTypes.${selectedSubmission.projectType}`)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500">{t('admin.submissions.labels.urgency')}</p>
-                        <p className="font-medium">{t(`urgency.${selectedSubmission.urgency}`)}</p>
                       </div>
                       <div>
                         <p className="text-gray-500">{t('admin.submissions.labels.location')}</p>
@@ -2016,7 +1994,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                 {/* Search */}
                 <div className="relative">
                   <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -2101,7 +2079,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                           <p className="text-xs text-gray-500 mt-1">
                             {submission.project.municipalityName}
                           </p>
-                          <p className="text-xs text-gray-400 mt-1">
+                          <p className="text-xs text-gray-500 mt-1">
                             {new Date(submission.createdAt).toLocaleDateString()}
                           </p>
                         </div>
@@ -2266,12 +2244,12 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                   <table className="w-full">
                     <thead className="bg-gray-50 border-b">
                       <tr>
-                        <th className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.name')}</th>
-                        <th className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.email')}</th>
-                        <th className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.organization')}</th>
-                        <th className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.role')}</th>
-                        <th className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.created')}</th>
-                        <th className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.actions')}</th>
+                        <th scope="col" className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.name')}</th>
+                        <th scope="col" className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.email')}</th>
+                        <th scope="col" className="text-left p-4 text-sm font-medium text-gray-500">{t('users.table.organization')}</th>
+                        <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.role')}</th>
+                        <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.created')}</th>
+                        <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">{t('users.table.actions')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -2417,7 +2395,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                               disabled={isUploadingBanner}
                             />
                           </label>
-                          <span className="text-xs text-gray-400">or</span>
+                          <span className="text-xs text-gray-500">or</span>
                           <Input
                             type="url"
                             placeholder="Paste image URL"
@@ -2535,7 +2513,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900">{project.facilityName}</p>
                           <p className="text-xs text-gray-500">{project.municipalityName}</p>
-                          <p className="text-xs text-gray-400 mb-1">
+                          <p className="text-xs text-gray-500 mb-1">
                             {[
                               project.category && CATEGORY_CONFIG[project.category as keyof typeof CATEGORY_CONFIG]?.label,
                               project.projectType && PROJECT_TYPE_CONFIG[project.projectType as keyof typeof PROJECT_TYPE_CONFIG]?.label,
@@ -2678,12 +2656,12 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                     <table className="w-full">
                       <thead className="bg-gray-50 border-b">
                         <tr>
-                          <th className="text-left p-4 text-sm font-medium text-gray-500">Subject</th>
-                          <th className="text-center p-4 text-sm font-medium text-gray-500">Status</th>
-                          <th className="text-center p-4 text-sm font-medium text-gray-500">Recipients</th>
-                          <th className="text-center p-4 text-sm font-medium text-gray-500">Sent / Failed</th>
-                          <th className="text-center p-4 text-sm font-medium text-gray-500">Date</th>
-                          <th className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
+                          <th scope="col" className="text-left p-4 text-sm font-medium text-gray-500">Subject</th>
+                          <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">Status</th>
+                          <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">Recipients</th>
+                          <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">Sent / Failed</th>
+                          <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">Date</th>
+                          <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
@@ -2716,7 +2694,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                                   )}
                                 </span>
                               ) : (
-                                <span className="text-gray-400">&mdash;</span>
+                                <span className="text-gray-500">&mdash;</span>
                               )}
                             </td>
                             <td className="p-4 text-center text-gray-500 text-sm">
@@ -2797,9 +2775,9 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
                     <table className="w-full">
                       <thead className="bg-gray-50 border-b">
                         <tr>
-                          <th className="text-left p-4 text-sm font-medium text-gray-500">Email</th>
-                          <th className="text-left p-4 text-sm font-medium text-gray-500">Subscribed</th>
-                          <th className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
+                          <th scope="col" className="text-left p-4 text-sm font-medium text-gray-500">Email</th>
+                          <th scope="col" className="text-left p-4 text-sm font-medium text-gray-500">Subscribed</th>
+                          <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y">
@@ -2829,7 +2807,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   )
 }

@@ -97,7 +97,7 @@ export async function PATCH(
       }
 
       // Validate projectType against Prisma enum (UI types may be ahead of DB schema)
-      const VALID_PROJECT_TYPES = ['SOLAR_PV', 'BATTERY_STORAGE', 'HEAT_PUMP', 'THERMO_MODERNIZATION', 'WATER_TREATMENT', 'GENERAL']
+      const VALID_PROJECT_TYPES = ['SOLAR_PV', 'BATTERY_STORAGE', 'HEAT_PUMP', 'THERMO_MODERNIZATION', 'GENERAL']
       const safeProjectType = VALID_PROJECT_TYPES.includes(submission.projectType)
         ? submission.projectType
         : null

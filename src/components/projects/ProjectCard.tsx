@@ -2,7 +2,8 @@
 
 import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { type Project, CATEGORY_CONFIG, URGENCY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, formatRelativeTime, getLocalizedProject } from '@/types'
+import Image from 'next/image'
+import { type Project, CATEGORY_CONFIG, PROJECT_TYPE_CONFIG, formatCurrency, formatRelativeTime, getLocalizedProject } from '@/types'
 import { ShareButton } from '@/components/ui/ShareButton'
 
 interface ProjectCardProps {
@@ -24,15 +25,17 @@ export function ProjectCard({
   const locale = useLocale()
   const localized = getLocalizedProject(project, locale)
   const categoryConfig = CATEGORY_CONFIG[project.category]
-  const urgencyConfig = URGENCY_CONFIG[project.urgency]
-
   const mainPhoto = project.photos?.[0]
+
+  const isIDP = project.isIDP === true
 
   // Common class names for the card container
   const cardClassName = `group flex flex-col h-full bg-white rounded-xl overflow-hidden card-hover border-2 ${
     isHighlighted
       ? 'border-[var(--navy-600)] shadow-lg ring-2 ring-[var(--navy-200)]'
-      : 'border-[var(--cream-300)] shadow-sm'
+      : isIDP
+        ? 'border-[#7B5F9B] shadow-sm'
+        : 'border-[var(--cream-300)] shadow-sm'
   }`
 
   // Card content - shared between both modes
@@ -41,13 +44,15 @@ export function ProjectCard({
       {/* Image Section - fixed aspect ratio, never shrinks */}
       <div className="relative aspect-[16/10] bg-[var(--cream-200)] flex-shrink-0 overflow-hidden">
         {mainPhoto ? (
-          <img
+          <Image
             src={mainPhoto}
             alt={localized.facilityName}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-[var(--navy-400)]">
+          <div className="w-full h-full flex items-center justify-center text-[var(--navy-500)]">
             {/* Category-specific placeholder icons */}
             {project.category === 'HOSPITAL' && (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -117,15 +122,6 @@ export function ProjectCard({
           )}
         </div>
 
-        {/* Urgency Badge (only show if high or critical) */}
-        {(project.urgency === 'HIGH' || project.urgency === 'CRITICAL') && (
-          <div
-            className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-medium text-white shadow-sm"
-            style={{ backgroundColor: urgencyConfig.color }}
-          >
-            {t(`urgency.${project.urgency}`)}
-          </div>
-        )}
       </div>
 
       {/* Content Section */}
@@ -186,13 +182,34 @@ export function ProjectCard({
           {localized.briefDescription}
         </p>
 
+        {/* IDP Community badge */}
+        {isIDP && (
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#7B5F9B]/10 text-[#7B5F9B] text-xs font-medium">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-3.5 h-3.5"
+              >
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              {t('projectCard.idpCommunity')}
+            </span>
+          </div>
+        )}
+
         {/* Spacer to push footer to bottom */}
         <div className="flex-1" />
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-2 border-t border-[var(--cream-300)]">
           {/* Posted time */}
-          <span className="text-xs text-[var(--navy-400)] whitespace-nowrap" suppressHydrationWarning>
+          <span className="text-xs text-[var(--navy-500)] whitespace-nowrap" suppressHydrationWarning>
             {t('projectCard.postedAgo', { time: formatRelativeTime(project.createdAt, t) })}
           </span>
 

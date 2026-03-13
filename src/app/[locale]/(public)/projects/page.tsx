@@ -12,7 +12,6 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import {
   type Project,
   type Category,
-  type Urgency,
   type CofinancingStatus,
   type ProjectType,
   CATEGORY_CONFIG,
@@ -25,13 +24,8 @@ import {
 // Sort options type
 type SortOption = 'newest' | 'oldest' | 'highestCost' | 'lowestCost' | 'alphabetical'
 
-// Urgency priority for sorting
-const URGENCY_PRIORITY: Record<Urgency, number> = {
-  CRITICAL: 4,
-  HIGH: 3,
-  MEDIUM: 2,
-  LOW: 1,
-}
+// Ukraine bounding box (covers the entire country)
+const UKRAINE_BOUNDS: MapBounds = { south: 44, west: 22, north: 52.5, east: 40.5 }
 
 // Helper to transform API response to Project type
 function transformProject(data: any): Project {
@@ -63,32 +57,55 @@ export default function ProjectsPage() {
   const [allProjects, setAllProjects] = useState<Project[]>([])
   const [visibleProjects, setVisibleProjects] = useState<Project[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const coveredBoundsRef = useRef<MapBounds | null>(null)
 
-  // Fetch projects from API
-  useEffect(() => {
-    async function fetchProjects() {
-      try {
-        const response = await fetch('/api/projects?all=true')
-        if (response.ok) {
-          const data = await response.json()
-          const projects = data.projects.map(transformProject)
+  // Fetch projects by bounds and merge into state
+  const fetchProjectsByBounds = useCallback(async (bounds: MapBounds, isInitial = false) => {
+    try {
+      const response = await fetch(
+        `/api/projects?bounds=${bounds.south},${bounds.west},${bounds.north},${bounds.east}`
+      )
+      if (response.ok) {
+        const data = await response.json()
+        const projects = data.projects.map(transformProject)
+        if (isInitial) {
           setAllProjects(projects)
           setVisibleProjects(projects)
+        } else {
+          setAllProjects((prev) => {
+            const existingIds = new Set(prev.map((p) => p.id))
+            const newProjects = projects.filter((p: Project) => !existingIds.has(p.id))
+            return newProjects.length > 0 ? [...prev, ...newProjects] : prev
+          })
         }
-      } catch (error) {
-        console.error('Failed to fetch projects:', error)
-      } finally {
-        setIsLoading(false)
+        // Expand covered bounds
+        coveredBoundsRef.current = coveredBoundsRef.current
+          ? {
+              south: Math.min(coveredBoundsRef.current.south, bounds.south),
+              west: Math.min(coveredBoundsRef.current.west, bounds.west),
+              north: Math.max(coveredBoundsRef.current.north, bounds.north),
+              east: Math.max(coveredBoundsRef.current.east, bounds.east),
+            }
+          : bounds
       }
+    } catch (error) {
+      console.error('Failed to fetch projects:', error)
+    } finally {
+      if (isInitial) setIsLoading(false)
     }
-    fetchProjects()
   }, [])
+
+  // Initial fetch with Ukraine bounding box
+  useEffect(() => {
+    fetchProjectsByBounds(UKRAINE_BOUNDS, true)
+  }, [fetchProjectsByBounds])
   const [highlightedProjectId, setHighlightedProjectId] = useState<string | null>(null)
   const [flyToProjectId, setFlyToProjectId] = useState<string | null>(null) // Separate state for zoom-on-click
   const [isMobileMapOpen, setIsMobileMapOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set())
   const [selectedCofinancing, setSelectedCofinancing] = useState<CofinancingStatus | null>(null)
+  const [filterIDP, setFilterIDP] = useState(false)
   const [selectedProjectType, setSelectedProjectType] = useState<ProjectType | null>(null)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000])
   const [powerRange, setPowerRange] = useState<[number, number]>([0, 500])
@@ -218,6 +235,11 @@ export default function ProjectsPage() {
       result = result.filter((p) => p.projectType === selectedProjectType)
     }
 
+    // IDP community filter
+    if (filterIDP) {
+      result = result.filter((p) => p.isIDP === true)
+    }
+
     // Price range filter (when max is at 500k, include everything above too)
     const [minPrice, maxPrice] = priceRange
     if (minPrice > 0 || maxPrice < 500000) {
@@ -241,7 +263,7 @@ export default function ProjectsPage() {
     }
 
     return result
-  }, [allProjects, searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange, locale])
+  }, [allProjects, searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, filterIDP, priceRange, powerRange, locale])
 
   // Sorted projects
   const sortedProjects = useMemo(() => {
@@ -303,16 +325,16 @@ export default function ProjectsPage() {
   // Reset pagination when filters change
   useEffect(() => {
     setDisplayCount(ITEMS_PER_PAGE)
-  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange])
+  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, filterIDP, priceRange, powerRange])
 
   // Show more projects
   const showMoreProjects = useCallback(() => {
     setDisplayCount((prev) => prev + ITEMS_PER_PAGE)
   }, [])
 
-  // Handle map bounds change - only update if visible projects actually changed
+  // Handle map bounds change - update visible projects and fetch if needed
   const handleBoundsChange = useCallback(
-    (_bounds: MapBounds, visible: Project[]) => {
+    (bounds: MapBounds, visible: Project[]) => {
       setVisibleProjects((prev) => {
         // Compare IDs to avoid unnecessary state updates
         const prevIds = new Set(prev.map((p) => p.id))
@@ -322,8 +344,19 @@ export default function ProjectsPage() {
         }
         return visible
       })
+
+      // Fetch more projects if viewport extends beyond what we've already fetched
+      const covered = coveredBoundsRef.current
+      if (covered && (
+        bounds.south < covered.south ||
+        bounds.west < covered.west ||
+        bounds.north > covered.north ||
+        bounds.east > covered.east
+      )) {
+        fetchProjectsByBounds(bounds)
+      }
     },
-    []
+    [fetchProjectsByBounds]
   )
 
   // Handle card hover - highlight corresponding marker on map
@@ -390,6 +423,7 @@ export default function ProjectsPage() {
     setSelectedCategories(new Set())
     setSelectedCofinancing(null)
     setSelectedProjectType(null)
+    setFilterIDP(false)
     setPriceRange([0, 500000])
     setPowerRange([0, 500])
     setSortBy('newest')
@@ -402,10 +436,11 @@ export default function ProjectsPage() {
     count += selectedCategories.size
     if (selectedCofinancing) count++
     if (selectedProjectType) count++
+    if (filterIDP) count++
     if (priceRange[0] > 0 || priceRange[1] < 500000) count++
     if (powerRange[0] > 0 || powerRange[1] < 500) count++
     return count
-  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, priceRange, powerRange])
+  }, [searchQuery, selectedCategories, selectedCofinancing, selectedProjectType, filterIDP, priceRange, powerRange])
 
   // Total funding needed for visible projects
   const totalFundingNeeded = useMemo(() => {
@@ -569,6 +604,22 @@ export default function ProjectsPage() {
                 </button>
               )
             })}
+
+            {/* IDP Community toggle */}
+            <button
+              onClick={() => setFilterIDP(!filterIDP)}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all shrink-0 border ${
+                filterIDP
+                  ? 'bg-[#7B5F9B]/10 text-[#7B5F9B] border-[#7B5F9B]'
+                  : 'bg-white/80 border-[var(--cream-300)] text-[var(--navy-600)] hover:border-[var(--navy-300)]'
+              }`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span className="hidden sm:inline">{t('projectCard.idpCommunity')}</span>
+            </button>
 
             {/* Project Type dropdown */}
             <div className="relative shrink-0">
@@ -804,7 +855,8 @@ export default function ProjectsPage() {
       </div>
 
       {/* Main Content - Split Screen */}
-      <main className="flex-1 flex overflow-hidden">
+      <main id="main-content" className="flex-1 flex overflow-hidden">
+        <h1 className="sr-only">{t('nav.projects')}</h1>
         {/* Left Panel - Project List (hidden when mobile map is open) */}
         <div ref={listContainerRef} className={`${isMobileMapOpen ? 'hidden' : ''} w-full lg:block lg:w-1/2 xl:w-[45%] overflow-y-auto custom-scrollbar bg-[var(--cream-100)] lg:border-r lg:border-[var(--cream-300)] lg:shadow-[2px_0_8px_-2px_rgba(0,0,0,0.06)]`}>
           {/* Results Header - Single Line */}
@@ -814,7 +866,7 @@ export default function ProjectsPage() {
               <div className="flex-1 min-w-0">
                 <div className="relative">
                   <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-400)]"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-500)]"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -831,13 +883,13 @@ export default function ProjectsPage() {
                     placeholder={t('homepage.searchPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-8 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-100)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-400)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
+                    className="w-full pl-9 pr-8 py-1.5 rounded-full border border-[var(--cream-300)] bg-[var(--cream-100)] text-[var(--navy-700)] text-sm placeholder:text-[var(--navy-500)] focus:outline-none focus:ring-2 focus:ring-[var(--navy-300)] focus:border-transparent"
                   />
                   {/* Clear search button */}
                   {searchQuery && (
                     <button
                       onClick={clearSearch}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-400)] hover:text-[var(--navy-600)] transition-colors"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--navy-500)] hover:text-[var(--navy-600)] transition-colors"
                       aria-label={t('homepage.searchClear')}
                     >
                       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -895,7 +947,7 @@ export default function ProjectsPage() {
                   <span className="text-[var(--navy-600)] text-sm font-medium">
                     {' '}{t('common.projects')}{' '}
                   </span>
-                  <span className="text-[var(--navy-400)]">|</span>
+                  <span className="text-[var(--navy-500)]">|</span>
                   <span className="text-[var(--navy-800)] text-sm font-bold">
                     {' '}{formatCurrency(totalFundingNeeded, { compact: true })}
                   </span>
@@ -962,7 +1014,7 @@ export default function ProjectsPage() {
                   exit={{ opacity: 0 }}
                   className="col-span-full py-12 text-center"
                 >
-                  <div className="text-[var(--navy-300)] mb-4">
+                  <div className="text-[var(--navy-500)] mb-4">
                     <svg
                       className="h-16 w-16 mx-auto"
                       fill="none"
@@ -998,7 +1050,7 @@ export default function ProjectsPage() {
             <p className="text-xs text-[var(--navy-600)] text-center">
               <span className="font-medium">hromada</span> {t('homepage.footer')}
               <br />
-              <span className="text-[var(--navy-400)]">
+              <span className="text-[var(--navy-500)]">
                 {t('homepage.noPaymentProcessing')}
               </span>
             </p>

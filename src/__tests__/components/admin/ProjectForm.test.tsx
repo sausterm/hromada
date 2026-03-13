@@ -53,15 +53,6 @@ describe('ProjectForm', () => {
       expect(screen.getByRole('option', { name: /School \/ Education/i })).toBeInTheDocument()
     })
 
-    it('renders urgency dropdown with all options', () => {
-      render(<ProjectForm {...defaultProps} />)
-
-      expect(screen.getByRole('option', { name: 'Low' })).toBeInTheDocument()
-      expect(screen.getByRole('option', { name: 'Medium' })).toBeInTheDocument()
-      expect(screen.getByRole('option', { name: 'High' })).toBeInTheDocument()
-      expect(screen.getByRole('option', { name: 'Critical' })).toBeInTheDocument()
-    })
-
     it('renders status dropdown with all options', () => {
       render(<ProjectForm {...defaultProps} />)
 

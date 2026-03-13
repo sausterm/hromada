@@ -12,10 +12,6 @@ jest.mock('next-intl', () => ({
       'categories.WATER': 'Water Utility',
       'categories.ENERGY': 'Energy Infrastructure',
       'categories.OTHER': 'Other Infrastructure',
-      'urgency.LOW': 'Low',
-      'urgency.MEDIUM': 'Medium',
-      'urgency.HIGH': 'High',
-      'urgency.CRITICAL': 'Critical',
       'projectTypes.SOLAR_PV': 'Solar PV',
       'projectTypes.HEAT_PUMP': 'Heat Pump',
       'projectTypes.BATTERY_STORAGE': 'Battery Storage',
@@ -173,36 +169,6 @@ describe('ProjectCard', () => {
     })
   })
 
-  describe('Urgency Badge', () => {
-    it('renders urgency badge for HIGH urgency', () => {
-      const project = createMockProject({ urgency: 'HIGH' })
-      render(<ProjectCard project={project} />)
-
-      expect(screen.getByText('High')).toBeInTheDocument()
-    })
-
-    it('renders urgency badge for CRITICAL urgency', () => {
-      const project = createMockProject({ urgency: 'CRITICAL' })
-      render(<ProjectCard project={project} />)
-
-      expect(screen.getByText('Critical')).toBeInTheDocument()
-    })
-
-    it('does not render urgency badge for LOW urgency', () => {
-      const project = createMockProject({ urgency: 'LOW' })
-      render(<ProjectCard project={project} />)
-
-      expect(screen.queryByText('Low')).not.toBeInTheDocument()
-    })
-
-    it('does not render urgency badge for MEDIUM urgency', () => {
-      const project = createMockProject({ urgency: 'MEDIUM' })
-      render(<ProjectCard project={project} />)
-
-      expect(screen.queryByText('Medium')).not.toBeInTheDocument()
-    })
-  })
-
   describe('Estimated Cost', () => {
     it('renders estimated cost when present', () => {
       const project = createMockProject({ estimatedCostUsd: 50000 })
@@ -262,7 +228,7 @@ describe('ProjectCard', () => {
       render(<ProjectCard project={project} />)
 
       const img = screen.getByRole('img')
-      expect(img).toHaveAttribute('src', 'https://example.com/photo1.jpg')
+      expect(img.getAttribute('src')).toContain('photo1.jpg')
     })
 
     it('renders placeholder icon when no photos', () => {

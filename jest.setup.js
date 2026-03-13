@@ -16,6 +16,23 @@ jest.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 
+// Mock @/i18n/navigation — default mock for all tests.
+// Individual test files can override with their own jest.mock('@/i18n/navigation', ...).
+jest.mock('@/i18n/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+  }),
+  usePathname: () => '/',
+  Link: jest.fn().mockImplementation(({ children, ...props }) => {
+    const React = require('react')
+    return React.createElement('a', props, children)
+  }),
+  redirect: jest.fn(),
+}))
+
 // Mock next/dynamic
 jest.mock('next/dynamic', () => ({
   __esModule: true,
@@ -68,6 +85,16 @@ if (isJsdom) {
       dispatchEvent: jest.fn(),
     })),
   })
+}
+
+// Mock ResizeObserver (not available in jsdom)
+if (isJsdom) {
+  global.ResizeObserver = class ResizeObserver {
+    constructor(callback) {}
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
 }
 
 // Suppress console errors in tests (optional)

@@ -1,6 +1,12 @@
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { PartnerCarousel } from '@/components/layout/PartnerCarousel'
 
+// Mock next/image
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ alt, fill, sizes, ...props }: any) => <img alt={alt} {...props} />,
+}))
+
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
@@ -141,7 +147,7 @@ describe('PartnerCarousel', () => {
       })
     })
 
-    it('does not render on other hostnames', async () => {
+    it('renders on any hostname (no hostname gating)', async () => {
       Object.defineProperty(window, 'location', {
         value: { hostname: 'example.com' },
         writable: true,
@@ -150,7 +156,7 @@ describe('PartnerCarousel', () => {
       render(<PartnerCarousel />)
 
       await waitFor(() => {
-        expect(screen.queryByText('Our Partners')).not.toBeInTheDocument()
+        expect(screen.getByText('Our Partners')).toBeInTheDocument()
       })
     })
   })
@@ -233,9 +239,9 @@ describe('PartnerCarousel', () => {
       render(<PartnerCarousel />)
 
       await waitFor(() => {
-        // With 6 partners triplicated, we should have 18 links
+        // With 4 partners triplicated, we should have 12 links
         const partnerLinks = screen.getAllByRole('link')
-        expect(partnerLinks.length).toBe(18)
+        expect(partnerLinks.length).toBe(12)
       })
     })
   })
@@ -272,17 +278,6 @@ describe('PartnerCarousel', () => {
       await waitFor(() => {
         const section = container.querySelector('section')
         expect(section).toHaveClass('overflow-hidden')
-      })
-    })
-
-    it('images have lazy loading', async () => {
-      render(<PartnerCarousel />)
-
-      await waitFor(() => {
-        const images = screen.getAllByRole('img')
-        images.forEach(img => {
-          expect(img).toHaveAttribute('loading', 'lazy')
-        })
       })
     })
 
@@ -387,13 +382,13 @@ describe('PartnerCarousel', () => {
       })
     })
 
-    it('RePower Ukraine links to correct URL', async () => {
+    it('POCACITO links to correct URL', async () => {
       render(<PartnerCarousel />)
 
       await waitFor(() => {
-        const repowerLinks = screen.getAllByAltText('RePower Ukraine')
-        const link = repowerLinks[0].closest('a')
-        expect(link).toHaveAttribute('href', 'https://repowerua.org/')
+        const pocacitoLinks = screen.getAllByAltText('POCACITO')
+        const link = pocacitoLinks[0].closest('a')
+        expect(link).toHaveAttribute('href', 'https://www.pocacito.org/')
       })
     })
   })

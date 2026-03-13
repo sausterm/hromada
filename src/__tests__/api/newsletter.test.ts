@@ -45,6 +45,7 @@ describe('POST /api/newsletter', () => {
       id: '1',
       email: 'john@example.com',
       unsubscribed: false,
+      unsubscribeToken: 'token-1',
     })
 
     const request = new NextRequest('http://localhost/api/newsletter', {
@@ -65,6 +66,7 @@ describe('POST /api/newsletter', () => {
     ;(mockPrisma.newsletterSubscriber.upsert as jest.Mock).mockResolvedValue({
       id: '1',
       email: 'john@example.com',
+      unsubscribeToken: 'token-1',
     })
 
     const request = new NextRequest('http://localhost/api/newsletter', {
@@ -81,7 +83,7 @@ describe('POST /api/newsletter', () => {
     expect(mockPrisma.newsletterSubscriber.upsert).toHaveBeenCalledWith({
       where: { email: 'john@example.com' },
       update: { unsubscribed: false },
-      create: { email: 'john@example.com' },
+      create: { email: 'john@example.com', name: null, source: 'website' },
     })
   })
 
@@ -90,6 +92,7 @@ describe('POST /api/newsletter', () => {
     ;(mockPrisma.newsletterSubscriber.upsert as jest.Mock).mockResolvedValue({
       id: '1',
       email: 'new@example.com',
+      unsubscribeToken: 'token-new',
     })
 
     const request = new NextRequest('http://localhost/api/newsletter', {
@@ -100,7 +103,7 @@ describe('POST /api/newsletter', () => {
 
     await POST(request)
 
-    expect(sendNewsletterWelcomeEmail).toHaveBeenCalledWith('new@example.com')
+    expect(sendNewsletterWelcomeEmail).toHaveBeenCalledWith('new@example.com', 'token-new', null)
   })
 
   it('sends welcome email for re-subscribing (previously unsubscribed)', async () => {
@@ -113,6 +116,7 @@ describe('POST /api/newsletter', () => {
       id: '1',
       email: 'returning@example.com',
       unsubscribed: false,
+      unsubscribeToken: 'token-returning',
     })
 
     const request = new NextRequest('http://localhost/api/newsletter', {
@@ -123,7 +127,7 @@ describe('POST /api/newsletter', () => {
 
     await POST(request)
 
-    expect(sendNewsletterWelcomeEmail).toHaveBeenCalledWith('returning@example.com')
+    expect(sendNewsletterWelcomeEmail).toHaveBeenCalledWith('returning@example.com', 'token-returning', null)
   })
 
   it('does not send welcome email for already-subscribed users', async () => {
@@ -136,6 +140,7 @@ describe('POST /api/newsletter', () => {
       id: '1',
       email: 'existing@example.com',
       unsubscribed: false,
+      unsubscribeToken: 'token-existing',
     })
 
     const request = new NextRequest('http://localhost/api/newsletter', {
@@ -248,6 +253,7 @@ describe('POST /api/newsletter', () => {
       id: '1',
       email: 'returning@example.com',
       unsubscribed: false,
+      unsubscribeToken: 'token-returning',
     })
 
     const request = new NextRequest('http://localhost/api/newsletter', {
@@ -264,7 +270,7 @@ describe('POST /api/newsletter', () => {
     expect(mockPrisma.newsletterSubscriber.upsert).toHaveBeenCalledWith({
       where: { email: 'returning@example.com' },
       update: { unsubscribed: false },
-      create: { email: 'returning@example.com' },
+      create: { email: 'returning@example.com', name: null, source: 'website' },
     })
   })
 })

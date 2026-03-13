@@ -166,6 +166,14 @@ jest.mock('@/i18n/navigation', () => ({
   Link: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
     <a href={href} className={className} data-testid={`link-${href}`}>{children}</a>
   ),
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+  }),
+  redirect: jest.fn(),
 }))
 
 // Mock types module
@@ -454,7 +462,7 @@ describe('HomePage', () => {
 
       await waitFor(() => {
         const faqItems = screen.getAllByTestId('faq-item')
-        expect(faqItems.length).toBe(5)
+        expect(faqItems.length).toBe(4)
       })
     })
   })

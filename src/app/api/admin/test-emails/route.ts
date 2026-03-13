@@ -218,7 +218,6 @@ export async function POST(request: NextRequest) {
       region: 'Kyiv Oblast',
       category: 'EDUCATION',
       projectType: 'SOLAR_PV',
-      urgency: 'HIGH',
       briefDescription: 'Install 50kW solar array on school roof to provide energy independence.',
       contactName: 'Olena Kovalenko',
       contactEmail: 'olena@bucha.gov.ua',

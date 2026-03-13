@@ -2,6 +2,13 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ProjectDetailPage from '@/app/[locale]/(public)/projects/[id]/page'
 
+// Mock Prisma (server component imports it transitively)
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    project: { findUnique: jest.fn() },
+  },
+}))
+
 // Mock useParams
 const mockParams = { id: 'test-project-123' }
 jest.mock('next/navigation', () => ({
@@ -267,7 +274,8 @@ describe('ProjectDetailPage', () => {
       render(<ProjectDetailPage />)
 
       await waitFor(() => {
-        expect(screen.getByText('Test Municipality')).toBeInTheDocument()
+        // Municipality name is rendered with region appended (e.g. "Test Municipality, Kyiv Oblast")
+        expect(screen.getByText(/Test Municipality/)).toBeInTheDocument()
       })
     })
 

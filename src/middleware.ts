@@ -39,20 +39,11 @@ const PROTECTED_ROUTES: Record<string, string[]> = {
 // Routes accessible without the site password (after removing locale prefix).
 // Matched by prefix — e.g. '/about' allows '/about/team' too.
 const PUBLIC_ROUTES = [
-  '/',           // Homepage (newsletter signup)
-  '/about',
-  '/projects',   // Browse list only — /projects/[id] requires password below
-  '/contact',
-  '/partner-with-us',
-  '/ofac-policy',
-  '/privacy',
-  '/terms',
-  '/transparency',
-  '/unsubscribe',
-  '/login',
-  '/forgot-password',
   '/site-access',
   '/blocked',
+  '/login',
+  '/forgot-password',
+  '/unsubscribe',
 ];
 
 // Create the internationalization middleware
@@ -174,10 +165,7 @@ export default async function middleware(request: NextRequestWithGeo) {
     return routePath === route || routePath.startsWith(route + '/');
   });
 
-  // Public routes and the /projects list page bypass the password gate,
-  // but individual project pages (/projects/[id]) still require it
-  const isProjectDetailPage = /^\/projects\/[^/]+/.test(routePath) && routePath !== '/projects';
-  const skipPasswordGate = isPublicRoute && !isProjectDetailPage;
+  const skipPasswordGate = isPublicRoute;
 
   if (!skipPasswordGate) {
     const siteAccessCookie = request.cookies.get(AUTH_COOKIE_NAME);

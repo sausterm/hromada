@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 
@@ -226,18 +227,22 @@ export function PressCarousel() {
               }}
               draggable={false}
             >
-              <img
-                src={item.logo}
-                alt={item.name}
-                className={`${(item as any).height || 'h-14'} w-auto object-contain pointer-events-none`}
-                draggable={false}
-              />
+              <div className={`relative ${(item as any).height || 'h-14'} w-40`}>
+                <Image
+                  src={item.logo}
+                  alt={item.name}
+                  fill
+                  sizes="160px"
+                  className="object-contain pointer-events-none"
+                  draggable={false}
+                />
+              </div>
             </a>
           ))}
         </div>
       </div>
 
-      <p className="text-[10px] text-[var(--navy-300)] text-center mt-6 px-4">
+      <p className="text-[10px] text-[var(--navy-500)] text-center mt-6 px-4">
         Logos are trademarks of their respective owners, used to identify coverage of our partners&apos; work.
       </p>
     </section>

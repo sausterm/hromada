@@ -29,6 +29,33 @@ jest.mock('@/lib/prisma', () => ({
       create: jest.fn(),
       findMany: jest.fn(),
     },
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}))
+
+// Mock email
+jest.mock('@/lib/email', () => ({
+  sendProjectSubmissionNotification: jest.fn().mockResolvedValue({ success: true }),
+  sendProjectSubmissionConfirmation: jest.fn().mockResolvedValue({ success: true }),
+}))
+
+// Mock security
+jest.mock('@/lib/security', () => ({
+  detectSuspiciousInput: jest.fn(() => false),
+  logAuditEvent: jest.fn(),
+  AuditAction: { SUSPICIOUS_ACTIVITY: 'SUSPICIOUS_ACTIVITY' },
+  getClientIp: jest.fn(() => '127.0.0.1'),
+  getUserAgent: jest.fn(() => 'test'),
+}))
+
+// Mock rate limiting for submissions route
+jest.mock('@/lib/rate-limit', () => ({
+  rateLimit: jest.fn(() => null),
+  RATE_LIMITS: {
+    contact: { limit: 5, windowSeconds: 60 },
+    projectSubmission: { limit: 5, windowSeconds: 60 },
   },
 }))
 

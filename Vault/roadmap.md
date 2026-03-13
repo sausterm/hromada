@@ -22,7 +22,8 @@ A trusted, transparent platform where donors can discover Ukrainian community pr
 - Tom has relationships with half the POCACITO board — they are actively helping get Hromada going
 - ✅ FSA drafted and reviewed by lawyers (Feb 19)
 - ✅ FSA sent to POCACITO for board review (Feb 20)
-- **Next step:** Board meeting March 27 → signing March 28
+- ✅ FSA amendments needed documented (Mar 7) — signing authority for MoUs, partner vetting, refund policy, audit flow-through
+- **Next step:** Board meeting March 27 → signing March 28. Raise MoU signing authority at board meeting.
 - Bank details (routing, account, SWIFT) available from POCACITO immediately upon FSA signing
 - See: [[specs/fiscal-sponsorship]]
 
@@ -62,7 +63,7 @@ FSA (legal) ──→ Phase 1 (launch) ──→ LAUNCH ──→ Phase 3 (growt
 - [x] PostgreSQL database via Prisma on Supabase
 - [x] Role-based auth (Admin, Partner, Nonprofit Manager, Donor) with JWT sessions
 - [x] Internationalization (EN/UK) with next-intl
-- [x] Interactive Leaflet map with project markers and clustering
+- [x] Interactive Leaflet map with project markers and clustering (MapTiler vector tiles with Ukrainian labels via MapLibre GL)
 - [x] Mobile map view with list/map toggle
 - [x] Project CRUD with admin dashboard
 - [x] Project submission workflow (partner submits → admin approves)
@@ -147,16 +148,28 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 
 #### Partner MoUs
 - [x] Draft Partner MoU template (Feb 2026)
-- [/] EcoAction Ukraine MoU — meeting with Kostia Friday Mar 7, already providing projects #p1
-- [/] Ecoclub Rivne MoU — meeting with Natalia Friday Mar 7 #p1
+- [x] Legal review — 5-domain panel, 15 recommendations implemented (Mar 5-7)
+- [x] EcoAction Ukraine MoU — reviewed with Kostia, at EcoAction board #p1
+- [x] Ecoclub Rivne MoU — reviewed with Natalia, at Ecoclub board #p1
+- [/] Greenpeace Ukraine MoU — call with Polina Kolodiazhna next week #p1
+- [/] MoU signing — not urgent pre-FSA, boards reviewing, Max/Brendan also reviewing #p1
 - [ ] US municipal partnership outreach (sister city programs) #p3
 
 #### Messaging & Storytelling
 - [ ] Core messaging framework (value prop, donor personas, key messages) #p1
+- [x] 1-pager for Scott Sklar — completed in Figma, Mar 8 #p0 @tom
 - [ ] Project storytelling template (before/after, impact metrics) #p1
 - [ ] Launch announcement draft (press release, social media) #p2
 - [ ] Donor testimonial collection process #p2
 - [ ] Case study: first successful project funding #p3
+
+#### Events
+- [/] May 20 — Cannon Congressional Office Building, Room 340 (morning). Booked by Max. Speakers: Lloyd Doggett, Kostia. Natalia attending. Ukrainian mayors. Hopeful: Svitlana Romanko, Clarence Edwards, Romina Bandura. #p1 @tom @max
+
+#### External Partnerships
+- [/] EOPA (Elected Officials to Protect America) — AI energy impact tool, donor network, centrist positioning. Joint call TBD. #p2 @tom
+- [x] Michael Shank — met Mar 11. Wants to intro FCNL head post-soft-launch, circulate press release, get Dear Colleague letter from Doggett to other members. #p1 @tom
+- [/] Scott Sklar — connector to donor networks. Needs 1-pager, then conference call. #p1 @tom
 
 ### Launch Gate — Two Phases
 
@@ -165,6 +178,7 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [ ] Hide/disable donation flow and bank details
 - [ ] Remove POCACITO branding for directory-only mode
 - [ ] Ecoaction projects live and browsable
+- [ ] Bulk project intake — CSV template ready, need upload script #p1
 - [ ] Confirm admin and partner access
 
 **Phase 2: Full launch (~March 28+)** — FSA signed, donations enabled.
@@ -176,7 +190,7 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [ ] Launch messaging ready (announcement, social)
 - [ ] **GO LIVE**
 
-> **Current status (Mar 4):** Security done, email system done. Soft launch as directory ~March 14. POCACITO board meets March 27, FSA signing ~March 28. Full launch days after signing.
+> **Current status (Mar 9):** Security done, email system done, MoUs legally reviewed and at partner boards. All three partners confirmed. 14 projects live with cropped photos. 1-pager for Sklar complete. Soft launch as directory ~March 14. Michael Shank meeting Tue Mar 11. POCACITO board meets March 27, FSA signing ~March 28. Full launch days after signing. May 20 Cannon Building event booked.
 
 ---
 
@@ -225,20 +239,21 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [x] Project update notifications (email + in-app) #p3
 - [x] Donor project timeline page — post-donation progress tracking #p2
 - [ ] Impact reporting with progress photos and before/after #p3
-- [ ] Social sharing for projects #p3
+- [x] Social sharing for projects (ShareButton: Twitter, LinkedIn, Facebook, Email, Copy Link) #p3
 - [ ] Recurring donation support #p3
 - [ ] Donation matching campaigns #p3
 
 ### Performance & Accessibility
-- [ ] Viewport-based map loading (won't scale past ~100 projects) #p1
+- [x] Viewport-based map loading — bounds-based API, client-side region caching, debounced fetch #p1
 - [x] Mobile map view (dual-map pattern with list/map toggle) #p1
-- [ ] Skip-to-content navigation links #p2
-- [/] ARIA labels on all form elements (semantic label associations in place, sparse aria-label attributes) #p2
-- [ ] Keyboard navigation for Leaflet map #p2
-- [ ] Color contrast audit against WCAG 2.1 AA #p3
+- [x] Skip-to-content navigation link — locale-aware, targets `<main id="main-content">` on all pages #p2
+- [x] ARIA labels on all form elements — Input/Textarea auto-add `aria-invalid` + `aria-describedby`, EmailCaptureForm labeled #p2
+- [x] Keyboard navigation for Leaflet map — `role="region"`, `aria-label`, built-in keyboard nav #p2
+- [x] Color contrast audit against WCAG 2.1 AA — 26 failures fixed across public + admin #p3
+- [x] Screen reader testing pass — landmarks, headings, table scope, aria-expanded, role="alert", heading hierarchy #p3
 
 ### Code Quality
-- [ ] Consolidate InquiryForm and ContactForm (near-duplicates) #p2
+- [x] Consolidate InquiryForm and ContactForm (near-duplicates) — InquiryForm deleted #p2
 - [/] Increase test coverage to 85% (currently at ~75%, up from ~63%) #p2
 - [ ] Add E2E tests for browse projects, admin CRUD #p2
 - [x] Fix remaining TypeScript errors (0 errors, `tsc --noEmit` clean) #p3

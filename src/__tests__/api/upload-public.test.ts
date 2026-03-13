@@ -11,19 +11,21 @@ jest.mock('@/lib/rate-limit', () => ({
 }))
 
 // Mock supabase
-const mockStorage = {
-  storage: {
-    from: jest.fn().mockReturnValue({
-      upload: jest.fn(),
-      getPublicUrl: jest.fn(),
-    }),
-  },
-}
-jest.mock('@/lib/supabase', () => ({
-  STORAGE_BUCKET: 'test-bucket',
-  supabase: mockStorage,
-  supabaseAdmin: mockStorage,
-}))
+jest.mock('@/lib/supabase', () => {
+  const mockStorage = {
+    storage: {
+      from: jest.fn().mockReturnValue({
+        upload: jest.fn(),
+        getPublicUrl: jest.fn(),
+      }),
+    },
+  }
+  return {
+    STORAGE_BUCKET: 'test-bucket',
+    supabase: mockStorage,
+    supabaseAdmin: mockStorage,
+  }
+})
 
 import { supabaseAdmin as supabase } from '@/lib/supabase'
 

@@ -35,6 +35,13 @@ This repo includes an Obsidian vault at `Vault/` for project coordination.
 
 When making a significant technical choice, create an ADR in `Vault/decisions/` using the template at `Vault/templates/decision.md`. Number sequentially (002, 003, ...).
 
+## Key People & Partnership Dynamics
+
+- **Michael Shank** — outcome-focused, sector-agnostic. Willing to work with anyone toward the desired result. Connected to FCNL, Lloyd Doggett's office.
+- **Brendan** — leans toward cultural partners.
+- **Max** — leans toward policy partners.
+- Hromada walks the middle ground: we work with anyone — cultural, policy, faith, corporate — toward the shared goal.
+
 ## Donation Model
 
 Hromada does NOT accept partial donations toward projects. Each project is funded as a whole — there is no per-project funding meter or progress bar. The only context where incremental funding tracking may apply is the Municipal Partnership Program.

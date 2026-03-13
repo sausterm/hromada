@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { DocumentaryPhoto } from '@/components/homepage/DocumentaryPhoto'
 import { TimelineEvent } from '@/components/homepage/TimelineEvent'
@@ -39,9 +40,9 @@ export function CaseStudySection() {
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-xs text-[var(--navy-500)]">
                   {t('homepage.caseStudy.partnerLabel')}:
-                  <img src="/partners/EcoactionLogo.png" alt="Ecoaction" className="h-4 w-auto" />
-                  <img src="/partners/EcoclubLogo.png" alt="Ecoclub" className="h-4 w-auto" />
-                  <img src="/partners/greenpeacelogo.png" alt="Greenpeace" className="h-4 w-auto" />
+                  <Image src="/partners/EcoactionLogo.png" alt="Ecoaction" width={64} height={16} className="h-4 w-auto" />
+                  <Image src="/partners/EcoclubLogo.png" alt="Ecoclub" width={64} height={16} className="h-4 w-auto" />
+                  <Image src="/partners/greenpeacelogo.png" alt="Greenpeace" width={64} height={16} className="h-4 w-auto" />
                 </span>
               </div>
               <h3 className="text-2xl font-bold text-[var(--navy-700)] mb-2">

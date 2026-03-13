@@ -31,8 +31,6 @@ jest.mock('next-intl', () => ({
       'submitProject.fields.selectCategory': 'Select Category',
       'submitProject.fields.projectType': 'Project Type',
       'submitProject.fields.selectType': '-- Select Type --',
-      'submitProject.fields.urgency': 'Urgency',
-      'submitProject.fields.selectUrgency': 'Select Urgency',
       'submitProject.fields.briefDescription': 'Brief Description',
       'submitProject.fields.briefDescriptionHelper': 'Short summary (max 150 characters)',
       'submitProject.fields.fullDescription': 'Full Description',
@@ -96,10 +94,6 @@ jest.mock('next-intl', () => ({
       'categories.WATER': 'Water Utility',
       'categories.ENERGY': 'Energy Infrastructure',
       'categories.OTHER': 'Other Infrastructure',
-      'urgency.LOW': 'Low',
-      'urgency.MEDIUM': 'Medium',
-      'urgency.HIGH': 'High',
-      'urgency.CRITICAL': 'Critical',
       'projectTypes.SOLAR_PV': 'Solar PV',
       'projectTypes.HEAT_PUMP': 'Heat Pump',
       'projectTypes.BATTERY_STORAGE': 'Battery Storage',
@@ -217,11 +211,6 @@ describe('SubmitProjectPage', () => {
     it('renders project type dropdown button', () => {
       render(<SubmitProjectPage />)
       expect(screen.getByText('-- Select Type --')).toBeInTheDocument()
-    })
-
-    it('renders urgency dropdown button', () => {
-      render(<SubmitProjectPage />)
-      expect(screen.getByText(/Select Urgency/)).toBeInTheDocument()
     })
 
     it('renders image upload component', () => {
@@ -568,20 +557,6 @@ describe('SubmitProjectPage', () => {
       // The button should now show the selected category
       await waitFor(() => {
         expect(screen.getByText(/Hospital \/ Medical/)).toBeInTheDocument()
-      })
-    })
-
-    it('opens urgency dropdown on hover', async () => {
-      render(<SubmitProjectPage />)
-
-      const urgencyButton = screen.getByText(/Select Urgency/)
-      fireEvent.mouseEnter(urgencyButton.closest('div')!)
-
-      await waitFor(() => {
-        expect(screen.getByText('Low')).toBeInTheDocument()
-        expect(screen.getByText('Medium')).toBeInTheDocument()
-        expect(screen.getByText('High')).toBeInTheDocument()
-        expect(screen.getByText('Critical')).toBeInTheDocument()
       })
     })
 

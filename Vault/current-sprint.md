@@ -7,13 +7,21 @@
 
 ## In Progress
 
-- [/] FSA submission to POCACITO — attorney-reviewed, awaiting board #p0 @tom
-- [/] Partner MoU with EcoAction — template done, finalizing #p1 @tom
+- [/] FSA submission to POCACITO — attorney-reviewed, awaiting board Mar 27 #p0 @tom
+- [x] Partner MoUs — legal review complete, shared with Kostia + Natalia, sent to their boards + Max/Brendan for review #p1 @tom
 - [x] Donor project timeline page — full progress view for funded projects #p1 @tom
+- [x] 1-pager for Scott Sklar — completed in Figma, Mar 8 #p0 @tom
 - [/] 2-pager explainer handout (Figma) #p1 @tom
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
-- [/] Ecoaction project docs in repo (Lychkove + Samar) — needs Sloan review and partner submission #p0 @sloan
+- [/] Ecoaction project docs in repo (Lychkove + Samar) — needs Sloan review and partner submission #p1 @sloan
 - [x] S3 document upload pipeline — staging→production flow for partner PDF submissions #p1 @tom
+- [x] IDP_HOUSING project type — added to Prisma schema, migration, TypeScript types, PROJECT_TYPE_CONFIG, EN/UK translations. Auto-appears in all forms. #p1 @sloan
+- [x] IDP project card styling — purple border + "IDP Community" badge on IDP_HOUSING project cards #p1 @tom
+- [x] Add 12 Ecoaction Tier 2 projects with cropped photos (no docs yet) #p1 @tom
+- [x] Admin dashboard — Partner column in projects table #p2 @tom
+- [x] MapTiler vector tiles with Ukrainian labels — MapLibre GL inside Leaflet container, parallel flyTo sync, cluster click handling, OSM fallback #p1 @tom
+- [x] CSP worker-src for MapLibre GL web workers #p2 @tom
+- [ ] Ask Kostia for original photos to replace Canva crops #p2 @tom
 
 ## To Do
 
@@ -33,17 +41,40 @@
 
 ### Technical
 - [ ] Test full donation flow end-to-end with real bank details #p1 @tom
-- [ ] Move EventBridge cron target back to hromadaproject.org before launch #p1 @tom
+- [x] Move EventBridge cron target back to hromadaproject.org — already pointing there, both domains serve same branch #p1 @tom
 
 ### Pre-Launch
 - [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
 
+### One-Pager Revisions (Shank feedback)
+- [ ] Subheader: change "From Ukrainian communities to American donors" → "Rebuilding Ukraine's communities, together" (less transactional, center communities not donors) #p1 @tom
+- [ ] Energy Security bullet: change "Hard security: hospitals and schools that run during blackouts and grid attacks" → "Energy independence: hospitals and schools that stay powered when the grid goes down" (less political, still motivational) #p1 @tom
+
+### Partner Onboarding
+- [ ] Send Natalia project intake template or form — she needs a good way to enter project info #p1 @tom ← **Tuesday Mar 10**
+
 ### Partnerships & Outreach
-- [ ] EcoAction Ukraine MoU — finalize and sign #p1 @tom
+- [x] EcoAction Ukraine MoU — reviewed with Kostia, sent to board #p1 @tom
+- [x] Ecoclub Rivne MoU — reviewed with Natalia, sent to board #p1 @tom
+- [x] Greenpeace Ukraine — call Mar 12 with Polina Kolodiazhna, Illia Kuksenko, Marine Abramian. Shared one-pager, MoU draft, EOPA link. Confirmation expected by end of next week. All signs positive — Polina is for it. #p1 @tom
+- [ ] EOPA partnership — evaluate, schedule joint call #p2 @tom
+- [x] Michael Shank meeting — Tuesday Mar 11. Wants to intro FCNL head post-soft-launch, circulate press release, get Dear Colleague letter from Doggett to other members #p1 @tom
+- [ ] Draft press release for soft launch — Shank to circulate #p1 @tom
+- [ ] Shank intro to FCNL head — after soft launch #p1 @tom
+- [ ] Dear Colleague letter from Lloyd Doggett — Shank to help coordinate #p1 @tom
+- [ ] Scott Sklar conference call — needs 1-pager first #p1 @tom
 
 ## Done
 
 ### This Sprint (Mar 3–17)
+- [x] Test coverage boost to 75% — 20 new suites, 394 new tests, 4 broken tests fixed #p1 @tom
+- [x] Map fix: 2D Mercator projection + minZoom/maxBounds/worldCopyJump #p1 @tom
+- [x] MoU legal review — 5-domain panel, 15 recommendations implemented in both MoUs #p1 @tom
+- [x] MoU revisions per Tom+Sloan feedback — "promptly" defined, response time 14→7 days, screening timing for post-procurement contractors #p1 @tom
+- [x] FSA amendments documented in Vault/specs/fiscal-sponsorship.md — 4 items for Mar 27 board meeting #p1 @tom
+- [x] Sloan IAM permissions — `Hromada-iam-scoped` policy (create/manage hromada-* roles), dev-delete exception in `Hromada-no-delete` #p1 @tom
+- [x] Partner project CSV template — bilingual headers, for bulk project intake #p2 @tom
+- [x] Doc analyzer Lambda pipeline — confirmed fully deployed (S3 buckets, Lambda, trigger all live) #p1 @sloan
 - [x] Email system fully operational — 10/10 testable emails confirmed working in production #p0 @tom
 - [x] SES credentials for Amplify compute — created IAM user `hromada-ses-sender` with explicit credentials #p0 @tom
 - [x] Fix SES credentials in `ses.ts` (campaign sender) — same Amplify credential issue #p1 @tom
@@ -52,6 +83,13 @@
 - [x] Fix fire-and-forget emails on Amplify — added `await` so Lambda doesn't tear down before send #p1 @tom
 - [x] Fix ADMIN_EMAIL — changed from placeholder `admin@example.com` to real address #p1 @tom
 - [x] Fix newsletter double-logo — removed double `emailLayout` wrapping in campaign sender #p2 @tom
+- [x] MapTiler vector tiles with Ukrainian labels via MapLibre GL — custom map style, parallel flyTo sync, fadeDuration: 0, cluster click handling #p1 @tom
+- [x] CSP update — added worker-src 'self' blob: for MapLibre GL web workers #p2 @tom
+- [x] WCAG color contrast fixes — 26 failures fixed across public + admin pages (navy/gray/category colors darkened) #p2 @tom
+- [x] Screen reader accessibility pass — `<main>` landmarks, `<h1>` on all pages, `scope="col"` on tables, `aria-expanded` on FAQ, `role="alert"` on errors, heading hierarchy fixes #p2 @tom
+- [x] Keyboard navigation for Leaflet map — `role="region"`, `aria-label`, `keyboard={true}` #p2 @tom
+- [x] Skip-to-content navigation link — locale-aware, visually hidden until focused #p2 @tom
+- [x] ARIA labels on form elements — Input/Textarea auto-add `aria-invalid` + `aria-describedby`, EmailCaptureForm labeled #p2 @tom
 - [x] Cofinancing percentage slider on partner submission form — 0-100% range with calculated dollar amount #p2 @tom
 - [x] Partner org multi-select checkboxes — replace free-text input with Ecoaction/Ecoclub Rivne/Greenpeace Ukraine checkboxes + Other #p2 @tom
 - [x] Prisma enum sync — added BATTERY_STORAGE and THERMO_MODERNIZATION to ProjectType #p1 @tom
@@ -106,8 +144,14 @@
 ## Sprint Notes
 
 - **Soft launch target: ~March 14** — matchmaking directory mode, no FSA/POCACITO references, no donation flow. Ecoaction already providing real projects.
-- **FSA signing target: March 28** — POCACITO board meets March 27, signing expected next day
-- **NGO partner meetings Friday (Mar 7):** Kostia (Ecoaction) and Natalia (Ecoclub Rivne) — MoU walkthroughs and expectations.
+- **FSA signing target: March 28** — POCACITO board meets March 27, signing expected next day. **Board is 50/50** per Brendan — 4 members, unanimous required. Brendan + Max pro-Hromada. Felicia (CU Boulder) likely yes. Alexx Baerwald Simard (Johns Hopkins) is the holdout — averse to conflict-adjacent work.
+- **All three partners confirmed** (EcoAction, Ecoclub Rivne, Greenpeace UA). MoUs verbally reviewed with Kostia and Natalia, passed to their boards. MoU signing not urgent — FSA is the real blocker.
+- **Natalia** in group chat, sending headshot + gathering projects next week.
+- **Scott Sklar** interested — needs 1-pager and conference call to present to his network.
+- **Michael Shank** officially advising Hromada as of Mar 10. Added to Signal. Will intro Tom to FCNL head after soft launch, looking at RMI. Wants press release for soft launch. Thinks May 20 should be policy-oriented.
+- **EOPA partnership** under evaluation — Max intro'd, good donor network, centrist positioning, AI impact modeling tool (Aug).
+- **May 20 event** — Cannon Building Room 340 (morning). Max booked. Lloyd Doggett + Kostia speaking, Natalia attending, Ukrainian mayors, hopefully Svitlana Romanko, Clarence Edwards, Romina Bandura.
+- **Sloan IAM** — added `Hromada-iam-scoped` (create/manage `hromada-*` roles) and dev-delete exception to `Hromada-no-delete`.
 - **Email system fully operational** — 10/10 testable emails confirmed working (Mar 4)
   - Tested: #1 (password reset), #5 (newsletter welcome), #6 (Calendly welcome), #7 (partnership inquiry), #9 (submission to admin), #10 (submission confirmation), #11 (project approval), #14 (project rejection), #16 (newsletter campaign)
   - Remaining: #3, #4, #8 (need payment flow), #12, #13, #15 (need specific events)
@@ -127,5 +171,7 @@
 |---------|-------|--------|
 | FSA signing | @tom | POCACITO board meets Mar 27, signing ~Mar 28 |
 | Real bank details | @tom | Blocked by FSA — available immediately upon signing |
-| NGO partner MoUs | @tom | Kostia (Ecoaction) + Natalia (Ecoclub) meetings Friday Mar 7 |
+| NGO partner MoUs | @tom | Verbally reviewed, at partner boards + Max/Brendan. Not urgent pre-FSA. |
+| 1-pager for Sklar | @tom | ✅ Completed Mar 8 |
+| May 20 event prep | @tom @max | Cannon Building booked. Need speaker confirmations, invites, materials. |
 | SES production access | @tom | Must exit sandbox before full launch |

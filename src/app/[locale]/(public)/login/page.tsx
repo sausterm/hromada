@@ -64,7 +64,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--cream-100)] p-4">
+    <main id="main-content" className="min-h-screen flex items-center justify-center bg-[var(--cream-100)] p-4">
+      <h1 className="sr-only">{t('login.title')}</h1>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">{t('login.title')}</CardTitle>
@@ -102,7 +103,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--navy-400)] hover:text-[var(--navy-600)] transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--navy-500)] hover:text-[var(--navy-600)] transition-colors"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
@@ -117,7 +118,7 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
-              {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+              {error && <p role="alert" className="mt-1 text-sm text-red-600">{error}</p>}
             </div>
             <Button type="submit" fullWidth isLoading={isSubmitting}>
               {t('login.loginButton')}
@@ -133,6 +134,6 @@ export default function LoginPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </main>
   )
 }

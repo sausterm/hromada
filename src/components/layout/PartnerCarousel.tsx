@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { usePathname } from '@/i18n/navigation'
 import { useEffect, useRef } from 'react'
@@ -200,13 +201,16 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
               }}
               draggable={false}
             >
-              <img
-                src={partner.logo}
-                alt={partner.name}
-                className={`${isSection ? ((partner as any).sectionHeight || (partner as any).height || 'h-16') : ((partner as any).height || 'h-16')} w-auto object-contain pointer-events-none`}
-                loading="lazy"
-                draggable={false}
-              />
+              <div className={`relative ${isSection ? ((partner as any).sectionHeight || (partner as any).height || 'h-16') : ((partner as any).height || 'h-16')} w-40`}>
+                <Image
+                  src={partner.logo}
+                  alt={partner.name}
+                  fill
+                  sizes="160px"
+                  className="object-contain pointer-events-none"
+                  draggable={false}
+                />
+              </div>
             </a>
           ))}
         </div>

@@ -25,21 +25,23 @@ jest.mock('@/lib/prisma', () => ({
 }))
 
 // Mock Supabase
-const mockStorage = {
-  storage: {
-    from: jest.fn(() => ({
-      upload: jest.fn(),
-      getPublicUrl: jest.fn(),
-      remove: jest.fn(),
-    })),
-  },
-}
-jest.mock('@/lib/supabase', () => ({
-  supabase: mockStorage,
-  supabaseAdmin: mockStorage,
-  isSupabaseConfigured: true,
-  STORAGE_BUCKET: 'project-images',
-}))
+jest.mock('@/lib/supabase', () => {
+  const mockStorage = {
+    storage: {
+      from: jest.fn(() => ({
+        upload: jest.fn(),
+        getPublicUrl: jest.fn(),
+        remove: jest.fn(),
+      })),
+    },
+  }
+  return {
+    supabase: mockStorage,
+    supabaseAdmin: mockStorage,
+    isSupabaseConfigured: true,
+    STORAGE_BUCKET: 'project-images',
+  }
+})
 
 // Mock pdf-extract
 jest.mock('@/lib/pdf-extract', () => ({

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card'
@@ -203,9 +204,11 @@ export function SupportProjectCard({
               className="w-full flex items-center justify-center gap-2 bg-[var(--ukraine-blue)] hover:opacity-90 text-white font-medium py-3 px-4 rounded-lg transition-opacity"
             >
               {t('scheduleCallWith')}
-              <img
+              <Image
                 src="/calendly-logo-white.png"
                 alt="Calendly"
+                width={72}
+                height={18}
                 className="h-[18px] w-auto relative top-[1px]"
               />
             </a>
@@ -235,7 +238,7 @@ export function SupportProjectCard({
               <div className="flex-1">
                 <div className="font-medium text-gray-900 text-sm">{t('methods.wire.title')}</div>
               </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -252,7 +255,7 @@ export function SupportProjectCard({
               <div className="flex-1">
                 <div className="font-medium text-gray-900 text-sm">{t('methods.daf.title')}</div>
               </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -269,7 +272,7 @@ export function SupportProjectCard({
               <div className="flex-1">
                 <div className="font-medium text-gray-900 text-sm">{t('methods.check.title')}</div>
               </div>
-              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>

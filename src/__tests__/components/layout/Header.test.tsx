@@ -482,7 +482,7 @@ describe('Header - Mobile Language Switching', () => {
     jest.clearAllMocks()
   })
 
-  it('primes language on first tap on touch device', () => {
+  it('switches language immediately on single tap (no two-tap prime)', () => {
     // Override matchMedia to simulate touch device
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
@@ -501,34 +501,8 @@ describe('Header - Mobile Language Switching', () => {
     render(<Header />)
     const langButton = screen.getByRole('button', { name: /language/i })
 
-    // First tap should prime (not switch)
+    // Single tap should switch immediately
     fireEvent.click(langButton)
-    expect(mockReplace).not.toHaveBeenCalled()
-  })
-
-  it('switches language on second tap on touch device', () => {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: jest.fn().mockImplementation((query: string) => ({
-        matches: query === '(hover: none)',
-        media: query,
-        onchange: null,
-        addListener: jest.fn(),
-        removeListener: jest.fn(),
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-        dispatchEvent: jest.fn(),
-      })),
-    })
-
-    render(<Header />)
-    const langButton = screen.getByRole('button', { name: /language/i })
-
-    // First tap primes
-    fireEvent.click(langButton)
-    // Second tap confirms
-    fireEvent.click(langButton)
-
     expect(mockReplace).toHaveBeenCalledWith('/', { locale: 'uk' })
   })
 })

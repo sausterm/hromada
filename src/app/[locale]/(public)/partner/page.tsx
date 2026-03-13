@@ -108,7 +108,8 @@ export default function PartnerDashboardPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <main id="main-content" className="container mx-auto px-4 py-8">
+        <h1 className="sr-only">{t('partner.title')}</h1>
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
@@ -165,22 +166,22 @@ export default function PartnerDashboardPage() {
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b">
                     <tr>
-                      <th className="text-left p-4 text-sm font-medium text-gray-500">
+                      <th scope="col" className="text-left p-4 text-sm font-medium text-gray-500">
                         {t('partner.projects.table.facility')}
                       </th>
-                      <th className="text-left p-4 text-sm font-medium text-gray-500">
+                      <th scope="col" className="text-left p-4 text-sm font-medium text-gray-500">
                         {t('partner.projects.table.municipality')}
                       </th>
-                      <th className="text-center p-4 text-sm font-medium text-gray-500">
+                      <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">
                         {t('partner.projects.table.category')}
                       </th>
-                      <th className="text-center p-4 text-sm font-medium text-gray-500">
+                      <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">
                         {t('partner.projects.table.status')}
                       </th>
-                      <th className="text-center p-4 text-sm font-medium text-gray-500">
+                      <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">
                         {t('partner.projects.table.submitted')}
                       </th>
-                      <th className="text-center p-4 text-sm font-medium text-gray-500">
+                      <th scope="col" className="text-center p-4 text-sm font-medium text-gray-500">
                         {t('admin.projects.table.actions')}
                       </th>
                     </tr>
@@ -262,7 +263,7 @@ export default function PartnerDashboardPage() {
             </Card>
           )}
         </div>
-      </div>
+      </main>
     </div>
   )
 }

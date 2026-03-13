@@ -68,29 +68,11 @@ export function Header({ children, transparent = false }: HeaderProps) {
   }, [])
 
   const handleLangClick = () => {
-    // Check if this is a touch device (no hover capability)
-    const isTouchDevice = window.matchMedia('(hover: none)').matches
-
-    if (!isTouchDevice) {
-      // Desktop: switch immediately (hover already previewed the flag)
-      switchLocale(otherLocale)
-      return
-    }
-
-    // Mobile: first tap primes (shows preview), second tap confirms
-    if (isLangPrimed) {
-      // Second tap — confirm the switch
-      if (langPrimeTimerRef.current) clearTimeout(langPrimeTimerRef.current)
-      setIsLangPrimed(false)
-      setIsLangHovered(false)
-      switchLocale(otherLocale)
-    } else {
-      // First tap — prime (flip to show other flag)
-      setIsLangPrimed(true)
-      langPrimeTimerRef.current = setTimeout(() => {
-        setIsLangPrimed(false)
-      }, 3000)
-    }
+    // Switch immediately on any click/tap
+    if (langPrimeTimerRef.current) clearTimeout(langPrimeTimerRef.current)
+    setIsLangPrimed(false)
+    setIsLangHovered(false)
+    switchLocale(otherLocale)
   }
 
   // Flag components that fill the circular button
@@ -384,7 +366,7 @@ export function Header({ children, transparent = false }: HeaderProps) {
                 className="relative w-full h-full transition-transform duration-500 ease-in-out"
                 style={{
                   transformStyle: 'preserve-3d',
-                  transform: (isLangHovered || isLangPrimed) ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                  transform: isLangHovered ? 'rotateY(180deg)' : 'rotateY(0deg)'
                 }}
               >
                 <div

@@ -29,6 +29,7 @@ model Project {
   cofinancingAvailable CofinancingStatus?
   cofinancingDetails   String?
   partnerOrganization  String?
+  isIDP                Boolean             @default(false)
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
   region               String?
@@ -164,7 +165,6 @@ enum ProjectType {
   HEAT_PUMP
   THERMO_MODERNIZATION
   WATER_TREATMENT
-  IDP_HOUSING
   GENERAL
 }
 

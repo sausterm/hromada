@@ -100,6 +100,8 @@ Materials:
 
 ## Municipal Partnerships #p1
 
+- [ ] Sister city matching — lookup table mapping Ukrainian cities to US sister city partners, flag new projects from sister cities for outreach #p1 @tom
+- [ ] Sister city banner on project detail page (e.g. "Kharkiv is a sister city of Cincinnati, OH") #p2
 - [ ] Admin dashboard: partnership inquiry management (list, status, respond) #p1
 - [ ] Partnership matching system (US city ↔ Ukrainian hromada) #p2
 - [ ] Partner onboarding workflow #p2

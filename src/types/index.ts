@@ -8,7 +8,7 @@ export type Urgency = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 export type Status = 'OPEN' | 'IN_DISCUSSION' | 'MATCHED' | 'FULFILLED'
 
 // Project type for renewable energy projects
-export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION' | 'IDP_HOUSING' | 'GENERAL'
+export type ProjectType = 'SOLAR_PV' | 'BATTERY_STORAGE' | 'HEAT_PUMP' | 'THERMO_MODERNIZATION' | 'GENERAL'
 
 // Co-financing availability status
 export type CofinancingStatus = 'YES' | 'NO' | 'NEEDS_CLARIFICATION'
@@ -73,6 +73,7 @@ export interface Project {
   cofinancingAvailable?: CofinancingStatus
   cofinancingDetails?: string
   partnerOrganization?: string
+  isIDP?: boolean
   // Prozorro procurement tracking
   edrpou?: string
   prozorroTenderId?: string
@@ -184,11 +185,6 @@ export const PROJECT_TYPE_CONFIG: Record<ProjectType, { label: string; color: st
     label: 'Thermo-modernization',
     color: '#6A5840',  // Warm taupe (WCAG AA)
     icon: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>'  // Home
-  },
-  IDP_HOUSING: {
-    label: 'IDP Housing',
-    color: '#7B5F9B',  // Dusty purple (WCAG AA)
-    icon: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'  // Users
   },
   GENERAL: {
     label: 'General',

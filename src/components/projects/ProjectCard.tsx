@@ -27,7 +27,7 @@ export function ProjectCard({
   const categoryConfig = CATEGORY_CONFIG[project.category]
   const mainPhoto = project.photos?.[0]
 
-  const isIDP = project.projectType === 'IDP_HOUSING'
+  const isIDP = project.isIDP === true
 
   // Common class names for the card container
   const cardClassName = `group flex flex-col h-full bg-white rounded-xl overflow-hidden card-hover border-2 ${

@@ -46,13 +46,17 @@
 ### Pre-Launch
 - [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
 
+### One-Pager Revisions (Shank feedback)
+- [ ] Subheader: change "From Ukrainian communities to American donors" → "Rebuilding Ukraine's communities, together" (less transactional, center communities not donors) #p1 @tom
+- [ ] Energy Security bullet: change "Hard security: hospitals and schools that run during blackouts and grid attacks" → "Energy independence: hospitals and schools that stay powered when the grid goes down" (less political, still motivational) #p1 @tom
+
 ### Partner Onboarding
 - [ ] Send Natalia project intake template or form — she needs a good way to enter project info #p1 @tom ← **Tuesday Mar 10**
 
 ### Partnerships & Outreach
 - [x] EcoAction Ukraine MoU — reviewed with Kostia, sent to board #p1 @tom
 - [x] Ecoclub Rivne MoU — reviewed with Natalia, sent to board #p1 @tom
-- [/] Greenpeace Ukraine — call Thu Mar 12 10AM ET with Polina + 2 others #p1 @tom
+- [x] Greenpeace Ukraine — call Mar 12 with Polina Kolodiazhna, Illia Kuksenko, Marine Abramian. Shared one-pager, MoU draft, EOPA link. Confirmation expected by end of next week. All signs positive — Polina is for it. #p1 @tom
 - [ ] EOPA partnership — evaluate, schedule joint call #p2 @tom
 - [x] Michael Shank meeting — Tuesday Mar 11. Wants to intro FCNL head post-soft-launch, circulate press release, get Dear Colleague letter from Doggett to other members #p1 @tom
 - [ ] Draft press release for soft launch — Shank to circulate #p1 @tom

@@ -61,11 +61,8 @@ function MapTilerBaseLayer() {
         interactive: false,
         attributionControl: false,
         fadeDuration: 0, // Instant tile appearance — prevents blink on zoom
-      })
-
-      // Force 2D flat — globe projection breaks Leaflet marker positioning.
-      // Must use setProjection() after construction; MapOptions doesn't include it.
-      glMap.setProjection({ type: 'mercator' })
+        projection: { type: 'mercator' }, // Force 2D flat — globe breaks Leaflet marker positioning
+      } as any)
 
       // Leaflet's zoom animation uses CSS cubic-bezier(0, 0, 0.25, 1).
       // GL's default easeTo uses bezier(0.25, 0.1, 0.25, 1) — a different curve.

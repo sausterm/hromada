@@ -5,8 +5,6 @@ import { Footer } from '@/components/layout/Footer'
 jest.mock('next-intl', () => ({
   useTranslations: () => (key: string, params?: Record<string, unknown>) => {
     const translations: Record<string, string> = {
-      fiscalSponsor: 'hromada is a project of',
-      candidSeal: 'Candid Platinum Seal of Transparency',
       terms: 'Terms of Service',
       privacy: 'Privacy Policy',
     }
@@ -49,27 +47,15 @@ describe('Footer', () => {
       expect(screen.getByText(/All rights reserved/)).toBeInTheDocument()
     })
 
-    it('renders fiscal sponsor text', () => {
+    it('does not render POCACITO or fiscal sponsor text (directory mode)', () => {
       render(<Footer />)
-      expect(screen.getByText(/hromada is a project of/)).toBeInTheDocument()
+      expect(screen.queryByText(/POCACITO/)).not.toBeInTheDocument()
+      expect(screen.queryByText(/hromada is a project of/)).not.toBeInTheDocument()
     })
 
-    it('renders POCACITO Network link', () => {
+    it('does not render Candid seal (directory mode)', () => {
       render(<Footer />)
-      const pocacitoLink = screen.getByText('POCACITO Network')
-      expect(pocacitoLink).toBeInTheDocument()
-      expect(pocacitoLink).toHaveAttribute('href', 'https://pocacito.org')
-      expect(pocacitoLink).toHaveAttribute('target', '_blank')
-      expect(pocacitoLink).toHaveAttribute('rel', 'noopener noreferrer')
-    })
-
-    it('renders Candid Platinum Seal link', () => {
-      render(<Footer />)
-      const candidLink = screen.getByText('Candid Platinum Seal of Transparency')
-      expect(candidLink).toBeInTheDocument()
-      expect(candidLink).toHaveAttribute('href', 'https://app.candid.org/profile/16026326/pocacito-network/')
-      expect(candidLink).toHaveAttribute('target', '_blank')
-      expect(candidLink).toHaveAttribute('rel', 'noopener noreferrer')
+      expect(screen.queryByText(/Candid/)).not.toBeInTheDocument()
     })
   })
 
@@ -98,22 +84,10 @@ describe('Footer', () => {
       expect(screen.getByText('Sanctions Policy')).toBeInTheDocument()
     })
 
-    it('does not render About Us link', () => {
+    it('renders exactly three links total', () => {
       render(<Footer />)
-      expect(screen.queryByTestId('link-/about')).not.toBeInTheDocument()
-    })
-
-    it('does not render Contact link', () => {
-      render(<Footer />)
-      expect(screen.queryByTestId('link-/contact')).not.toBeInTheDocument()
-    })
-
-    it('renders exactly five links total', () => {
-      render(<Footer />)
-      // 3 internal navigation links (Terms, Privacy, Sanctions Policy)
-      // + 2 external links (POCACITO Network, Candid Seal)
       const links = screen.getAllByRole('link')
-      expect(links).toHaveLength(5)
+      expect(links).toHaveLength(3)
     })
   })
 

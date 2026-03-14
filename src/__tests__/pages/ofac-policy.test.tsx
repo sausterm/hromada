@@ -14,8 +14,12 @@ describe('OFACPolicyPage', () => {
 
   it('renders the version info', () => {
     render(<OFACPolicyPage />)
-    expect(screen.getAllByText(/POCACITO Network/).length).toBeGreaterThan(0)
     expect(screen.getByText(/Version 1.0/)).toBeInTheDocument()
+  })
+
+  it('does not mention POCACITO by name', () => {
+    render(<OFACPolicyPage />)
+    expect(screen.queryByText(/POCACITO/)).not.toBeInTheDocument()
   })
 
   it('renders section headings', () => {

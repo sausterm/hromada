@@ -15,8 +15,7 @@
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
 - [/] Ecoaction project docs in repo (Lychkove + Samar) — needs Sloan review and partner submission #p1 @sloan
 - [x] S3 document upload pipeline — staging→production flow for partner PDF submissions #p1 @tom
-- [x] IDP_HOUSING project type — added to Prisma schema, migration, TypeScript types, PROJECT_TYPE_CONFIG, EN/UK translations. Auto-appears in all forms. #p1 @sloan
-- [x] IDP project card styling — purple border + "IDP Community" badge on IDP_HOUSING project cards #p1 @tom
+- [x] IDP boolean field + filter toggle — replaced IDP_HOUSING enum with isIDP boolean on Project model, added IDP Community filter chip on projects browse page #p1 @tom
 - [x] Add 12 Ecoaction Tier 2 projects with cropped photos (no docs yet) #p1 @tom
 - [x] Admin dashboard — Partner column in projects table #p2 @tom
 - [x] MapTiler vector tiles with Ukrainian labels — MapLibre GL inside Leaflet container, parallel flyTo sync, cluster click handling, OSM fallback #p1 @tom
@@ -43,7 +42,21 @@
 - [ ] Test full donation flow end-to-end with real bank details #p1 @tom
 - [x] Move EventBridge cron target back to hromadaproject.org — already pointing there, both domains serve same branch #p1 @tom
 
-### Pre-Launch
+### Soft Launch Prep (March 18)
+- [ ] Create LinkedIn company page #p0 @tom
+- [ ] Draft launch post — announce Hromada + mission + first partner Ecoaction + first batch of projects (one combined post) #p0 @tom
+- [ ] Draft press release for soft launch — Shank to review and circulate #p1 @tom
+- [x] Remove site password for open access #p0 @tom
+- [x] Hide/disable donation flow — SupportProjectCard stripped to Calendly CTA only #p0 @tom
+- [x] Remove POCACITO/FSA references — footer, about page, How It Works, privacy policy #p1 @tom
+- [x] Hide Ecoclub/Greenpeace partners — carousel, about, case study, project detail #p1 @tom
+- [x] Remove transparency page and nav link #p1 @tom
+- [x] Remove submit-project page and links #p1 @tom
+- [x] Update How It Works step 4 and promise badge for directory mode #p1 @tom
+- [x] Clean up privacy policy — remove Plaid/Wise, POCACITO fiscal sponsor section #p1 @tom
+- [x] Merge v2-payment-processing into directory-mode (152 files, clean merge) #p0 @tom
+- [ ] Remove SITE_PASSWORD env var from Amplify (via console, NOT CLI) #p0 @tom
+- [ ] Request SES production access (exit sandbox) before launch #p1 @tom
 - [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
 
 ### One-Pager Revisions (Shank feedback)
@@ -52,6 +65,7 @@
 
 ### Partner Onboarding
 - [ ] Send Natalia project intake template or form — she needs a good way to enter project info #p1 @tom ← **Tuesday Mar 10**
+- [ ] Set up Calendly collective event types per partner — each project's "Schedule a Call" links to a collective event checking both Tom's calendar and the partner contact's calendar (Kostia for Ecoaction, Natalia for Ecoclub, Polina for Greenpeace). Partners need free Calendly accounts connected to their personal calendars. Code change: map project's partnerOrganization → partner-specific Calendly URL. #p1 @tom
 
 ### Partnerships & Outreach
 - [x] EcoAction Ukraine MoU — reviewed with Kostia, sent to board #p1 @tom
@@ -67,6 +81,9 @@
 ## Done
 
 ### This Sprint (Mar 3–17)
+- [x] Hide Municipal Partnership Program from header nav for directory mode #p1 @tom
+- [x] CTA button: "How It Works" → "About Us" at bottom of homepage #p2 @tom
+- [x] MapLibre GL projection fix — `as any` cast for constructor, `setProjection()` broke map sync #p1 @tom
 - [x] Test coverage boost to 75% — 20 new suites, 394 new tests, 4 broken tests fixed #p1 @tom
 - [x] Map fix: 2D Mercator projection + minZoom/maxBounds/worldCopyJump #p1 @tom
 - [x] MoU legal review — 5-domain panel, 15 recommendations implemented in both MoUs #p1 @tom
@@ -143,7 +160,7 @@
 
 ## Sprint Notes
 
-- **Soft launch target: ~March 14** — matchmaking directory mode, no FSA/POCACITO references, no donation flow. Ecoaction already providing real projects.
+- **Soft launch: Wednesday March 18, 10am ET** — matchmaking directory mode, no FSA/POCACITO references, no donation flow. Ecoaction listed as first official partner. LinkedIn page + first post at launch.
 - **FSA signing target: March 28** — POCACITO board meets March 27, signing expected next day. **Board is 50/50** per Brendan — 4 members, unanimous required. Brendan + Max pro-Hromada. Felicia (CU Boulder) likely yes. Alexx Baerwald Simard (Johns Hopkins) is the holdout — averse to conflict-adjacent work.
 - **All three partners confirmed** (EcoAction, Ecoclub Rivne, Greenpeace UA). MoUs verbally reviewed with Kostia and Natalia, passed to their boards. MoU signing not urgent — FSA is the real blocker.
 - **Natalia** in group chat, sending headshot + gathering projects next week.
@@ -160,10 +177,31 @@
 - Calendly cron confirmed working via EventBridge (currently targeting demo subdomain)
 - Prozorro integration complete: tender link → ProjectUpdate → donor email → daily polling
 
-## Two-Phase Launch Plan
+## Launch Strategy
 
-1. **Soft launch (~March 14):** Matchmaking directory — browse projects, partner submissions, no payment flow. No mention of FSA or POCACITO. Site password removed or converted to invite list.
-2. **Full launch (~March 28+):** FSA signed, bank details live, donation flow enabled, POCACITO branding restored.
+### Phase 1: Soft Launch — Wednesday March 18, 10am ET
+Matchmaking directory only. No payment processing, no donation flow, no FSA/POCACITO references. Ecoaction listed as first official partner.
+
+**LinkedIn rollout (sequential posts, showing momentum):**
+1. **Launch post** — Announce Hromada and mission. First batch of projects on the site with first official partner, Ecoaction (brief description of Ecoaction and Kostia).
+2. **Ecoclub Rivne post** — When Natalia is ready: second partner announcement + new batch of projects.
+3. **Greenpeace Ukraine post** — Third partner announcement + new batch of projects.
+
+**Press release** around launch — Shank to review and circulate to actual press.
+
+### Phase 2: FSA Announcement — ~End of March
+- POCACITO board meets March 27, signing expected March 28.
+- Post: "Fiscal sponsor secured, payment processing coming soon!"
+
+### Phase 3: Payment Processing Live
+- Merge `v2-payment-processing` branch with real bank details.
+- Post: donation flow is live, projects can now be funded.
+
+### Phase 4: Ongoing Cadence
+- May 20 Cannon Building event announcement (and possibly an April event before then)
+- Newsletter first edition
+- Announcements of projects funded and projects built
+- Event announcements
 
 ## Blockers
 

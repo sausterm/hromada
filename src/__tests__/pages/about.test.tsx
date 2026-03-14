@@ -7,7 +7,7 @@ jest.mock('next-intl', () => ({
     const translations: Record<string, string> = {
       'about.title': 'About Hromada',
       'about.mission': 'Connecting donors with Ukrainian communities.',
-      'about.statementOfPurpose': 'Statement of Purpose',
+      'about.statementOfPurpose': 'What Hromada Is',
       'about.statementOfPurposeText': 'We bridge the gap between American donors and Ukrainian municipalities.',
       'about.browseProjects': 'Browse Projects',
       'about.ourPartners': 'Our Partners',
@@ -17,23 +17,12 @@ jest.mock('next-intl', () => ({
       'about.teamTomRole': 'Co-Founder',
       'about.teamTomBio': 'Bio text.',
       'about.teamKostiaName': 'Kostia K',
-      'about.teamKostiaRole': 'Co-Founder',
+      'about.teamKostiaRole': 'Founding Partner',
       'about.teamKostiaBio': 'Bio text.',
       'about.teamSloanName': 'Sloan A',
       'about.teamSloanRole': 'Engineer',
       'about.teamSloanBio': 'Bio text.',
-      'about.fiscalSponsorTitle': 'Fiscal Sponsor',
-      'about.fiscalSponsorIntro': 'POCACITO Network is our fiscal sponsor.',
-      'about.fiscalSponsorEin': 'EIN: 12-3456789',
-      'about.fiscalSponsorZeroFee': 'Zero fee',
-      'about.fiscalSponsorTaxDeductible': 'Tax-deductible',
-      'about.fiscalSponsorCandid': 'Candid Platinum',
       'about.partnerEcoactionDesc': 'Environmental NGO.',
-      'about.partnerEcoclubDesc': 'Eco club.',
-      'about.partnerRePowerDesc': 'Energy NGO.',
-      'about.partnerGreenpeaceDesc': 'Environmental org.',
-      'about.partnerEnergyActDesc': 'Energy advocacy.',
-      'nav.submitProject': 'Submit a Project',
     }
     return translations[key] || key
   },
@@ -79,7 +68,7 @@ describe('AboutPage', () => {
   describe('Sections', () => {
     it('renders Statement of Purpose section', () => {
       render(<AboutPage />)
-      expect(screen.getByText('Statement of Purpose')).toBeInTheDocument()
+      expect(screen.getByText('What Hromada Is')).toBeInTheDocument()
       expect(screen.getByText(/bridge the gap/)).toBeInTheDocument()
     })
 
@@ -89,11 +78,12 @@ describe('AboutPage', () => {
       expect(screen.getByText('We work with trusted NGOs.')).toBeInTheDocument()
     })
 
-    it('renders partner logos', () => {
+    it('renders only Ecoaction partner logo (directory mode)', () => {
       render(<AboutPage />)
       expect(screen.getByAltText('Ecoaction')).toBeInTheDocument()
-      expect(screen.getByAltText('Ecoclub')).toBeInTheDocument()
-      expect(screen.getByAltText('Greenpeace')).toBeInTheDocument()
+      // Ecoclub and Greenpeace hidden for directory mode
+      expect(screen.queryByAltText('Ecoclub')).not.toBeInTheDocument()
+      expect(screen.queryByAltText('Greenpeace')).not.toBeInTheDocument()
     })
 
     it('renders team section', () => {
@@ -102,10 +92,10 @@ describe('AboutPage', () => {
       expect(screen.getByText('Tom Protzman')).toBeInTheDocument()
     })
 
-    it('renders fiscal sponsor section', () => {
+    it('does not render fiscal sponsor section (directory mode)', () => {
       render(<AboutPage />)
-      expect(screen.getByText('Fiscal Sponsor')).toBeInTheDocument()
-      expect(screen.getByAltText('POCACITO Network')).toBeInTheDocument()
+      expect(screen.queryByText('Fiscal Sponsor')).not.toBeInTheDocument()
+      expect(screen.queryByAltText('POCACITO Network')).not.toBeInTheDocument()
     })
   })
 
@@ -116,10 +106,9 @@ describe('AboutPage', () => {
       expect(screen.getByText('Browse Projects')).toBeInTheDocument()
     })
 
-    it('renders Submit Project link', () => {
+    it('does not render Submit Project link (directory mode)', () => {
       render(<AboutPage />)
-      expect(screen.getByTestId('link-/submit-project')).toBeInTheDocument()
-      expect(screen.getByText('Submit a Project')).toBeInTheDocument()
+      expect(screen.queryByTestId('link-/submit-project')).not.toBeInTheDocument()
     })
   })
 

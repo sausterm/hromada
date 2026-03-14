@@ -42,14 +42,32 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 - [ ] ACH payment method support #p3
 - [ ] Donation matching campaigns #p3
 
-## Soft Launch Prep (Target ~March 14) #p0
+## Soft Launch Prep (Wednesday March 18, 10am ET) #p0
 
-- [ ] Remove site password (or convert to soft-launch invite list) #p0 @tom
-- [ ] Hide/disable donation flow and bank details for directory mode #p0
-- [ ] Remove POCACITO/FSA branding for directory-only mode #p1
+- [ ] Create LinkedIn company page #p0 @tom
+- [ ] Draft launch post — Hromada + mission + Ecoaction as first partner + first projects (one combined post) #p0 @tom
+- [ ] Draft press release for soft launch — Shank to review and circulate #p1 @tom
+- [x] Remove site password for open access #p0 @tom
+- [x] Hide/disable donation flow — SupportProjectCard stripped to Calendly CTA only #p0
+- [x] Remove POCACITO/FSA branding — footer, about, How It Works, privacy policy, locale strings #p1
+- [x] Hide Ecoclub/Greenpeace partners — carousel, about, case study, project detail config #p1
+- [x] Hide Municipal Partnership Program from header nav #p1
+- [x] CTA button: "How It Works" → "About Us" at bottom of homepage #p2
+- [x] Remove transparency page and submit-project page for directory mode #p1
+- [x] Merge v2-payment-processing into directory-mode branch #p0 @tom
 - [/] Ensure Ecoaction projects are submitted, approved, and browsable — Lychkove + Samar docs in repo (Mar 4) #p0 @tom
+- [ ] Remove SITE_PASSWORD env var from Amplify branch (via console, NOT CLI) #p0 @tom
 - [ ] Bulk project upload script — read Partner_Project_Template.csv, create projects via API #p1 @tom
-- [ ] Move EventBridge cron target back to hromadaproject.org #p1 @tom
+- [x] Move EventBridge cron target back to hromadaproject.org #p1 @tom
+
+## Post-Soft-Launch Content Cadence #p1
+
+- [ ] LinkedIn post: Ecoclub Rivne second partner + new batch of projects (when Natalia ready) #p1 @tom
+- [ ] LinkedIn post: Greenpeace Ukraine third partner + new projects #p1 @tom
+- [ ] LinkedIn post: FSA secured, payment processing coming soon (~end of March) #p1 @tom
+- [ ] LinkedIn post: payment processing live, projects can now be funded #p1 @tom
+- [ ] Newsletter first edition #p2 @tom
+- [ ] Project funded / project built announcements #p2 @tom
 
 ## Communications & Outreach #p1
 

@@ -12,7 +12,7 @@ export default function OFACPolicyPage() {
           OFAC Sanctions Compliance Policy
         </h1>
         <p className="text-sm text-[var(--navy-500)] mb-10">
-          Hromada — A Project of POCACITO Network · Version 1.0
+          Hromada · Version 1.0
         </p>
 
         <div className="space-y-10 text-[var(--navy-600)] text-[15px] leading-relaxed">
@@ -23,8 +23,7 @@ export default function OFACPolicyPage() {
               Hromada (&ldquo;the Project&rdquo;) is committed to full compliance with all United States sanctions
               laws and regulations administered by the Office of Foreign Assets Control (&ldquo;OFAC&rdquo;) of the
               U.S. Department of the Treasury. All funds received by the Project originate from U.S. donors
-              through POCACITO Network, a 501(c)(3) tax-exempt organization serving as the Project&rsquo;s fiscal
-              sponsor. All international disbursements are subject to the screening and compliance procedures
+              through a 501(c)(3) tax-exempt fiscal sponsor. All international disbursements are subject to the screening and compliance procedures
               set forth in this policy.
             </p>
           </section>
@@ -42,7 +41,7 @@ export default function OFACPolicyPage() {
                 compliance responsibilities in the event the Project Director is unable to fulfill their duties.
               </li>
               <li>
-                <strong>POCACITO Network, Fiscal Sponsor.</strong> Reviews and approves all disbursements
+                <strong>Fiscal Sponsor.</strong> Reviews and approves all disbursements
                 pursuant to the Fiscal Sponsorship Agreement. Retains authority to suspend any disbursement
                 pending resolution of compliance concerns.
               </li>
@@ -121,7 +120,7 @@ export default function OFACPolicyPage() {
               </li>
               <li>
                 If the match cannot be conclusively resolved as a false positive, the Compliance Officer
-                shall notify POCACITO Network&rsquo;s designated representative within twenty-four (24) hours;
+                shall notify the Fiscal Sponsor&rsquo;s designated representative within twenty-four (24) hours;
               </li>
               <li>
                 No disbursement shall proceed until the Fiscal Sponsor provides written clearance or the
@@ -214,7 +213,7 @@ export default function OFACPolicyPage() {
                 prevent further exposure;
               </li>
               <li>
-                The Compliance Officer shall notify POCACITO Network&rsquo;s designated representative
+                The Compliance Officer shall notify the Fiscal Sponsor&rsquo;s designated representative
                 within twenty-four (24) hours of becoming aware of the potential violation;
               </li>
               <li>

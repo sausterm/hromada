@@ -171,26 +171,52 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 - [x] Michael Shank — met Mar 11. Wants to intro FCNL head post-soft-launch, circulate press release, get Dear Colleague letter from Doggett to other members. #p1 @tom
 - [/] Scott Sklar — connector to donor networks. Needs 1-pager, then conference call. #p1 @tom
 
-### Launch Gate — Two Phases
+### Launch Strategy — Four Phases
 
-**Phase 1: Soft launch (~March 14)** — matchmaking directory, no donation flow, no FSA/POCACITO references.
-- [ ] Remove site password (or convert to soft-launch invite list)
-- [ ] Hide/disable donation flow and bank details
-- [ ] Remove POCACITO branding for directory-only mode
-- [ ] Ecoaction projects live and browsable
-- [ ] Bulk project intake — CSV template ready, need upload script #p1
-- [ ] Confirm admin and partner access
+**Phase 1: Soft launch — Wednesday March 18, 10am ET**
+Matchmaking directory only. No payment processing, no donations, no FSA/POCACITO references. Ecoaction as first official partner.
+- [ ] Create LinkedIn company page #p0 @tom
+- [ ] Draft launch post — Hromada + mission + Ecoaction + first batch of projects (one combined post) #p0 @tom
+- [ ] Draft press release — Shank to review and circulate to actual press #p1 @tom
+- [x] Remove site password for open access #p0 @tom
+- [x] Hide/disable donation flow — Calendly CTA only, payment methods stripped #p0 @tom
+- [x] Remove POCACITO/FSA branding — footer, about, How It Works, privacy policy #p1
+- [x] Hide Ecoclub/Greenpeace partners until their announcement posts #p1
+- [x] Remove transparency page and submit-project page #p1
+- [x] Hide Municipal Partnership Program from nav #p1
+- [x] CTA button: "How It Works" → "About Us" #p2
+- [x] Merge v2-payment-processing into directory-mode #p0 @tom
+- [/] Ecoaction projects live and browsable #p0
+- [ ] Confirm admin and partner access #p1
 
-**Phase 2: Full launch (~March 28+)** — FSA signed, donations enabled.
-- [ ] FSA signed and bank details in hand
+**LinkedIn content cadence (showing momentum):**
+1. Launch post: Hromada + mission + Ecoaction as first partner + first projects
+2. Ecoclub Rivne: second partner + new batch of projects (when Natalia is ready)
+3. Greenpeace Ukraine: third partner + new batch of projects
+4. FSA secured, payment processing coming soon (~end of March)
+5. Payment processing live — projects can now be funded
+6. May 20 Cannon Building event + possibly an April event
+7. Newsletter first edition, project funded/built announcements, event announcements
+
+**Phase 2: FSA announcement (~end of March)**
+- [ ] POCACITO board approves (March 27) and signs FSA (~March 28)
+- [ ] Post: fiscal sponsor secured, payment processing coming soon
+
+**Phase 3: Full launch — payment processing live**
+- [ ] Obtain real bank details from POCACITO
 - [ ] Replace placeholder bank details with real POCACITO info
 - [ ] Restore POCACITO branding
-- [ ] Test donation flow on production URL with real bank details
-- [ ] Confirm nonprofit manager access
-- [ ] Launch messaging ready (announcement, social)
-- [ ] **GO LIVE**
+- [ ] Test donation flow on production with real bank details
+- [ ] Merge `v2-payment-processing`
+- [ ] Post: donation flow is live, projects can now be funded
 
-> **Current status (Mar 9):** Security done, email system done, MoUs legally reviewed and at partner boards. All three partners confirmed. 14 projects live with cropped photos. 1-pager for Sklar complete. Soft launch as directory ~March 14. Michael Shank meeting Tue Mar 11. POCACITO board meets March 27, FSA signing ~March 28. Full launch days after signing. May 20 Cannon Building event booked.
+**Phase 4: Ongoing cadence**
+- [ ] May 20 Cannon Building event (possibly April event before then)
+- [ ] Newsletter first edition
+- [ ] Projects funded and projects built announcements
+- [ ] Event announcements
+
+> **Current status (Mar 14):** Directory mode branch ready. Site password removed, donation UI hidden (Calendly CTA only), POCACITO/FSA references stripped, Ecoclub/Greenpeace hidden until their announcement posts. Transparency and submit-project pages removed. v2-payment-processing merged into directory-mode. Security done, email system done, MoUs at partner boards. All three partners confirmed. 75% test coverage. MapTiler live. Shank advising. Soft launch Wednesday March 18, 10am ET. POCACITO board meets March 27, FSA signing ~March 28. May 20 Cannon Building event booked.
 
 ---
 
@@ -298,8 +324,8 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 | Phase | Focus | Target | Status |
 |-------|-------|--------|--------|
 | **Phase 0** | Foundation (code) | Feb 2026 | ✅ ~95% complete |
-| **Phase 1** | Launch readiness | Mar 2026 | 🔄 ~80% — soft launch ~Mar 14, FSA signing ~Mar 28 |
-| **SOFT LAUNCH** | Directory mode | ~Mar 14 | ⏳ Ecoaction projects ready, no donation flow |
+| **Phase 1** | Launch readiness | Mar 2026 | 🔄 ~85% — soft launch Wed Mar 18, FSA signing ~Mar 28 |
+| **SOFT LAUNCH** | Directory mode | Wed Mar 18 10am ET | ⏳ Ecoaction as first partner, LinkedIn launch, press release |
 | **FULL LAUNCH** | First real donation | ~Mar 28+ | ⏳ Blocked by FSA signing (board meets Mar 27) |
 | **Phase 2** | Automation | Apr–May 2026 | ~20% — Sentry, CSRF, password reset, tax receipts |
 | **Phase 3** | Growth | Jun–Sep 2026 | ~20% — mobile map, donor dashboard, test coverage |

@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { Users, SearchCheck, Megaphone, Heart, Wrench, SolarPanel, type LucideIcon } from 'lucide-react'
+import { Users, SearchCheck, Megaphone, MessageCircle, Wrench, SolarPanel, type LucideIcon } from 'lucide-react'
 
 interface Step {
   number: number
@@ -41,7 +41,7 @@ const STEPS: Step[] = [
     titleKey: 'homepage.howItWorks.step4Title',
     descKey: 'homepage.howItWorks.step4Desc',
     hexColor: '#B5654A',
-    Icon: Heart,
+    Icon: MessageCircle,
   },
   {
     number: 5,
@@ -193,19 +193,6 @@ export function HowItWorksSection() {
               <div className="text-xs text-[var(--navy-500)]">{t('homepage.howItWorks.promiseDesc')}</div>
             </div>
           </div>
-
-          <a
-            href="https://app.candid.org/profile/16026326/pocacito-network/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 bg-white px-6 py-4 rounded-2xl border border-[var(--cream-200)] shadow-lg hover:shadow-xl transition-shadow sm:flex-1"
-          >
-            <Image src="/partners/candidseal.png" alt="Candid Platinum Seal" width={40} height={40} className="w-10 h-10 object-contain flex-shrink-0" />
-            <div className="text-left">
-              <div className="text-[var(--navy-700)] font-semibold text-sm">501(c)(3) Fiscal Sponsor</div>
-              <div className="text-xs text-[var(--navy-500)]">POCACITO Network · Candid Platinum Seal</div>
-            </div>
-          </a>
         </div>
 
         {/* Project Categories */}

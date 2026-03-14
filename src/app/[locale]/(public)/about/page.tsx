@@ -15,10 +15,8 @@ const team = [
 
 const partners = [
   { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/', descKey: 'about.partnerEcoactionDesc' },
-  { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/', descKey: 'about.partnerEcoclubDesc' },
-  // { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/', descKey: 'about.partnerRePowerDesc' },
-  { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/', descKey: 'about.partnerGreenpeaceDesc' },
-  // { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/', descKey: 'about.partnerEnergyActDesc' },
+  // { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/', descKey: 'about.partnerEcoclubDesc' },
+  // { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/', descKey: 'about.partnerGreenpeaceDesc' },
 ]
 
 const mediaItems = [
@@ -97,54 +95,6 @@ export default function AboutPage() {
 
         <hr className="border-[var(--cream-300)] mb-16 w-24 mx-auto" />
 
-        {/* Fiscal Sponsor */}
-        <section className="fade-in-section mb-16">
-          <h2 className="font-logo text-2xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
-            {t('about.fiscalSponsorTitle')}
-          </h2>
-          <p className="text-base leading-relaxed text-[var(--navy-600)] mb-6 text-center max-w-2xl mx-auto">
-            {t('about.fiscalSponsorIntro')}
-          </p>
-
-          <div className="flex justify-center mb-6">
-            <a href="https://www.pocacito.org/" target="_blank" rel="noopener noreferrer">
-              <Image
-                src="/partners/pocacitologo.png"
-                alt="POCACITO Network"
-                width={192}
-                height={48}
-                className="h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
-              />
-            </a>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-4">
-            {[
-              { key: 'about.fiscalSponsorEin' },
-              { key: 'about.fiscalSponsorZeroFee' },
-              { key: 'about.fiscalSponsorTaxDeductible' },
-            ].map((item) => (
-              <span
-                key={item.key}
-                className="inline-flex items-center px-4 py-2 bg-white rounded-full border border-[var(--cream-200)] text-sm text-[var(--navy-600)] font-medium"
-              >
-                {t(item.key)}
-              </span>
-            ))}
-            <a
-              href="https://app.candid.org/profile/16026326/pocacito-network/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-white rounded-full border border-[var(--cream-200)] text-sm text-[var(--navy-600)] font-medium hover:border-[var(--ukraine-blue)] transition-colors"
-            >
-              <Image src="/partners/candidseal.png" alt="Candid Platinum Seal" width={20} height={20} className="w-5 h-5 object-contain" />
-              {t('about.fiscalSponsorCandid')}
-            </a>
-          </div>
-        </section>
-
-        <hr className="border-[var(--cream-300)] mb-16 w-24 mx-auto" />
-
         {/* Partners */}
         <section className="fade-in-section mb-16">
           <h2 className="font-logo text-2xl font-semibold tracking-tight text-[var(--navy-700)] mb-3 text-center">
@@ -214,11 +164,6 @@ export default function AboutPage() {
           <Link href="/projects">
             <Button variant="primary">
               {t('about.browseProjects')}
-            </Button>
-          </Link>
-          <Link href="/submit-project">
-            <Button variant="primary">
-              {t('nav.submitProject')}
             </Button>
           </Link>
         </div>

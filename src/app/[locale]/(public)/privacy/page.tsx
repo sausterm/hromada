@@ -20,7 +20,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">1. Who We Are</h2>
             <p>
-              Hromada is a platform connecting American donors with Ukrainian municipalities for civilian infrastructure rebuilding, with a focus on renewable energy. Hromada operates as a project of POCACITO Network, a 501(c)(3) public charity (EIN 99-0392258) based in Charlottesville, Virginia.
+              Hromada is a platform connecting American donors with Ukrainian municipalities for civilian infrastructure rebuilding, with a focus on renewable energy.
             </p>
             <p className="mt-2">
               For privacy-related inquiries, contact us at{' '}
@@ -32,28 +32,21 @@ export default function PrivacyPage() {
             <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">2. Information We Collect</h2>
 
             <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">Account Information</h3>
-            <p>When you create an account or submit a donation confirmation, we collect your name, email address, and optionally your organization name. Donor accounts are created automatically when you confirm a contribution.</p>
-
-            <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">Donation Information</h3>
-            <p>When you confirm a contribution, we record the amount, payment method (wire transfer, DAF grant, check, or ACH), reference number, and the project you are supporting. This information is used to track your donation through our disbursement process and provide you with status updates.</p>
+            <p>When you create an account, we collect your name, email address, and optionally your organization name.</p>
 
             <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">Contact and Inquiry Forms</h3>
             <p>If you submit a contact form, partnership inquiry, or newsletter signup, we collect the information you provide (name, email, message, and any additional fields on the form).</p>
 
             <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">Technical Data</h3>
-            <p>We collect IP addresses and user agent strings in connection with login attempts, donation submissions, and security events. IP addresses are also checked (but not stored) for geographic access restrictions. We do not use tracking cookies or third-party analytics tools.</p>
+            <p>We collect IP addresses and user agent strings in connection with login attempts, form submissions, and security events. IP addresses are also checked (but not stored) for geographic access restrictions. We do not use tracking cookies or third-party analytics tools.</p>
 
-            <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">Financial Account Data (Planned)</h3>
-            <p>In a future version of the platform, we plan to integrate with Plaid and Wise to automate donation detection and international fund transfers. Plaid will connect to POCACITO Network&apos;s bank account — not to donor bank accounts — to detect incoming wire transfers. Wise will be used to process outbound transfers to Ukrainian municipalities. No donor banking credentials will be collected or stored through these integrations.</p>
           </section>
 
           <section>
             <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">3. How We Use Your Information</h2>
             <ul className="list-disc pl-5 space-y-1.5 mt-2">
-              <li>To process and track your donations from receipt through disbursement to Ukrainian municipalities</li>
-              <li>To create and maintain your donor account and provide access to your donation dashboard</li>
-              <li>To send transactional emails (donation confirmations, status updates, password resets)</li>
-              <li>To issue tax receipts through our fiscal sponsor, POCACITO Network</li>
+              <li>To create and maintain your account</li>
+              <li>To send transactional emails (account confirmations, status updates, password resets)</li>
               <li>To respond to your inquiries and partnership requests</li>
               <li>To comply with U.S. sanctions laws (OFAC) and anti-money laundering regulations</li>
               <li>To detect and prevent fraud, unauthorized access, and other security threats</li>
@@ -74,21 +67,12 @@ export default function PrivacyPage() {
           <section>
             <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">5. Who We Share Your Information With</h2>
 
-            <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">POCACITO Network (Fiscal Sponsor)</h3>
-            <p>As our fiscal sponsor, POCACITO Network receives donor information necessary to issue tax receipts, maintain financial records, and fulfill IRS reporting obligations.</p>
-
             <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">Service Providers</h3>
             <ul className="list-disc pl-5 space-y-1.5 mt-2">
               <li><strong>Supabase</strong> (database and file storage) — Hosts our database and project photo storage on AWS infrastructure.</li>
               <li><strong>Amazon SES</strong> (email delivery) — Processes transactional emails on our behalf. Receives recipient email addresses and email content.</li>
               <li><strong>Sentry</strong> (error monitoring) — Receives technical error data to help us identify and fix bugs. May capture limited session replay data when errors occur.</li>
               <li><strong>AWS Amplify</strong> (hosting) — Hosts the platform. Processes web requests including IP addresses.</li>
-            </ul>
-
-            <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">Planned Integrations</h3>
-            <ul className="list-disc pl-5 space-y-1.5 mt-2">
-              <li><strong>Plaid</strong> — Will access POCACITO Network&apos;s bank account transaction data to detect incoming donations. Does not access donor bank accounts.</li>
-              <li><strong>Wise</strong> — Will process international wire transfers to Ukrainian municipalities. Receives recipient bank details and transfer amounts.</li>
             </ul>
 
             <h3 className="font-semibold text-[var(--navy-700)] mt-4 mb-2">We Do Not</h3>
@@ -124,7 +108,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="font-logo text-xl font-semibold tracking-tight text-[var(--navy-700)] mb-3">8. Data Retention</h2>
             <p>
-              We retain donation records and financial transaction data indefinitely, as required for tax reporting, audit compliance, and OFAC sanctions record-keeping obligations. Account information is retained for as long as your account is active. Contact form submissions and partnership inquiries are retained until they are resolved. You may request deletion of your account by contacting us, subject to our legal retention obligations.
+              Account information is retained for as long as your account is active. Contact form submissions and partnership inquiries are retained until they are resolved. You may request deletion of your account by contacting us, subject to our legal retention obligations.
             </p>
           </section>
 
@@ -163,9 +147,6 @@ export default function PrivacyPage() {
               For questions about this Privacy Policy or your personal data, contact:<br />
               Thomas Protzman<br />
               <a href="mailto:thomas@hromadaproject.org" className="text-[var(--ukraine-blue)] hover:underline">thomas@hromadaproject.org</a>
-            </p>
-            <p className="mt-2 text-sm text-[var(--navy-500)]">
-              Hromada is a project of POCACITO Network, 1004 Fern Ct, Charlottesville, VA 22901.
             </p>
           </section>
         </div>

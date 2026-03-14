@@ -29,8 +29,8 @@ export function FAQSection() {
           <FAQItem question={t('homepage.faq.q4')}>
             {t('homepage.faq.a4')}
           </FAQItem>
-          <FAQItem question={t('homepage.faq.q5')}>
-            {t('homepage.faq.a5')}
+          <FAQItem question={t('homepage.faq.q3')}>
+            {t('homepage.faq.a3')}
           </FAQItem>
         </div>
       </div>

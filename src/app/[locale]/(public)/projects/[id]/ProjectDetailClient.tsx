@@ -32,26 +32,16 @@ const PARTNER_CONFIG: Record<string, { logo: string; url: string; name: string }
     url: 'https://en.ecoaction.org.ua/',
     name: 'NGO Ecoaction',
   },
-  'ecoclub': {
-    logo: '/partners/EcoclubLogo.png',
-    url: 'https://ecoclubrivne.org/en/',
-    name: 'NGO Ecoclub',
-  },
-  // 'energy act': {
-  //   logo: '/partners/energyactukrainelogo.png',
-  //   url: 'https://www.energyactua.com/',
-  //   name: 'Energy Act For Ukraine',
+  // 'ecoclub': {
+  //   logo: '/partners/EcoclubLogo.png',
+  //   url: 'https://ecoclubrivne.org/en/',
+  //   name: 'NGO Ecoclub',
   // },
-  // 'repower': {
-  //   logo: '/partners/RePowerUkraineLogo.png',
-  //   url: 'https://repowerua.org/',
-  //   name: 'RePower Ukraine',
+  // 'greenpeace': {
+  //   logo: '/partners/greenpeacelogo.png',
+  //   url: 'https://www.greenpeace.org/ukraine/en/',
+  //   name: 'Greenpeace Ukraine',
   // },
-  'greenpeace': {
-    logo: '/partners/greenpeacelogo.png',
-    url: 'https://www.greenpeace.org/ukraine/en/',
-    name: 'Greenpeace Ukraine',
-  },
 }
 
 // Helper to find partner config by organization name
@@ -481,7 +471,6 @@ export default function ProjectDetailClient() {
 
           {/* Sidebar - Sticky support card */}
           <div className="lg:sticky lg:top-24 lg:self-start space-y-6">
-            {/* Support This Project */}
             <SupportProjectCard
               projectId={project.id}
               projectName={localized.facilityName}

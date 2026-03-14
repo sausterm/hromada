@@ -25,7 +25,7 @@ export function CTASection() {
           </Link>
           <Link href="/about">
             <Button variant="outline" size="lg" className="min-w-[200px]">
-              {t('homepage.hero.ctaHowItWorks')}
+              {t('nav.aboutUs')}
             </Button>
           </Link>
         </div>

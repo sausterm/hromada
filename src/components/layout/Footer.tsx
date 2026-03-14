@@ -11,19 +11,6 @@ export function Footer() {
     <footer className="bg-[var(--cream-100)] border-t border-[var(--cream-300)] py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center">
-          {/* Fiscal sponsor */}
-          <p className="text-sm text-[var(--navy-500)] mb-3">
-            {t('fiscalSponsor')}{' '}
-            <a href="https://pocacito.org" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
-              POCACITO Network
-            </a>
-            <span className="hidden sm:inline">{' · '}</span>
-            <br className="sm:hidden" />
-            <a href="https://app.candid.org/profile/16026326/pocacito-network/" target="_blank" rel="noopener noreferrer" className="text-[var(--navy-600)] hover:text-[var(--ukraine-blue)] underline transition-colors">
-              {t('candidSeal')}
-            </a>
-          </p>
-
           {/* Links */}
           <div className="flex justify-center gap-6 text-sm flex-wrap">
             <Link

@@ -17,6 +17,11 @@ jest.mock('next-intl', () => ({
   },
 }))
 
+// Mock @/i18n/navigation
+jest.mock('@/i18n/navigation', () => ({
+  usePathname: () => '/projects',
+}))
+
 // Mock requestAnimationFrame
 const originalRAF = global.requestAnimationFrame
 const originalCAF = global.cancelAnimationFrame
@@ -34,11 +39,6 @@ afterEach(() => {
 })
 
 describe('PartnerCarousel', () => {
-  it('renders nothing when hostname is not allowed', () => {
-    // jsdom defaults to localhost, but window.location isn't easily mockable
-    // With localhost it should render
-  })
-
   it('renders partner section on localhost', async () => {
     await act(async () => {
       render(<PartnerCarousel />)
@@ -47,34 +47,33 @@ describe('PartnerCarousel', () => {
     expect(screen.getByText('Our Partners')).toBeInTheDocument()
   })
 
-  it('renders all partner logos (triplicated)', async () => {
+  it('renders only Ecoaction (single partner, directory mode)', async () => {
     await act(async () => {
       render(<PartnerCarousel />)
     })
 
-    // 6 partners x 3 (triplicated) = 18 img elements
     const ecoactionImages = screen.getAllByAltText('Ecoaction')
-    expect(ecoactionImages.length).toBe(3)
+    expect(ecoactionImages.length).toBe(1)
   })
 
-  it('renders partner links', async () => {
+  it('renders single partner link', async () => {
     await act(async () => {
       render(<PartnerCarousel />)
     })
 
     const links = screen.getAllByRole('link')
-    expect(links.length).toBe(12) // 4 partners x 3
+    expect(links.length).toBe(1)
     expect(links[0]).toHaveAttribute('target', '_blank')
     expect(links[0]).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
-  it('renders all partner names', async () => {
+  it('does not render hidden partners', async () => {
     await act(async () => {
       render(<PartnerCarousel />)
     })
 
-    expect(screen.getAllByAltText('Ecoclub').length).toBe(3)
-    expect(screen.getAllByAltText('Greenpeace').length).toBe(3)
-    expect(screen.getAllByAltText('POCACITO').length).toBe(3)
+    expect(screen.queryByAltText('Ecoclub')).not.toBeInTheDocument()
+    expect(screen.queryByAltText('Greenpeace')).not.toBeInTheDocument()
+    expect(screen.queryByAltText('POCACITO')).not.toBeInTheDocument()
   })
 })

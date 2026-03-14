@@ -159,7 +159,6 @@ describe('Header', () => {
         expect(screen.getByText('Project Map')).toBeInTheDocument()
         expect(screen.getByText('About Us')).toBeInTheDocument()
         expect(screen.getByText('Contact')).toBeInTheDocument()
-        expect(screen.getByText('Partner With Us')).toBeInTheDocument()
       })
     })
 

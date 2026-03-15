@@ -132,14 +132,18 @@ export default function ProjectsPage() {
   const cofinancingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const sortTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Helper to handle dropdown open with cancel of pending close (desktop hover only)
+  // Helper to handle dropdown open with delay (desktop hover only)
+  // 300ms delay prevents accidental opens when cursor passes through on the way to the map
   const openDropdown = (setter: (v: boolean) => void, timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>) => {
     if (!window.matchMedia('(hover: hover)').matches) return
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
     }
-    setter(true)
+    timeoutRef.current = setTimeout(() => {
+      setter(true)
+      timeoutRef.current = null
+    }, 300)
   }
 
   // Helper to handle dropdown close with delay (desktop hover only)
@@ -489,13 +493,9 @@ export default function ProjectsPage() {
 
 
               {/* Dropdown panel */}
-              {priceButtonRef.current && (
+              {isPriceDropdownOpen && priceButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
-                    isPriceDropdownOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
+                  className="fixed z-50"
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
                     left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -640,13 +640,9 @@ export default function ProjectsPage() {
                 </svg>
               </button>
 
-              {projectTypeButtonRef.current && (
+              {isProjectTypeOpen && projectTypeButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
-                    isProjectTypeOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
+                  className="fixed z-50"
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
@@ -697,13 +693,9 @@ export default function ProjectsPage() {
 
 
               {/* Dropdown panel */}
-              {powerButtonRef.current && (
+              {isPowerDropdownOpen && powerButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
-                    isPowerDropdownOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
+                  className="fixed z-50"
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -803,13 +795,9 @@ export default function ProjectsPage() {
                 </svg>
               </button>
 
-              {cofinancingButtonRef.current && (
+              {isCofinancingOpen && cofinancingButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
-                    isCofinancingOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
+                  className="fixed z-50"
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,

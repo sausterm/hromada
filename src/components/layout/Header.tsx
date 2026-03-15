@@ -121,8 +121,11 @@ export function Header({ children, transparent = false }: HeaderProps) {
   const isHomepage = pathname === '/'
 
   const handleLogoClick = (targetLocale: Locale) => {
-    if (isHomepage) {
-      // On homepage, just switch language
+    if (isHomepage && targetLocale === locale) {
+      // On homepage in same language, scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else if (isHomepage) {
+      // On homepage, switch language
       switchLocale(targetLocale)
     } else {
       // On other pages, navigate to homepage in that language
@@ -131,8 +134,13 @@ export function Header({ children, transparent = false }: HeaderProps) {
   }
 
   const handleIconClick = () => {
-    // Navigate to homepage in current locale
-    router.push('/', { locale: locale as Locale })
+    if (isHomepage) {
+      // On homepage, scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      // On other pages, navigate to homepage in current locale
+      router.push('/', { locale: locale as Locale })
+    }
   }
 
   return (

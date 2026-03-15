@@ -68,7 +68,7 @@ export function EmailCaptureForm() {
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="px-5 py-2.5 rounded-lg bg-[var(--navy-700)] text-white text-sm font-medium hover:bg-[var(--navy-800)] transition-colors disabled:opacity-50 whitespace-nowrap"
+        className="px-5 py-2.5 rounded-lg bg-[var(--navy-700)] text-white text-sm font-medium hover:bg-[var(--ukraine-blue)] transition-colors disabled:opacity-50 whitespace-nowrap"
       >
         {status === 'loading' ? '...' : t('homepage.cta.emailButton')}
       </button>

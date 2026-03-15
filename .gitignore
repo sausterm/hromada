@@ -55,13 +55,8 @@ logs/
 *.log
 Admin_accessKeys.csv
 
-# Obsidian — user-specific files (vault config is in Vault/.obsidian/)
-Vault/.obsidian/workspace.json
-Vault/.obsidian/workspace-mobile.json
-Vault/.obsidian/plugins/
-Vault/.obsidian/hotkeys.json
-Vault/.obsidian/appearance.json
-Vault/.obsidian/core-plugins-migration.json
+# Obsidian planning vault — local only, not branch-dependent
+Vault/
 
 # Claude Code local state
 .claude/

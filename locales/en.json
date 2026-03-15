@@ -1,6 +1,6 @@
 {
   "partners": {
-    "title": "Our Partners:"
+    "title": "We Work With:"
   },
   "blocked": {
     "title": "Access Restricted",
@@ -166,7 +166,7 @@
       "timeline4Desc": "Modern heating system operational — the hospital can now function even during blackouts",
       "timeline5Date": "Today",
       "timeline5Title": "Stronger than before",
-      "timeline5Desc": "80% lower heating costs, 41% electricity savings — full payback projected within 6–7 years",
+      "timeline5Desc": "80% lower heating costs, 41% electricity savings — energy independent and fully operational",
       "photoCaption2": "The rebuilt clinic now runs on renewable energy, serving Horenka and surrounding villages",
       "photoCaption3": "Completed solar installation on the Horenka hospital — energy independent and fully operational",
       "impactTitle": "Project Impact",
@@ -532,6 +532,8 @@
     "intro": "Every project on Hromada was identified and requested by the community it serves. This page explains how those requests reach you — and how they're verified.",
     "civilianOnlyTitle": "Civilian Infrastructure Only",
     "civilianOnlyText": "Hromada exclusively supports civilian infrastructure — hospitals, schools, water systems, heating modernization, and renewable energy. We do not fund, facilitate, or support any military equipment, dual-use technology, or defense-related projects. Communities are using this platform to rebuild essential services and strengthen energy independence.",
+    "idpTitle": "IDP-Hosting Communities",
+    "idpText": "Many of the municipalities on this platform are hosting large populations of internally displaced people. Infrastructure projects in these communities serve both long-time residents and families who have relocated from frontline areas.",
     "verificationTitle": "Project Verification",
     "verificationText": "Each project is reviewed by NGO partners on the ground in Ukraine before publication. Municipality identity is confirmed, project scope and costs are verified, and documentation is checked for accuracy.",
     "directConnectionTitle": "Where Your Support Goes",

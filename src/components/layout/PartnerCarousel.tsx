@@ -185,12 +185,12 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
               rel="noopener noreferrer"
               className="flex items-center justify-center hover:opacity-70 transition-opacity"
             >
-              <div className={`relative ${isSection ? 'h-16' : 'h-16'} w-40`}>
+              <div className={`relative ${isSection ? 'h-20' : 'h-20'} w-48`}>
                 <Image
                   src={partner.logo}
                   alt={partner.name}
                   fill
-                  sizes="160px"
+                  sizes="192px"
                   className="object-contain"
                 />
               </div>
@@ -235,7 +235,7 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
               }}
               draggable={false}
             >
-              <div className={`relative ${isSection ? ((partner as any).sectionHeight || (partner as any).height || 'h-16') : ((partner as any).height || 'h-16')} w-40`}>
+              <div className={`relative ${isSection ? ((partner as any).sectionHeight || (partner as any).height || 'h-20') : ((partner as any).height || 'h-20')} w-48`}>
                 <Image
                   src={partner.logo}
                   alt={partner.name}

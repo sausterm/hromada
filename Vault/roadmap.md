@@ -175,7 +175,8 @@ Partner ecosystem and messaging strategy. Ecoaction already submitting real proj
 
 **Phase 1: Soft launch — Wednesday March 18, 10am ET**
 Matchmaking directory only. No payment processing, no donations, no FSA/POCACITO references. Ecoaction as first official partner.
-- [ ] Create LinkedIn company page #p0 @tom
+- [x] Create LinkedIn company page #p0 @tom
+- [x] Establish visual direction: navy/cream duotone photos + white hromada wordmark watermark for all social/marketing imagery #p1 @tom
 - [ ] Draft launch post — Hromada + mission + Ecoaction + first batch of projects (one combined post) #p0 @tom
 - [ ] Draft press release — Shank to review and circulate to actual press #p1 @tom
 - [x] Remove site password for open access #p0 @tom

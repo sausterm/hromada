@@ -131,7 +131,7 @@ export function HowItWorksSection() {
   }, [])
 
   return (
-    <section id="how-it-works" className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)]">
+    <section id="how-it-works" className="fade-in-section py-16 md:py-24 bg-[var(--cream-100)] scroll-mt-16">
       <div className="max-w-3xl mx-auto px-4 lg:px-8">
         <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-12 text-center">
           {t('homepage.howItWorks.title')}
@@ -217,6 +217,14 @@ export function HowItWorksSection() {
             ))}
           </ul>
           <div className="mt-6 pt-6 border-t border-[var(--cream-300)] flex items-start gap-2">
+            <svg className="w-4 h-4 text-[#5B8FA8] flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <p className="text-sm leading-relaxed text-[var(--navy-600)]">
+              <strong className="text-[var(--navy-700)]">{t('transparency.idpTitle')}:</strong> {t('transparency.idpText')}
+            </p>
+          </div>
+          <div className="mt-4 flex items-start gap-2">
             <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M10 18v-7" /><path d="M11.12 2.198a2 2 0 0 1 1.76.006l7.866 3.847c.476.233.31.949-.22.949H3.474c-.53 0-.695-.716-.22-.949z" /><path d="M14 18v-7" /><path d="M18 18v-7" /><path d="M3 22h18" /><path d="M6 18v-7" />
             </svg>

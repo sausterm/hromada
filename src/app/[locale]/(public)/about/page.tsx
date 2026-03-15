@@ -69,13 +69,13 @@ export default function AboutPage() {
             {team.map((member) => (
               <div key={member.initials} className="flex items-start gap-5">
                 {member.photo ? (
-                  <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0">
+                  <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0 group">
                     <Image
                       src={member.photo}
                       alt={member.initials}
                       width={96}
                       height={96}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
                 ) : (
@@ -142,14 +142,14 @@ export default function AboutPage() {
                 href={item.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all"
+                className="group flex items-center justify-center p-4 bg-white rounded-lg border border-[var(--cream-200)] hover:border-[var(--cream-400)] hover:shadow-sm transition-all overflow-hidden"
               >
                 <Image
                   src={item.logo}
                   alt={item.name}
                   width={160}
                   height={40}
-                  className="h-10 w-auto object-contain"
+                  className="h-10 w-auto object-contain transition-transform duration-500 group-hover:scale-110"
                 />
               </a>
             ))}

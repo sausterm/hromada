@@ -143,7 +143,7 @@ export default function ProjectsPage() {
     timeoutRef.current = setTimeout(() => {
       setter(true)
       timeoutRef.current = null
-    }, 300)
+    }, 100)
   }
 
   // Helper to handle dropdown close with delay (desktop hover only)

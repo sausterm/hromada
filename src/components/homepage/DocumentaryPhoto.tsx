@@ -20,12 +20,12 @@ export function DocumentaryPhoto({
 
   return (
     <figure className="relative">
-      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[var(--cream-200)]">
+      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-[var(--cream-200)] group">
         <Image
           src={src}
           alt={alt}
           fill
-          className={`object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`object-cover transition-all duration-500 group-hover:scale-105 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setIsLoaded(true)}
           sizes="(max-width: 768px) 100vw, 50vw"
         />

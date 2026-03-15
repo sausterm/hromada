@@ -23,18 +23,6 @@ export default function ContactPage() {
         </p>
 
         <div className="space-y-12">
-          {/* For Municipalities */}
-          <section>
-            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
-              {t('forMunicipalities')}
-            </h2>
-            <p className="text-base leading-relaxed text-[var(--navy-600)] text-center">
-              {t('forMunicipalitiesText')}
-            </p>
-          </section>
-
-          <hr className="border-[var(--cream-300)] w-24 mx-auto" />
-
           {/* For Donors */}
           <section>
             <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">

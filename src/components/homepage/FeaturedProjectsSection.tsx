@@ -45,7 +45,7 @@ export function FeaturedProjectsSection({ projects }: FeaturedProjectsSectionPro
   return (
     <section id="featured-projects" className="fade-in-section py-8 md:py-12 bg-[var(--cream-100)] scroll-mt-20 shadow-[inset_0_8px_12px_-8px_rgba(0,0,0,0.08)]">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-8 text-center sm:text-left">
+        <h2 className="font-logo text-2xl md:text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-8 text-center">
           {t('homepage.featured.title')}
         </h2>
 

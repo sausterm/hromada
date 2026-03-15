@@ -47,7 +47,7 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://hromadaproject.org'),
-    title: 'hromada | Support Ukrainian renewable infrastructure',
+    title: 'Hromada | Support Ukrainian renewable infrastructure',
     description: 'Connect with Ukrainian municipalities to support infrastructure recovery',
     authors: [{ name: 'Thomas D. Protzman' }, { name: 'Sloan Austermann' }],
     creator: 'Hromada Platform',
@@ -59,15 +59,15 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: '/apple-icon.png',
     },
     openGraph: {
-      title: 'hromada | Support Ukrainian renewable infrastructure',
+      title: 'Hromada | Support Ukrainian renewable infrastructure',
       description: 'Connect with Ukrainian municipalities to support renewable infrastructure recovery for hospitals, schools, and essential services.',
-      siteName: 'hromada',
+      siteName: 'Hromada',
       type: 'website',
-      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'hromada' }],
+      images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Hromada' }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'hromada | Support Ukrainian renewable infrastructure',
+      title: 'Hromada | Support Ukrainian renewable infrastructure',
       description: 'Connect with Ukrainian municipalities to support renewable infrastructure recovery.',
       images: ['/og-image.png'],
     },

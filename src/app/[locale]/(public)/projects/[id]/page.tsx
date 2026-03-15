@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     if (!project) {
       return {
-        title: 'Project Not Found | hromada',
+        title: 'Project Not Found | Hromada',
       }
     }
 
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         title: ogTitle,
         description: truncatedDescription,
         type: 'article',
-        siteName: 'hromada',
+        siteName: 'Hromada',
         ...(photoUrl ? {
           images: [{ url: photoUrl, width: 1200, height: 630, alt: title }],
         } : {}),
@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   } catch (error) {
     console.error('Error generating project metadata:', error)
     return {
-      title: 'Project | hromada',
+      title: 'Project | Hromada',
     }
   }
 }

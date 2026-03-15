@@ -497,9 +497,13 @@ export default function ProjectsPage() {
 
 
               {/* Dropdown panel */}
-              {isPriceDropdownOpen && priceButtonRef.current && (
+              {priceButtonRef.current && (
                 <div
-                  className="fixed z-50 animate-dropdown-in"
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                    isPriceDropdownOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
                     left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -644,9 +648,13 @@ export default function ProjectsPage() {
                 </svg>
               </button>
 
-              {isProjectTypeOpen && projectTypeButtonRef.current && (
+              {projectTypeButtonRef.current && (
                 <div
-                  className="fixed z-50 animate-dropdown-in"
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                    isProjectTypeOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
@@ -697,9 +705,13 @@ export default function ProjectsPage() {
 
 
               {/* Dropdown panel */}
-              {isPowerDropdownOpen && powerButtonRef.current && (
+              {powerButtonRef.current && (
                 <div
-                  className="fixed z-50 animate-dropdown-in"
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                    isPowerDropdownOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -799,9 +811,13 @@ export default function ProjectsPage() {
                 </svg>
               </button>
 
-              {isCofinancingOpen && cofinancingButtonRef.current && (
+              {cofinancingButtonRef.current && (
                 <div
-                  className="fixed z-50 animate-dropdown-in"
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                    isCofinancingOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,

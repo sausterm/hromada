@@ -23,26 +23,6 @@ export default function ContactPage() {
         </p>
 
         <div className="space-y-12">
-          {/* For Municipalities */}
-          <section>
-            <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">
-              {t('forMunicipalities')}
-            </h2>
-            <p className="text-base leading-relaxed text-[var(--navy-600)] text-center">
-              {t('forMunicipalitiesText')}
-            </p>
-            <div className="mt-4 flex justify-center">
-              <Link href="/submit-project" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--navy-300)] text-[var(--navy-700)] font-medium hover:bg-[var(--navy-700)] hover:text-white hover:border-[var(--navy-700)] transition-all">
-                {t('forMunicipalitiesAction')}
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-          </section>
-
-          <hr className="border-[var(--cream-300)] w-24 mx-auto" />
-
           {/* For Donors */}
           <section>
             <h2 className="font-logo text-3xl font-semibold tracking-tight text-[var(--navy-700)] mb-4 text-center">

@@ -704,14 +704,10 @@ export default function ProjectsPage() {
               </button>
 
 
-              {/* Dropdown panel */}
-              {powerButtonRef.current && (
+              {/* Dropdown panel — conditionally rendered because the tall slider overlaps map markers */}
+              {isPowerDropdownOpen && powerButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
-                    isPowerDropdownOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
+                  className="fixed z-50 animate-dropdown-in"
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,

@@ -170,10 +170,10 @@ export default function ProjectsPage() {
     setTimeout(() => setter(!current), 0)
   }
 
-  // Close dropdowns when tapping outside the filter bar and sort dropdown
+  // Close dropdowns when clicking/tapping outside the filter bar and sort dropdown
   const filterBarRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const handleTouchOutside = (e: TouchEvent) => {
+    const handleOutside = (e: MouseEvent | TouchEvent) => {
       const target = e.target as Node
       const inFilterBar = filterBarRef.current?.contains(target)
       const inSortDropdown = sortDropdownRef.current?.contains(target)
@@ -181,8 +181,12 @@ export default function ProjectsPage() {
         closeAllDropdowns()
       }
     }
-    document.addEventListener('touchstart', handleTouchOutside)
-    return () => document.removeEventListener('touchstart', handleTouchOutside)
+    document.addEventListener('mousedown', handleOutside)
+    document.addEventListener('touchstart', handleOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleOutside)
+      document.removeEventListener('touchstart', handleOutside)
+    }
   }, [])
 
   // Pagination for card list
@@ -495,7 +499,7 @@ export default function ProjectsPage() {
               {/* Dropdown panel */}
               {isPriceDropdownOpen && priceButtonRef.current && (
                 <div
-                  className="fixed z-50"
+                  className="fixed z-50 animate-dropdown-in"
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
                     left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -642,7 +646,7 @@ export default function ProjectsPage() {
 
               {isProjectTypeOpen && projectTypeButtonRef.current && (
                 <div
-                  className="fixed z-50"
+                  className="fixed z-50 animate-dropdown-in"
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
@@ -695,7 +699,7 @@ export default function ProjectsPage() {
               {/* Dropdown panel */}
               {isPowerDropdownOpen && powerButtonRef.current && (
                 <div
-                  className="fixed z-50"
+                  className="fixed z-50 animate-dropdown-in"
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -797,7 +801,7 @@ export default function ProjectsPage() {
 
               {isCofinancingOpen && cofinancingButtonRef.current && (
                 <div
-                  className="fixed z-50"
+                  className="fixed z-50 animate-dropdown-in"
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,

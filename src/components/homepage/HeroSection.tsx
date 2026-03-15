@@ -88,9 +88,12 @@ export function HeroSection({ totalStats }: HeroSectionProps) {
                 {t('homepage.hero.ctaBrowse')}
               </Button>
             </Link>
-            <Link href="#how-it-works" className="text-white/80 hover:text-white text-sm font-medium underline underline-offset-4 transition-colors">
+            <button
+              onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+              className="text-white/80 hover:text-white text-sm font-medium underline underline-offset-4 transition-colors cursor-pointer"
+            >
               {t('homepage.hero.ctaHowItWorks')}
-            </Link>
+            </button>
           </div>
         </div>
       </div>

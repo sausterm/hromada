@@ -9,7 +9,7 @@ const mediaItems = [
     name: 'Politico',
     logo: '/press/politico.png',
     url: 'https://www.politico.eu/article/ukraine-support-green-recovery-solar-wind-power/',
-    height: 'h-10',
+    height: 'h-14',
   },
   {
     name: 'Mother Jones',
@@ -50,13 +50,13 @@ const mediaItems = [
     name: 'Louisiana Illuminator',
     logo: '/press/louisianailluminator.png',
     url: 'https://lailluminator.com/2025/03/25/ukraine-louisiana/',
-    height: 'h-6',
+    height: 'h-10',
   },
   {
     name: 'Thomson Reuters Foundation',
     logo: '/press/thomsonreuters.png',
     url: 'https://news.trust.org/item/20220412163221-dexaq/',
-    height: 'h-20',
+    height: 'h-24',
   },
 ]
 
@@ -227,12 +227,12 @@ export function PressCarousel() {
               }}
               draggable={false}
             >
-              <div className={`relative ${(item as any).height || 'h-14'} w-40`}>
+              <div className={`relative ${(item as any).height || 'h-18'} w-48`}>
                 <Image
                   src={item.logo}
                   alt={item.name}
                   fill
-                  sizes="160px"
+                  sizes="192px"
                   className="object-contain pointer-events-none"
                   draggable={false}
                 />

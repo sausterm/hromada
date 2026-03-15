@@ -7,11 +7,11 @@ import { useEffect, useRef } from 'react'
 
 const partners = [
   { name: 'Ecoaction', logo: '/partners/EcoactionLogo.png', url: 'https://en.ecoaction.org.ua/' },
-  { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/' },
+  // { name: 'Ecoclub', logo: '/partners/EcoclubLogo.png', url: 'https://ecoclubrivne.org/en/' },
   // { name: 'RePower Ukraine', logo: '/partners/RePowerUkraineLogo.png', url: 'https://repowerua.org/' },
-  { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/' },
+  // { name: 'Greenpeace', logo: '/partners/greenpeacelogo.png', url: 'https://www.greenpeace.org/ukraine/en/' },
   // { name: 'Energy Act For Ukraine', logo: '/partners/energyactukrainelogo.png', url: 'https://www.energyactua.com/', height: 'h-16', sectionHeight: 'h-18' },
-  { name: 'POCACITO', logo: '/partners/pocacitologo.png', url: 'https://www.pocacito.org/' },
+  // { name: 'POCACITO', logo: '/partners/pocacitologo.png', url: 'https://www.pocacito.org/' },
 ]
 
 export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: { hideOnHomepage?: boolean; variant?: 'footer' | 'section' }) {
@@ -167,6 +167,40 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
 
   const isSection = variant === 'section'
 
+  // Single partner: static centered display, no carousel animation
+  if (partners.length <= 1) {
+    return (
+      <section className={`bg-[var(--cream-100)] ${isSection ? 'py-16 md:py-24' : 'py-6 border-t border-[var(--cream-300)]'}`}>
+        <div className={`container mx-auto px-4 ${isSection ? 'mb-8' : 'mb-4'}`}>
+          <h2 className={`text-center font-semibold text-[var(--navy-700)] ${isSection ? 'font-logo text-2xl md:text-3xl tracking-tight' : 'text-lg'}`}>
+            {t('partners.title')}
+          </h2>
+        </div>
+        <div className="flex justify-center">
+          {partners.map((partner) => (
+            <a
+              key={partner.name}
+              href={partner.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center hover:opacity-70 transition-opacity"
+            >
+              <div className={`relative ${isSection ? 'h-20' : 'h-20'} w-48`}>
+                <Image
+                  src={partner.logo}
+                  alt={partner.name}
+                  fill
+                  sizes="192px"
+                  className="object-contain"
+                />
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className={`bg-[var(--cream-100)] overflow-hidden ${isSection ? 'py-16 md:py-24' : 'py-6 border-t border-[var(--cream-300)]'}`}>
       <div className={`container mx-auto px-4 ${isSection ? 'mb-8' : 'mb-4'}`}>
@@ -201,7 +235,7 @@ export function PartnerCarousel({ hideOnHomepage = false, variant = 'footer' }: 
               }}
               draggable={false}
             >
-              <div className={`relative ${isSection ? ((partner as any).sectionHeight || (partner as any).height || 'h-16') : ((partner as any).height || 'h-16')} w-40`}>
+              <div className={`relative ${isSection ? ((partner as any).sectionHeight || (partner as any).height || 'h-20') : ((partner as any).height || 'h-20')} w-48`}>
                 <Image
                   src={partner.logo}
                   alt={partner.name}

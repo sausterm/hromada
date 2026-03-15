@@ -94,7 +94,6 @@ function ImpactCard() {
     { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />, bgColor: 'bg-orange-100', textColor: 'text-orange-600', label: t('homepage.caseStudy.impactHeating') },
     { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />, bgColor: 'bg-yellow-100', textColor: 'text-yellow-600', label: t('homepage.caseStudy.impactElectricity') },
     { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />, bgColor: 'bg-green-100', textColor: 'text-green-600', label: t('homepage.caseStudy.impactCost') },
-    { icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />, bgColor: 'bg-blue-100', textColor: 'text-blue-600', label: t('homepage.caseStudy.impactPayback') },
   ]
 
   return (

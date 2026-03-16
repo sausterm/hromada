@@ -668,10 +668,10 @@ export default function ProjectsPage() {
 
               {isProjectTypeMounted && projectTypeButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                  className={`fixed z-50 ${
                     isProjectTypeOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                      ? 'animate-dropdown-in pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none transition-all duration-200 ease-out'
                   }`}
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
@@ -725,10 +725,10 @@ export default function ProjectsPage() {
               {/* Dropdown panel */}
               {isPowerMounted && powerButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                  className={`fixed z-50 ${
                     isPowerDropdownOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                      ? 'animate-dropdown-in pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none transition-all duration-200 ease-out'
                   }`}
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
@@ -831,10 +831,10 @@ export default function ProjectsPage() {
 
               {isCofinancingMounted && cofinancingButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                  className={`fixed z-50 ${
                     isCofinancingOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                      ? 'animate-dropdown-in pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none transition-all duration-200 ease-out'
                   }`}
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,

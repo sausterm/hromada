@@ -1,6 +1,20 @@
 'use client'
 
-import { useState, useCallback, useMemo, useRef, useEffect, useId } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect, useId, type Dispatch, type SetStateAction } from 'react'
+
+// Keeps element mounted for `delay`ms after closing, allowing fade-out animation
+function useDelayedUnmount(isOpen: boolean, delay = 200) {
+  const [isMounted, setIsMounted] = useState(isOpen)
+  useEffect(() => {
+    if (isOpen) {
+      setIsMounted(true)
+    } else {
+      const timer = setTimeout(() => setIsMounted(false), delay)
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen, delay])
+  return isMounted
+}
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslations, useLocale } from 'next-intl'
 import { useRouter } from '@/i18n/navigation'
@@ -114,6 +128,10 @@ export default function ProjectsPage() {
   const [isProjectTypeOpen, setIsProjectTypeOpen] = useState(false)
   const [isCofinancingOpen, setIsCofinancingOpen] = useState(false)
   const [isSortOpen, setIsSortOpen] = useState(false)
+  const isPriceMounted = useDelayedUnmount(isPriceDropdownOpen)
+  const isPowerMounted = useDelayedUnmount(isPowerDropdownOpen)
+  const isProjectTypeMounted = useDelayedUnmount(isProjectTypeOpen)
+  const isCofinancingMounted = useDelayedUnmount(isCofinancingOpen)
   const priceDropdownId = useId()
   const powerDropdownId = useId()
   const [sortBy, setSortBy] = useState<SortOption>('newest')
@@ -497,9 +515,13 @@ export default function ProjectsPage() {
 
 
               {/* Dropdown panel */}
-              {isPriceDropdownOpen && priceButtonRef.current && (
+              {isPriceMounted && priceButtonRef.current && (
                 <div
-                  className="fixed z-50 animate-dropdown-in"
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                    isPriceDropdownOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,
                     left: priceButtonRef.current.getBoundingClientRect().left + priceButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -644,9 +666,13 @@ export default function ProjectsPage() {
                 </svg>
               </button>
 
-              {isProjectTypeOpen && projectTypeButtonRef.current && (
+              {isProjectTypeMounted && projectTypeButtonRef.current && (
                 <div
-                  className="fixed z-50 animate-dropdown-in"
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                    isProjectTypeOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
@@ -697,9 +723,13 @@ export default function ProjectsPage() {
 
 
               {/* Dropdown panel */}
-              {isPowerDropdownOpen && powerButtonRef.current && (
+              {isPowerMounted && powerButtonRef.current && (
                 <div
-                  className="fixed z-50 animate-dropdown-in"
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                    isPowerDropdownOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: powerButtonRef.current.getBoundingClientRect().bottom,
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
@@ -801,9 +831,13 @@ export default function ProjectsPage() {
                 </svg>
               </button>
 
-              {isCofinancingOpen && cofinancingButtonRef.current && (
+              {isCofinancingMounted && cofinancingButtonRef.current && (
                 <div
-                  className="fixed z-50 animate-dropdown-in"
+                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                    isCofinancingOpen
+                      ? 'opacity-100 translate-y-0 pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                  }`}
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,

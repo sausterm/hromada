@@ -1,4 +1,4 @@
-import { SESClient, SendEmailCommand, SendRawEmailCommand } from '@aws-sdk/client-ses'
+import { providerSendEmail } from '@/lib/email-provider'
 import { sanitizeInput } from '@/lib/security'
 import {
   emailLayout,
@@ -17,21 +17,6 @@ import {
   emailProcessFlow,
 } from '@/lib/email-template'
 
-// Create SES client with explicit credentials (Amplify compute doesn't inherit IAM role)
-const ses = process.env.SES_REGION
-  ? new SESClient({
-      region: process.env.SES_REGION,
-      ...(process.env.SES_ACCESS_KEY_ID && process.env.SES_SECRET_ACCESS_KEY
-        ? {
-            credentials: {
-              accessKeyId: process.env.SES_ACCESS_KEY_ID,
-              secretAccessKey: process.env.SES_SECRET_ACCESS_KEY,
-            },
-          }
-        : {}),
-    })
-  : null
-
 const FROM_DONOR = process.env.SES_FROM_DONOR || 'thomas@hromadaproject.org'
 const FROM_ADMIN = process.env.SES_FROM_ADMIN || 'noreply@hromadaproject.org'
 
@@ -49,23 +34,19 @@ async function sendEmail({
   html: string
   from?: 'donor' | 'admin'
 }): Promise<void> {
-  if (!ses) {
-    throw new Error('SES not configured')
-  }
-
   const fromEmail = from === 'admin' ? FROM_ADMIN : FROM_DONOR
   const fromName = from === 'admin' ? 'Hromada' : 'Thomas at Hromada'
 
-  await ses.send(
-    new SendEmailCommand({
-      Source: `${fromName} <${fromEmail}>`,
-      Destination: { ToAddresses: [to] },
-      Message: {
-        Subject: { Data: subject, Charset: 'UTF-8' },
-        Body: { Html: { Data: html, Charset: 'UTF-8' } },
-      },
-    })
-  )
+  const result = await providerSendEmail({
+    from: `${fromName} <${fromEmail}>`,
+    to,
+    subject,
+    html,
+  })
+
+  if (!result.success) {
+    throw new Error(result.error || 'Failed to send email')
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -101,8 +82,8 @@ export async function sendPasswordResetEmail({
   email,
   code,
 }: PasswordResetEmailParams): Promise<{ success: boolean; error?: string }> {
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping password reset email')
+  if (!process.env.RESEND_API_KEY && !process.env.SES_REGION) {
+    console.warn('Email not configured, skipping password reset email')
     console.log(`[DEV] Password reset code for ${email}: ${code}`)
     return { success: true }
   }
@@ -165,10 +146,6 @@ export async function sendContactNotification({
     return { success: true }
   }
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping email notification')
-    return { success: true }
-  }
 
   try {
     const body = `
@@ -242,10 +219,6 @@ export async function sendDonationReceivedEmail({
   partnerName,
   partnerLogoUrl,
 }: DonationReceivedParams): Promise<{ success: boolean; error?: string }> {
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping donation received email')
-    return { success: true }
-  }
 
   const methodLabel = PAYMENT_LABELS[paymentMethod] || paymentMethod
   const amountText = amount ? `<strong>$${amount.toLocaleString()}</strong> ` : ''
@@ -335,10 +308,6 @@ export async function sendDonationNotificationToAdmin({
     return { success: true }
   }
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping admin notification')
-    return { success: true }
-  }
 
   const methodLabel = PAYMENT_LABELS_TITLE[paymentMethod] || paymentMethod
   const amountDisplay = amount ? `$${amount.toLocaleString()}` : 'Amount to be confirmed'
@@ -401,10 +370,6 @@ export async function sendNewsletterWelcomeEmail(
     : undefined
   const firstName = name ? s(name.split(' ')[0]) : null
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping newsletter welcome email')
-    return { success: true }
-  }
 
   try {
     const greeting = firstName
@@ -494,10 +459,6 @@ export async function sendCalendlyWelcomeEmail(
   unsubscribeToken: string,
   projectName?: string,
 ): Promise<{ success: boolean; error?: string }> {
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping Calendly welcome email')
-    return { success: true }
-  }
 
   try {
     const { subject, html } = buildCalendlyWelcomeEmailHtml(
@@ -555,10 +516,6 @@ export async function sendPartnershipInquiryNotification({
     return { success: true }
   }
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping email notification')
-    return { success: true }
-  }
 
   try {
     const body = `
@@ -644,11 +601,6 @@ export async function sendDonationForwardedEmail({
 }: DonationForwardedParams): Promise<{ success: boolean; error?: string }> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping donation forwarded email')
-    return { success: true }
-  }
-
   const methodLabel = PAYMENT_LABELS[paymentMethod.toLowerCase()] || paymentMethod
   const amountText = ` <strong>$${amount.toLocaleString()}</strong>`
 
@@ -728,38 +680,23 @@ export async function sendDonationForwardedEmail({
     const subject = `Your donation is on its way to Ukraine \u2014 ${s(projectName)}`
     const htmlContent = emailLayout(body, { preheader: 'Your tax receipt is attached.' })
 
-    // Build raw MIME email with PDF attachment
-    const boundary = `----=_Part_${Date.now()}_${Math.random().toString(36).slice(2)}`
-    const pdfBase64 = receiptPdfBuffer.toString('base64')
+    const result = await providerSendEmail({
+      from: `Thomas at Hromada <${FROM_DONOR}>`,
+      to: donorEmail,
+      subject,
+      html: htmlContent,
+      attachments: [
+        {
+          filename: `Hromada_Tax_Receipt_${receiptNumber}.pdf`,
+          content: receiptPdfBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
+    })
 
-    const rawEmail = [
-      `From: Thomas at Hromada <${FROM_DONOR}>`,
-      `To: ${donorEmail}`,
-      `Subject: ${subject}`,
-      'MIME-Version: 1.0',
-      `Content-Type: multipart/mixed; boundary="${boundary}"`,
-      '',
-      `--${boundary}`,
-      'Content-Type: text/html; charset=UTF-8',
-      'Content-Transfer-Encoding: 7bit',
-      '',
-      htmlContent,
-      '',
-      `--${boundary}`,
-      `Content-Type: application/pdf; name="Hromada_Tax_Receipt_${receiptNumber}.pdf"`,
-      'Content-Transfer-Encoding: base64',
-      `Content-Disposition: attachment; filename="Hromada_Tax_Receipt_${receiptNumber}.pdf"`,
-      '',
-      pdfBase64,
-      '',
-      `--${boundary}--`,
-    ].join('\r\n')
-
-    await ses.send(
-      new SendRawEmailCommand({
-        RawMessage: { Data: new TextEncoder().encode(rawEmail) },
-      })
-    )
+    if (!result.success) {
+      throw new Error(result.error || 'Failed to send email')
+    }
 
     return { success: true }
   } catch (error) {
@@ -807,8 +744,8 @@ export async function sendProjectSubmissionNotification({
   const adminEmail = process.env.ADMIN_EMAIL
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-  if (!adminEmail || !ses) {
-    console.warn('ADMIN_EMAIL or SES not configured, skipping submission notification')
+  if (!adminEmail) {
+    console.warn('ADMIN_EMAIL not configured, skipping submission notification')
     return { success: true }
   }
 
@@ -881,10 +818,6 @@ export async function sendProjectSubmissionConfirmation({
   contactEmail,
   facilityName,
 }: ProjectSubmissionConfirmationParams): Promise<{ success: boolean; error?: string }> {
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping submission confirmation email')
-    return { success: true }
-  }
 
   try {
     const body = `
@@ -940,10 +873,6 @@ export async function sendProjectApprovalEmail({
 }: ProjectApprovalParams): Promise<{ success: boolean; error?: string }> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping project approval email')
-    return { success: true }
-  }
 
   try {
     const body = `
@@ -1008,10 +937,6 @@ export async function sendProjectUpdateEmail({
 }: ProjectUpdateEmailParams): Promise<{ success: boolean; error?: string }> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping project update email')
-    return { success: true }
-  }
 
   const prozorroUrl = `https://prozorro.gov.ua/tender/${tenderID}`
 
@@ -1076,8 +1001,8 @@ export async function sendProzorroMatchEmail({
   const adminEmail = process.env.ADMIN_EMAIL
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-  if (!adminEmail || !ses) {
-    console.warn('ADMIN_EMAIL or SES not configured, skipping Prozorro match notification')
+  if (!adminEmail) {
+    console.warn('ADMIN_EMAIL not configured, skipping Prozorro match notification')
     return { success: true }
   }
 
@@ -1137,10 +1062,6 @@ export async function sendProjectRejectionEmail({
   facilityName,
   rejectionReason,
 }: ProjectRejectionParams): Promise<{ success: boolean; error?: string }> {
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping project rejection email')
-    return { success: true }
-  }
 
   try {
     const body = `
@@ -1205,10 +1126,6 @@ export async function sendProjectCompletedEmail({
 }: ProjectCompletedParams): Promise<{ success: boolean; error?: string }> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping project completed email')
-    return { success: true }
-  }
 
   const amountText = amount ? `Your $${amount.toLocaleString()} contribution` : 'Your contribution'
 
@@ -1300,10 +1217,6 @@ export async function sendNewsletterEmail({
   const unsubscribeUrl = `${appUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`
   const firstName = recipientName ? s(recipientName.split(' ')[0]) : null
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping newsletter email')
-    return { success: true }
-  }
 
   try {
     const greeting = firstName ? `<p>Hi ${firstName},</p>` : ''
@@ -1415,10 +1328,6 @@ export async function sendPressReleaseProjectCompleted({
     ? `${appUrl}/api/newsletter/unsubscribe?token=${unsubscribeToken}`
     : undefined
 
-  if (!ses) {
-    console.warn('AWS SES not configured, skipping press release email')
-    return { success: true }
-  }
 
   const locationLine = region
     ? `${s(municipality)}, ${s(region)}, Ukraine`

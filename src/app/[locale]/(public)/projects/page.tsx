@@ -496,7 +496,7 @@ export default function ProjectsPage() {
               </button>
 
 
-              {/* Dropdown panel — conditionally rendered because the tall slider overlaps map markers */}
+              {/* Dropdown panel */}
               {isPriceDropdownOpen && priceButtonRef.current && (
                 <div
                   className="fixed z-50 animate-dropdown-in"
@@ -644,13 +644,9 @@ export default function ProjectsPage() {
                 </svg>
               </button>
 
-              {projectTypeButtonRef.current && (
+              {isProjectTypeOpen && projectTypeButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
-                    isProjectTypeOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
+                  className="fixed z-50 animate-dropdown-in"
                   style={{
                     top: projectTypeButtonRef.current.getBoundingClientRect().bottom,
                     left: projectTypeButtonRef.current.getBoundingClientRect().left,
@@ -700,7 +696,7 @@ export default function ProjectsPage() {
               </button>
 
 
-              {/* Dropdown panel — conditionally rendered because the tall slider overlaps map markers */}
+              {/* Dropdown panel */}
               {isPowerDropdownOpen && powerButtonRef.current && (
                 <div
                   className="fixed z-50 animate-dropdown-in"
@@ -709,6 +705,8 @@ export default function ProjectsPage() {
                     left: powerButtonRef.current.getBoundingClientRect().left + powerButtonRef.current.getBoundingClientRect().width / 2 - 56,
                     paddingTop: '8px',
                   }}
+                  onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
+                  onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}}
                   onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                   onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 >
@@ -803,13 +801,9 @@ export default function ProjectsPage() {
                 </svg>
               </button>
 
-              {cofinancingButtonRef.current && (
+              {isCofinancingOpen && cofinancingButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
-                    isCofinancingOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
-                  }`}
+                  className="fixed z-50 animate-dropdown-in"
                   style={{
                     top: cofinancingButtonRef.current.getBoundingClientRect().bottom,
                     left: cofinancingButtonRef.current.getBoundingClientRect().left,

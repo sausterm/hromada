@@ -517,10 +517,10 @@ export default function ProjectsPage() {
               {/* Dropdown panel */}
               {isPriceMounted && priceButtonRef.current && (
                 <div
-                  className={`fixed z-50 transition-all duration-200 ease-out ${
+                  className={`fixed z-50 ${
                     isPriceDropdownOpen
-                      ? 'opacity-100 translate-y-0 pointer-events-auto'
-                      : 'opacity-0 -translate-y-2 pointer-events-none'
+                      ? 'animate-dropdown-in pointer-events-auto'
+                      : 'opacity-0 -translate-y-2 pointer-events-none transition-all duration-200 ease-out'
                   }`}
                   style={{
                     top: priceButtonRef.current.getBoundingClientRect().bottom,

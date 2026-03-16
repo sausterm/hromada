@@ -736,8 +736,6 @@ export default function ProjectsPage() {
                     paddingTop: '8px',
                   }}
                   onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
-                  onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}}
-                  onMouseEnter={() => openDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                   onMouseLeave={() => closeDropdown(setIsPowerDropdownOpen, powerTimeoutRef)}
                 >
                   <div

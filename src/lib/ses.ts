@@ -1,36 +1,11 @@
-import {
-  SESv2Client,
-  SendEmailCommand,
-  SendBulkEmailCommand,
-  type BulkEmailEntry,
-} from '@aws-sdk/client-sesv2'
+/**
+ * Campaign/bulk email service.
+ * Routes through email-provider abstraction (Resend or SES).
+ */
 
-const SES_REGION = process.env.SES_REGION || 'us-east-1'
+import { providerSendEmail, providerSendBulkEmail } from '@/lib/email-provider'
+
 const FROM_ADDRESS = 'Hromada <noreply@hromadaproject.org>'
-
-let client: SESv2Client | null = null
-
-function getClient(): SESv2Client | null {
-  if (client) return client
-
-  try {
-    client = new SESv2Client({
-      region: SES_REGION,
-      ...(process.env.SES_ACCESS_KEY_ID && process.env.SES_SECRET_ACCESS_KEY
-        ? {
-            credentials: {
-              accessKeyId: process.env.SES_ACCESS_KEY_ID,
-              secretAccessKey: process.env.SES_SECRET_ACCESS_KEY,
-            },
-          }
-        : {}),
-    })
-    return client
-  } catch (error) {
-    console.warn('Failed to initialize SES client:', error)
-    return null
-  }
-}
 
 export interface SendEmailParams {
   to: string | string[]
@@ -53,43 +28,14 @@ export async function sendEmail({
   from,
   replyTo,
 }: SendEmailParams): Promise<SendEmailResult> {
-  const ses = getClient()
-  if (!ses) {
-    console.warn('SES client not available, skipping email send')
-    return { success: true }
-  }
-
-  const toAddresses = Array.isArray(to) ? to : [to]
-
-  try {
-    const result = await ses.send(
-      new SendEmailCommand({
-        FromEmailAddress: from || FROM_ADDRESS,
-        Destination: { ToAddresses: toAddresses },
-        ReplyToAddresses: replyTo,
-        Content: {
-          Simple: {
-            Subject: { Data: subject, Charset: 'UTF-8' },
-            Body: {
-              Html: { Data: html, Charset: 'UTF-8' },
-            },
-          },
-        },
-      })
-    )
-
-    return { success: true, messageId: result.MessageId }
-  } catch (error) {
-    console.error('SES sendEmail failed:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Failed to send email',
-    }
-  }
+  return providerSendEmail({
+    from: from || FROM_ADDRESS,
+    to,
+    subject,
+    html,
+    replyTo,
+  })
 }
-
-const BULK_BATCH_SIZE = 50
-const BATCH_DELAY_MS = 200
 
 export interface BulkEmailRecipient {
   to: string
@@ -114,71 +60,10 @@ export async function sendBulkEmail({
   html: string
   from?: string
 }): Promise<BulkSendResult> {
-  const ses = getClient()
-  if (!ses) {
-    console.warn('SES client not available, skipping bulk email send')
-    return { total: recipients.length, sent: 0, failed: 0, errors: [] }
-  }
-
-  const result: BulkSendResult = {
-    total: recipients.length,
-    sent: 0,
-    failed: 0,
-    errors: [],
-  }
-
-  // Process in batches of 50 (SES bulk limit)
-  for (let i = 0; i < recipients.length; i += BULK_BATCH_SIZE) {
-    const batch = recipients.slice(i, i + BULK_BATCH_SIZE)
-
-    const entries: BulkEmailEntry[] = batch.map((r) => ({
-      Destination: { ToAddresses: [r.to] },
-    }))
-
-    try {
-      const response = await ses.send(
-        new SendBulkEmailCommand({
-          FromEmailAddress: from || FROM_ADDRESS,
-          DefaultContent: {
-            Template: {
-              TemplateData: JSON.stringify({}),
-              TemplateContent: {
-                Subject: subject,
-                Html: html,
-              },
-            },
-          },
-          BulkEmailEntries: entries,
-        })
-      )
-
-      if (response.BulkEmailEntryResults) {
-        response.BulkEmailEntryResults.forEach((entry, idx) => {
-          if (entry.Status === 'SUCCESS') {
-            result.sent++
-          } else {
-            result.failed++
-            result.errors.push({
-              to: batch[idx].to,
-              error: entry.Error || 'Unknown error',
-            })
-          }
-        })
-      }
-    } catch (error) {
-      // Entire batch failed
-      result.failed += batch.length
-      const errorMsg = error instanceof Error ? error.message : 'Batch send failed'
-      batch.forEach((r) => {
-        result.errors.push({ to: r.to, error: errorMsg })
-      })
-    }
-
-    // Rate-limit between batches
-    if (i + BULK_BATCH_SIZE < recipients.length) {
-      await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS))
-    }
-  }
-
-  return result
+  return providerSendBulkEmail({
+    recipients,
+    subject,
+    html,
+    from: from || FROM_ADDRESS,
+  })
 }

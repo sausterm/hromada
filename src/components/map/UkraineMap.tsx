@@ -218,10 +218,14 @@ const UKRAINE_ZOOM = 6
 // Store previous view for restoring after popup close
 let savedMapView: { center: [number, number]; zoom: number } | null = null
 
-// Create custom icon for each category
-function createCategoryIcon(category: Category): L.DivIcon {
+// IDP community marker color
+const IDP_COLOR = '#7C3AED' // purple-600
+
+// Create custom icon for each category, optionally with IDP purple override
+function createCategoryIcon(category: Category, isIDP = false): L.DivIcon {
   const config = CATEGORY_CONFIG[category]
   const size = 36
+  const bgColor = isIDP ? IDP_COLOR : config.color
 
   return L.divIcon({
     className: 'custom-marker-wrapper',
@@ -235,7 +239,7 @@ function createCategoryIcon(category: Category): L.DivIcon {
         border-radius: 50%;
         border: 2px solid white;
         box-shadow: 0 3px 12px rgba(58, 54, 51, 0.25);
-        background-color: ${config.color};
+        background-color: ${bgColor};
       ">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; display: block;">
           ${config.icon}
@@ -255,6 +259,15 @@ const categoryIcons: Record<Category, L.DivIcon> = {
   WATER: createCategoryIcon('WATER'),
   ENERGY: createCategoryIcon('ENERGY'),
   OTHER: createCategoryIcon('OTHER'),
+}
+
+// Pre-create IDP (purple) icons for each category
+const idpCategoryIcons: Record<Category, L.DivIcon> = {
+  HOSPITAL: createCategoryIcon('HOSPITAL', true),
+  SCHOOL: createCategoryIcon('SCHOOL', true),
+  WATER: createCategoryIcon('WATER', true),
+  ENERGY: createCategoryIcon('ENERGY', true),
+  OTHER: createCategoryIcon('OTHER', true),
 }
 
 // Create cluster icon with count
@@ -701,7 +714,7 @@ const ProjectMarkers = memo(function ProjectMarkers({
           <Marker
             key={project.id}
             position={position}
-            icon={categoryIcons[project.category]}
+            icon={project.isIDP ? idpCategoryIcons[project.category] : categoryIcons[project.category]}
             ref={(ref) => {
               if (ref) {
                 markerRefs.current[project.id] = ref

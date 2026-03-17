@@ -126,6 +126,7 @@ export async function PATCH(
           cofinancingAvailable: submission.cofinancingAvailable as any || null,
           cofinancingDetails: submission.cofinancingDetails,
           partnerOrganization: submission.partnerOrganization,
+          region: submission.region,
           edrpou: submission.edrpou,
           // Ukrainian translations
           municipalityNameUk: ukrainianTranslations.municipalityNameUk,

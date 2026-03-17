@@ -219,7 +219,7 @@ const UKRAINE_ZOOM = 6
 let savedMapView: { center: [number, number]; zoom: number } | null = null
 
 // IDP community marker color
-const IDP_COLOR = '#7C3AED' // purple-600
+const IDP_COLOR = '#7B5F9B' // dusty purple — matches IDP card border
 
 // Create custom icon for each category, optionally with IDP purple override
 function createCategoryIcon(category: Category, isIDP = false): L.DivIcon {

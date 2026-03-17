@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link, useRouter } from '@/i18n/navigation'
 import { useAuth } from '@/hooks/useAuth'
@@ -229,6 +229,15 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
   })
   const [userFormError, setUserFormError] = useState('')
   const [isSubmittingUser, setIsSubmittingUser] = useState(false)
+
+  // Inline toast notifications (replaces browser alert() calls)
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const showToast = useCallback((type: 'success' | 'error', text: string) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    setToast({ type, text })
+    toastTimerRef.current = setTimeout(() => setToast(null), 3000)
+  }, [])
 
   // Fetch projects from API
   useEffect(() => {
@@ -661,7 +670,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
         setUsers((prev) => [data.user, ...prev])
         setShowUserForm(false)
         setUserFormData({ name: '', email: '', password: '', organization: '', role: 'PARTNER' })
-        alert(t('users.createSuccess'))
+        showToast('success', t('users.createSuccess'))
       } else {
         const data = await response.json()
         setUserFormError(data.error || 'Failed to create user')
@@ -702,7 +711,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
         setEditingUser(null)
         setShowUserForm(false)
         setUserFormData({ name: '', email: '', password: '', organization: '', role: 'PARTNER' })
-        alert(t('users.updateSuccess'))
+        showToast('success', t('users.updateSuccess'))
       } else {
         const data = await response.json()
         setUserFormError(data.error || 'Failed to update user')
@@ -725,7 +734,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
 
       if (response.ok) {
         setUsers((prev) => prev.filter((u) => u.id !== userId))
-        alert(t('users.deleteSuccess'))
+        showToast('success', t('users.deleteSuccess'))
       }
     } catch (error) {
       console.error('Failed to delete user:', error)
@@ -771,14 +780,14 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
           setProjects(projectsData.projects.map(transformProject))
         }
         setSelectedSubmission(null)
-        alert(t('admin.submissions.approveSuccess'))
+        showToast('success', t('admin.submissions.approveSuccess'))
       } else {
         const data = await response.json()
-        alert(data.error || t('admin.submissions.approveSuccess'))
+        showToast('error', data.error || 'Failed to approve submission')
       }
     } catch (error) {
       console.error('Failed to approve submission:', error)
-      alert(t('admin.submissions.approveSuccess'))
+      showToast('error', 'Failed to approve submission')
     } finally {
       setIsProcessing(false)
     }
@@ -786,7 +795,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
 
   const handleRejectSubmission = async (submissionId: string) => {
     if (!rejectionReason.trim()) {
-      alert(t('admin.submissions.provideReason'))
+      showToast('error', t('admin.submissions.provideReason'))
       return
     }
     setIsProcessing(true)
@@ -812,14 +821,14 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
         )
         setSelectedSubmission(null)
         setRejectionReason('')
-        alert(t('admin.submissions.rejectSuccess'))
+        showToast('success', t('admin.submissions.rejectSuccess'))
       } else {
         const data = await response.json()
-        alert(data.error || t('admin.submissions.rejectSuccess'))
+        showToast('error', data.error || 'Failed to reject submission')
       }
     } catch (error) {
       console.error('Failed to reject submission:', error)
-      alert(t('admin.submissions.rejectSuccess'))
+      showToast('error', 'Failed to reject submission')
     } finally {
       setIsProcessing(false)
     }
@@ -1035,9 +1044,9 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
       const failedCount = results.filter((r) => !r.ok).length
 
       if (failedCount > 0) {
-        alert(t('admin.projects.bulkDeletePartialFail', { failed: failedCount, total: selectedProjectIds.size }))
+        showToast('error', t('admin.projects.bulkDeletePartialFail', { failed: failedCount, total: selectedProjectIds.size }))
       } else {
-        alert(t('admin.projects.bulkDeleteSuccess', { count: selectedProjectIds.size }))
+        showToast('success', t('admin.projects.bulkDeleteSuccess', { count: selectedProjectIds.size }))
       }
 
       // Remove deleted projects from state
@@ -1045,7 +1054,7 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
       clearSelection()
     } catch (error) {
       console.error('Bulk delete failed:', error)
-      alert(t('admin.projects.bulkDeleteFail'))
+      showToast('error', t('admin.projects.bulkDeleteFail'))
     } finally {
       setIsDeleting(false)
     }
@@ -1079,6 +1088,27 @@ function Dashboard({ onLogout, userName }: { onLogout: () => void; userName?: st
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* Inline toast notification */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div
+            className={`rounded-lg px-4 py-3 shadow-lg text-sm font-medium flex items-center gap-2 ${
+              toast.type === 'success'
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : 'bg-red-50 text-red-800 border border-red-200'
+            }`}
+          >
+            <span>{toast.type === 'success' ? '\u2713' : '\u2717'}</span>
+            <span>{toast.text}</span>
+            <button
+              onClick={() => setToast(null)}
+              className="ml-2 text-current opacity-50 hover:opacity-100"
+            >
+              \u00d7
+            </button>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">

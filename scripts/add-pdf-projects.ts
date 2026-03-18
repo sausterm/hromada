@@ -228,7 +228,7 @@ async function main() {
       const fullDesc = `Solar photovoltaic system installation for ${proj.object} in ${municipalityName}.
 
 Technical specifications:
-• Theoretical power: ${proj.powerKw} kW${(proj as any).dcPower ? ' (DC)' : ''}
+• Theoretical power: ${proj.powerKw} kW${('dcPower' in proj && proj.dcPower) ? ' (DC)' : ''}
 • Number of 540W panels: ${proj.panels || 'TBD'}
 • Estimated cost: $${proj.costUsd?.toLocaleString() || 'TBD'} USD
 
@@ -248,7 +248,7 @@ Co-financing: ${proj.cofinance}`
           urgency: 'MEDIUM',
           status: 'OPEN',
           projectType: 'SOLAR_PV',
-          projectSubtype: (proj as any).dcPower ? 'Hybrid PV (DC)' : 'Standard PV',
+          projectSubtype: ('dcPower' in proj && proj.dcPower) ? 'Hybrid PV (DC)' : 'Standard PV',
           technicalPowerKw: proj.powerKw,
           numberOfPanels: proj.panels,
           estimatedCostUsd: proj.costUsd,

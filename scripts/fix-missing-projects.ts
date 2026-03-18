@@ -106,7 +106,7 @@ async function main() {
   console.log('\n✅ Done!')
 }
 
-async function createProject(proj: any, coords: { lat: number; lng: number }, contactInfo: any) {
+async function createProject(proj: typeof missingProjects[number], coords: { lat: number; lng: number }, contactInfo: typeof CONTACTS[keyof typeof CONTACTS]) {
   const briefDesc = `${proj.powerKw}kW solar PV installation for ${proj.object.toLowerCase()}`
   const fullDesc = `Solar photovoltaic system installation for ${proj.object} in ${proj.municipalityName}.
 

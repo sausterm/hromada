@@ -6,7 +6,7 @@ import { Pool } from 'pg'
 
 const connectionString = process.env.DATABASE_URL || ''
 const isRemoteDb = connectionString.includes('supabase.co')
-let poolConfig: any = { connectionString }
+let poolConfig: Record<string, unknown> = { connectionString }
 if (isRemoteDb && process.env.DB_HOST) {
   poolConfig = {
     host: process.env.DB_HOST,

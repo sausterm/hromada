@@ -27,7 +27,7 @@ jest.mock('@/i18n/navigation', () => ({
   }),
   usePathname: () => '/',
   Link: jest.fn().mockImplementation(({ children, ...props }) => {
-    const React = require('react')
+    const React = require('react') // eslint-disable-line @typescript-eslint/no-require-imports
     return React.createElement('a', props, children)
   }),
   redirect: jest.fn(),

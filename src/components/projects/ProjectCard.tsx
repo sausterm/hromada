@@ -30,12 +30,12 @@ export function ProjectCard({
   const isIDP = project.isIDP === true
 
   // Common class names for the card container
-  const cardClassName = `group flex flex-col h-full bg-white rounded-xl overflow-hidden card-hover border-2 ${
+  const cardClassName = `group flex flex-col h-full rounded-xl overflow-hidden card-hover border-2 ${
     isHighlighted
-      ? 'border-[var(--navy-600)] shadow-lg ring-2 ring-[var(--navy-200)]'
+      ? 'bg-white border-[var(--navy-600)] shadow-lg ring-2 ring-[var(--navy-200)]'
       : isIDP
-        ? 'border-[#7B5F9B] shadow-sm'
-        : 'border-[var(--cream-300)] shadow-sm'
+        ? 'bg-[#7B5F9B]/5 border-[#7B5F9B] shadow-sm'
+        : 'bg-white border-[var(--cream-300)] shadow-sm'
   }`
 
   // Card content - shared between both modes
@@ -208,9 +208,7 @@ export function ProjectCard({
 
         {/* Footer */}
         <div className={`flex items-center justify-between pt-2 border-t ${
-          isIDP
-            ? 'border-[#7B5F9B]/20 bg-[#7B5F9B]/5 -mx-4 px-4 -mb-4 pb-4 rounded-b-xl'
-            : 'border-[var(--cream-300)]'
+          isIDP ? 'border-[#7B5F9B]/20' : 'border-[var(--cream-300)]'
         }`}>
           {/* Posted time */}
           <span className="text-xs text-[var(--navy-500)] whitespace-nowrap" suppressHydrationWarning>

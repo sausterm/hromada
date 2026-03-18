@@ -104,21 +104,8 @@ export function emailLayout(content: string, options?: EmailLayoutOptions): stri
           <!-- ============ FOOTER ============ -->
           <tr>
             <td style="background:${C.cream};padding:28px 40px;text-align:center;border-top:1px solid ${C.creamDark};">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-bottom:16px;">
-                <tr>
-                  <td style="padding:0 12px;" valign="middle">
-                    <img src="${EMAIL_ASSETS}/pocacitologo.png" alt="POCACITO Network" height="24" style="height:24px;display:block;" />
-                  </td>
-                  <td style="padding:0 12px;" valign="middle">
-                    <img src="${EMAIL_ASSETS}/candidseal.png" alt="Candid Platinum Seal" height="32" style="height:32px;display:block;" />
-                  </td>
-                </tr>
-              </table>
               <p style="margin:0 0 4px;font-size:12px;color:${C.textLight};font-family:${FONT_BODY};">
-                Hromada is a project of <strong>POCACITO Network</strong>, a 501(c)(3) nonprofit.
-              </p>
-              <p style="margin:0;font-size:11px;color:${C.textMuted};font-family:${FONT_BODY};">
-                EIN 99-0392258 &middot; Charlottesville, VA
+                &copy; ${new Date().getFullYear()} Hromada
               </p>
               ${unsubscribeBlock}
             </td>

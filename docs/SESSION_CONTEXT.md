@@ -1,8 +1,8 @@
 # Session Context — Hromada
 
-**Date**: 2026-03-04
-**Branch**: `v2-payment-processing`
-**Status**: Amplify build fixed (webpack flag), password reset verified locally, demo site deployed. SES emails blocked on Amplify service role (see handoff below).
+**Date**: 2026-03-18
+**Branch**: `main` (formerly `directory-mode`, force-pushed Mar 18)
+**Status**: SOFT LAUNCH COMPLETE. Site live at hromadaproject.org. Ecoaction projects live. Email via Resend. Custom domain email via Proton. No payment processing yet (awaiting FSA signing Mar 27-28).
 
 ---
 
@@ -142,18 +142,24 @@ Donor receives "Funds Delivered" update
 ## Environment Variables
 
 ```bash
-# Configured
-AWS_SES_REGION=us-east-1     # SES region
-AWS_SES_FROM_EMAIL=noreply@hromadaproject.org  # Verified sender
-ADMIN_EMAIL=admin@...        # Receives donation notifications
+# Email (Resend — replaced SES on Mar 18)
+RESEND_API_KEY=re_...        # Resend API key
+EMAIL_PROVIDER=resend        # Provider selector (resend or ses)
+ADMIN_EMAIL=thomas@hromadaproject.org  # Receives admin notifications
+
+# Auth
+SESSION_SECRET=...           # JWT signing key (added Mar 18)
+
+# Other configured
 DEEPL_API_KEY=...            # Translation (DeepL free tier, 500K chars/month)
-SITE_PASSWORD=hromadav2!2026 # Site access gate
+NEXT_PUBLIC_MAPTILER_KEY=... # Map tiles
 
 # Production (AWS Amplify)
 # All vars configured in Amplify console including:
-# NEXT_PUBLIC_SENTRY_DSN, DATABASE_URL, DIRECT_URL, SESSION_SECRET, etc.
+# DATABASE_URL, DIRECT_URL, SESSION_SECRET, S3_ACCESS_KEY_ID, etc.
+# SITE_PASSWORD removed (site is public as of soft launch)
 
-# Needed before launch
+# Needed before payment processing
 # Real POCACITO Network bank details (currently placeholders in SupportProjectCard)
 
 # Future
@@ -178,9 +184,11 @@ WISE_API_KEY=...             # Outbound transfer tracking
 
 ## Team
 
-- Thomas Protzman (Director)
-- Kostiantyn Krynytskyi (Director - Ukraine, handles municipal bank details)
-- Sloan Austermann (Director - Technology & Operations)
+- Thomas Protzman (Co-founder, Director)
+- Sloan Austermann (Co-founder, Technology & Operations)
+- Kostiantyn Krynytskyi (Founding Partner, EcoAction — NOT co-founder/director)
+- Natalia Kholodova (Founding Partner, Ecoclub Rivne)
+- Polina Kolodiazhna (Founding Partner, Greenpeace Ukraine)
 
 ---
 
@@ -203,9 +211,9 @@ Two variants in `public/partners/`: `Logo.png` (cream bg) and `Logo-white.png` (
 
 ## Git Branch State
 
-- **main**: Mobile bug fixes, about page, login password toggle
-- **v2-payment-processing**: All of main + payment processing, MPP, homepage redesign, i18n, document system, DeepL migration, case study, security hardening, audit trail
-- When merging v2 into main, expect conflicts in: `globals.css`, `Header.tsx`, locale files, homepage
+- **main**: Production branch. All features merged. Deployed to hromadaproject.org via Amplify.
+- **directory-mode**: Development branch, kept in sync with main. Force-pushed as main on Mar 18.
+- **v2-payment-processing**: Legacy branch, merged into directory-mode pre-launch. No longer active.
 
 ---
 
@@ -229,7 +237,7 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 - **Deploys succeeding** — build uses `next build --webpack` to avoid Turbopack symlink issue
 - **Build command**: `NODE_OPTIONS=--max-old-space-size=8192 npm run build` (8GB heap for OOM protection)
 - **On-demand revalidation** — `/api/revalidate` endpoint for clearing ISR cache
-- **Custom domains**: `demo.hromadaproject.org` → `v2-payment-processing`, `hromadaproject.org` / `www` → `main`
+- **Custom domains**: `hromadaproject.org` / `www` → `main`
 - **Env vars**: All configured including `SES_REGION=us-east-1` (added 2026-03-04). See `Vault/reports/2026-03-04-webpack-build-fix.md` for full list.
 - **AWS CLI**: `aws amplify list-jobs --app-id d3lasyv0tebbph --branch-name v2-payment-processing --profile hromada`
 - **Warning**: `aws amplify update-branch --environment-variables` REPLACES all env vars, not just the ones specified. Always include all vars when updating.
@@ -238,9 +246,9 @@ Fiscal Sponsorship Agreement drafted and under review. Key points:
 
 The Amplify app has **no IAM service role**. The compute function can't call SES — password reset emails fail silently on demo site. See `Vault/reports/2026-03-04-webpack-build-fix.md` for exact steps Thomas needs to take (update trust policy on `Hromada-LambdaExecRole`, attach to Amplify app). Takes ~2 minutes.
 
-### SES Sandbox Mode
+### Email Provider: Resend (replaced SES on Mar 18)
 
-SES is in sandbox on Thomas's account — can only send to verified addresses. Verified: `hromadaproject.org` (domain), `thomasprotzman@proton.me`, `tprotzmant+test1@gmail.com`, `sloanaustermann@proton.me`, `sloantaustermann@gmail.com`. Thomas should request production access for launch.
+SES sandbox issues made it impractical. Switched to Resend. Domain `hromadaproject.org` verified with DKIM/SPF. Sends from `thomas@hromadaproject.org` and `noreply@hromadaproject.org`. SES code remains as fallback (set `EMAIL_PROVIDER=ses` to switch back).
 
 ---
 
@@ -274,10 +282,10 @@ SES is in sandbox on Thomas's account — can only send to verified addresses. V
 
 - **AWS SES emails**: Need to verify `hromadaproject.org` domain in SES and move out of sandbox for production sends. IAM role on Amplify needs `ses:SendEmail` permission.
 - **Placeholder bank details**: Still in SupportProjectCard — blocked on FSA signing and real POCACITO account info.
-- **Site password**: `hromadav2!2026`
-- **Admin login**: Use `HROMADA_ADMIN_SECRET` from `.env.local`
-- **Hosting**: AWS Amplify (NOT Vercel). Push to branch triggers build automatically.
-- **DNS**: Managed through Cloudflare for `hromadaproject.org`
+- **Site password**: REMOVED (site is public since soft launch Mar 18)
+- **Admin login**: thomasprotzman@proton.me / Admin!2024Secure
+- **Hosting**: AWS Amplify (NOT Vercel). Push to main triggers build automatically.
+- **DNS**: Route 53 on Sloan's AWS account (not Tom's CLI)
 - **Prisma**: Using `db push` (not `migrate dev`) due to migration drift. Schema applied directly to Supabase.
 - **Tests**: 107 suites, 1792 passing, 5 skipped.
 - **Source maps**: Disabled in production build (`sourcemaps.disable: true` in `next.config.ts`). Source map files deleted post-build in `amplify.yml`.

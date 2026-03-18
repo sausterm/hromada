@@ -43,24 +43,14 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 - [ ] ACH payment method support #p3
 - [ ] Donation matching campaigns #p3
 
-## Soft Launch Prep (Wednesday March 18, 10am ET) #p0
+## Soft Launch — COMPLETED March 18, 2026
 
-- [ ] Create LinkedIn company page #p0 @tom
-- [ ] Draft launch post — Hromada + mission + Ecoaction as first partner + first projects (one combined post) #p0 @tom
-- [ ] Draft press release for soft launch — Shank to review and circulate #p1 @tom
-- [x] Remove site password for open access #p0 @tom
-- [x] Hide/disable donation flow — SupportProjectCard stripped to Calendly CTA only #p0
-- [x] Remove POCACITO/FSA branding — footer, about, How It Works, privacy policy, locale strings #p1
-- [x] Hide Ecoclub/Greenpeace partners — carousel, about, case study, project detail config #p1
-- [x] Hide Municipal Partnership Program from header nav #p1
-- [x] CTA button: "How It Works" → "About Us" at bottom of homepage #p2
-- [x] Remove transparency page and submit-project page for directory mode #p1
-- [x] Merge v2-payment-processing into directory-mode branch #p0 @tom
-- [/] Ensure Ecoaction projects are submitted, approved, and browsable — Lychkove + Samar docs in repo (Mar 4) #p0 @tom
-- [ ] Remove SITE_PASSWORD env var from Amplify branch (via console, NOT CLI) #p0 @tom
+All soft launch tasks complete. Site is live at hromadaproject.org. Ecoaction projects live. Launched across socials. Email via Resend working. Custom domain email (thomas@, info@hromadaproject.org) configured via Proton.
+
+Remaining post-launch items moved to relevant sections above/below.
+
 - [ ] Bulk project upload script — read Partner_Project_Template.csv, create projects via API #p1 @tom
 - [ ] Get cost estimates from Kostia for 4 projects (no price yet): Petropavlivka Lyceum No. 1, Petropavlivka Lyceum No. 2, Karpivskyi Preschool Kazka, Karpivskyi Lyceum. Re-add to site once costs available. #p1 @tom
-- [x] Move EventBridge cron target back to hromadaproject.org #p1 @tom
 
 ## Post-Soft-Launch Content Cadence #p1
 
@@ -83,7 +73,7 @@ Emails:
 - [x] Admin newsletter compose page — write, preview, send to subscribers #p2 @tom
 - [x] Email system production-ready — SES credentials, recipient routing, newsletter sending all working #p0 @tom
 - [x] Fix newsletter double-logo bug (campaign sender double-wrapping emailLayout) #p2 @tom
-- [ ] Request SES production access (exit sandbox) — currently can only send to verified addresses #p1 @tom
+- [x] Email provider migrated from SES to Resend — domain verified, DKIM/SPF configured, working in production #p0 @tom
 - [ ] Auto-send project completed press release (#18) on COMPLETED status — pulls all data from DB, sends to all subscribers #p2 @tom
 
 Press releases (only):

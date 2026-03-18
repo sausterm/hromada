@@ -8,11 +8,11 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   serverExternalPackages: ['@prisma/client', '@prisma/adapter-pg', 'pg'],
   images: {
+    domains: ['kwzirplynefqlpvdvpqz.supabase.co', 'images.unsplash.com'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'kwzirplynefqlpvdvpqz.supabase.co',
-        pathname: '/storage/v1/object/public/**',
       },
       {
         protocol: 'https',

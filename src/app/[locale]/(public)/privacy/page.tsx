@@ -66,7 +66,6 @@ export default function PrivacyPage() {
             <p>We use two cookies, both essential for the platform to function:</p>
             <ul className="list-disc pl-5 space-y-1.5 mt-2">
               <li><strong>hromada_session</strong> — An encrypted session token that keeps you logged in. Expires after 7 days. HttpOnly, secure, not accessible to JavaScript.</li>
-              <li><strong>hromada_site_access</strong> — Verifies that you have entered the site access password (used during beta). Expires after 7 days. HttpOnly, secure.</li>
             </ul>
             <p className="mt-2">We do not use advertising cookies, tracking cookies, or third-party analytics cookies.</p>
           </section>

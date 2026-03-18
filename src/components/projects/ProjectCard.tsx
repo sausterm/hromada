@@ -207,7 +207,11 @@ export function ProjectCard({
         <div className="flex-1" />
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-[var(--cream-300)]">
+        <div className={`flex items-center justify-between pt-2 border-t ${
+          isIDP
+            ? 'border-[#7B5F9B]/20 bg-[#7B5F9B]/5 -mx-4 px-4 -mb-4 pb-4 rounded-b-xl'
+            : 'border-[var(--cream-300)]'
+        }`}>
           {/* Posted time */}
           <span className="text-xs text-[var(--navy-500)] whitespace-nowrap" suppressHydrationWarning>
             {t('projectCard.postedAgo', { time: formatRelativeTime(project.createdAt, t) })}

@@ -24,6 +24,8 @@ frontend:
           echo "SES_ACCESS_KEY_ID=$SES_ACCESS_KEY_ID" >> .env.production
           echo "SES_SECRET_ACCESS_KEY=$SES_SECRET_ACCESS_KEY" >> .env.production
           echo "ADMIN_EMAIL=$ADMIN_EMAIL" >> .env.production
+          echo "RESEND_API_KEY=$RESEND_API_KEY" >> .env.production
+          echo "EMAIL_PROVIDER=$EMAIL_PROVIDER" >> .env.production
           echo "CRON_SECRET=$CRON_SECRET" >> .env.production
           echo "CALENDLY_API_TOKEN=$CALENDLY_API_TOKEN" >> .env.production
           echo "DEEPL_API_KEY=$DEEPL_API_KEY" >> .env.production

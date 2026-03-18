@@ -79,6 +79,8 @@
     "BATTERY_STORAGE": "Battery Storage",
     "HEAT_PUMP": "Heat Pump",
     "THERMO_MODERNIZATION": "Thermo-modernization",
+    "WATER_TREATMENT": "Water Treatment",
+    "RENOVATION": "Renovation",
     "GENERAL": "General"
   },
   "cofinancing": {
@@ -445,7 +447,7 @@
   },
   "legal": {
     "termsTitle": "Terms of Service",
-    "termsComingSoon": "Our Terms of Service are being finalized. This platform is currently in beta.",
+    "termsComingSoon": "Our Terms of Service are being finalized and will be published shortly.",
     "privacyTitle": "Privacy Policy",
     "privacyComingSoon": "Our Privacy Policy is being finalized. We take data protection seriously and follow industry best practices."
   },
@@ -1081,7 +1083,7 @@
   "partnership": {
     "hero": {
       "title": "Municipal Partnership Program",
-      "subtitle": "Ukraine's energy grid has been devastated by Russian attacks. Thousands of municipalities need solar panels, heat pumps, and battery storage — but have no way to reach international donors.",
+      "subtitle": "Thousands of Ukrainian municipalities need solar panels, heat pumps, and battery storage — but have no way to reach international donors.",
       "pitch": "The Municipal Partnership Program connects one American community with one Ukrainian community around one project. Real impact you can see and measure.",
       "cta": "Express Interest"
     },

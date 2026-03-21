@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RumAnalytics } from "@/components/analytics/RumAnalytics";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <RumAnalytics />
         {children}
       </body>
     </html>

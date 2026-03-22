@@ -19,6 +19,22 @@ Sources: [[specs/payment-processing]], [Codebase Analysis](../docs/CODEBASE_ANAL
 - [ ] Confirm insurance/liability requirements from FSA #p2
 - [ ] Document fund disbursement process (how money moves from POCACITO → Ukraine) #p1
 
+## Hromada 501(c)(3) — Target Submit June 21, 2026 #p0
+
+Parallel track to POCACITO FSA. POCACITO remains fiscal sponsor until 501(c)(3) status granted.
+
+- [x] Form SS-4 — EIN **41-5028677** assigned March 21, 2026 #p0 @tom
+- [x] SDAT filing — Articles of Incorporation filed March 21, expedited review by April 3 #p0 @tom
+- [ ] Call IRS 800-829-4933 to update EIN name "Hromada" → "Hromada Inc." #p0 @tom
+- [ ] Bylaws #p0 @tom
+- [ ] Conflict of Interest Policy #p0 @tom
+- [ ] Budget / 3-year financial projections #p0 @tom
+- [ ] Mission Statement #p1 @tom
+- [ ] Purpose Statement #p1 @tom
+- [ ] Board composition — 3+ directors, majority unrelated/uncompensated #p1 @tom
+- [ ] IRS Form 1023 (full) — $600 fee #p0 @tom
+- [ ] Maryland Secretary of State — charitable solicitation registration #p1 @tom
+
 ## Security #p0
 
 - [x] Fix session token vulnerability — migrated to JWT (jose/HS256) with SESSION_SECRET, httpOnly cookies #p0 @sloan
@@ -94,7 +110,12 @@ Materials:
 
 ## Events #p1
 
-- [/] May 20 Cannon Building Room 340 — morning event. Max booked. #p1 @tom @max
+- [/] May 20 Cannon Building Room 340 — morning event. Max booked. Need to decide theme/topic (30-min US-team call). #p1 @tom @max
+  - [ ] **Decide theme/topic** — schedule group call
+  - [ ] Confirm speakers + invitees
+  - [ ] Event program, run-of-show, printed materials
+- [ ] Charlottesville donor event — C-Ville 100 connection via Max/Brendan #p2 @tom
+- [ ] NYC donor event #p2 @tom
   - [ ] Confirm Lloyd Doggett speaking
   - [ ] Confirm Kostia speaking
   - [ ] Confirm Natalia attending
@@ -106,8 +127,13 @@ Materials:
 ## External Partnerships #p2
 
 - [/] EOPA partnership evaluation — joint call, data use terms, community consent model #p2 @tom
-- [/] Scott Sklar — 1-pager then conference call to his network #p1 @tom
+- [/] Scott Sklar — lunch next week #p1 @tom
 - [x] Michael Shank — met Mar 11. Follow-ups: FCNL head intro, press release, Doggett Dear Colleague letter #p1 @tom
+- [/] Pat Strong — opening full network (NREL, SEIA, Rotary, Chernihiv city, Blau-Gelbes Kreuz). Potential board member. #p1 @tom
+- [ ] Clemens Helbach — German Embassy, Thu Mar 27. Event support + German business connections. Jean Froehly? #p1 @tom
+- [ ] Charlottesville donor event — C-Ville 100 connection via Max/Brendan #p2 @tom
+- [ ] NYC donor event #p2 @tom
+- [ ] Kravitz organization — mentioned by Pat, context unclear. Follow up. #p3 @tom
 
 ## Municipal Partnerships #p1
 

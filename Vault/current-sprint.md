@@ -11,9 +11,18 @@
 - [/] 2-pager explainer handout (Figma) #p1 @tom
 - [/] 6-pager detailed explainer (Figma) #p1 @tom
 - [ ] Shank intro to FCNL head — soft launch complete, ready for intro #p1 @tom
-- [ ] Scott Sklar conference call — has 1-pager, schedule call #p1 @tom
+- [/] Scott Sklar lunch — next Wednesday #p1 @tom
+- [x] Böll Foundation 501(c)(3) session — Thu Mar 20 with Brendan #p1 @tom
+- [x] Pat Strong / Rotary call — Fri Mar 20, great first impression, opening full network #p1 @tom
+- [/] 501(c)(3) setup — EIN done (41-5028677), SDAT filed (review by Apr 3), call IRS Mon to fix name, full 1023 by June 21 #p0 @tom
+- [ ] Meet Pat Strong in DC — possibly Mar 27 #p1 @tom
+- [ ] Write Clemens Helbach first thing Monday Mar 24 #p0 @tom
+- [ ] Follow up with Pat Strong Monday Mar 24 #p0 @tom
+- [ ] Talk to Shank about donor outreach language #p1 @tom
+- [ ] Meet Clemens Helbach (German Embassy) — Thu Mar 27, event support + German business connections #p1 @tom
+- [ ] Schedule US-team group call to decide May 20 event theme/topic #p1 @tom
 - [ ] Dear Colleague letter from Lloyd Doggett — Shank to help coordinate #p1 @tom
-- [ ] Ask Kostia for original photos to replace Canva crops #p2 @tom
+- [x] Ask Kostia for original photos to replace Canva crops #p2 @tom
 
 ## To Do
 
@@ -40,13 +49,8 @@
 - [ ] Draft press release — deferred to payment processing launch #p1 @tom
 - [ ] Send logo usage courtesy emails to press outlets (Böll, Stimson, Euromaidan, WaPo, NBC) #p2 @tom
 
-### One-Pager Revisions (Shank feedback)
-- [ ] Subheader: change "From Ukrainian communities to American donors" → "Rebuilding Ukraine's communities, together" #p1 @tom
-- [ ] Energy Security bullet: change "Hard security..." → "Energy independence..." #p1 @tom
-
 ### Partner Onboarding
-- [ ] Send Natalia project intake template or form #p1 @tom
-- [ ] Set up Calendly collective event types per partner #p1 @tom
+- [x] Send Natalia project intake template or form #p1 @tom
 
 ### Partnerships & Outreach
 - [ ] EOPA partnership — evaluate, schedule joint call #p2 @tom
@@ -61,6 +65,8 @@
 - [x] Navy/cream duotone of Sheptytskyi photo #p2 @tom
 - [x] LinkedIn launch post published — Hromada org page #p0 @tom
 - [x] LinkedIn personal repost drafted and published #p1 @tom
+- [x] One-pager revisions per Shank feedback (subheader + energy security bullet) #p1 @tom
+- [x] Send Natalia project intake template #p1 @tom
 
 ### Soft Launch (Mar 18) — COMPLETED
 - [x] **SOFT LAUNCH COMPLETE — March 18, 2026** — launched across socials with Ecoaction projects
